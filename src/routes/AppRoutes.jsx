@@ -9,36 +9,32 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ProductDetails from "../pages/ProductDetails";
 import Checkout from "../pages/Checkout";
+import Wishlist from "../pages/Wishlist";
+import Profile from "../pages/Profile";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import OrderSuccess from "../pages/OrderSuccess";
 import NotFound from "../pages/NotFound";
 
 export default function AppRoutes() {
-
   return (
-
     <Routes>
-
       <Route element={<MainLayout />}>
-
         <Route path="/" element={<Home />} />
-
         <Route path="/shop" element={<Shop />} />
-
         <Route path="/product/:id" element={<ProductDetails />} />
-
         <Route path="/cart" element={<Cart />} />
-
         <Route path="/checkout" element={<Checkout />} />
-
+        <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
-
         <Route path="/register" element={<Register />} />
-
       </Route>
 
       <Route path="*" element={<NotFound />} />
-
     </Routes>
-
   );
-
 }
