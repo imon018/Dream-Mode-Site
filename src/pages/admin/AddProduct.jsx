@@ -1,15 +1,39 @@
 import { useState } from "react";
 import Button from "../../components/ui/Button";
+import { addProductToDB } from "../../services/firestoreProductService";
+import { uploadImage } from "../../services/uploadService";
+import { successToast, errorToast } from "../../components/ui/Toast";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log({ name, price, image });
+    try {
+      let imageUrl = "";
+
+      if (image) {
+        imageUrl = await uploadImage(image);
+      }
+
+      await addProductToDB({
+        name,
+        price: Number(price),
+        image: imageUrl
+      });
+
+      successToast("Product added successfully!");
+
+      setName("");
+      setPrice("");
+      setImage(null);
+
+    } catch (err) {
+      errorToast(err.message);
+    }
   };
 
   return (
@@ -36,10 +60,9 @@ export default function AddProduct() {
         />
 
         <input
-          className="w-full border p-3 rounded-xl"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
+          type="file"
+          className="w-full"
+          onChange={(e) => setImage(e.target.files[0])}
         />
 
         <Button className="w-full">
