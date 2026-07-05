@@ -1,4 +1,8 @@
+import useAuth from "../hooks/useAuth";
+
 export default function Profile() {
+  const { user } = useAuth();
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
 
@@ -6,9 +10,16 @@ export default function Profile() {
         My Profile
       </h1>
 
-      <p className="mt-4 text-gray-600">
-        User information will appear here.
-      </p>
+      {user ? (
+        <div className="mt-6 space-y-2">
+
+          <p>Email: {user.email}</p>
+          <p>User ID: {user.uid}</p>
+
+        </div>
+      ) : (
+        <p>Please login</p>
+      )}
 
     </div>
   );
