@@ -1,17 +1,33 @@
 import useCart from "../hooks/useCart";
+import useAuth from "../hooks/useAuth";
 import Button from "../components/ui/Button";
-import { successToast } from "../components/ui/Toast";
+import { createOrder } from "../services/orderService";
+import { successToast, errorToast } from "../components/ui/Toast";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
+  const { user } = useAuth();
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
+    if (!user) return errorToast("Login required");
     if (cart.length === 0) return;
 
-    successToast("Order placed successfully!");
-    clearCart();
+    try {
+      await createOrder({
+        email: user.email,
+        items: cart,
+        total,
+        createdAt: new Date().toISOString()
+      });
+
+      successToast("Order placed successfully!");
+      clearCart();
+
+    } catch (err) {
+      errorToast(err.message);
+    }
   };
 
   return (
@@ -21,7 +37,7 @@ export default function Checkout() {
         Checkout
       </h1>
 
-      <div className="mt-8 space-y-4">
+      <div className="mt-8 space-y-3">
 
         {cart.map((item, i) => (
           <div key={i} className="flex justify-between border-b py-2">
