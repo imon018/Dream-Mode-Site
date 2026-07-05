@@ -16,6 +16,7 @@ export const addProductToDB = async (product) => {
 
 export const getProductsFromDB = async () => {
   const snapshot = await getDocs(productRef);
+
   return snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data()
