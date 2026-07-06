@@ -1,12 +1,7 @@
-import FloatingWhatsApp from "./components/FloatingWhatsApp";
-import AppRoutes from "./routes/AppRoutes";
-import AuthProvider from "./context/AuthContext";
-
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-      <FloatingWhatsApp />
-    </AuthProvider>
+    <div style={{ padding: 40 }}>
+      <h1>Dream Mode Test ✅</h1>
+    </div>
   );
 }
