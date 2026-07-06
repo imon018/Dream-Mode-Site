@@ -26,53 +26,59 @@ export default function CartProvider({ children }) {
     }
   }, [cart]);
 
+  // helper: normalize ids to strings
+  const toId = (id) => (id == null ? id : String(id));
+
   // Add product with quantity support. If product exists, increase quantity.
   const addToCart = (product, qty = 1) => {
-    if (!product || !product.id) return;
+    if (!product || product.id == null) return;
 
-    console.debug("CartContext.addToCart", { id: product.id, qty });
+    const id = toId(product.id);
+    console.debug("CartContext.addToCart", { id, qty });
 
     setCart((prev) => {
-      const idx = prev.findIndex((p) => p.id === product.id);
+      const idx = prev.findIndex((p) => toId(p.id) === id);
       if (idx >= 0) {
         return prev.map((p, i) =>
           i === idx ? { ...p, quantity: (p.quantity || 1) + qty } : p
         );
       }
 
-      return [...prev, { ...product, quantity: qty }];
+      return [...prev, { ...product, id, quantity: qty }];
     });
   };
 
   // Remove quantity (or whole item if qty >= current). Default removes one unit.
   const removeFromCart = (id, qty = 1) => {
-    if (!id) return;
+    if (id == null) return;
 
-    console.debug("CartContext.removeFromCart", { id, qty });
+    const sid = toId(id);
+    console.debug("CartContext.removeFromCart", { id: sid, qty });
 
     setCart((prev) => {
-      const idx = prev.findIndex((p) => p.id === id);
+      const idx = prev.findIndex((p) => toId(p.id) === sid);
       if (idx === -1) return prev;
 
       const item = prev[idx];
       const currentQty = item.quantity || 1;
       if (qty >= currentQty) {
-        return prev.filter((p) => p.id !== id);
+        return prev.filter((p) => toId(p.id) !== sid);
       }
 
-      return prev.map((p) => (p.id === id ? { ...p, quantity: currentQty - qty } : p));
+      return prev.map((p) => (toId(p.id) === sid ? { ...p, quantity: currentQty - qty } : p));
     });
   };
 
   // Set exact quantity (if newQty <= 0 item is removed)
   const updateQuantity = (id, newQty) => {
-    if (!id) return;
+    if (id == null) return;
 
-    console.debug("CartContext.updateQuantity", { id, newQty });
+    const sid = toId(id);
+    console.debug("CartContext.updateQuantity", { id: sid, newQty });
 
     setCart((prev) => {
-      if (newQty <= 0) return prev.filter((p) => p.id !== id);
-      return prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p));
+      if (newQty <= 0) return prev.filter((p) => toId(p.id) !== sid);
+      return prev.map((p) => (toId(p.id) === sid ? { ...p, quantity: newQty } : p));
     });
   };
 
