@@ -1,2 +1,2 @@
-# Stop tracking .env and ensure it's ignored
-.gitignore already includes .env, but ensure it's present
+# Stop tracking .env — placeholders only in repo
+.env
