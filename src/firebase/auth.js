@@ -1,4 +1,4 @@
-import app from "./firebaseConfig";
+import app, { isFirebaseConfigured } from "./firebaseConfig";
 import { getAuth } from "firebase/auth";
 
-export const auth = getAuth(app);
+export const auth = isFirebaseConfigured ? getAuth(app) : null;
