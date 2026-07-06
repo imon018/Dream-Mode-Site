@@ -34,7 +34,6 @@ export default function CartProvider({ children }) {
     if (!product || product.id == null) return;
 
     const id = toId(product.id);
-    console.debug("CartContext.addToCart", { id, qty });
 
     setCart((prev) => {
       const idx = prev.findIndex((p) => toId(p.id) === id);
@@ -53,7 +52,6 @@ export default function CartProvider({ children }) {
     if (id == null) return;
 
     const sid = toId(id);
-    console.debug("CartContext.removeFromCart", { id: sid, qty });
 
     setCart((prev) => {
       const idx = prev.findIndex((p) => toId(p.id) === sid);
@@ -74,7 +72,6 @@ export default function CartProvider({ children }) {
     if (id == null) return;
 
     const sid = toId(id);
-    console.debug("CartContext.updateQuantity", { id: sid, newQty });
 
     setCart((prev) => {
       if (newQty <= 0) return prev.filter((p) => toId(p.id) !== sid);
