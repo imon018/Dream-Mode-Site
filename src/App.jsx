@@ -1,12 +1,15 @@
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
 import AppRoutes from "./routes/AppRoutes";
 import AuthProvider from "./context/AuthContext";
+import CartProvider from "./context/CartContext";
 
 export default function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
-      <FloatingWhatsApp />
+      <CartProvider>
+        <AppRoutes />
+        <FloatingWhatsApp />
+      </CartProvider>
     </AuthProvider>
   );
 }
