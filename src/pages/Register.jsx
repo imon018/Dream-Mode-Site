@@ -16,8 +16,9 @@ export default function Register() {
       const data = await register(email, password);
       console.log("REGISTER SUCCESS:", data);
 
+      // show toast, wait briefly so toast can appear, then navigate
       successToast("Account Created Successfully");
-      // redirect to profile after success so user sees their account
+      await new Promise((r) => setTimeout(r, 500));
       navigate("/profile");
 
     } catch (err) {
