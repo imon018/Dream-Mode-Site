@@ -32,6 +32,20 @@ export const register = async (email, password) => {
     const userRef = doc(db, "users", result.user.uid);
 
     console.log("WRITING TO FIRESTORE...");
+    
+    try {
+  await setDoc(userRef, {
+    email: result.user.email,
+    role: "user",
+    createdAt: serverTimestamp(),
+  });
+
+  console.log("FIRESTORE CREATED");
+
+} catch (e) {
+  console.error("SETDOC ERROR:", e.code, e.message);
+  throw e;
+}
 
     await setDoc(userRef, {
       email: result.user.email,
