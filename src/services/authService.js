@@ -17,20 +17,24 @@ export const login = (email, password) =>
   signInWithEmailAndPassword(auth, email, password);
 
 export const register = async (email, password) => {
+  try {
+    const result = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-  const result = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+    await setDoc(doc(db, "users", result.user.uid), {
+      email: result.user.email,
+      role: "user",
+      createdAt: serverTimestamp(),
+    });
 
-  await setDoc(doc(db, "users", result.user.uid), {
-    email: result.user.email,
-    role: "user",
-    createdAt: serverTimestamp()
-  });
-
-  return result;
+    return result;
+  } catch (err) {
+    console.error("Register Error:", err);
+    throw err;
+  }
 };
 
 export const logout = () => signOut(auth);
