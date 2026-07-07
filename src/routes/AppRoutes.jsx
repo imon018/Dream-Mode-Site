@@ -1,6 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
+import AdminLayout from "../layouts/AdminLayout";
+import Dashboard from "../pages/admin/Dashboard";
+import AdminProfile from "../pages/admin/AdminProfile";
 
 import Home from "../pages/Home";
 import Shop from "../pages/Shop";
@@ -33,6 +36,19 @@ export default function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Route>
+      <Route path="/admin" element={<AdminLayout />}>
+
+  <Route
+    index
+    element={<Dashboard />}
+  />
+
+  <Route
+    path="profile"
+    element={<AdminProfile />}
+  />
+
+</Route>
 
       <Route path="*" element={<NotFound />} />
     </Routes>
