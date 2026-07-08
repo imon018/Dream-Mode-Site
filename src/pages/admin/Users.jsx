@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { getUsers } from "../../services/adminService";
+import {
+  changeRole,
+  togglePremium,
+} from "../../services/adminService";
 
 export default function Users() {
 
@@ -11,6 +15,9 @@ export default function Users() {
   }, []);
 
   async function loadUsers() {
+    async function makeAdmin() {
+
+}
     const data = await getUsers();
     setUsers(data);
   }
