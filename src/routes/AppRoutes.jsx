@@ -7,6 +7,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import AdminProfile from "../pages/admin/AdminProfile";
 import Users from "../pages/admin/Users";
 import Products from "../pages/admin/Products";
+import AddProduct from "../pages/admin/AddProduct";
 
 import Home from "../pages/Home";
 import Shop from "../pages/Shop";
@@ -119,6 +120,11 @@ export default function AppRoutes() {
           path="products"
           element={<Products />}
         />
+
+        <Route
+  path="add-product"
+  element={<AddProduct />}
+/>
 
 
       </Route>
