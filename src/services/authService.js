@@ -60,5 +60,10 @@ export const register = async (
   }
 };
 
+export const resendVerificationEmail =
+  async (user) => {
+    await sendEmailVerification(user);
+  };
+
 export const logout = () =>
   signOut(auth);
