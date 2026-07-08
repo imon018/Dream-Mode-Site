@@ -18,7 +18,8 @@ import { logout } from "../services/authService";
 
 export default function AdminLayout() {
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const [sidebarOpen, setSidebarOpen] = useState(false);
+const [collapsed, setCollapsed] = useState(false);
 
   const menu = [
     {
@@ -73,12 +74,27 @@ export default function AdminLayout() {
   <FiMenu size={24} />
 </button>
 
+      <button
+  onClick={() => setCollapsed(!collapsed)}
+  className="hidden lg:flex fixed top-4 left-4 z-40 bg-white border shadow-md p-2 rounded-xl"
+>
+  <FiMenu size={20} />
+</button>
+
+      {sidebarOpen && (
+  <div
+    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+    onClick={() => setSidebarOpen(false)}
+  />
+)}
+
       <aside
   className={`
     fixed lg:static
     top-0 left-0
     h-screen
-    w-72
+    ${collapsed ? "lg:w-20" : "lg:w-72"}
+w-72
     bg-slate-900
     text-white
     flex
@@ -106,13 +122,17 @@ export default function AdminLayout() {
 
         <div className="p-6 border-b border-slate-700">
 
-          <h1 className="text-2xl font-bold">
-            Dream Mode
-          </h1>
+          {!collapsed && (
+  <h1 className="text-2xl font-bold">
+    Dream Mode
+  </h1>
+)}
 
-          <p className="text-sm text-gray-400">
-            Admin Panel
-          </p>
+          {!collapsed && (
+  <p className="text-sm text-gray-400">
+    Admin Panel
+  </p>
+)}
 
         </div>
 
@@ -132,7 +152,7 @@ export default function AdminLayout() {
             >
               {item.icon}
 
-              {item.name}
+              {!collapsed && item.name}
             </NavLink>
           ))}
 
