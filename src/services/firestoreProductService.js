@@ -20,7 +20,7 @@ export const getProductsFromDB = async () => {
 
   return snapshot.docs.map((doc) => ({
     id: doc.id,
-    ...doc.data()
+    ...doc.data(),
   }));
 };
 
@@ -37,12 +37,10 @@ export const getLatestProducts = async () => {
   }));
 };
 
-import { getDoc } from "firebase/firestore";
-
 export const getProductById = async (id) => {
-  const productRef = doc(db, "products", id);
+  const productDoc = doc(db, "products", id);
 
-  const snapshot = await getDoc(productRef);
+  const snapshot = await getDoc(productDoc);
 
   if (!snapshot.exists()) {
     return null;
