@@ -111,9 +111,12 @@ setImage(null);
           onChange={(e) => setImage(e.target.files[0])}
         />
 
-        <Button className="w-full">
-          Save Product
-        </Button>
+        <Button
+  type="submit"
+  className="w-full"
+>
+  Save Product
+</Button>
 
       </form>
 
