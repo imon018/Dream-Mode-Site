@@ -1,7 +1,20 @@
+import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
+
+import { uploadImages } from "../../services/uploadService";
+
+import {
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+
+import { db } from "../../firebase/firestore";
 
 export default function AdminProfile() {
   const { user } = useAuth();
+
+  const [uploading, setUploading] =
+    useState(false);
 
   const createdAt = user?.metadata?.creationTime
     ? new Date(
@@ -15,6 +28,39 @@ export default function AdminProfile() {
       ).toLocaleString()
     : "N/A";
 
+  const handlePhotoUpload = async (e) => {
+    try {
+      setUploading(true);
+
+      const file = e.target.files[0];
+
+      if (!file) return;
+
+      const uploaded = await uploadImages([
+        file,
+      ]);
+
+      const photoURL =
+        uploaded[0].imageUrl;
+
+      await updateDoc(
+        doc(db, "users", user.uid),
+        {
+          photoURL,
+        }
+      );
+
+      alert("Profile photo updated");
+
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+      alert("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -22,8 +68,39 @@ export default function AdminProfile() {
         <div className="bg-slate-900 text-white p-8">
           <div className="flex flex-col md:flex-row items-center gap-6">
 
-            <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center text-4xl font-bold">
-              {user?.email?.charAt(0)?.toUpperCase()}
+            <div className="relative">
+
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="Admin"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-blue-600"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center text-4xl font-bold">
+                  {user?.email
+                    ?.charAt(0)
+                    ?.toUpperCase()}
+                </div>
+              )}
+
+              <label className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs cursor-pointer whitespace-nowrap">
+
+                {uploading
+                  ? "Uploading..."
+                  : "Change"}
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={
+                    handlePhotoUpload
+                  }
+                />
+
+              </label>
+
             </div>
 
             <div>
