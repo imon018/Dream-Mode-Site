@@ -6,13 +6,28 @@ import { successToast, errorToast } from "../../components/ui/Toast";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [image, setImage] = useState(null);
+const [category, setCategory] = useState("");
+const [description, setDescription] = useState("");
+const [price, setPrice] = useState("");
+const [stock, setStock] = useState("");
+const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
+    if (
+  !name ||
+  !category ||
+  !description ||
+  !price ||
+  !stock ||
+  !image
+) {
+  errorToast("Please fill in all fields.");
+  return;
+}
+
+try {
       let imageUrl = "";
 
       if (image) {
@@ -20,16 +35,23 @@ export default function AddProduct() {
       }
 
       await addProductToDB({
-        name,
-        price: Number(price),
-        image: imageUrl
-      });
+  name,
+  category,
+  description,
+  price: Number(price),
+  stock: Number(stock),
+  image: imageUrl,
+  createdAt: new Date(),
+});
 
       successToast("Product added successfully!");
 
       setName("");
-      setPrice("");
-      setImage(null);
+setCategory("");
+setDescription("");
+setPrice("");
+setStock("");
+setImage(null);
 
     } catch (err) {
       errorToast(err.message);
@@ -53,11 +75,54 @@ export default function AddProduct() {
         />
 
         <input
+  className="w-full border p-3 rounded-xl"
+  placeholder="Category"
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+/>
+
+        <input
+  placeholder="Category"
+  ...
+/>
+
+<textarea
+  className="w-full border p-3 rounded-xl"
+  rows={4}
+  placeholder="Product Description"
+  value={description}
+  onChange={(e) => setDescription(e.target.value)}
+/>
+
+<input
+  placeholder="Price"
+  ...
+/>
+
+        <input
           className="w-full border p-3 rounded-xl"
           placeholder="Price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
+
+        <input
+  placeholder="Price"
+  ...
+/>
+
+<input
+  type="number"
+  className="w-full border p-3 rounded-xl"
+  placeholder="Stock Quantity"
+  value={stock}
+  onChange={(e) => setStock(e.target.value)}
+/>
+
+<input
+  type="file"
+  ...
+/>
 
         <input
           type="file"
