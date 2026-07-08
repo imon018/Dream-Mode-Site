@@ -1,5 +1,5 @@
-import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
+import { useState, useEffect } from "react";
 
 import { uploadImages } from "../../services/uploadService";
 
@@ -13,8 +13,14 @@ import { db } from "../../firebase/firestore";
 export default function AdminProfile() {
   const { user } = useAuth();
 
-  const [uploading, setUploading] =
-    useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [photo, setPhoto] = useState("");
+
+  useEffect(() => {
+    if (user?.photoURL) {
+      setPhoto(user.photoURL);
+    }
+  }, [user]);
 
   const handlePhotoUpload = async (e) => {
     try {
@@ -24,12 +30,11 @@ export default function AdminProfile() {
 
       if (!file) return;
 
-      const uploaded = await uploadImages([
-        file,
-      ]);
+      const uploaded = await uploadImages([file]);
 
-      const photoURL =
-        uploaded[0].imageUrl;
+      const photoURL = uploaded[0].imageUrl;
+
+      setPhoto(photoURL);
 
       await updateDoc(
         doc(db, "users", user.uid),
@@ -37,6 +42,8 @@ export default function AdminProfile() {
           photoURL,
         }
       );
+
+      alert("Photo uploaded successfully");
 
       window.location.reload();
     } catch (err) {
@@ -54,18 +61,18 @@ export default function AdminProfile() {
         Admin Profile
       </h1>
 
-      <div className="flex flex-col items-center mb-8">
+      <div className="mb-8 flex flex-col items-center">
 
         <img
           src={
-            user?.photoURL ||
+            photo ||
             "https://via.placeholder.com/150"
           }
           alt="Admin"
-          className="w-36 h-36 rounded-full object-cover border-4 border-blue-600"
+          className="w-32 h-32 rounded-full object-cover border-4 border-blue-600"
         />
 
-        <label className="mt-4 bg-blue-600 text-white px-5 py-2 rounded-xl cursor-pointer">
+        <label className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-xl cursor-pointer">
 
           {uploading
             ? "Uploading..."
@@ -75,10 +82,9 @@ export default function AdminProfile() {
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={
-              handlePhotoUpload
-            }
+            onChange={handlePhotoUpload}
           />
+
         </label>
 
       </div>
