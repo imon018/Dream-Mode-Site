@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   login,
   logout,
+  resendVerificationEmail,
 } from "../services/authService";
 
 import {
@@ -23,6 +24,9 @@ export default function Login() {
   const [password, setPassword] =
     useState("");
 
+  const [unverifiedUser, setUnverifiedUser] =
+    useState(null);
+
   const handleLogin = async (
     e
   ) => {
@@ -40,6 +44,10 @@ export default function Login() {
       if (
         !result.user.emailVerified
       ) {
+        setUnverifiedUser(
+          result.user
+        );
+
         await logout();
 
         errorToast(
@@ -61,8 +69,29 @@ export default function Login() {
     }
   };
 
+  const handleResendVerification =
+    async () => {
+      try {
+        if (!unverifiedUser)
+          return;
+
+        await resendVerificationEmail(
+          unverifiedUser
+        );
+
+        successToast(
+          "Verification email sent again."
+        );
+      } catch (err) {
+        errorToast(
+          err.message
+        );
+      }
+    };
+
   return (
     <div className="max-w-md mx-auto py-20">
+
       <h1 className="text-3xl font-bold mb-6">
         Login
       </h1>
@@ -100,7 +129,20 @@ export default function Login() {
         >
           Login
         </Button>
+
+        {unverifiedUser && (
+          <button
+            type="button"
+            onClick={
+              handleResendVerification
+            }
+            className="w-full text-blue-600 font-medium mt-3"
+          >
+            Resend Verification Email
+          </button>
+        )}
       </form>
+
     </div>
   );
 }
