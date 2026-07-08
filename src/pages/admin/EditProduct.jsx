@@ -229,6 +229,19 @@ const moveImageDown = (index) => {
     }
     className="w-full border p-3 rounded-xl"
   />
+
+  {newImages.length > 0 && (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+      {newImages.map((file, index) => (
+        <img
+          key={index}
+          src={URL.createObjectURL(file)}
+          alt=""
+          className="h-32 w-full object-cover rounded-lg border"
+        />
+      ))}
+    </div>
+  )}
 </div>
 
         {images.length > 0 && (
@@ -285,7 +298,6 @@ const moveImageDown = (index) => {
 
 </div>
                   </div>
-                </div>
               ))}
             </div>
           </div>
