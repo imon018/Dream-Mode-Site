@@ -1,13 +1,14 @@
 import { Outlet, NavLink } from "react-router-dom";
 import {
   FiGrid,
-  FiBox,
-  FiUsers,
-  FiShoppingCart,
-  FiBarChart2,
-  FiSettings,
-  FiUser,
-  FiLogOut,
+FiBox,
+FiPlusCircle,
+FiUsers,
+FiShoppingCart,
+FiBarChart2,
+FiSettings,
+FiUser,
+FiLogOut,
 } from "react-icons/fi";
 
 import { logout } from "../services/authService";
