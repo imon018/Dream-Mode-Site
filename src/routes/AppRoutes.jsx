@@ -5,6 +5,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import Dashboard from "../pages/admin/Dashboard";
 import AdminProfile from "../pages/admin/AdminProfile";
 import Users from "../pages/admin/Users";
+import Products from "../pages/admin/Products";
 import Home from "../pages/Home";
 import Shop from "../pages/Shop";
 import Cart from "../pages/Cart";
@@ -35,8 +36,9 @@ export default function AppRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin" element={<AdminLayout />}>
       </Route>
-      <Route path="/admin" element={<AdminLayout />}>
+      
 
   <Route
     index
@@ -50,6 +52,10 @@ export default function AppRoutes() {
         <Route
   path="users"
   element={<Users />}
+/>
+        <Route
+  path="products"
+  element={<Products />}
 />
 
 </Route>
