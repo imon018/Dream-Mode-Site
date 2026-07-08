@@ -49,14 +49,16 @@ export default function AppRoutes() {
     path="profile"
     element={<AdminProfile />}
   />
-        <Route
-  path="users"
-  element={<Users />}
-/>
-        <Route
-  path="products"
-  element={<Products />}
-/>
+
+  <Route
+    path="users"
+    element={<Users />}
+  />
+
+  <Route
+    path="products"
+    element={<Products />}
+  />
 
 </Route>
 
