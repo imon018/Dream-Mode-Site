@@ -28,10 +28,18 @@ export const getProductsFromDB = async () => {
 export const getLatestProducts = async () => {
   const snapshot = await getDocs(productRef);
 
-  return snapshot.docs.map((doc) => ({
+  const products = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
+
+  return products
+    .sort(
+      (a, b) =>
+        b.createdAt?.seconds -
+        a.createdAt?.seconds
+    )
+    .slice(0, 8);
 };
 
 export const getProductById = async (id) => {
