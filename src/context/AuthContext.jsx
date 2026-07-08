@@ -40,18 +40,15 @@ export default function AuthProvider({ children }) {
 
           if (userSnap.exists()) {
             setUser({
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
+              ...firebaseUser,
               ...userSnap.data(),
             });
           } else {
-            setUser({
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-            });
+            setUser(firebaseUser);
           }
         } catch (error) {
           console.log(error);
+          setUser(firebaseUser);
         } finally {
           setLoading(false);
         }
@@ -69,6 +66,4 @@ export default function AuthProvider({ children }) {
       }}
     >
       {children}
-    </AuthContext.Provider>
-  );
-}
+   
