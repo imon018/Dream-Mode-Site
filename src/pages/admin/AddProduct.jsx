@@ -80,12 +80,7 @@ setImage(null);
   value={category}
   onChange={(e) => setCategory(e.target.value)}
 />
-
-        <input
-  placeholder="Category"
-  ...
-/>
-
+        
 <textarea
   className="w-full border p-3 rounded-xl"
   rows={4}
@@ -94,21 +89,12 @@ setImage(null);
   onChange={(e) => setDescription(e.target.value)}
 />
 
-<input
-  placeholder="Price"
-  ...
-/>
-
         <input
-          className="w-full border p-3 rounded-xl"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
-
-        <input
+  type="number"
+  className="w-full border p-3 rounded-xl"
   placeholder="Price"
-  ...
+  value={price}
+  onChange={(e) => setPrice(e.target.value)}
 />
 
 <input
@@ -117,11 +103,6 @@ setImage(null);
   placeholder="Stock Quantity"
   value={stock}
   onChange={(e) => setStock(e.target.value)}
-/>
-
-<input
-  type="file"
-  ...
 />
 
         <input
