@@ -11,6 +11,7 @@ import AddProduct from "../pages/admin/AddProduct";
 import EditProduct from "../pages/admin/EditProduct";
 import Orders from "../pages/admin/Orders";
 import Analytics from "../pages/admin/Analytics";
+import Settings from "../pages/admin/Settings";
 
 import Home from "../pages/Home";
 import Shop from "../pages/Shop";
@@ -142,6 +143,11 @@ export default function AppRoutes() {
         <Route
   path="analytics"
   element={<Analytics />}
+/>
+
+        <Route
+  path="settings"
+  element={<Settings />}
 />
 
 
