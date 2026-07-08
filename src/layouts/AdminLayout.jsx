@@ -26,6 +26,11 @@ export default function AdminLayout() {
       path: "/admin/products",
     },
     {
+  name: "Add Product",
+  icon: <FiPlusCircle />,
+  path: "/admin/add-product",
+},
+    {
       name: "Orders",
       icon: <FiShoppingCart />,
       path: "/admin/orders",
