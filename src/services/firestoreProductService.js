@@ -26,3 +26,12 @@ export const getProductsFromDB = async () => {
 export const deleteProductFromDB = async (id) => {
   await deleteDoc(doc(db, "products", id));
 };
+
+export const getLatestProducts = async () => {
+  const snapshot = await getDocs(productRef);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
