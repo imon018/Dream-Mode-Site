@@ -6,67 +6,66 @@ import { successToast, errorToast } from "../../components/ui/Toast";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
-const [category, setCategory] = useState("");
-const [description, setDescription] = useState("");
-const [price, setPrice] = useState("");
-const [stock, setStock] = useState("");
-const [image, setImage] = useState(null);
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
+  const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
-  !name ||
-  !category ||
-  !description ||
-  !price ||
-  !stock ||
-  !image
-) {
-  errorToast("Please fill in all fields.");
-  return;
-}
+      !name ||
+      !category ||
+      !description ||
+      !price ||
+      !stock ||
+      !image
+    ) {
+      errorToast("Please fill in all fields.");
+      return;
+    }
 
-try {
-      let imageUrl = "";
-
-      if (image) {
-        imageUrl = await uploadImage(image);
-      }
+    try {
+      const uploaded = await uploadImage(image);
 
       await addProductToDB({
-  name,
-  category,
-  description,
-  price: Number(price),
-  stock: Number(stock),
-  image: imageUrl,
-  createdAt: new Date(),
-});
+        name,
+        category,
+        description,
+        price: Number(price),
+        stock: Number(stock),
+
+        image: uploaded.imageUrl,
+        publicId: uploaded.publicId,
+
+        createdAt: new Date(),
+      });
 
       successToast("Product added successfully!");
 
       setName("");
-setCategory("");
-setDescription("");
-setPrice("");
-setStock("");
-setImage(null);
+      setCategory("");
+      setDescription("");
+      setPrice("");
+      setStock("");
+      setImage(null);
 
+      const fileInput = document.getElementById("product-image");
+      if (fileInput) fileInput.value = "";
     } catch (err) {
-      errorToast(err.message);
+      errorToast(err.message || "Failed to add product.");
     }
   };
 
   return (
     <div className="max-w-xl mx-auto px-6 py-12">
-
       <h1 className="text-3xl font-bold mb-6">
         Add Product
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
         <input
           className="w-full border p-3 rounded-xl"
           placeholder="Product Name"
@@ -75,51 +74,51 @@ setImage(null);
         />
 
         <input
-  className="w-full border p-3 rounded-xl"
-  placeholder="Category"
-  value={category}
-  onChange={(e) => setCategory(e.target.value)}
-/>
-        
-<textarea
-  className="w-full border p-3 rounded-xl"
-  rows={4}
-  placeholder="Product Description"
-  value={description}
-  onChange={(e) => setDescription(e.target.value)}
-/>
+          className="w-full border p-3 rounded-xl"
+          placeholder="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+
+        <textarea
+          className="w-full border p-3 rounded-xl"
+          rows={4}
+          placeholder="Product Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
         <input
-  type="number"
-  className="w-full border p-3 rounded-xl"
-  placeholder="Price"
-  value={price}
-  onChange={(e) => setPrice(e.target.value)}
-/>
-
-<input
-  type="number"
-  className="w-full border p-3 rounded-xl"
-  placeholder="Stock Quantity"
-  value={stock}
-  onChange={(e) => setStock(e.target.value)}
-/>
+          type="number"
+          className="w-full border p-3 rounded-xl"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
 
         <input
+          type="number"
+          className="w-full border p-3 rounded-xl"
+          placeholder="Stock Quantity"
+          value={stock}
+          onChange={(e) => setStock(e.target.value)}
+        />
+
+        <input
+          id="product-image"
           type="file"
           className="w-full"
+          accept="image/*"
           onChange={(e) => setImage(e.target.files[0])}
         />
 
         <Button
-  type="submit"
-  className="w-full"
->
-  Save Product
-</Button>
-
+          type="submit"
+          className="w-full"
+        >
+          Save Product
+        </Button>
       </form>
-
     </div>
   );
 }
