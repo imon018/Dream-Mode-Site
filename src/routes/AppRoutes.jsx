@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../layouts/AdminLayout";
+import ProtectedAdminRoute from "./ProtectedAdminRoute";
 
 import Dashboard from "../pages/admin/Dashboard";
 import AdminProfile from "../pages/admin/AdminProfile";
@@ -98,9 +99,13 @@ export default function AppRoutes() {
       {/* Admin Dashboard Routes */}
 
       <Route
-        path="/admin"
-        element={<AdminLayout />}
-      >
+  path="/admin"
+  element={
+    <ProtectedAdminRoute>
+      <AdminLayout />
+    </ProtectedAdminRoute>
+  }
+>
 
         <Route
           index
