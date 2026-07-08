@@ -4,7 +4,8 @@ import {
   getDocs,
   deleteDoc,
   doc,
-  getDoc
+  getDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 import { db } from "../firebase/firestore";
@@ -22,10 +23,6 @@ export const getProductsFromDB = async () => {
     id: doc.id,
     ...doc.data(),
   }));
-};
-
-export const deleteProductFromDB = async (id) => {
-  await deleteDoc(doc(db, "products", id));
 };
 
 export const getLatestProducts = async () => {
@@ -50,4 +47,17 @@ export const getProductById = async (id) => {
     id: snapshot.id,
     ...snapshot.data(),
   };
+};
+
+export const updateProductInDB = async (
+  id,
+  updatedData
+) => {
+  const productDoc = doc(db, "products", id);
+
+  await updateDoc(productDoc, updatedData);
+};
+
+export const deleteProductFromDB = async (id) => {
+  await deleteDoc(doc(db, "products", id));
 };
