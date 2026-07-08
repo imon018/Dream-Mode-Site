@@ -19,15 +19,11 @@ export default function Checkout() {
   );
 
   const handleOrder = async () => {
-    if (!user) {
-      errorToast("Login required");
-      return;
-    }
+    if (!user)
+      return errorToast("Login required");
 
-    if (cart.length === 0) {
-      errorToast("Cart is empty");
-      return;
-    }
+    if (cart.length === 0)
+      return errorToast("Cart is empty");
 
     try {
       await createOrder({
@@ -38,15 +34,19 @@ export default function Checkout() {
         createdAt: new Date().toISOString(),
       });
 
-      successToast("Order placed successfully!");
+      successToast(
+        "Order placed successfully!"
+      );
 
       clearCart();
 
       navigate("/order-success");
     } catch (err) {
       console.log(err);
+
       errorToast(
-        err.message || "Failed to place order"
+        err.message ||
+          "Failed to place order"
       );
     }
   };
@@ -64,7 +64,10 @@ export default function Checkout() {
             className="flex justify-between border-b py-2"
           >
             <span>{item.name}</span>
-            <span>৳ {item.price}</span>
+
+            <span>
+              ৳ {item.price}
+            </span>
           </div>
         ))}
       </div>
