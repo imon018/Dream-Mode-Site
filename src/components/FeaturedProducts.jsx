@@ -23,10 +23,13 @@ export default function FeaturedProducts() {
 
   return (
     <section className="py-20 max-w-7xl mx-auto px-6">
-
-      <h2 className="text-3xl font-bold text-center mb-12">
-        Featured Products
+      <h2 className="text-3xl font-bold text-center mb-3">
+        Latest Arrivals
       </h2>
+
+      <p className="text-center text-gray-500 mb-12">
+        Discover our newest products
+      </p>
 
       {loading ? (
         <div className="text-center text-lg">
@@ -46,7 +49,6 @@ export default function FeaturedProducts() {
           ))}
         </div>
       )}
-
     </section>
   );
 }
