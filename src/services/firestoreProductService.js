@@ -3,7 +3,8 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  doc
+  doc,
+  getDoc
 } from "firebase/firestore";
 
 import { db } from "../firebase/firestore";
@@ -34,4 +35,21 @@ export const getLatestProducts = async () => {
     id: doc.id,
     ...doc.data(),
   }));
+};
+
+import { getDoc } from "firebase/firestore";
+
+export const getProductById = async (id) => {
+  const productRef = doc(db, "products", id);
+
+  const snapshot = await getDoc(productRef);
+
+  if (!snapshot.exists()) {
+    return null;
+  }
+
+  return {
+    id: snapshot.id,
+    ...snapshot.data(),
+  };
 };
