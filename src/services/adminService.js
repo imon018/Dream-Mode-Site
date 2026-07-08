@@ -8,13 +8,19 @@ import {
 
 import { db } from "../firebase/firestore";
 
-export async function getUsers() {
+export async function getUsers(search = "") {
   const snap = await getDocs(collection(db, "users"));
 
-  return snap.docs.map((item) => ({
+  const users = snap.docs.map((item) => ({
     id: item.id,
     ...item.data(),
   }));
+
+  if (!search) return users;
+
+  return users.filter((user) =>
+    user.email?.toLowerCase().includes(search.toLowerCase())
+  );
 }
 
 export async function changeRole(id, role) {
