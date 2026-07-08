@@ -20,25 +20,47 @@ export default function Users() {
 }
 
 async function makeAdmin(user) {
+  try {
 
-  await changeRole(
-    user.id,
-    user.role === "admin"
-      ? "user"
-      : "admin"
-  );
+    console.log("Admin Click:", user);
 
-  loadUsers();
+    await changeRole(
+      user.id,
+      user.role === "admin"
+        ? "user"
+        : "admin"
+    );
+
+    console.log("Role Updated");
+
+    await loadUsers();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
 }
 
 async function makePremium(user) {
+  try {
 
-  await togglePremium(
-    user.id,
-    !user.premium
-  );
+    console.log("Premium Click:", user);
 
-  loadUsers();
+    await togglePremium(
+      user.id,
+      !user.premium
+    );
+
+    console.log("Premium Updated");
+
+    await loadUsers();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
 }
 
   return (
