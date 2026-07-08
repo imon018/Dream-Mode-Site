@@ -112,6 +112,18 @@ export default function AdminProfile() {
                 {user?.email}
               </p>
 
+              <div className="mt-3">
+  {user?.emailVerified ? (
+    <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm">
+      ✅ Email Verified
+    </span>
+  ) : (
+    <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
+      ❌ Email Not Verified
+    </span>
+  )}
+</div>
+
               <span className="inline-block mt-3 bg-blue-600 px-4 py-2 rounded-full text-sm">
                 Administrator
               </span>
@@ -165,16 +177,20 @@ export default function AdminProfile() {
             </div>
 
             <div className="border rounded-xl p-5">
-              <p className="text-gray-500 mb-2">
-                Email Verified
-              </p>
+  <p className="text-gray-500 mb-2">
+    Email Verification
+  </p>
 
-              <h2>
-                {user?.emailVerified
-                  ? "Yes"
-                  : "No"}
-              </h2>
-            </div>
+  {user?.emailVerified ? (
+    <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full font-medium">
+      ✅ Verified
+    </span>
+  ) : (
+    <span className="bg-red-100 text-red-700 px-4 py-2 rounded-full font-medium">
+      ❌ Not Verified
+    </span>
+  )}
+</div>
 
             <div className="border rounded-xl p-5">
               <p className="text-gray-500 mb-2">
