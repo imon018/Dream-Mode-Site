@@ -5,6 +5,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
+
 import { db } from "../../firebase/firestore";
 
 import {
@@ -18,7 +19,6 @@ export default function Dashboard() {
   const [stats, setStats] = useState({
     users: 0,
     admins: 0,
-    premium: 0,
     products: 0,
     orders: 0,
     revenue: 0,
@@ -30,7 +30,9 @@ export default function Dashboard() {
 
   async function loadDashboard() {
     try {
-      const usersSnap = await getDocs(collection(db, "users"));
+      const usersSnap = await getDocs(
+        collection(db, "users")
+      );
 
       const adminsSnap = await getDocs(
         query(
@@ -39,20 +41,28 @@ export default function Dashboard() {
         )
       );
 
-      const premiumSnap = await getDocs(
-        query(
-          collection(db, "users"),
-          where("premium", "==", true)
-        )
+      const productsSnap = await getDocs(
+        collection(db, "products")
       );
+
+      const ordersSnap = await getDocs(
+        collection(db, "orders")
+      );
+
+      let revenue = 0;
+
+      ordersSnap.forEach((doc) => {
+        revenue += Number(
+          doc.data().total || 0
+        );
+      });
 
       setStats({
         users: usersSnap.size,
         admins: adminsSnap.size,
-        premium: premiumSnap.size,
-        products: 0,
-        orders: 0,
-        revenue: 0,
+        products: productsSnap.size,
+        orders: ordersSnap.size,
+        revenue,
       });
     } catch (err) {
       console.log(err);
@@ -71,11 +81,6 @@ export default function Dashboard() {
       icon: <FiUsers size={30} />,
     },
     {
-      title: "Premium",
-      value: stats.premium,
-      icon: <FiDollarSign size={30} />,
-    },
-    {
       title: "Products",
       value: stats.products,
       icon: <FiBox size={30} />,
@@ -87,7 +92,7 @@ export default function Dashboard() {
     },
     {
       title: "Revenue",
-      value: "৳ " + stats.revenue,
+      value: `৳ ${stats.revenue}`,
       icon: <FiDollarSign size={30} />,
     },
   ];
