@@ -980,16 +980,25 @@ if(!user.email){
 
           <img
 
-            src={
-              photoURL ||
-              "https://via.placeholder.com/200"
-            }
+src={
+ photoURL ||
+ "https://via.placeholder.com/200"
+}
 
-            alt="Profile"
+alt="Profile"
 
-            className="w-40 h-40 rounded-full object-cover mx-auto border-4"
+className="
+w-40
+h-40
+rounded-full
+object-cover
+mx-auto
+border-4
+border-primary
+shadow-lg
+"
 
-          />
+/>
 
 
 
@@ -1262,6 +1271,22 @@ if(!user.email){
 
               </p>
 
+              <p>
+  <b>Member Since:</b>
+  <br />
+
+  {
+    user.metadata?.creationTime
+    ?
+    new Date(
+      user.metadata.creationTime
+    ).toLocaleDateString()
+    :
+    "N/A"
+  }
+
+</p>
+
 
 
             </div>
@@ -1337,6 +1362,21 @@ if(!user.email){
                           {activity.message}
 
                         </p>
+
+                        <p className="text-sm text-gray-500 mt-2">
+
+{
+  activity.createdAt?.toDate
+  ?
+  activity.createdAt
+  .toDate()
+  .toLocaleString()
+  :
+  ""
+}
+
+</p>
+                      
 
 
 
