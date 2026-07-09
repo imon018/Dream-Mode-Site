@@ -28,6 +28,9 @@ export default function ProductDetailsView() {
     setSelectedImage] =
     useState("");
 
+  const [zoom, setZoom] =
+    useState(false);
+
   useEffect(() => {
     const loadProduct =
       async () => {
@@ -84,13 +87,55 @@ export default function ProductDetailsView() {
 
         <div>
 
-          <div className="bg-white rounded-[28px] overflow-hidden shadow-premium">
+          <div
+            className="
+              bg-white
+              rounded-[28px]
+              overflow-hidden
+              shadow-premium
+              relative
+              cursor-zoom-in
+            "
+            onMouseEnter={() =>
+              setZoom(true)
+            }
+            onMouseLeave={() =>
+              setZoom(false)
+            }
+          >
 
             <img
               src={selectedImage}
               alt={product.name}
-              className="w-full object-cover transition duration-500 hover:scale-105"
+              className={`
+                w-full
+                object-cover
+                transition-all
+                duration-500
+                ${
+                  zoom
+                    ? "scale-125"
+                    : "scale-100"
+                }
+              `}
             />
+
+            <div
+              className="
+                absolute
+                bottom-4
+                right-4
+                bg-black/70
+                text-white
+                text-xs
+                px-3
+                py-2
+                rounded-full
+                backdrop-blur
+              "
+            >
+              Zoom
+            </div>
 
           </div>
 
@@ -107,11 +152,24 @@ export default function ProductDetailsView() {
                     onClick={() =>
                       setSelectedImage(img)
                     }
-                    className={`w-20 h-20 object-cover rounded-xl cursor-pointer border-2 transition-all ${
-                      selectedImage === img
-                        ? "border-black"
-                        : "border-gray-200"
-                    }`}
+                    className={`
+                      w-20
+                      h-20
+                      md:w-24
+                      md:h-24
+                      object-cover
+                      rounded-2xl
+                      cursor-pointer
+                      border-2
+                      transition-all
+                      duration-300
+                      hover:scale-105
+                      ${
+                        selectedImage === img
+                          ? "border-black shadow-lg"
+                          : "border-gray-200"
+                      }
+                    `}
                   />
                 )
               )}
@@ -174,7 +232,15 @@ export default function ProductDetailsView() {
               onClick={() =>
                 addToWishlist(product)
               }
-              className="outline-btn"
+              className="
+                px-6
+                py-3
+                rounded-xl
+                border
+                border-gray-300
+                hover:bg-gray-100
+                transition
+              "
             >
               Wishlist
             </button>
@@ -184,8 +250,6 @@ export default function ProductDetailsView() {
         </div>
 
       </div>
-
-      {/* YOU MAY ALSO LIKE */}
 
       <RelatedProducts
         currentId={product.id}
