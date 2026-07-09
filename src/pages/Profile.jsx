@@ -1449,20 +1449,42 @@ export default function Profile() {
 
             />
 
+                      <label className="flex items-center gap-2 mt-4">
+
+  <input
+    type="checkbox"
+    checked={showPassword}
+    onChange={() =>
+      setShowPassword(!showPassword)
+    }
+  />
+
+  Show Password
+
+</label>
+
 
 
 
             <Button
 
-              onClick={handleChangePassword}
+  onClick={handleChangePassword}
 
-              className="w-full mt-5"
+  disabled={changingPassword}
 
-            >
+  className="w-full mt-5"
 
-              Change Password
+>
 
-            </Button>
+  {
+    changingPassword
+    ?
+    "Updating..."
+    :
+    "Change Password"
+  }
+
+</Button>
 
 
 
