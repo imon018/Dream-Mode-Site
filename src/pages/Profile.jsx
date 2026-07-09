@@ -13,7 +13,22 @@ import {
 
 import {
   changePassword,
+  logout,
 } from "../services/authService";
+
+import {
+  deleteUser,
+} from "firebase/auth";
+
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  setDoc,
+} from "firebase/firestore";
+
+import { db } from "../firebase/firestore";
 
 import {
   successToast,
@@ -22,12 +37,15 @@ import {
 
 import Button from "../components/ui/Button";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function Profile() {
 
   const { user } = useAuth();
+
+  const navigate = useNavigate();
+
 
   const [loading, setLoading] =
     useState(true);
@@ -36,6 +54,9 @@ export default function Profile() {
     useState(false);
 
   const [changingPassword, setChangingPassword] =
+    useState(false);
+
+  const [deletingAccount, setDeletingAccount] =
     useState(false);
 
 
@@ -65,29 +86,46 @@ export default function Profile() {
     useState(false);
 
 
+  const [profileData, setProfileData] =
+    useState(null);
+
+
   useEffect(() => {
 
     const loadProfile = async () => {
 
       if (!user) {
+
         setLoading(false);
+
         return;
+
       }
 
 
       try {
 
         const profile =
-          await getUserProfile(user.uid);
+          await getUserProfile(
+            user.uid
+          );
 
 
         if (profile) {
 
-          setName(profile.name || "");
+          setProfileData(profile);
 
-          setPhone(profile.phone || "");
+          setName(
+            profile.name || ""
+          );
 
-          setAddress(profile.address || "");
+          setPhone(
+            profile.phone || ""
+          );
+
+          setAddress(
+            profile.address || ""
+          );
 
           setPhotoURL(
             profile.photoURL || ""
@@ -115,6 +153,48 @@ export default function Profile() {
     loadProfile();
 
   }, [user]);
+
+  const addActivity = async (
+    type,
+    message
+  ) => {
+
+    if (!user) return;
+
+    try {
+
+      const activityRef = doc(
+        db,
+        "users",
+        user.uid,
+        "activity",
+        crypto.randomUUID()
+      );
+
+
+      await setDoc(
+        activityRef,
+        {
+          type,
+          message,
+          createdAt:
+            new Date(),
+        }
+      );
+
+
+    } catch (error) {
+
+      console.log(
+        "Activity error:",
+        error
+      );
+
+    }
+
+  };
+
+
 
   const handleSave = async () => {
 
@@ -145,13 +225,17 @@ export default function Profile() {
       setSaving(true);
 
 
-      let imageUrl = photoURL;
+      let imageUrl =
+        photoURL;
 
 
       if (photoFile) {
 
         const uploaded =
-          await uploadSingleImage(photoFile);
+          await uploadSingleImage(
+            photoFile
+          );
+
 
         imageUrl =
           uploaded.imageUrl;
@@ -170,10 +254,18 @@ export default function Profile() {
       );
 
 
-      setPhotoURL(imageUrl);
+      setPhotoURL(
+        imageUrl
+      );
 
 
       setPhotoFile(null);
+
+
+      await addActivity(
+        "profile_update",
+        "Profile information updated"
+      );
 
 
       successToast(
@@ -200,11 +292,30 @@ export default function Profile() {
 
 
 
-  const handleRemovePhoto = () => {
+  const handleRemovePhoto = async () => {
 
     setPhotoFile(null);
 
     setPhotoURL("");
+
+
+    await updateUserProfile(
+      user.uid,
+      {
+        photoURL: "",
+      }
+    );
+
+
+    await addActivity(
+      "photo_remove",
+      "Profile photo removed"
+    );
+
+
+    successToast(
+      "Profile photo removed."
+    );
 
   };
 
@@ -256,6 +367,12 @@ export default function Profile() {
       );
 
 
+      await addActivity(
+        "password_change",
+        "Password changed"
+      );
+
+
       setNewPassword("");
 
       setConfirmPassword("");
@@ -278,6 +395,145 @@ export default function Profile() {
     } finally {
 
       setChangingPassword(false);
+
+    }
+
+  };
+
+  const [activities, setActivities] =
+    useState([]);
+
+
+  const [activityLoading, setActivityLoading] =
+    useState(true);
+
+
+
+  useEffect(() => {
+
+    const loadActivities = async () => {
+
+      if (!user) return;
+
+
+      try {
+
+        const activityRef =
+          collection(
+            db,
+            "users",
+            user.uid,
+            "activity"
+          );
+
+
+        const snapshot =
+          await getDocs(activityRef);
+
+
+        const data =
+          snapshot.docs
+            .map((item) => ({
+              id: item.id,
+              ...item.data(),
+            }))
+            .sort(
+              (a, b) =>
+                b.createdAt?.seconds -
+                a.createdAt?.seconds
+            );
+
+
+        setActivities(data);
+
+
+      } catch (error) {
+
+        console.log(error);
+
+      } finally {
+
+        setActivityLoading(false);
+
+      }
+
+    };
+
+
+    loadActivities();
+
+  }, [user]);
+
+
+
+
+  const profileCompletion =
+    [
+      name,
+      phone,
+      address,
+      photoURL,
+    ].filter(Boolean).length / 4 * 100;
+
+
+
+
+  const handleDeleteAccount = async () => {
+
+    if (!user) return;
+
+
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete your account?"
+      );
+
+
+    if (!confirmDelete)
+      return;
+
+
+
+    try {
+
+      setDeletingAccount(true);
+
+
+      await deleteDoc(
+        doc(
+          db,
+          "users",
+          user.uid
+        )
+      );
+
+
+      await deleteUser(
+        user
+      );
+
+
+      successToast(
+        "Account deleted successfully."
+      );
+
+
+      navigate("/");
+
+
+    } catch (error) {
+
+      console.log(error);
+
+
+      errorToast(
+        error.message
+      );
+
+
+    } finally {
+
+      setDeletingAccount(false);
 
     }
 
@@ -317,17 +573,16 @@ export default function Profile() {
       <div className="grid lg:grid-cols-3 gap-8">
 
 
-        {/* Profile Card */}
-
         <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
+
 
           <img
             src={
               photoURL ||
-              "https://via.placeholder.com/200?text=Profile"
+              "https://via.placeholder.com/200"
             }
             alt="Profile"
-            className="w-40 h-40 rounded-full object-cover border-4 border-indigo-100 mx-auto"
+            className="w-40 h-40 rounded-full object-cover mx-auto border-4"
           />
 
 
@@ -347,15 +602,15 @@ export default function Profile() {
           {photoURL && (
 
             <button
-              type="button"
               onClick={handleRemovePhoto}
               disabled={saving}
-              className="mt-3 text-red-600 font-medium"
+              className="mt-3 text-red-600"
             >
               Remove Photo
             </button>
 
           )}
+
 
 
           <h2 className="text-2xl font-bold mt-6">
@@ -368,25 +623,38 @@ export default function Profile() {
           </p>
 
 
-          <div className="mt-4">
 
-            {user.emailVerified ? (
+          <div className="mt-6 text-left">
 
-              <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
 
-                ✅ Email Verified
+            <div className="flex justify-between mb-2">
 
+              <span className="font-medium">
+                Profile Completion
               </span>
 
-            ) : (
 
-              <span className="bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-medium">
-
-                ❌ Email Not Verified
-
+              <span className="font-bold">
+                {Math.round(profileCompletion)}%
               </span>
 
-            )}
+
+            </div>
+
+
+
+            <div className="w-full bg-gray-200 rounded-full h-3">
+
+              <div
+                className="bg-primary h-3 rounded-full"
+                style={{
+                  width:
+                    `${profileCompletion}%`
+                }}
+              />
+
+            </div>
+
 
           </div>
 
@@ -395,107 +663,80 @@ export default function Profile() {
 
 
 
-        {/* Right Side */}
+
 
         <div className="lg:col-span-2 space-y-8">
 
 
-          {/* Edit Profile */}
 
           <div className="bg-white rounded-3xl shadow-xl p-8">
+
 
             <h2 className="text-2xl font-bold mb-6">
               Edit Profile
             </h2>
 
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-5">
 
 
-              <div>
-
-                <label className="block font-medium mb-2">
-                  Full Name
-                </label>
-
-
-                <input
-                  className="w-full border rounded-xl p-3"
-                  value={name}
-                  disabled={saving}
-                  onChange={(e) =>
-                    setName(e.target.value)
-                  }
-                />
-
-              </div>
+              <input
+                className="border rounded-xl p-3"
+                placeholder="Name"
+                value={name}
+                disabled={saving}
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
+              />
 
 
-              <div>
 
-                <label className="block font-medium mb-2">
-                  Email
-                </label>
-
-
-                <input
-                  className="w-full border rounded-xl p-3 bg-gray-100"
-                  value={user.email}
-                  readOnly
-                />
-
-              </div>
+              <input
+                className="border rounded-xl p-3 bg-gray-100"
+                value={user.email}
+                readOnly
+              />
 
 
-              <div>
 
-                <label className="block font-medium mb-2">
-                  Phone Number
-                </label>
-
-
-                <input
-                  className="w-full border rounded-xl p-3"
-                  value={phone}
-                  disabled={saving}
-                  onChange={(e) =>
-                    setPhone(e.target.value)
-                  }
-                />
-
-              </div>
+              <input
+                className="border rounded-xl p-3"
+                placeholder="Phone"
+                value={phone}
+                disabled={saving}
+                onChange={(e) =>
+                  setPhone(e.target.value)
+                }
+              />
 
 
-              <div>
 
-                <label className="block font-medium mb-2">
-                  Address
-                </label>
-
-
-                <input
-                  className="w-full border rounded-xl p-3"
-                  value={address}
-                  disabled={saving}
-                  onChange={(e) =>
-                    setAddress(e.target.value)
-                  }
-                />
-
-              </div>
+              <input
+                className="border rounded-xl p-3"
+                placeholder="Address"
+                value={address}
+                disabled={saving}
+                onChange={(e) =>
+                  setAddress(e.target.value)
+                }
+              />
 
 
             </div>
 
 
+
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="w-full mt-8"
+              className="w-full mt-6"
             >
+
               {saving
                 ? "Saving..."
                 : "Save Changes"}
+
             </Button>
 
 
@@ -513,54 +754,52 @@ export default function Profile() {
             <div className="space-y-4">
 
 
-              <div className="flex justify-between items-center border-b pb-3">
+              <div className="flex justify-between border-b pb-3">
 
                 <span className="font-medium">
                   User ID
                 </span>
 
 
-                <span className="text-gray-600 text-sm break-all">
+                <span className="text-gray-500 text-sm break-all">
                   {user.uid}
                 </span>
+
 
               </div>
 
 
 
-              <div className="flex justify-between items-center border-b pb-3">
+              <div className="flex justify-between border-b pb-3">
 
                 <span className="font-medium">
                   Email
                 </span>
 
 
-                <span className="text-gray-600">
+                <span className="text-gray-500">
                   {user.email}
                 </span>
+
 
               </div>
 
 
 
-              <div className="flex justify-between items-center border-b pb-3">
+              <div className="flex justify-between border-b pb-3">
 
                 <span className="font-medium">
-                  Verification
+                  Member Since
                 </span>
 
 
-                <span
-                  className={
-                    user.emailVerified
-                      ? "text-green-600 font-semibold"
-                      : "text-red-600 font-semibold"
-                  }
-                >
+                <span className="text-gray-500">
 
-                  {user.emailVerified
-                    ? "Verified"
-                    : "Not Verified"}
+                  {user.metadata?.creationTime
+                    ? new Date(
+                        user.metadata.creationTime
+                      ).toLocaleDateString()
+                    : "N/A"}
 
                 </span>
 
@@ -572,6 +811,78 @@ export default function Profile() {
 
 
           </div>
+
+
+
+
+
+          {/* Activity History */}
+
+
+          <div className="bg-white rounded-3xl shadow-xl p-8">
+
+
+            <h2 className="text-2xl font-bold mb-6">
+              Recent Activity
+            </h2>
+
+
+
+            {
+              activityLoading ? (
+
+                <p>
+                  Loading activity...
+                </p>
+
+              ) : activities.length === 0 ? (
+
+                <p className="text-gray-500">
+                  No activity found.
+                </p>
+
+              ) : (
+
+                <div className="space-y-4">
+
+
+                  {activities.map((activity) => (
+
+                    <div
+                      key={activity.id}
+                      className="border rounded-xl p-4"
+                    >
+
+                      <p className="font-medium">
+                        {activity.message}
+                      </p>
+
+
+                      <p className="text-sm text-gray-500 mt-1">
+
+                        {activity.createdAt?.toDate
+                          ? activity.createdAt
+                              .toDate()
+                              .toLocaleString()
+                          : ""}
+
+                      </p>
+
+
+                    </div>
+
+                  ))}
+
+
+                </div>
+
+              )
+
+            }
+
+
+          </div>
+
 
 
 
@@ -591,19 +902,18 @@ export default function Profile() {
             <div className="grid md:grid-cols-2 gap-4">
 
 
-
               <Link
                 to="/my-orders"
-                className="border rounded-2xl p-5 hover:bg-gray-50 transition"
+                className="border rounded-2xl p-5 hover:bg-gray-50"
               >
 
-                <h3 className="text-lg font-semibold">
+                <h3 className="font-bold text-lg">
                   📦 My Orders
                 </h3>
 
 
                 <p className="text-gray-500 mt-2">
-                  View all your orders
+                  View your order history
                 </p>
 
 
@@ -612,19 +922,18 @@ export default function Profile() {
 
 
 
-
               <Link
                 to="/wishlist"
-                className="border rounded-2xl p-5 hover:bg-gray-50 transition"
+                className="border rounded-2xl p-5 hover:bg-gray-50"
               >
 
-                <h3 className="text-lg font-semibold">
+                <h3 className="font-bold text-lg">
                   ❤️ Wishlist
                 </h3>
 
 
                 <p className="text-gray-500 mt-2">
-                  Your favourite products
+                  Saved products
                 </p>
 
 
@@ -648,66 +957,43 @@ export default function Profile() {
             <div className="space-y-5">
 
 
-              <div>
-
-                <label className="block font-medium mb-2">
-                  New Password
-                </label>
-
-
-                <input
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
-                  className="w-full border rounded-xl p-3"
-                  placeholder="Enter new password"
-                  value={newPassword}
-                  onChange={(e) =>
-                    setNewPassword(
-                      e.target.value
-                    )
-                  }
-                />
-
-
-              </div>
+              <input
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                className="w-full border rounded-xl p-3"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) =>
+                  setNewPassword(
+                    e.target.value
+                  )
+                }
+              />
 
 
 
-
-              <div>
-
-                <label className="block font-medium mb-2">
-                  Confirm Password
-                </label>
-
-
-                <input
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
-                  className="w-full border rounded-xl p-3"
-                  placeholder="Confirm new password"
-                  value={confirmPassword}
-                  onChange={(e) =>
-                    setConfirmPassword(
-                      e.target.value
-                    )
-                  }
-                />
-
-
-              </div>
+              <input
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                className="w-full border rounded-xl p-3"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) =>
+                  setConfirmPassword(
+                    e.target.value
+                  )
+                }
+              />
 
 
 
-
-              <label className="flex items-center gap-2 cursor-pointer">
-
+              <label className="flex items-center gap-2">
 
                 <input
                   type="checkbox"
@@ -720,10 +1006,7 @@ export default function Profile() {
                 />
 
 
-                <span>
-                  Show Password
-                </span>
-
+                Show Password
 
               </label>
 
@@ -731,27 +1014,62 @@ export default function Profile() {
 
 
               <Button
-                onClick={
-                  handleChangePassword
-                }
-                disabled={
-                  changingPassword
-                }
+                onClick={handleChangePassword}
+                disabled={changingPassword}
                 className="w-full"
               >
 
                 {changingPassword
-                  ? "Updating Password..."
+                  ? "Updating..."
                   : "Change Password"}
 
               </Button>
 
-
-
-            </div>
+              </div>
 
 
           </div>
+
+
+
+
+
+          {/* Danger Zone */}
+
+
+          <div className="bg-white rounded-3xl shadow-xl p-8">
+
+
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              Danger Zone
+            </h2>
+
+
+
+            <p className="text-gray-600 mb-5">
+
+              Delete your account permanently.
+              This action cannot be undone.
+
+            </p>
+
+
+
+            <Button
+              onClick={handleDeleteAccount}
+              disabled={deletingAccount}
+              className="bg-red-600 hover:bg-red-700 w-full"
+            >
+
+              {deletingAccount
+                ? "Deleting..."
+                : "Delete Account"}
+
+            </Button>
+
+
+          </div>
+
 
 
         </div>
@@ -762,8 +1080,6 @@ export default function Profile() {
 
     </div>
 
-
   );
-
 
 }
