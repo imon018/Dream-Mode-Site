@@ -8,10 +8,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#2563EB",
-        secondary: "#0F172A",
-        accent: "#F97316"
-      }
+  primary: "#0F172A",
+  secondary: "#1E293B",
+  accent: "#C9A227",
+  cream: "#FAF7F2",
+}
     }
   },
   plugins: []
