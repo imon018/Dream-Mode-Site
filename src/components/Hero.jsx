@@ -6,89 +6,84 @@ import {
 import { Link } from "react-router-dom";
 
 import {
-  getLatestBanner,
+  getAllBanners,
 } from "../services/firestoreBannerService";
 
 export default function Hero() {
 
-  const [banner, setBanner] =
-    useState(null);
+  const [banners, setBanners] =
+    useState([]);
+
+  const [current, setCurrent] =
+    useState(0);
 
   useEffect(() => {
 
-    const loadBanner =
+    const load =
       async () => {
 
         const data =
-          await getLatestBanner();
+          await getAllBanners();
 
-        setBanner(data);
+        setBanners(data);
 
       };
 
-    loadBanner();
+    load();
 
   }, []);
 
+  useEffect(() => {
+
+    if (banners.length <= 1)
+      return;
+
+    const interval =
+      setInterval(() => {
+
+        setCurrent((prev) =>
+          prev ===
+          banners.length - 1
+            ? 0
+            : prev + 1
+        );
+
+      }, 5000);
+
+    return () =>
+      clearInterval(interval);
+
+  }, [banners]);
+
+  const banner =
+    banners[current];
+
   return (
 
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden bg-[#faf7f2]">
 
-      {/* Background */}
+      <div className="container-box py-14 md:py-20 lg:py-28">
 
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100" />
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
 
-      <div className="relative max-w-7xl mx-auto px-5 lg:px-8 py-14 md:py-20 lg:py-28">
+          <div>
 
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-
-          {/* LEFT */}
-
-          <div className="fade-up">
-
-            <span
-              className="
-                inline-flex
-                items-center
-                px-4
-                py-2
-                rounded-full
-                bg-white
-                border
-                border-gray-200
-                shadow-sm
-                text-sm
-                font-medium
-              "
-            >
-              ✨ New Arrival
+            <span className="inline-flex px-4 py-2 rounded-full bg-white shadow text-sm">
+              ✨ Premium Collection
             </span>
 
-            <h1
-              className="
-                mt-6
-                text-4xl
-                md:text-6xl
-                lg:text-7xl
-                font-black
-                leading-tight
-              "
-            >
+            <h1 className="mt-6 text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
+
               {banner?.title ||
                 "Dream Mode"}
+
             </h1>
 
-            <p
-              className="
-                mt-6
-                text-gray-600
-                text-lg
-                leading-8
-                max-w-xl
-              "
-            >
+            <p className="mt-6 text-lg text-gray-600 leading-8 max-w-xl">
+
               {banner?.subtitle ||
-                "Premium fashion for modern lifestyle."}
+                "Luxury Fashion For Modern Lifestyle"}
+
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-10">
@@ -105,39 +100,59 @@ export default function Hero() {
                 to="/shop"
                 className="outline-btn text-center"
               >
-                Explore Collection
+                Explore
               </Link>
+
+            </div>
+
+            {/* Dots */}
+
+            <div className="flex gap-3 mt-10">
+
+              {banners.map(
+                (_, index) => (
+
+                  <button
+                    key={index}
+                    onClick={() =>
+                      setCurrent(index)
+                    }
+                    className={`
+                      h-3
+                      rounded-full
+                      transition-all
+                      duration-300
+                      ${
+                        current === index
+                          ? "w-10 bg-black"
+                          : "w-3 bg-gray-300"
+                      }
+                    `}
+                  />
+
+                )
+              )}
 
             </div>
 
           </div>
 
-          {/* RIGHT */}
+          <div>
 
-          <div className="fade-up">
-
-            <div
-              className="
-                overflow-hidden
-                rounded-[35px]
-                shadow-premium
-              "
-            >
+            <div className="overflow-hidden rounded-[35px] shadow-premium">
 
               <img
                 src={
-                  banner?.image ||
-                  "https://images.unsplash.com/photo-1523381210434-271e8be1f52b"
+                  banner?.image
                 }
-                alt="Banner"
+                alt=""
                 className="
-                  w-full
                   h-[350px]
                   md:h-[500px]
                   lg:h-[650px]
+                  w-full
                   object-cover
-                  hover:scale-105
-                  transition
+                  transition-all
                   duration-700
                 "
               />
