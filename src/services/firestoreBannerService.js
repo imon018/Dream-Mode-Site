@@ -59,3 +59,21 @@ export const getLatestBanner =
         b.createdAt - a.createdAt
     )[0];
   };
+
+export const getAllBanners =
+  async () => {
+
+    const snapshot =
+      await getDocs(bannerRef);
+
+    const banners =
+      snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+    return banners.sort(
+      (a, b) =>
+        b.createdAt - a.createdAt
+    );
+  };
