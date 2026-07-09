@@ -3,7 +3,15 @@ import { useEffect, useState } from "react";
 import {
   getAllOrders,
   updateOrderStatus,
+  deleteOrder,
 } from "../../services/orderService";
+
+import {
+  successToast,
+  errorToast,
+} from "../../components/ui/Toast";
+
+import { Link } from "react-router-dom";
 
 
 export default function Orders() {
@@ -102,7 +110,33 @@ export default function Orders() {
   };
 
 
+const handleDeleteOrder = async (id) => {
 
+  const confirmDelete = window.confirm(
+    "Delete this order permanently?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+
+    await deleteOrder(id);
+
+    setOrders((prev) =>
+      prev.filter((order) => order.id !== id)
+    );
+
+    successToast("Order deleted successfully.");
+
+  } catch (error) {
+
+    console.log(error);
+
+    errorToast("Failed to delete order.");
+
+  }
+
+};
 
 
 
