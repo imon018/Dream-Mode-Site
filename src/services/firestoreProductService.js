@@ -95,7 +95,6 @@ export const getHeroBannerProduct =
   };
 
 export const getRelatedProducts = async (
-  category,
   currentId
 ) => {
   const snapshot = await getDocs(productRef);
@@ -107,9 +106,7 @@ export const getRelatedProducts = async (
 
   return products
     .filter(
-      (item) =>
-        item.category === category &&
-        item.id !== currentId
+      (item) => item.id !== currentId
     )
     .slice(0, 4);
 };
