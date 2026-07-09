@@ -9,6 +9,7 @@ import AdminProfile from "../pages/admin/AdminProfile";
 import Users from "../pages/admin/Users";
 import Products from "../pages/admin/Products";
 import AddProduct from "../pages/admin/AddProduct";
+import AddOrder from "./pages/admin/AddOrder";
 import EditProduct from "../pages/admin/EditProduct";
 import Orders from "../pages/admin/Orders";
 import Analytics from "../pages/admin/Analytics";
@@ -171,6 +172,11 @@ export default function AppRoutes() {
         <Route
   path="settings"
   element={<Settings />}
+/>
+
+        <Route
+  path="/admin/add-order"
+  element={<AddOrder />}
 />
 
 
