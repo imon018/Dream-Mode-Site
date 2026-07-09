@@ -32,39 +32,39 @@ export default function UserLayout() {
   const menu = [
 
   {
-    name: "Account Information",
-    path: "/profile/account",
-    icon: <FiUser />,
+    name:"Account Information",
+    path:"/profile/account",
+    icon:<FiUser />,
   },
 
   {
-    name: "Recent Activities",
-    path: "/profile/activity",
-    icon: <FiActivity />,
+    name:"Recent Activities",
+    path:"/profile/activity",
+    icon:<FiActivity />,
   },
 
   {
-    name: "My Orders",
-    path: "/profile/orders",
-    icon: <FiShoppingBag />,
+    name:"My Orders",
+    path:"/profile/orders",
+    icon:<FiShoppingBag />,
   },
 
   {
-    name: "Wishlist",
-    path: "/profile/wishlist",
-    icon: <FiHeart />,
+    name:"Wishlist",
+    path:"/profile/wishlist",
+    icon:<FiHeart />,
   },
 
   {
-    name: "Change Password",
-    path: "/profile/security/password",
-    icon: <FiLock />,
+    name:"Change Password",
+    path:"/profile/security/password",
+    icon:<FiLock />,
   },
 
   {
-    name: "Delete Account",
-    path: "/profile/security/delete",
-    icon: <FiTrash2 />,
+    name:"Delete Account",
+    path:"/profile/security/delete",
+    icon:<FiTrash2 />,
   },
 
 ];
