@@ -19,42 +19,115 @@ export default function ProductCard({
   };
 
   return (
-    <div className="group bg-white rounded-[28px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
+    <div
+      className="
+      group
+      bg-white
+      rounded-[32px]
+      overflow-hidden
+      border
+      border-gray-100
+      shadow-sm
+      hover:shadow-2xl
+      hover:-translate-y-2
+      transition-all
+      duration-500
+    "
+    >
+      {/* IMAGE */}
 
-      <div className="overflow-hidden relative">
+      <div className="relative overflow-hidden">
 
         <img
-  src={product.image}
-  className="h-56 sm:h-64 md:h-72 lg:h-80 w-full object-cover transition duration-500 hover:scale-105"
-  alt={product.name}
-/>
+          src={product.image}
+          alt={product.name}
+          className="
+            h-64
+            sm:h-72
+            md:h-80
+            lg:h-[360px]
+            w-full
+            object-cover
+            group-hover:scale-110
+            transition-all
+            duration-700
+          "
+        />
+
+        {/* STOCK BADGE */}
 
         {product.stock > 0 && (
-          <span className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs">
-            In Stock
+          <span
+            className="
+              absolute
+              top-4
+              left-4
+              bg-black
+              text-white
+              text-xs
+              px-4
+              py-2
+              rounded-full
+              backdrop-blur
+            "
+          >
+            ✨ Available
           </span>
         )}
 
-      </div>
+        {/* PRICE FLOAT */}
 
-      <div className="p-6">
-
-        <h3 className="mt-2 text-xl font-semibold line-clamp-1">
-          {product.name}
-        </h3>
-
-        <p className="text-gray-500 mt-3 line-clamp-2 text-sm">
-          {product.description}
-        </p>
-
-        <div className="mt-4 text-2xl font-bold text-primary">
+        <div
+          className="
+            absolute
+            bottom-4
+            right-4
+            bg-white/90
+            backdrop-blur-md
+            px-4
+            py-2
+            rounded-full
+            font-bold
+            shadow-lg
+          "
+        >
           ৳ {product.price}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mt-6">
+      </div>
+
+      {/* CONTENT */}
+
+      <div className="p-6">
+
+        <h3
+          className="
+            text-xl
+            md:text-2xl
+            font-bold
+            line-clamp-1
+          "
+        >
+          {product.name}
+        </h3>
+
+        <p
+          className="
+            mt-3
+            text-gray-500
+            text-sm
+            leading-6
+            line-clamp-2
+          "
+        >
+          {product.description}
+        </p>
+
+        <div className="mt-6 grid grid-cols-2 gap-3">
 
           <Button
             onClick={handleAdd}
+            className="rounded-2xl"
           >
             Add Cart
           </Button>
@@ -65,7 +138,11 @@ export default function ProductCard({
                 `/product/${product.id}`
               )
             }
-            className="bg-black hover:bg-gray-900"
+            className="
+              bg-black
+              hover:bg-gray-900
+              rounded-2xl
+            "
           >
             View
           </Button>
@@ -73,6 +150,7 @@ export default function ProductCard({
         </div>
 
       </div>
+
     </div>
   );
 }
