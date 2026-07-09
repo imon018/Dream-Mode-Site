@@ -852,38 +852,7 @@ if(!user.email){
         }
 
 
-const activityRef =
-  collection(
-    db,
-    "users",
-    user.uid,
-    "activity"
-  );
 
-
-const activitySnapshot =
-  await getDocs(
-    activityRef
-  );
-
-
-for(
-
-  
-  const activity of activitySnapshot.docs
-){
-
-  await deleteDoc(
-    doc(
-      db,
-      "users",
-      user.uid,
-      "activity",
-      activity.id
-    )
-  );
-
-}
 
 
         await deleteDoc(
