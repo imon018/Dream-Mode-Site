@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import useAuth from "../hooks/useAuth";
 
 import {
@@ -16,6 +18,7 @@ import {
 export default function MyOrders() {
 
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [orders, setOrders] =
     useState([]);
@@ -375,6 +378,22 @@ export default function MyOrders() {
                                     </p>
 
                                   </div>
+                                  
+                                  <button
+
+  onClick={() =>
+    navigate(
+      `/product/${item.id}`
+    )
+  }
+
+  className="mt-2 bg-blue-600 text-white px-4 py-1 rounded-lg text-sm"
+
+>
+
+  View Product
+
+</button>
 
                                 </div>
 
