@@ -1,16 +1,17 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
-  Link,
-  useNavigate,
-} from "react-router-dom";
+  FiMenu,
+  FiX,
+  FiShoppingBag,
+  FiUser,
+} from "react-icons/fi";
 
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
 
-import {
-  logout,
-} from "../services/authService";
+import { logout } from "../services/authService";
 
 export default function Header() {
   const { user } = useAuth();
@@ -19,146 +20,236 @@ export default function Header() {
 
   const navigate = useNavigate();
 
-  const [menuOpen, setMenuOpen] =
+  const [mobileOpen, setMobileOpen] =
     useState(false);
 
-  const handleLogout =
-    async () => {
-      await logout();
-      navigate("/login");
-    };
+  const handleLogout = async () => {
+    await logout();
+
+    navigate("/login");
+
+    setMobileOpen(false);
+  };
 
   return (
     <>
-      {/* HEADER */}
+      {/* NAVBAR */}
 
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+      <header
+        className="
+        sticky
+        top-0
+        z-50
+        border-b
+        border-white/20
+        bg-white/75
+        backdrop-blur-xl
+        shadow-sm
+      "
+      >
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
 
-        <div className="container-box h-20 flex items-center justify-between">
+          <div className="h-16 md:h-20 flex items-center justify-between">
 
-          {/* LOGO */}
-
-          <Link
-            to="/"
-            className="text-2xl md:text-3xl font-bold tracking-tight"
-          >
-            <span className="gradient-text">
-              Dream Mode
-            </span>
-          </Link>
-
-          {/* DESKTOP MENU */}
-
-          <nav className="hidden md:flex items-center gap-8 font-medium">
+            {/* LOGO */}
 
             <Link
               to="/"
-              className="hover:text-black text-gray-600"
+              className="text-2xl md:text-3xl font-black tracking-tight"
             >
-              Home
+              Dream
+              <span className="text-primary">
+                Mode
+              </span>
             </Link>
 
-            <Link
-              to="/shop"
-              className="hover:text-black text-gray-600"
-            >
-              Shop
-            </Link>
+            {/* DESKTOP MENU */}
 
-            <Link
-              to="/cart"
-              className="relative hover:text-black text-gray-600"
-            >
-              Cart
+            <nav className="hidden md:flex items-center gap-8 font-medium">
 
-              {cartCount > 0 && (
-                <span className="ml-2 bg-black text-white text-xs px-2 py-1 rounded-full">
-                  {cartCount}
-                </span>
+              <Link
+                to="/"
+                className="hover:text-primary transition"
+              >
+                Home
+              </Link>
+
+              <Link
+                to="/shop"
+                className="hover:text-primary transition"
+              >
+                Shop
+              </Link>
+
+              <Link
+                to="/cart"
+                className="relative flex items-center gap-2 hover:text-primary transition"
+              >
+                <FiShoppingBag />
+
+                Cart
+
+                {cartCount > 0 && (
+                  <span
+                    className="
+                    absolute
+                    -top-3
+                    -right-4
+                    bg-primary
+                    text-white
+                    text-xs
+                    min-w-[20px]
+                    h-5
+                    px-1
+                    rounded-full
+                    flex
+                    items-center
+                    justify-center
+                  "
+                  >
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {!user ? (
+                <>
+                  <Link
+                    to="/login"
+                    className="hover:text-primary transition"
+                  >
+                    Login
+                  </Link>
+
+                  <Link
+                    to="/register"
+                    className="
+                    bg-black
+                    text-white
+                    px-5
+                    py-2.5
+                    rounded-full
+                    hover:scale-105
+                    transition
+                  "
+                  >
+                    Join Now
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {user.role === "admin" && (
+                    <Link
+                      to="/admin"
+                      className="hover:text-primary transition"
+                    >
+                      Dashboard
+                    </Link>
+                  )}
+
+                  <Link
+                    to="/profile"
+                    className="
+                    flex
+                    items-center
+                    gap-2
+                    hover:text-primary
+                    transition
+                  "
+                  >
+                    <FiUser />
+                    Profile
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="text-red-600"
+                  >
+                    Logout
+                  </button>
+                </>
               )}
-            </Link>
+            </nav>
 
-            {!user ? (
-              <>
-                <Link
-                  to="/login"
-                  className="hover:text-black text-gray-600"
-                >
-                  Login
-                </Link>
+            {/* MOBILE ACTIONS */}
 
-                <Link
-                  to="/register"
-                  className="primary-btn"
-                >
-                  Join Now
-                </Link>
-              </>
-            ) : user.role === "admin" ? (
-              <>
-                <Link
-                  to="/admin"
-                  className="hover:text-black text-gray-600"
-                >
-                  Dashboard
-                </Link>
+            <div className="flex items-center gap-3 md:hidden">
 
-                <button
-                  onClick={handleLogout}
-                  className="text-red-600 font-medium"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/profile"
-                  className="hover:text-black text-gray-600"
-                >
-                  {user.name ||
-                    user.email?.split("@")[0]}
-                </Link>
+              <Link
+                to="/cart"
+                className="relative"
+              >
+                <FiShoppingBag
+                  size={22}
+                />
 
-                <button
-                  onClick={handleLogout}
-                  className="text-red-600 font-medium"
-                >
-                  Logout
-                </button>
-              </>
-            )}
+                {cartCount > 0 && (
+                  <span
+                    className="
+                    absolute
+                    -top-2
+                    -right-2
+                    bg-primary
+                    text-white
+                    text-[10px]
+                    min-w-[18px]
+                    h-[18px]
+                    rounded-full
+                    flex
+                    items-center
+                    justify-center
+                  "
+                  >
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
 
-          </nav>
+              <button
+                onClick={() =>
+                  setMobileOpen(
+                    !mobileOpen
+                  )
+                }
+              >
+                {mobileOpen ? (
+                  <FiX size={28} />
+                ) : (
+                  <FiMenu size={28} />
+                )}
+              </button>
 
-          {/* MOBILE BUTTON */}
+            </div>
 
-          <button
-            onClick={() =>
-              setMenuOpen(!menuOpen)
-            }
-            className="md:hidden text-3xl"
-          >
-            ☰
-          </button>
+          </div>
 
         </div>
-
       </header>
 
       {/* MOBILE DRAWER */}
 
       <div
-        className={`fixed top-0 right-0 h-full w-[280px] bg-white z-[100] shadow-2xl transition-all duration-300 md:hidden ${
-          menuOpen
+        className={`
+        fixed
+        top-0
+        right-0
+        h-screen
+        w-[280px]
+        bg-white
+        z-[60]
+        shadow-2xl
+        transition-all
+        duration-300
+        ${
+          mobileOpen
             ? "translate-x-0"
             : "translate-x-full"
-        }`}
+        }
+      `}
       >
-
         <div className="p-6">
 
-          <div className="flex items-center justify-between">
+          <div className="flex justify-between items-center mb-8">
 
             <h2 className="text-xl font-bold">
               Menu
@@ -166,21 +257,20 @@ export default function Header() {
 
             <button
               onClick={() =>
-                setMenuOpen(false)
+                setMobileOpen(false)
               }
-              className="text-3xl"
             >
-              ×
+              <FiX size={26} />
             </button>
 
           </div>
 
-          <div className="mt-8 flex flex-col gap-5">
+          <div className="flex flex-col gap-5 font-medium">
 
             <Link
               to="/"
               onClick={() =>
-                setMenuOpen(false)
+                setMobileOpen(false)
               }
             >
               Home
@@ -189,7 +279,7 @@ export default function Header() {
             <Link
               to="/shop"
               onClick={() =>
-                setMenuOpen(false)
+                setMobileOpen(false)
               }
             >
               Shop
@@ -198,7 +288,7 @@ export default function Header() {
             <Link
               to="/cart"
               onClick={() =>
-                setMenuOpen(false)
+                setMobileOpen(false)
               }
             >
               Cart ({cartCount})
@@ -209,7 +299,7 @@ export default function Header() {
                 <Link
                   to="/login"
                   onClick={() =>
-                    setMenuOpen(false)
+                    setMobileOpen(false)
                   }
                 >
                   Login
@@ -218,44 +308,40 @@ export default function Header() {
                 <Link
                   to="/register"
                   onClick={() =>
-                    setMenuOpen(false)
+                    setMobileOpen(false)
                   }
                 >
                   Register
                 </Link>
-              </>
-            ) : user.role === "admin" ? (
-              <>
-                <Link
-                  to="/admin"
-                  onClick={() =>
-                    setMenuOpen(false)
-                  }
-                >
-                  Admin Dashboard
-                </Link>
-
-                <button
-                  onClick={handleLogout}
-                  className="text-left text-red-600"
-                >
-                  Logout
-                </button>
               </>
             ) : (
               <>
                 <Link
                   to="/profile"
                   onClick={() =>
-                    setMenuOpen(false)
+                    setMobileOpen(false)
                   }
                 >
                   Profile
                 </Link>
 
+                {user.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    onClick={() =>
+                      setMobileOpen(false)
+                    }
+                  >
+                    Dashboard
+                  </Link>
+                )}
+
                 <button
                   onClick={handleLogout}
-                  className="text-left text-red-600"
+                  className="
+                  text-left
+                  text-red-600
+                "
                 >
                   Logout
                 </button>
@@ -265,17 +351,21 @@ export default function Header() {
           </div>
 
         </div>
-
       </div>
 
-      {/* OVERLAY */}
+      {/* BACKDROP */}
 
-      {menuOpen && (
+      {mobileOpen && (
         <div
           onClick={() =>
-            setMenuOpen(false)
+            setMobileOpen(false)
           }
-          className="fixed inset-0 bg-black/40 z-50 md:hidden"
+          className="
+          fixed
+          inset-0
+          bg-black/40
+          z-50
+        "
         />
       )}
     </>
