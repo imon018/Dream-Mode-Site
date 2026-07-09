@@ -17,8 +17,40 @@ import {
 import { auth } from "../firebase/auth";
 import { db } from "../firebase/firestore";
 
-export const login = (email, password) =>
-  signInWithEmailAndPassword(auth, email, password);
+export const login = async (
+  email,
+  password
+) => {
+
+  const result =
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+
+  const userRef = doc(
+    db,
+    "users",
+    result.user.uid
+  );
+
+
+  await setDoc(
+    userRef,
+    {
+      lastLogin: serverTimestamp(),
+    },
+    {
+      merge: true,
+    }
+  );
+
+
+  return result;
+
+};
 
 export const register = async (
   name,
