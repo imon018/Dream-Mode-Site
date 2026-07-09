@@ -76,6 +76,41 @@ export default function AppRoutes() {
   element={<Profile />}
 />
 
+        <Route
+          path="/about"
+          element={<About />}
+        />
+
+        <Route
+          path="/contact"
+          element={<Contact />}
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+  path="/forgot-password"
+  element={<ForgotPassword />}
+/>
+
+        <Route
+  path="/verify-email"
+  element={<VerifyEmail />}
+/>
+
+      </Route>
+
+
+{/* User Dashboard Routes */}
+
 
 <Route
   path="/profile/dashboard"
@@ -121,37 +156,10 @@ export default function AppRoutes() {
 
 </Route>
 
-        <Route
-          path="/about"
-          element={<About />}
-        />
 
-        <Route
-          path="/contact"
-          element={<Contact />}
-        />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-
-        <Route
-  path="/forgot-password"
-  element={<ForgotPassword />}
-/>
-
-        <Route
-  path="/verify-email"
-  element={<VerifyEmail />}
-/>
-
-      </Route>
+{/* Admin Dashboard Routes */}
 
 
 
