@@ -55,6 +55,48 @@ export default function AppRoutes() {
         <Route path="/shop" element={<Shop />} />
 
         <Route
+  path="/profile"
+  element={<UserLayout />}
+>
+
+  <Route
+    index
+    element={<Profile />}
+  />
+
+  <Route
+    path="account"
+    element={<AccountInformation />}
+  />
+
+  <Route
+    path="activity"
+    element={<RecentActivities />}
+  />
+
+  <Route
+    path="orders"
+    element={<MyOrders />}
+  />
+
+  <Route
+    path="wishlist"
+    element={<Wishlist />}
+  />
+
+  <Route
+    path="security/password"
+    element={<ChangePassword />}
+  />
+
+  <Route
+    path="security/delete"
+    element={<DeleteAccount />}
+  />
+
+</Route>
+
+        <Route
           path="/product/:id"
           element={<ProductDetails />}
         />
@@ -104,56 +146,6 @@ export default function AppRoutes() {
       </Route>
 
 
-{/* User Dashboard Routes */}
-
-
-<Route
-  path="/profile"
-  element={<UserLayout />}
->
-
-  <Route
-  path="/profile"
-  element={<Profile />}
-/>
-
-  <Route
-    path="account"
-    element={<AccountInformation />}
-  />
-
-
-  <Route
-    path="activity"
-    element={<RecentActivities />}
-  />
-
-
-  <Route
-    path="orders"
-    element={<MyOrders />}
-  />
-
-
-  <Route
-    path="wishlist"
-    element={<Wishlist />}
-  />
-
-
-  <Route
-    path="security/password"
-    element={<ChangePassword />}
-  />
-
-
-  <Route
-    path="security/delete"
-    element={<DeleteAccount />}
-  />
-
-
-</Route>
 
 
 
