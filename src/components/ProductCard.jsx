@@ -24,10 +24,10 @@ export default function ProductCard({
       <div className="overflow-hidden relative">
 
         <img
-          src={product.image}
-          alt={product.name}
-          className="h-72 w-full object-cover group-hover:scale-110 transition duration-700"
-        />
+  src={product.image}
+  className="h-56 sm:h-64 md:h-72 lg:h-80 w-full object-cover transition duration-500 hover:scale-105"
+  alt={product.name}
+/>
 
         {product.stock > 0 && (
           <span className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs">
@@ -38,10 +38,6 @@ export default function ProductCard({
       </div>
 
       <div className="p-6">
-
-        <p className="text-xs uppercase tracking-widest text-gray-400">
-          {product.category}
-        </p>
 
         <h3 className="mt-2 text-xl font-semibold line-clamp-1">
           {product.name}
