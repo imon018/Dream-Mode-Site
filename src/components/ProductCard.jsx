@@ -3,66 +3,73 @@ import Button from "./ui/Button";
 import useCart from "../hooks/useCart";
 import { successToast } from "./ui/Toast";
 
-export default function ProductCard({ product }) {
-  const { addToCart } = useCart();
+export default function ProductCard({
+  product,
+}) {
   const navigate = useNavigate();
+
+  const { addToCart } = useCart();
 
   const handleAdd = () => {
     addToCart(product);
-    successToast("Added to cart");
+
+    successToast(
+      "Added to cart successfully"
+    );
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition">
+    <div className="group bg-white rounded-[28px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
 
-      <img
-        src={product.image}
-        className="h-64 w-full object-cover"
-        alt={product.name}
-      />
+      <div className="overflow-hidden relative">
 
-      <div className="p-5">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="h-72 w-full object-cover group-hover:scale-110 transition duration-700"
+        />
 
-        <h3 className="font-bold text-lg">
-          {product.name}
-        </h3>
+        {product.stock > 0 && (
+          <span className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs">
+            In Stock
+          </span>
+        )}
 
-        <p className="text-sm text-gray-500 mt-1">
+      </div>
+
+      <div className="p-6">
+
+        <p className="text-xs uppercase tracking-widest text-gray-400">
           {product.category}
         </p>
 
-        <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+        <h3 className="mt-2 text-xl font-semibold line-clamp-1">
+          {product.name}
+        </h3>
+
+        <p className="text-gray-500 mt-3 line-clamp-2 text-sm">
           {product.description}
         </p>
 
-        <p className="text-primary text-xl mt-3 font-bold">
+        <div className="mt-4 text-2xl font-bold text-primary">
           ৳ {product.price}
-        </p>
+        </div>
 
-        <p
-          className={`mt-2 font-medium ${
-            product.stock > 0
-              ? "text-green-600"
-              : "text-red-600"
-          }`}
-        >
-          {product.stock > 0
-            ? `In Stock (${product.stock})`
-            : "Out of Stock"}
-        </p>
-
-        <div className="flex gap-3 mt-5">
+        <div className="grid grid-cols-2 gap-3 mt-6">
 
           <Button
             onClick={handleAdd}
-            className="flex-1"
           >
-            Add to Cart
+            Add Cart
           </Button>
 
           <Button
-            onClick={() => navigate(`/product/${product.id}`)}
-            className="flex-1 bg-gray-800 hover:bg-black"
+            onClick={() =>
+              navigate(
+                `/product/${product.id}`
+              )
+            }
+            className="bg-black hover:bg-gray-900"
           >
             View
           </Button>
@@ -70,7 +77,6 @@ export default function ProductCard({ product }) {
         </div>
 
       </div>
-
     </div>
   );
 }
