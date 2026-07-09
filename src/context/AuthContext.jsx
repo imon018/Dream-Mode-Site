@@ -4,80 +4,217 @@ import {
   useState,
 } from "react";
 
-import { auth } from "../firebase/auth";
 
 import {
   onAuthStateChanged,
 } from "firebase/auth";
+
 
 import {
   doc,
   getDoc,
 } from "firebase/firestore";
 
-import { db } from "../firebase/firestore";
+
+import {
+  auth,
+} from "../firebase/auth";
+
+
+import {
+  db,
+} from "../firebase/firestore";
+
+
+
 
 export const AuthContext =
   createContext();
 
+
+
+
+
+
 export default function AuthProvider({
   children,
 }) {
-  const [user, setUser] =
+
+
+
+  const [user,setUser] =
     useState(null);
 
-  const [loading, setLoading] =
+
+
+  const [loading,setLoading] =
     useState(true);
 
-  useEffect(() => {
-    const unsub =
+
+
+
+
+
+
+
+  useEffect(()=>{
+
+
+    const unsubscribe =
+
       onAuthStateChanged(
+
         auth,
-        async (firebaseUser) => {
-          try {
-            if (!firebaseUser) {
+
+        async(firebaseUser)=>{
+
+
+          try{
+
+
+            if(!firebaseUser){
+
+
               setUser(null);
+
               setLoading(false);
+
               return;
+
+
             }
 
-            const userRef = doc(
-              db,
-              "users",
-              firebaseUser.uid
-            );
+
+
+
+
+
+            const userRef =
+              doc(
+
+                db,
+
+                "users",
+
+                firebaseUser.uid
+
+              );
+
+
+
+
+
 
             const userSnap =
-              await getDoc(userRef);
+              await getDoc(
+                userRef
+              );
 
-            if (userSnap.exists()) {
+
+
+
+
+
+
+            if(userSnap.exists()){
+
+
               setUser({
+
                 ...firebaseUser,
+
                 ...userSnap.data(),
+
               });
-            } else {
-              setUser(firebaseUser);
+
+
+
+            }else{
+
+
+              setUser(
+                firebaseUser
+              );
+
+
             }
-          } catch (err) {
-            console.log(err);
-            setUser(firebaseUser);
-          } finally {
+
+
+
+
+
+
+          }catch(error){
+
+
+            console.log(error);
+
+
+            setUser(
+              firebaseUser
+            );
+
+
+
+          }finally{
+
+
             setLoading(false);
+
+
           }
+
+
         }
+
       );
 
-    return () => unsub();
-  }, []);
+
+
+
+
+
+
+      return ()=>unsubscribe();
+
+
+
+  },[]);
+
+
+
+
+
+
+
 
   return (
+
+
     <AuthContext.Provider
+
+
       value={{
+
         user,
+
         loading,
+
       }}
+
+
+
     >
+
+
+
       {children}
+
+
+
     </AuthContext.Provider>
+
+
   );
+
 }
