@@ -28,6 +28,7 @@ import Profile from "../pages/Profile";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import OrderSuccess from "../pages/OrderSuccess";
+import MyOrders from "../pages/MyOrders";
 
 import NotFound from "../pages/NotFound";
 
@@ -73,6 +74,11 @@ export default function AppRoutes() {
           path="/profile"
           element={<Profile />}
         />
+
+        <Route
+  path="/my-orders"
+  element={<MyOrders />}
+/>
 
         <Route
           path="/about"
