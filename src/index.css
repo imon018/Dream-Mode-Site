@@ -144,3 +144,11 @@ select{
 .shadow-premium{
   box-shadow:
   0 10
+
+@media (max-width:768px){
+
+  body{
+    padding-bottom:80px;
+  }
+
+}
