@@ -13,6 +13,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import AdminProfile from "../pages/admin/AdminProfile";
 import Users from "../pages/admin/Users";
 import Products from "../pages/admin/Products";
+import HeroBanners from "../pages/admin/HeroBanners";
 import AddProduct from "../pages/admin/AddProduct";
 import AddOrder from "../pages/admin/AddOrder";
 import EditProduct from "../pages/admin/EditProduct";
@@ -218,6 +219,10 @@ export default function AppRoutes() {
   element={<Settings />}
 />
 
+        <Route
+  path="banners"
+  element={<HeroBanners />}
+/>
         
 
 
