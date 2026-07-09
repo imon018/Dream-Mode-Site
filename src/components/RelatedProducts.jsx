@@ -28,7 +28,7 @@ export default function RelatedProducts({
               (item) =>
                 item.id !== currentId
             )
-            .slice(0, 4);
+            .slice(0, 3);
 
         setProducts(filtered);
       } catch (error) {
@@ -40,25 +40,25 @@ export default function RelatedProducts({
     return null;
 
   return (
-    <section className="mt-24">
+    <section className="mt-20 md:mt-28">
 
-      <div className="text-center mb-12">
+      <div className="text-center mb-10 md:mb-14">
 
-        <span className="text-sm uppercase tracking-[4px] text-gray-400">
+        <span className="text-xs md:text-sm uppercase tracking-[4px] text-gray-400">
           Discover More
         </span>
 
-        <h2 className="text-3xl md:text-4xl font-bold mt-3">
-          ✨ You May Also Like
+        <h2 className="text-2xl md:text-4xl font-bold mt-3">
+          Curated For You
         </h2>
 
-        <p className="text-gray-500 mt-3">
-          Handpicked products selected for you
+        <p className="text-gray-500 mt-3 text-sm md:text-base">
+          Handpicked selections chosen for your style
         </p>
 
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
 
         {products.map((product) => (
           <ProductCard
