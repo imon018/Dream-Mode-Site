@@ -599,6 +599,16 @@ export default function Profile() {
   const handleChangePassword =
     async()=>{
 
+      if(!user){
+
+  errorToast(
+    "User not found."
+  );
+
+  return;
+
+}
+
 
       if(
         !newPassword ||
@@ -739,6 +749,23 @@ export default function Profile() {
   const handleDeleteAccount =
     async()=>{
 
+      if(!user){
+
+  return;
+
+}
+
+
+if(!user.email){
+
+  errorToast(
+    "Email account required for verification."
+  );
+
+  return;
+
+}
+
 
       if(!user)
         return;
@@ -825,7 +852,38 @@ export default function Profile() {
         }
 
 
+const activityRef =
+  collection(
+    db,
+    "users",
+    user.uid,
+    "activity"
+  );
 
+
+const activitySnapshot =
+  await getDocs(
+    activityRef
+  );
+
+
+for(
+
+  
+  const activity of activitySnapshot.docs
+){
+
+  await deleteDoc(
+    doc(
+      db,
+      "users",
+      user.uid,
+      "activity",
+      activity.id
+    )
+  );
+
+}
 
 
         await deleteDoc(
