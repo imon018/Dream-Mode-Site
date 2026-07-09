@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 import {
   login,
@@ -21,6 +24,14 @@ import {
 export default function Login() {
   const navigate =
     useNavigate();
+
+  const location =
+  useLocation();
+
+const redirectPath =
+  new URLSearchParams(
+    location.search
+  ).get("redirect");
 
   const [email, setEmail] =
     useState("");
@@ -72,15 +83,30 @@ const profile =
   );
 
 
-if (
+if (redirectPath) {
+
+  navigate(
+    `/${redirectPath}`
+  );
+
+
+} else if (
   profile?.role === "admin"
 ) {
 
-  navigate("/admin/profile");
+
+  navigate(
+    "/admin/profile"
+  );
+
 
 } else {
 
-  navigate("/profile");
+
+  navigate(
+    "/profile"
+  );
+
 
 }
       
