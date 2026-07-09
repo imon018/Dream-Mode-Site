@@ -4,7 +4,9 @@ import useAuth from "../hooks/useAuth";
 
 import Button from "./ui/Button";
 
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+} from "react-router-dom";
 
 
 
@@ -12,16 +14,24 @@ export default function CartPage() {
 
 
   const {
+
     cart,
+
     removeFromCart,
+
     updateQuantity,
+
     clearCart,
+
   } = useCart();
 
 
 
-  const { user } =
-    useAuth();
+
+  const {
+    user
+  } = useAuth();
+
 
 
 
@@ -33,38 +43,44 @@ export default function CartPage() {
 
 
 
-  const total = cart.reduce(
 
-    (sum, item) =>
+  const total =
+
+    cart.reduce(
+
+      (sum,item)=>
 
       sum +
+
       item.price *
+
       item.quantity,
 
-    0
+      0
 
-  );
-
-
+    );
 
 
 
 
 
-  const handleCheckout = () => {
 
+
+  const handleCheckout = ()=>{
 
 
     if(!user){
+
 
       navigate(
         "/login?redirect=checkout"
       );
 
+
       return;
 
-    }
 
+    }
 
 
 
@@ -79,9 +95,13 @@ export default function CartPage() {
 
 
 
+
   return (
 
+
     <div className="max-w-6xl mx-auto px-6 py-12">
+
+
 
 
 
@@ -96,37 +116,78 @@ export default function CartPage() {
 
 
 
-      {
-        cart.length === 0
 
-        ?
+      {
+        cart.length === 0 ?
+
 
         (
 
-          <div className="text-center py-20">
 
 
-            <h2 className="text-2xl font-bold">
+          <div className="bg-white shadow-xl rounded-3xl p-10 text-center">
 
-              Your cart is empty
+
+            <div className="text-6xl mb-5">
+
+              🛒
+
+            </div>
+
+
+
+
+            <h2 className="text-3xl font-bold">
+
+              Your Cart is Empty
 
             </h2>
+
+
+
+
+            <p className="text-gray-500 mt-3">
+
+              Looks like you haven't added
+              anything yet.
+
+            </p>
+
+
+
+
+
+            <button
+
+              onClick={()=>navigate("/shop")}
+
+              className="mt-6 bg-primary text-white px-8 py-3 rounded-xl font-semibold"
+
+            >
+
+              Continue Shopping
+
+            </button>
+
 
 
 
           </div>
 
 
+
         )
 
+
+
         :
+
+
 
         (
 
 
-
           <div className="space-y-5">
-
 
 
 
@@ -147,20 +208,16 @@ export default function CartPage() {
 
 
 
+
                   <img
 
-                    src={
-                      item.image
-                    }
+                    src={item.image}
 
-                    alt={
-                      item.name
-                    }
+                    alt={item.name}
 
                     className="w-24 h-24 rounded-xl object-cover"
 
                   />
-
 
 
 
@@ -177,6 +234,7 @@ export default function CartPage() {
 
 
 
+
                     <p className="text-gray-600">
 
                       ৳ {item.price}
@@ -186,27 +244,21 @@ export default function CartPage() {
 
 
 
-                    <div className="flex items-center gap-3 mt-3">
 
+                    <div className="flex items-center gap-3 mt-3">
 
 
                       <button
 
-                        onClick={()=>
+                        onClick={()=>updateQuantity(
 
+                          item.id,
 
-                          updateQuantity(
+                          item.quantity - 1
 
-                            item.id,
+                        )}
 
-                            item.quantity - 1
-
-                          )
-
-
-                        }
-
-                        className="border px-3 rounded"
+                        className="border px-3 py-1 rounded"
 
                       >
 
@@ -230,21 +282,15 @@ export default function CartPage() {
 
                       <button
 
-                        onClick={()=>
+                        onClick={()=>updateQuantity(
 
+                          item.id,
 
-                          updateQuantity(
+                          item.quantity + 1
 
-                            item.id,
+                        )}
 
-                            item.quantity + 1
-
-                          )
-
-
-                        }
-
-                        className="border px-3 rounded"
+                        className="border px-3 py-1 rounded"
 
                       >
 
@@ -253,10 +299,7 @@ export default function CartPage() {
                       </button>
 
 
-
-
                     </div>
-
 
 
 
@@ -267,15 +310,11 @@ export default function CartPage() {
 
 
 
+
+
                   <Button
 
-                    onClick={()=>
-
-                      removeFromCart(
-                        item.id
-                      )
-
-                    }
+                    onClick={()=>removeFromCart(item.id)}
 
                     className="bg-red-500"
 
@@ -292,7 +331,6 @@ export default function CartPage() {
                 </div>
 
 
-
               ))
 
             }
@@ -306,7 +344,6 @@ export default function CartPage() {
             <div className="bg-white shadow rounded-2xl p-6 mt-8">
 
 
-
               <div className="flex justify-between text-2xl font-bold">
 
 
@@ -315,6 +352,7 @@ export default function CartPage() {
                   Total
 
                 </span>
+
 
 
                 <span>
@@ -330,13 +368,9 @@ export default function CartPage() {
 
 
 
-
-
               <Button
 
-                onClick={
-                  handleCheckout
-                }
+                onClick={handleCheckout}
 
                 className="w-full mt-6"
 
@@ -350,13 +384,9 @@ export default function CartPage() {
 
 
 
-
-
               <button
 
-                onClick={
-                  clearCart
-                }
+                onClick={clearCart}
 
                 className="text-red-600 mt-4"
 
@@ -369,9 +399,7 @@ export default function CartPage() {
 
 
 
-
             </div>
-
 
 
 
@@ -387,10 +415,8 @@ export default function CartPage() {
 
 
 
-
-
-
     </div>
+
 
   );
 
