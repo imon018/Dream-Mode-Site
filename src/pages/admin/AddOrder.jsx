@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import Button from "../../components/ui/Button";
+
 import {
   addOrderByAdmin,
 } from "../../services/orderService";
@@ -9,11 +11,8 @@ import {
   errorToast,
 } from "../../components/ui/Toast";
 
-import Button from "../../components/ui/Button";
 
-
-
-export default function AddOrder(){
+export default function AddOrder() {
 
 
   const [customerName,setCustomerName] =
@@ -39,8 +38,8 @@ export default function AddOrder(){
 
 
 
-
-  const handleSubmit = async(e)=>{
+  const handleSubmit =
+  async(e)=>{
 
     e.preventDefault();
 
@@ -63,7 +62,14 @@ export default function AddOrder(){
     }
 
 
+
     try{
+
+
+      const total =
+        Number(price) *
+        Number(quantity);
+
 
 
       await addOrderByAdmin({
@@ -80,31 +86,34 @@ export default function AddOrder(){
         items:[
 
           {
-            id:Date.now(),
 
-            name:productName,
+            id:
+            crypto.randomUUID(),
 
-            price:Number(price),
+            name:
+            productName,
 
-            quantity:Number(quantity),
+            price:
+            Number(price),
+
+            quantity:
+            Number(quantity),
 
           }
 
         ],
 
 
-        total:
-          Number(price) *
-          Number(quantity),
+        total,
 
 
         status:
-          "Pending",
+        "Pending",
 
 
         createdAt:
-          new Date()
-          .toISOString(),
+        new Date()
+        .toISOString(),
 
 
       });
@@ -114,6 +123,7 @@ export default function AddOrder(){
       successToast(
         "Order added successfully."
       );
+
 
 
       setCustomerName("");
@@ -133,7 +143,8 @@ export default function AddOrder(){
 
 
       errorToast(
-        error.message
+        error.message ||
+        "Failed to add order."
       );
 
 
@@ -144,9 +155,10 @@ export default function AddOrder(){
 
 
 
+
   return (
 
-    <div className="max-w-xl mx-auto">
+    <div className="max-w-xl">
 
       <h1 className="text-3xl font-bold mb-8">
 
@@ -155,9 +167,10 @@ export default function AddOrder(){
       </h1>
 
 
+
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 bg-white p-8 rounded-3xl shadow"
+        className="space-y-4 bg-white p-6 rounded-3xl shadow"
       >
 
 
@@ -171,17 +184,17 @@ export default function AddOrder(){
         />
 
 
-
         <input
           className="w-full border rounded-xl p-3"
-          placeholder="Email"
+          placeholder="Customer Email"
           value={email}
           onChange={(e)=>
             setEmail(e.target.value)
           }
         />
 
-                <input
+
+        <input
           className="w-full border rounded-xl p-3"
           placeholder="Phone"
           value={phone}
@@ -194,12 +207,12 @@ export default function AddOrder(){
         <textarea
           className="w-full border rounded-xl p-3"
           placeholder="Address"
-          rows="3"
           value={address}
           onChange={(e)=>
             setAddress(e.target.value)
           }
         />
+
 
 
         <input
@@ -210,6 +223,7 @@ export default function AddOrder(){
             setProductName(e.target.value)
           }
         />
+
 
 
         <input
@@ -223,6 +237,7 @@ export default function AddOrder(){
         />
 
 
+
         <input
           type="number"
           className="w-full border rounded-xl p-3"
@@ -234,11 +249,22 @@ export default function AddOrder(){
         />
 
 
+
         <Button
           type="submit"
-          className="w-full mt-4"
+          className="w-full"
         >
 
           Add Order
 
         </Button>
+
+
+      </form>
+
+
+    </div>
+
+  );
+
+}
