@@ -1,32 +1,56 @@
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import { Link } from "react-router-dom";
 
+import {
+  getHeroBannerProduct,
+} from "../services/firestoreProductService";
+
 export default function Hero() {
+  const [heroProduct, setHeroProduct] =
+    useState(null);
+
+  useEffect(() => {
+    const loadHero =
+      async () => {
+        const product =
+          await getHeroBannerProduct();
+
+        setHeroProduct(product);
+      };
+
+    loadHero();
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-[#faf7f2]">
 
-      <div className="container-box py-20 lg:py-32">
+      <div className="container-box py-16 lg:py-28">
 
-        <div className="grid lg:grid-cols-2 gap-14 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
 
           <div>
 
-            <span className="inline-block px-5 py-2 rounded-full bg-white shadow">
-              Premium Collection 2026
+            <span className="inline-block px-5 py-2 rounded-full bg-white shadow text-sm">
+
+              Premium Collection
+
             </span>
 
-            <h1 className="mt-6 text-5xl lg:text-7xl font-bold leading-tight">
+            <h1 className="mt-6 text-4xl md:text-5xl lg:text-7xl font-bold leading-tight">
 
-              Elevate Your Style
-              <br />
-
-              With Dream Mode
+              {heroProduct?.name ||
+                "Dream Mode Collection"}
 
             </h1>
 
-            <p className="mt-6 text-gray-600 text-lg">
+            <p className="mt-6 text-gray-600 text-lg leading-8">
 
-              Discover elegant fashion and premium
-              collections crafted for modern women.
+              {heroProduct?.description ||
+                "Discover premium fashion collections designed for modern style and elegance."}
 
             </p>
 
@@ -36,15 +60,15 @@ export default function Hero() {
                 to="/shop"
                 className="primary-btn text-center"
               >
-                Shop Collection
+                Shop Now
               </Link>
 
-              <a
-                href="https://wa.me/"
+              <Link
+                to={`/product/${heroProduct?.id || ""}`}
                 className="outline-btn text-center"
               >
-                WhatsApp Order
-              </a>
+                View Product
+              </Link>
 
             </div>
 
@@ -53,9 +77,15 @@ export default function Hero() {
           <div>
 
             <img
-              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b"
-              alt=""
-              className="rounded-[35px] shadow-premium object-cover h-[600px]"
+              src={
+                heroProduct?.image ||
+                "https://via.placeholder.com/800x900"
+              }
+              alt={
+                heroProduct?.name ||
+                "Dream Mode"
+              }
+              className="rounded-[35px] shadow-premium h-[350px] md:h-[500px] lg:h-[650px] w-full object-cover"
             />
 
           </div>
