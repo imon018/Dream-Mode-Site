@@ -408,23 +408,48 @@ export default function Login() {
 
 
 
-        <div className="text-right">
+        <div className="text-center space-y-3">
 
 
-          <Link
+  <Link
 
-            to="/forgot-password"
+    to="/forgot-password"
 
-            className="text-blue-600 hover:underline text-sm"
+    className="block text-blue-600 hover:underline text-sm font-medium"
 
-          >
+  >
 
-            Forgot Password?
+    Forgot Password?
 
-          </Link>
+  </Link>
 
 
-        </div>
+
+
+
+  <p className="text-sm text-gray-600">
+
+    Don't have an account?
+
+    {" "}
+
+    <Link
+
+      to="/register"
+
+      className="text-blue-600 font-semibold hover:underline"
+
+    >
+
+      Register Now
+
+    </Link>
+
+
+  </p>
+
+
+</div>
 
 
 
