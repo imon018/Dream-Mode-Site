@@ -145,4 +145,23 @@ select{
 
 .gradient-text{
 
- 
+  background:linear-gradient(90deg,#111827,#6366f1);
+
+  -webkit-background-clip:text;
+
+  -webkit-text-fill-color:transparent;
+
+}
+
+.shadow-premium{
+
+  box-shadow:
+  0 20px 60px rgba(0,0,0,.08);
+
+}
+
+.radius-premium{
+
+  border-radius:32px;
+
+}
