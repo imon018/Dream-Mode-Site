@@ -11,22 +11,24 @@ import {
 import Button from "../components/ui/Button";
 
 export default function Register() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [email, setEmail] =
-    useState("");
-
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] =
     useState("");
 
-  const handleRegister = async (
-    e
-  ) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!name || !email || !password) {
+      errorToast("Please fill in all fields.");
+      return;
+    }
 
     try {
       await register(
+        name,
         email,
         password
       );
@@ -35,23 +37,17 @@ export default function Register() {
         "Verification email sent."
       );
 
-      navigate(
-        "/verify-email",
-        {
-          state: { email },
-        }
-      );
+      navigate("/verify-email", {
+        state: { email },
+      });
     } catch (err) {
-      console.log(err);
-
-      errorToast(
-        err.message
-      );
+      errorToast(err.message);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto py-20">
+    <div className="max-w-md mx-auto py-20 px-6">
+
       <h1 className="text-3xl font-bold mb-6">
         Create Account
       </h1>
@@ -60,14 +56,23 @@ export default function Register() {
         onSubmit={handleRegister}
         className="space-y-4"
       >
+
         <input
+          className="w-full border p-3 rounded-xl"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) =>
+            setName(e.target.value)
+          }
+        />
+
+        <input
+          type="email"
           className="w-full border p-3 rounded-xl"
           placeholder="Email"
           value={email}
           onChange={(e) =>
-            setEmail(
-              e.target.value
-            )
+            setEmail(e.target.value)
           }
         />
 
@@ -77,9 +82,7 @@ export default function Register() {
           placeholder="Password"
           value={password}
           onChange={(e) =>
-            setPassword(
-              e.target.value
-            )
+            setPassword(e.target.value)
           }
         />
 
@@ -89,7 +92,9 @@ export default function Register() {
         >
           Register
         </Button>
+
       </form>
+
     </div>
   );
 }
