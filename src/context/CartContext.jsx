@@ -15,17 +15,20 @@ export default function CartProvider({
 }) {
 
 
-  const [cart, setCart] =
-    useState(() => {
+  const [cart,setCart] =
+    useState(()=>{
+
 
       const savedCart =
         localStorage.getItem(
           "dream_cart"
         );
 
+
       return savedCart
         ? JSON.parse(savedCart)
         : [];
+
 
     });
 
@@ -33,7 +36,9 @@ export default function CartProvider({
 
 
 
-  useEffect(() => {
+
+  useEffect(()=>{
+
 
     localStorage.setItem(
       "dream_cart",
@@ -41,7 +46,7 @@ export default function CartProvider({
     );
 
 
-  }, [cart]);
+  },[cart]);
 
 
 
@@ -49,10 +54,11 @@ export default function CartProvider({
 
 
 
-  const addToCart = (product) => {
+
+  const addToCart = (product)=>{
 
 
-    setCart((prev)=>{
+    setCart(prev=>{
 
 
       const existing =
@@ -63,29 +69,52 @@ export default function CartProvider({
 
 
 
+
       if(existing){
 
 
-        return prev.map(item =>
+        return prev.map(item=>{
 
-          item.id === product.id
 
-          ?
+          if(item.id === product.id){
 
-          {
-            ...item,
-            quantity:
-              item.quantity + 1
+
+            const maxStock =
+              product.stock || 999;
+
+
+
+            return {
+
+              ...item,
+
+              quantity:
+                item.quantity < maxStock
+
+                ?
+
+                item.quantity + 1
+
+                :
+
+                item.quantity
+
+            };
+
+
           }
 
-          :
 
-          item
+          return item;
 
-        );
+
+        });
+
 
 
       }
+
+
 
 
 
@@ -94,11 +123,15 @@ export default function CartProvider({
         ...prev,
 
         {
+
           ...product,
+
           quantity:1
+
         }
 
       ];
+
 
 
     });
@@ -114,10 +147,10 @@ export default function CartProvider({
 
 
 
-  const removeFromCart = (id)=>{
+  const removeFromCart=(id)=>{
 
 
-    setCart(prev =>
+    setCart(prev=>
 
       prev.filter(
         item =>
@@ -136,37 +169,46 @@ export default function CartProvider({
 
 
 
-  const updateQuantity = (
+  const updateQuantity=(
     id,
     quantity
   )=>{
 
 
-    if(quantity < 1)
-      return;
+    setCart(prev=>
+
+      prev.map(item=>{
+
+
+        if(item.id === id){
+
+
+          const max =
+            item.stock || 999;
 
 
 
-    setCart(prev =>
+          return {
 
-      prev.map(item =>
+            ...item,
+
+            quantity:
+              Math.min(
+                quantity,
+                max
+              )
+
+          };
 
 
-        item.id === id
-
-        ?
-
-        {
-          ...item,
-          quantity
         }
 
-        :
 
-        item
+        return item;
 
 
-      )
+      })
+
 
     );
 
@@ -179,9 +221,12 @@ export default function CartProvider({
 
 
 
-  const clearCart = ()=>{
+
+  const clearCart=()=>{
+
 
     setCart([]);
+
 
   };
 
@@ -190,13 +235,36 @@ export default function CartProvider({
 
 
 
+
+
+  const cartCount =
+    cart.reduce(
+
+      (sum,item)=>
+
+      sum + item.quantity,
+
+      0
+
+    );
+
+
+
+
+
+
+
+
   return (
+
 
     <CartContext.Provider
 
       value={{
 
         cart,
+
+        cartCount,
 
         addToCart,
 
@@ -210,9 +278,12 @@ export default function CartProvider({
 
     >
 
+
       {children}
 
+
     </CartContext.Provider>
+
 
   );
 
