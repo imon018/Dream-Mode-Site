@@ -1,6 +1,8 @@
 import Hero from "../components/Hero";
 import FeaturedProducts from "../components/FeaturedProducts";
-import CategoryGrid from "../components/CategoryGrid";
+import WhyChooseUs from "../components/WhyChooseUs";
+import Testimonials from "../components/Testimonials";
+import DeliveryInfo from "../components/DeliveryInfo";
 import OfferBanner from "../components/OfferBanner";
 import AnimatedWrapper from "../components/ui/AnimatedWrapper";
 
@@ -9,7 +11,9 @@ export default function Home() {
     <AnimatedWrapper>
       <Hero />
       <FeaturedProducts />
-      <CategoryGrid />
+      <WhyChooseUs />
+      <Testimonials />
+      <DeliveryInfo />
       <OfferBanner />
     </AnimatedWrapper>
   );
