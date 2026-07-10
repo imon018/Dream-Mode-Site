@@ -9,69 +9,174 @@ export default function MobileBottomNav() {
     location.pathname === path;
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg">
+    <div
+      className="
+      md:hidden
+      fixed
+      bottom-0
+      left-0
+      right-0
+      z-[999]
+      px-3
+      pb-3
+    "
+    >
+      <div
+        className="
+        grid
+        grid-cols-4
+        h-16
 
-      <div className="grid grid-cols-4 h-16">
+        rounded-[24px]
+
+        bg-white/90
+        backdrop-blur-xl
+
+        border
+        border-slate-200
+
+        shadow-2xl
+      "
+      >
+
+        {/* HOME */}
 
         <Link
           to="/"
-          className={`flex flex-col items-center justify-center text-sm ${
-            isActive("/")
-              ? "text-black font-semibold"
-              : "text-gray-500"
-          }`}
+          className={`
+            flex
+            flex-col
+            items-center
+            justify-center
+            transition-all
+            duration-300
+            ${
+              isActive("/")
+                ? "text-yellow-500"
+                : "text-slate-500"
+            }
+          `}
         >
-          <span>🏠</span>
-          <span>Home</span>
+          <span className="text-xl">
+            🏠
+          </span>
+
+          <span className="text-xs font-medium">
+            Home
+          </span>
         </Link>
+
+        {/* SHOP */}
 
         <Link
           to="/shop"
-          className={`flex flex-col items-center justify-center text-sm ${
-            isActive("/shop")
-              ? "text-black font-semibold"
-              : "text-gray-500"
-          }`}
+          className={`
+            flex
+            flex-col
+            items-center
+            justify-center
+            transition-all
+            duration-300
+            ${
+              isActive("/shop")
+                ? "text-yellow-500"
+                : "text-slate-500"
+            }
+          `}
         >
-          <span>🛍</span>
-          <span>Shop</span>
+          <span className="text-xl">
+            🛍
+          </span>
+
+          <span className="text-xs font-medium">
+            Shop
+          </span>
         </Link>
+
+        {/* CART */}
 
         <Link
           to="/cart"
-          className={`flex flex-col items-center justify-center text-sm relative ${
-            isActive("/cart")
-              ? "text-black font-semibold"
-              : "text-gray-500"
-          }`}
+          className={`
+            relative
+            flex
+            flex-col
+            items-center
+            justify-center
+            transition-all
+            duration-300
+            ${
+              isActive("/cart")
+                ? "text-yellow-500"
+                : "text-slate-500"
+            }
+          `}
         >
-          <span>🛒</span>
+          <span className="text-xl">
+            🛒
+          </span>
 
           {cartCount > 0 && (
-            <span className="absolute top-1 right-7 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <span
+              className="
+              absolute
+              top-1
+              right-5
+
+              bg-red-500
+              text-white
+
+              text-[10px]
+
+              min-w-[18px]
+              h-[18px]
+
+              rounded-full
+
+              flex
+              items-center
+              justify-center
+            "
+            >
               {cartCount}
             </span>
           )}
 
-          <span>Cart</span>
+          <span className="text-xs font-medium">
+            Cart
+          </span>
         </Link>
+
+        {/* PROFILE */}
 
         <Link
           to="/profile"
-          className={`flex flex-col items-center justify-center text-sm ${
-            location.pathname.startsWith(
-              "/profile"
-            )
-              ? "text-black font-semibold"
-              : "text-gray-500"
-          }`}
+          className={`
+            flex
+            flex-col
+            items-center
+            justify-center
+            transition-all
+            duration-300
+            ${
+              location.pathname.startsWith(
+                "/profile"
+              )
+                ? "text-yellow-500"
+                : "text-slate-500"
+            }
+          `}
         >
-          <span>👤</span>
-          <span>Profile</span>
+          <span className="text-xl">
+            👤
+          </span>
+
+          <span className="text-xs font-medium">
+            Profile
+          </span>
         </Link>
 
       </div>
-
     </div>
   );
 }
