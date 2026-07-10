@@ -369,10 +369,8 @@ pt-8
   gap-2
   max-w-[310px]
 "
-        </div>
+  >
   
-
-
   {/* OFFER PRICE */}
 
   <div
@@ -511,6 +509,7 @@ md:text-lg
     ৳ {banner.regularPrice - banner.offerPrice}
   </span>
 
+</div>
 </div>
             {/* BUTTONS */}
 
