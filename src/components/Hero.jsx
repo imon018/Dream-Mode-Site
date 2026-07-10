@@ -255,7 +255,7 @@ return (
         container-box
         flex
         items-start
-pt-5
+pt-6
       "
       >
 
@@ -359,15 +359,15 @@ pt-5
   {banner.title}
 </p>
 
-          <div className="h-[45px]" />
-          
+         
+         
                       {/* PRICE BOX */}
           
 <div
   className="
     absolute
     left-5
-    bottom-20
+    bottom-25
     grid
     grid-cols-3
     gap-2
@@ -521,7 +521,7 @@ md:text-lg
   className="
     absolute
     left-5
-    bottom-8
+    bottom-12
     grid
     grid-cols-3
     gap-2
