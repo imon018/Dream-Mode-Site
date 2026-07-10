@@ -425,3 +425,22 @@ select{
     #eab308
   );
 }
+
+
+/* Announcement Bar */
+
+.marquee {
+  display: inline-block;
+  min-width: 200%;
+  animation: marqueeMove 22s linear infinite;
+}
+
+@keyframes marqueeMove {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
