@@ -8,10 +8,10 @@ import {
 } from "react-router-dom";
 
 import {
-  FiArrowRight,
-  FiChevronLeft,
-  FiChevronRight,
-} from "react-icons/fi";
+  Link,
+} from "react-router-dom";
+
+import Button from "../ui/Button";
 
 import {
   getAllBanners,
@@ -501,7 +501,7 @@ return (
             ))}
           </div>
         )}
-      </div>
+ 
     </section>
   );
 }
