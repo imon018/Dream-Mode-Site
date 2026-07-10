@@ -11,8 +11,6 @@ import {
   successToast,
 } from "./ui/Toast";
 
-import ProductRating from "./product/ProductRating";
-
 import {
   FiEye,
   FiShoppingCart,
@@ -206,7 +204,8 @@ export default function ProductCard({
               : "p-5"
           }
 
-          -mt-4
+          --mt-3
+					 md:-mt-4
 
           relative
           z-20
@@ -345,7 +344,7 @@ export default function ProductCard({
           >
 
             <span className="flex items-center justify-center gap-2">
-  <FiEye className="text-base bg-transparent" />
+  <FiEye className="text-base" />
   View Details
 </span>
 
