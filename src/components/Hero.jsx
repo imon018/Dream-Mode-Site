@@ -14,7 +14,7 @@ import {
 
 import {
   FaWhatsapp,
-} from "react-icons/fa";
+} from "react-icons/fa6";
 
 import {
   getAllBanners,
@@ -198,15 +198,15 @@ export default function Hero() {
 return (
   
 <section
-    className="
-      relative
-      h-[560px]
-      md:h-[650px]
-      lg:h-[720px]
-      overflow-hidden
-      rounded-b-[30px]
-    "
-  >
+  className="
+    relative
+    h-[460px]
+    md:h-[540px]
+    lg:h-[620px]
+    overflow-hidden
+    rounded-b-[30px]
+  "
+>
       {/* BACKGROUND IMAGE */}
 
       <img
@@ -254,16 +254,18 @@ return (
         h-full
         container-box
         flex
-        items-center
+        items-start
+pt-8
       "
       >
 
         <div
-          className="
-          max-w-3xl
-          text-white
-        "
-        >
+  className="
+    max-w-3xl
+    text-white
+    pt-2
+  "
+>
 
 <div
   className="
@@ -272,53 +274,57 @@ return (
   overflow-hidden
   rounded-full
   border
-  border-yellow-400
+  border-amber-500
+  shadow-[0_0_20px_rgba(245,158,11,.45)]
   "
 >
 
   {/* BLUR BACKGROUND */}
 
   <img
-    src={banner.image}
-    alt=""
-    className="
+  src={banner.image}
+  alt=""
+  className="
     absolute
     inset-0
     w-full
     h-full
     object-cover
-    blur-md
-    scale-110
+    blur-lg
+    scale-100
+    rounded-full
     "
-  />
+/>
 
   {/* GLASS OVERLAY */}
 
   <div
-    className="
+  className="
     absolute
     inset-0
-    bg-black/30
-    backdrop-blur-sm
+    rounded-full
+    bg-black/40
+    backdrop-blur-md
     "
-  />
+/>
 
   {/* TEXT */}
 
   <span
-    className="
+  className="
     relative
     z-10
-    px-6
-    py-3
-    text-yellow-300
-    font-bold
-    text-sm
+    px-3
+    py-1.5
+    text-amber-300
+    font-normal
+    text-[11px]
+    tracking-wide
     "
-  >
+>
 
     {banner.badgeText ||
-      "💥 Premium Collection"}
+      "🔥 Premium Collection"}
 
   </span>
 
@@ -326,41 +332,41 @@ return (
 
           <h1
   className="
-    mt-6
-    text-4xl
-    md:text-6xl
-    lg:text-7xl
-    font-black
+    mt-4
+    text-3xl
+    md:text-5xl
+    lg:text-6xl
+    font-extrabold
     leading-tight
-    text-yellow-400
+    tracking-tight
+    text-amber-300
+    drop-shadow-[0_3px_12px_rgba(245,158,11,.35)]
   "
 >
   {banner?.title || "Premium Product"}
 </h1>
-
+         
           <p
   className="
-    mt-4
-    text-base
-    md:text-lg
-    text-white
-    max-w-2xl
-    leading-7
+    mt-3
+    text-[13px]
+    md:text-base
+    text-white/90
+    max-w-[320px]
+    leading-6
   "
 >
-  {banner.title}
-</p>
 
                       {/* PRICE BOX */}
 
 <div
   className="
-    mt-8
-    grid
-    grid-cols-3
-    gap-3
-    max-w-3xl
-  "
+  mt-5
+  grid
+  grid-cols-3
+  gap-2
+  max-w-[310px]
+"
 >
 
 
@@ -368,14 +374,15 @@ return (
 
   <div
     className="
-      rounded-xl
-      bg-black/30
-      backdrop-blur-md
-      border
-      border-yellow-400/30
-      p-3
-      text-center
-    "
+  rounded-lg
+  bg-black/35
+  backdrop-blur-md
+  border
+  border-amber-500
+  shadow-[0_0_20px_rgba(245,158,11,.20)]
+  p-2
+  text-center
+"
   >
 
     <p
@@ -391,11 +398,11 @@ return (
 
     <h3
       className="
-        text-2xl
-        md:text-3xl
-        font-black
-        text-yellow-400
-      "
+  text-lg
+  md:text-xl
+  font-bold
+  text-amber-300
+"
     >
       ৳ {banner.offerPrice}
     </h3>
@@ -415,7 +422,7 @@ return (
       bg-black/30
       backdrop-blur-md
       border
-      border-white/20
+      border-amber-500
       p-3
       text-center
     "
@@ -423,10 +430,11 @@ return (
 
     <p
       className="
-        text-xs
-        text-white/70
-        mb-1
-      "
+  text-[10px]
+  text-amber-300
+  font-medium
+  mb-1
+"
     >
       Regular Price
     </p>
@@ -434,8 +442,8 @@ return (
 
     <h3
       className="
-        text-xl
-        md:text-2xl
+        text-base
+md:text-lg
         font-bold
         text-white
         line-through
@@ -454,63 +462,63 @@ return (
 
   {/* SAVE */}
 
-  <div
+  {/* SAVE */}
+
+<div
+  className="
+    w-[72px]
+    h-[72px]
+    rounded-full
+    bg-gradient-to-br
+    from-amber-200
+    via-amber-400
+    to-amber-600
+    border-[3px]
+    border-amber-500
+    shadow-[0_0_20px_rgba(245,158,11,.45)]
+    flex
+    flex-col
+    justify-center
+    items-center
+    text-center
+    shrink-0
+  "
+>
+
+  <span
     className="
-      rounded-xl
-      bg-yellow-400
-      p-3
-      text-center
-      flex
-      flex-col
-      justify-center
+      text-[10px]
+      font-medium
+      text-black
+      uppercase
+      tracking-wide
     "
   >
+    SAVE
+  </span>
 
-    <p
-      className="
-        text-xs
-        text-black
-        font-bold
-      "
-    >
-      Save
-    </p>
-
-
-    <h3
-      className="
-        text-xl
-        md:text-2xl
-        font-black
-        text-black
-      "
-    >
-
-      ৳ {
-        banner.regularPrice -
-        banner.offerPrice
-      }
-
-    </h3>
-
-
-  </div>
-
-
+  <span
+    className="
+      text-base
+      font-black
+      text-black
+      leading-none
+    "
+  >
+    ৳ {banner.regularPrice - banner.offerPrice}
+  </span>
 
 </div>
-
             {/* BUTTONS */}
 
 <div
   className="
-    mt-8
-    grid
-    grid-cols-3
-    gap-3
-    w-full
-    max-w-3xl
-  "
+  mt-5
+  grid
+  grid-cols-3
+  gap-2
+  max-w-[310px]
+"
 >
 
   {/* SHOP NOW */}
@@ -522,21 +530,23 @@ return (
     <Button
       className="
   w-full
-  h-14
-  rounded-xl
+  h-10
+  rounded-lg
 
-  bg-yellow-400
-  hover:bg-yellow-300
+  bg-gradient-to-r
+  from-amber-400
+  to-amber-500
 
   text-black
-  font-bold
-  text-sm
-  md:text-base
+  font-semibold
+  text-[11px]
+
+  shadow-[0_0_20px_rgba(245,158,11,.35)]
 "
     >
       
       <span className="flex items-center justify-center gap-2">
-    <FiShoppingBag className="text-xl" />
+    <FiShoppingBag className="text-base" />
     Shop Now
   </span>
       
@@ -559,18 +569,18 @@ return (
           h-14
           rounded-xl
           bg-purple-700/40
-          backdrop-blur-md
-          border
-          border-purple-300
-          text-white
-          font-bold
-          text-sm
-          md:text-base
+backdrop-blur-md
+border
+border-amber-500
+text-white
+font-medium
+text-[11px]
+shadow-[0_0_20px_rgba(245,158,11,.18)]
         "
       >
         
         <span className="flex items-center justify-center gap-2">
-    <FiEye className="text-xl" />
+    <FiEye className="text-base" />
     View
   </span>
         
@@ -596,19 +606,21 @@ return (
     <Button
       className="
   w-full
-  h-14
-  rounded-xl
-  bg-white/10
+  h-10
+  rounded-lg
+  bg-black/35
   backdrop-blur-md
   border
-  border-yellow-400
+  border-amber-500
   text-white
-  font-bold
+  font-medium
+  text-[11px]
+  shadow-[0_0_20px_rgba(245,158,11,.18)]
 "
     >
       
 <span className="flex items-center justify-center gap-2">
-    <FaWhatsapp className="text-xl" />
+    <FaWhatsapp className="text-base" />
     WhatsApp
   </span>
       
