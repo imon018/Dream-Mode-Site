@@ -250,28 +250,32 @@ export default function FeaturedProducts() {
 
           <Swiper
 
-            modules={[
-              Pagination
-            ]}
+  modules={[
+    Pagination
+  ]}
 
+  pagination={{
+    clickable:true
+  }}
 
-            pagination={{
-              clickable:true
-            }}
+  spaceBetween={20}
 
+  slidesPerView={1}
 
-            spaceBetween={20}
+  onTouchEnd={(swiper)=>{
+    if(
+      swiper.isEnd &&
+      swiper.touches.diff < -50
+    ){
+      navigate("/shop");
+    }
+  }}
 
-            onReachEnd={()=>{
-  navigate("/shop");
-}}
+  className="
+    pb-12
+  "
 
-
-            className="
-              pb-12
-            "
-
-          >
+>
 
 
 
