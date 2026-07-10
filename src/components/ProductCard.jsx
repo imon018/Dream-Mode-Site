@@ -324,7 +324,7 @@ export default function ProductCard({
 
               rounded-lg
 
-              bg-purple-700/40
+              bg-purple-900/70
 
               backdrop-blur-md
 
@@ -341,12 +341,9 @@ export default function ProductCard({
           >
 
             <span className="flex items-center justify-center gap-2">
-
-              👁
-
-              View Details
-
-            </span>
+  <FiEye className="text-base bg-transparent" />
+  View Details
+</span>
 
           </Button>
 
