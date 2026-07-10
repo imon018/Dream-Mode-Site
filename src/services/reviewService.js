@@ -174,3 +174,33 @@ export async function getLatestReviews() {
   }));
 
 }
+
+// ================================
+// FORMAT REVIEW DATE
+// ================================
+
+export function formatReviewDate(timestamp) {
+
+  if (!timestamp) return "";
+
+  try {
+
+    const date = timestamp.toDate();
+
+    return new Intl.DateTimeFormat(
+      "en-BD",
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }
+    ).format(date);
+
+  } catch {
+
+    return "";
+
+  }
+
+}
+
