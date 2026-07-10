@@ -159,9 +159,20 @@ export default function FeaturedProducts() {
           spaceBetween={16}
 
 
-          onReachEnd={()=>{
-            navigate("/shop");
-          }}
+          onSlideChange={(swiper)=>{
+
+  if(
+    swiper.isEnd &&
+    swiper.activeIndex > 0
+  ){
+
+    setTimeout(()=>{
+      navigate("/shop");
+    },300);
+
+  }
+
+}}
 
 
           className="
