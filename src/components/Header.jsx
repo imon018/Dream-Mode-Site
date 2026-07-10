@@ -151,41 +151,38 @@ export default function Header() {
 
                 <div className="leading-none">
 
-                  <h2
-                    className="
-                    text-[20px]
-                    md:text-[24px]
-                    font-bold
-                    tracking-wide
-                    text-[#071F57]
-                  "
-                    style={{
-                      fontFamily:
-                        "Playfair Display",
-                    }}
-                  >
+  <h2
+    className="
+      text-[22px]
+      md:text-[34px]
+      font-bold
+      tracking-wide
+      text-[#0A3D91]
+      leading-none
+    "
+    style={{
+      fontFamily: "'Lobster', cursive",
+      textShadow: "0 2px 8px rgba(7,31,87,.15)"
+    }}
+  >
+    Dream Mode
+  </h2>
 
-                    DREAM MODE
+  <p
+    className="
+      text-[9px]
+      md:text-[11px]
+      mt-1
+      tracking-[1px]
+      text-[#D4AF37]
+      font-medium
+      leading-none
+    "
+  >
+    Dress Your Dream, Live Your Style
+  </p>
 
-                  </h2>
-
-                  <p
-                    className="
-                    hidden
-                    md:block
-                    text-[10px]
-                    text-gray-500
-                    mt-1
-                  "
-                  >
-
-                    Dress Your Dream,
-                    Live Your Style
-
-                  </p>
-
-                </div>
-
+</div>
               </Link>
 
             </div>
