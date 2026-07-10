@@ -57,7 +57,7 @@ export default function PremiumHighlights() {
   ];
 
   return (
-    <section className="relative z-20 -mt-4 px-3 md:px-6">
+    <section className="relative z-20 -mt-3 px-3 md:px-6">
       <div className="max-w-6xl mx-auto">
 
         {/* FEATURES */}
