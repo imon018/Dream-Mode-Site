@@ -228,7 +228,7 @@ return (
   className="
   absolute
   inset-0
-  bg-black/40
+  bg-black/5
   "
 />
 
@@ -239,8 +239,8 @@ return (
         absolute
         inset-0
         bg-gradient-to-r
-        from-black/70
-        via-black/30
+        from-black/35
+        via-black/10
         to-transparent
       "
       />
@@ -255,7 +255,7 @@ return (
         container-box
         flex
         items-start
-pt-8
+pt-20
       "
       >
 
@@ -515,7 +515,7 @@ md:text-lg
 
 <div
   className="
-  mt-5
+  mt-6
   grid
   grid-cols-3
   gap-2
