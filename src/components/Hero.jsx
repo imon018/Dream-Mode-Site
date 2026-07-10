@@ -359,6 +359,8 @@ pt-4
   {banner.title}
 </p>
 
+          <div className="h-[90px]" />
+          
                       {/* PRICE BOX */}
           
 <div
