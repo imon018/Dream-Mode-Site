@@ -106,6 +106,17 @@ export default function ProductCard({
             product.name
           }
 
+          <p
+  className="
+    mt-1
+    text-sm
+    font-bold
+    text-amber-600
+  "
+>
+  ৳ {product.price}
+</p>
+
 
           className={`
             w-full
@@ -145,8 +156,8 @@ export default function ProductCard({
             top-3
             right-3
 
-            w-10
-            h-10
+            w-8
+            h-8
 
             rounded-full
 
@@ -160,7 +171,7 @@ export default function ProductCard({
             items-center
             justify-center
 
-            text-xl
+            text-base
 
             hover:scale-110
 
@@ -191,10 +202,10 @@ export default function ProductCard({
           className="
             absolute
             top-3
-            left-3
+            left-2
 
-            px-3
-            py-1.5
+            px-2
+            py-9
 
             rounded-full
 
@@ -207,7 +218,7 @@ export default function ProductCard({
 
             font-bold
 
-            text-[10px]
+            text-[9px]
 
             shadow-[0_0_20px_rgba(245,158,11,.35)]
 
@@ -224,50 +235,30 @@ export default function ProductCard({
 
 
 
-        {/* PRICE */}
-
-
-        <div
-
-          className="
-            absolute
-            bottom-3
-            right-3
-
-            px-4
-            py-2
-
-            rounded-full
-
-            bg-white/95
-
-            shadow-xl
-
-            font-black
-
-            text-blue-900
-          "
-
-        >
-
-          ৳ {product.price}
-
-        </div>
-
-
-      </div>
+        
 
       {/* CONTENT */}
 
       <div
-        className={
-          compact
-          ?
-          "p-3"
-          :
-          "p-5"
-        }
-      >
+  className={`
+    ${
+      compact
+        ? "p-3"
+        : "p-5"
+    }
+
+    -mt-4
+
+    relative
+    z-20
+
+    bg-white
+
+    rounded-t-[22px]
+
+    shadow-[0_-8px_25px_rgba(0,0,0,.08)]
+  `}
+>
 
 
         <h3
@@ -292,11 +283,6 @@ export default function ProductCard({
 
 
 
-        <ProductRating
-          productId={
-            product.id
-          }
-        />
 
 
 
@@ -319,68 +305,8 @@ export default function ProductCard({
 
 
 
-        {/* STOCK */}
+       
 
-        <div
-          className="
-            mt-3
-          "
-        >
-
-          {
-            product.stock > 0
-
-            ?
-
-            <span
-              className="
-                inline-flex
-                px-3
-                py-1
-
-                rounded-full
-
-                bg-green-50
-
-                text-green-700
-
-                text-xs
-
-                font-bold
-              "
-            >
-
-              ✓ In Stock
-
-            </span>
-
-            :
-
-            <span
-              className="
-                inline-flex
-                px-3
-                py-1
-
-                rounded-full
-
-                bg-red-50
-
-                text-red-600
-
-                text-xs
-
-                font-bold
-              "
-            >
-
-              Out Of Stock
-
-            </span>
-
-          }
-
-        </div>
 
 
 
@@ -411,48 +337,35 @@ export default function ProductCard({
 
 
             className="
-              w-full
-              h-9
+  w-full
+  h-10
 
-              rounded-xl
+  rounded-lg
 
-              bg-gradient-to-r
-              from-yellow-400
-              to-amber-500
+  bg-[#021B4A]
 
-              backdrop-blur-md
+  backdrop-blur-md
 
-              border
-              border-amber-500
+  border
+  border-amber-500
 
-              text-black
+  text-white
 
-              font-bold
+  font-medium
+  text-[11px]
 
-              text-xs
-
-              shadow-[0_0_20px_rgba(245,158,11,.35)]
-
-              hover:scale-[1.02]
-
-              transition
-            "
+  shadow-[0_0_20px_rgba(245,158,11,.18)]
+"
 
           >
 
-            <span
-              className="
-                flex
-                items-center
-                justify-center
-                gap-2
-              "
-            >
+            <span className="flex items-center justify-center gap-2">
 
-              🛒
-              Add To Cart
+  🛒
 
-            </span>
+  Add To Cart
+
+</span>
 
 
           </Button>
@@ -473,46 +386,35 @@ export default function ProductCard({
 
 
             className="
-              w-full
-              h-9
+  w-full
+  h-10
 
-              rounded-xl
+  rounded-lg
 
-              bg-purple-700/40
+  bg-purple-700/40
 
-              backdrop-blur-md
+  backdrop-blur-md
 
-              border
-              border-amber-500
+  border
+  border-amber-500
 
-              text-white
+  text-white
 
-              font-bold
+  font-medium
+  text-[11px]
 
-              text-xs
-
-              shadow-[0_0_20px_rgba(245,158,11,.18)]
-
-              hover:scale-[1.02]
-
-              transition
-            "
+  shadow-[0_0_20px_rgba(245,158,11,.18)]
+"
 
           >
 
-            <span
-              className="
-                flex
-                items-center
-                justify-center
-                gap-2
-              "
-            >
+            <span className="flex items-center justify-center gap-2">
 
-              👁
-              View
+  👁
 
-            </span>
+  View Details
+
+</span>
 
 
           </Button>
