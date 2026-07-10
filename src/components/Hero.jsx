@@ -372,7 +372,7 @@ pt-6
     grid-cols-3
     gap-1
     max-w-[270px]
-    h-[380px]
+    h-[70px]
 
   "
 >
