@@ -7,24 +7,20 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-
 import {
   Swiper,
   SwiperSlide,
 } from "swiper/react";
 
-
 import {
   Pagination,
 } from "swiper/modules";
-
 
 import "swiper/css";
 import "swiper/css/pagination";
 
 
 import ProductCard from "./ProductCard";
-
 
 import {
   getLatestProducts,
@@ -42,32 +38,34 @@ export default function FeaturedProducts() {
 
   const [
     products,
-    setProducts
+    setProducts,
   ] = useState([]);
 
 
 
   const [
     loading,
-    setLoading
+    setLoading,
   ] = useState(true);
 
 
 
 
-  useEffect(() => {
+
+  useEffect(()=>{
 
     loadProducts();
 
-  }, []);
+  },[]);
+
 
 
 
 
   const loadProducts =
-    async () => {
+    async()=>{
 
-      try {
+      try{
 
         const data =
           await getLatestProducts();
@@ -77,11 +75,6 @@ export default function FeaturedProducts() {
           data.slice(0,8)
         );
 
-
-      }
-      catch(error){
-
-        console.log(error);
 
       }
       finally{
@@ -96,9 +89,8 @@ export default function FeaturedProducts() {
 
 
 
+  // make 2 slides
   const slides = [];
-
-
 
   for(
     let i = 0;
@@ -119,12 +111,12 @@ export default function FeaturedProducts() {
 
 
 
+
   return (
 
     <section
       className="
-        py-8
-        md:py-12
+        section
       "
     >
 
@@ -139,54 +131,17 @@ export default function FeaturedProducts() {
 
         {/* HEADER */}
 
-
         <div
           className="
             text-center
-            mb-8
+            mb-5
           "
         >
 
 
-          <div
-            className="
-              inline-flex
-              px-4
-              py-1.5
-
-              rounded-full
-
-              border
-              border-amber-500
-
-              bg-transparent
-
-              shadow-[0_0_20px_rgba(245,158,11,.35)]
-
-              text-amber-500
-
-              text-xs
-
-              font-bold
-            "
-          >
-
-            ✨ New Arrival
-
-          </div>
-
-
-
           <h2
             className="
-              mt-4
-
-              text-2xl
-              md:text-4xl
-
-              font-black
-
-              text-slate-900
+              section-title
             "
           >
 
@@ -198,22 +153,59 @@ export default function FeaturedProducts() {
 
           <p
             className="
-              mt-2
-
-              text-sm
-              md:text-base
-
-              text-gray-500
+              section-subtitle
             "
           >
 
-            Discover our latest premium collection
+            Discover our best selling products
 
           </p>
 
 
 
+          {/* VIEW ALL */}
+
+          <div
+            className="
+              flex
+              justify-end
+              mt-3
+            "
+          >
+
+            <button
+
+              onClick={()=>
+                navigate("/shop")
+              }
+
+
+              className="
+                text-amber-500
+                font-bold
+                text-sm
+                flex
+                items-center
+                gap-1
+                hover:scale-105
+                transition
+              "
+
+            >
+
+              View All ➡
+
+
+            </button>
+
+
+          </div>
+
+
         </div>
+
+
+
 
 
 
@@ -229,7 +221,6 @@ export default function FeaturedProducts() {
             <div
               className="
                 text-center
-                py-10
               "
             >
 
@@ -260,8 +251,23 @@ export default function FeaturedProducts() {
             spaceBetween={20}
 
 
+            onSlideChange={(swiper)=>{
+
+
+              if(
+                swiper.activeIndex === slides.length
+              ){
+
+                navigate("/shop");
+
+              }
+
+
+            }}
+
+
             className="
-              pb-10
+              pb-12
             "
 
           >
@@ -273,7 +279,7 @@ export default function FeaturedProducts() {
                 (
                   slide,
                   index
-                ) => (
+                )=>(
 
 
                 <SwiperSlide
@@ -281,48 +287,41 @@ export default function FeaturedProducts() {
                 >
 
 
-
                   <div
                     className="
                       grid
-
                       grid-cols-2
+                      gap-4
 
-                      gap-3
-
-                      md:grid-cols-4
-
-                      md:gap-5
+                      lg:grid-cols-4
                     "
                   >
 
 
-
                     {
                       slide.map(
-                        (
-                          product
-                        ) => (
+                        product=>(
 
+                          <ProductCard
 
-                        <ProductCard
+                            key={
+                              product.id
+                            }
 
-                          key={
-                            product.id
-                          }
+                            product={
+                              product
+                            }
 
-                          product={
-                            product
-                          }
+                            compact={
+                              true
+                            }
 
-                          compact
+                          />
 
-                        />
+                        )
 
-
-                      ))
+                      )
                     }
-
 
 
                   </div>
@@ -332,116 +331,11 @@ export default function FeaturedProducts() {
                 </SwiperSlide>
 
 
-              ))
+                )
 
+              )
             }
 
-
-
-
-
-            {/* VIEW ALL SLIDE */}
-
-
-            <SwiperSlide>
-
-
-              <div
-                className="
-                  min-h-[320px]
-
-                  flex
-
-                  items-center
-
-                  justify-center
-                "
-              >
-
-
-
-                <button
-
-                  onClick={() =>
-                    navigate(
-                      "/shop"
-                    )
-                  }
-
-
-                  className="
-                    w-full
-
-                    max-w-sm
-
-                    h-44
-
-                    rounded-[28px]
-
-                    border
-
-                    border-amber-500
-
-                    bg-gradient-to-br
-
-                    from-[#021B4A]
-
-                    via-[#03235F]
-
-                    to-[#021B4A]
-
-
-                    shadow-[0_0_20px_rgba(245,158,11,.45)]
-
-                    backdrop-blur-md
-
-                    transition
-
-                    hover:scale-105
-                  "
-
-                >
-
-
-                  <h3
-                    className="
-                      text-2xl
-
-                      font-black
-
-                      text-amber-400
-                    "
-                  >
-
-                    View All ➡
-
-                  </h3>
-
-
-
-                  <p
-                    className="
-                      mt-2
-
-                      text-white/80
-
-                      text-sm
-                    "
-                  >
-
-                    Explore complete collection
-
-                  </p>
-
-
-                </button>
-
-
-
-              </div>
-
-
-            </SwiperSlide>
 
 
 
@@ -460,5 +354,6 @@ export default function FeaturedProducts() {
     </section>
 
   );
+
 
 }
