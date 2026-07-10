@@ -228,7 +228,14 @@ export default function Header() {
             "
             >
 
-              <button>
+              <button
+  onClick={() => navigate("/shop")}
+  className="
+    hover:scale-110
+    transition
+    duration-300
+  "
+>
   <FiSearch
     size={22}
     className="text-[#071F57]"
