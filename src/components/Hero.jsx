@@ -324,7 +324,7 @@ pt-6
 >
 
     {banner.badgeText ||
-      "🔥 Premium Collection"}
+      "✨ Premium Collection"}
 
   </span>
 
