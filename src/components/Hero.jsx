@@ -367,12 +367,12 @@ pt-6
   className="
     absolute
     left-5
-    bottom-22
+    bottom-20
     grid
     grid-cols-3
     gap-1
     max-w-[270px]
-    h-auto
+    h-[120px]
 
   "
 >
@@ -632,7 +632,7 @@ shadow-[0_0_20px_rgba(245,158,11,.18)]
       
 <span className="flex items-center justify-center gap-2">
     <FaWhatsapp className="text-base" />
-    WhatsApp
+    WhatsApp Order
   </span>
       
     </Button>
