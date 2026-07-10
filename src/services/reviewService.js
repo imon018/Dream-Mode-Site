@@ -6,6 +6,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  limit,
 } from "firebase/firestore";
 
 import { db } from "../firebase";
@@ -19,6 +20,10 @@ const reviewsCollection =
   );
 
 
+
+
+
+// ADD REVIEW
 
 export async function addReview(reviewData){
 
@@ -37,6 +42,12 @@ export async function addReview(reviewData){
 }
 
 
+
+
+
+
+
+// GET PRODUCT REVIEWS
 
 
 export async function getProductReviews(
@@ -69,7 +80,7 @@ export async function getProductReviews(
 
 
   return snapshot.docs.map(
-    (doc)=>({
+    doc=>({
 
       id:doc.id,
 
@@ -77,5 +88,58 @@ export async function getProductReviews(
 
     })
   );
+
+}
+
+
+
+
+
+
+
+
+// CHECK USER ALREADY REVIEWED
+
+
+export async function hasUserReviewed(
+  productId,
+  userId
+){
+
+
+  const q =
+    query(
+
+      reviewsCollection,
+
+
+      where(
+        "productId",
+        "==",
+        productId
+      ),
+
+
+      where(
+        "userId",
+        "==",
+        userId
+      ),
+
+
+      limit(1)
+
+    );
+
+
+
+
+  const snapshot =
+    await getDocs(q);
+
+
+
+  return !snapshot.empty;
+
 
 }
