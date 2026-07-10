@@ -11,7 +11,6 @@ import {
   successToast,
 } from "./ui/Toast";
 
-import ProductRating from "./product/ProductRating";
 
 
 export default function ProductCard({
