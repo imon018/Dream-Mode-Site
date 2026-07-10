@@ -149,15 +149,23 @@ export default function Header() {
                 "
                 />
 
-                <div className="leading-none">
+                <div
+  className="
+    leading-none
+    ml-3
+    flex
+    flex-col
+  "
+>
 
   <h2
     className="
-      text-[28px]
+      text-[30px]
       md:text-[42px]
       font-bold
       leading-none
       text-[#1A1A1A]
+      whitespace-nowrap
     "
     style={{
       fontFamily: "'Lobster', cursive",
@@ -169,13 +177,14 @@ export default function Header() {
 
   <p
     className="
-      text-[10px]
-      md:text-[12px]
+      text-[8px]
+      md:text-[11px]
       mt-1
       text-[#D4AF37]
       font-medium
-      tracking-[1.8px]
+      tracking-[1.5px]
       uppercase
+      whitespace-nowrap
     "
   >
     Dress Your Dream, Live Your Style
