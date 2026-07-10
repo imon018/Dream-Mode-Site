@@ -335,7 +335,7 @@ return (
     text-yellow-400
   "
 >
-  {product?.name || "Premium Product"}
+  {banner?.title || "Premium Product"}
 </h1>
 
           <p
@@ -621,8 +621,9 @@ return (
 
           {/* RIGHT SIDE EMPTY FOR FULL BACKGROUND HERO */}
 
-          <div />
+          <div>
 
+        </div>
         </div>
 
        
