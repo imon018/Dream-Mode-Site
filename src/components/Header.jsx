@@ -228,19 +228,12 @@ export default function Header() {
             "
             >
 
-              <button
-                className="
-                hidden
-                lg:flex
-              "
-              >
-
-                <FiSearch
-                  size={21}
-                  className="text-[#071F57]"
-                />
-
-              </button>
+              <button>
+  <FiSearch
+    size={22}
+    className="text-[#071F57]"
+  />
+</button>
 
               <Link
                 to="/cart"
