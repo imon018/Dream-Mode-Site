@@ -367,7 +367,7 @@ pt-6
   className="
     absolute
     left-5
-    bottom-25
+    bottom-20
     grid
     grid-cols-3
     gap-2
