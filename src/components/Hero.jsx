@@ -596,7 +596,7 @@ shadow-[0_0_20px_rgba(245,158,11,.18)]
         
         <span className="flex items-center justify-center gap-2">
     <FiEye className="text-base" />
-    View
+    View Details
   </span>
         
       </Button>
