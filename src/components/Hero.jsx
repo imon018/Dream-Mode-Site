@@ -621,11 +621,11 @@ return (
 
           {/* RIGHT SIDE EMPTY FOR FULL BACKGROUND HERO */}
 
-          
-
+       <div>
+</div>
         </div>
         </div>
-
+  
        
         {/* DOTS */}
 
