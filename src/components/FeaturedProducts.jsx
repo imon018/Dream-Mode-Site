@@ -262,10 +262,6 @@ export default function FeaturedProducts() {
 
             spaceBetween={20}
 
-            onReachEnd={()=>{
-  navigate("/shop");
-}}
-
 
             className="
               pb-12
