@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import FeaturedProductCard from "./FeaturedProductCard";
+import ProductCard from "./ProductCard";
 
 import {
   getLatestProducts,
@@ -41,7 +41,9 @@ export default function FeaturedProducts() {
       const data =
         await getLatestProducts();
 
-      setProducts(data);
+      setProducts(
+        data.slice(0, 8)
+      );
 
     } finally {
 
@@ -51,47 +53,32 @@ export default function FeaturedProducts() {
 
   };
 
-  const chunkProducts = (
-    items,
-    size
-  ) => {
+  const slides = [];
 
-    const chunks = [];
+  for (
+    let i = 0;
+    i < products.length;
+    i += 4
+  ) {
 
-    for (
-      let i = 0;
-      i < items.length;
-      i += size
-    ) {
-
-      chunks.push(
-        items.slice(
-          i,
-          i + size
-        )
-      );
-
-    }
-
-    return chunks;
-
-  };
-
-  const slides =
-    chunkProducts(
-      products.slice(0, 8),
-      4
+    slides.push(
+      products.slice(
+        i,
+        i + 4
+      )
     );
+
+  }
 
   return (
 
-    <section className="section">
+    <section className="py-8 md:py-12">
 
       <div className="container-box">
 
         {/* HEADER */}
 
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
 
           <div
             className="
@@ -103,24 +90,24 @@ export default function FeaturedProducts() {
               rounded-full
               border
               border-amber-500
-              shadow-[0_0_20px_rgba(245,158,11,.25)]
-              bg-black/20
+              shadow-[0_0_20px_rgba(245,158,11,.45)]
               mb-4
             "
           >
-            <span className="text-amber-400">
+
+            <span>
               ✨
             </span>
 
             <span
               className="
-                text-amber-400
+                text-amber-500
                 text-xs
                 md:text-sm
                 font-semibold
               "
             >
-              Latest Collection
+              Premium Collection
             </span>
 
           </div>
@@ -129,11 +116,11 @@ export default function FeaturedProducts() {
             className="
               text-2xl
               md:text-4xl
-              font-extrabold
+              font-black
               text-slate-900
             "
           >
-            New Arrivals
+            Featured Products
           </h2>
 
           <p
@@ -144,7 +131,7 @@ export default function FeaturedProducts() {
               text-slate-500
             "
           >
-            Discover our latest premium collection
+            Discover our best selling products
           </p>
 
         </div>
@@ -192,20 +179,24 @@ export default function FeaturedProducts() {
                       grid
                       grid-cols-2
                       gap-3
+                      md:grid-cols-4
                       md:gap-5
                     "
                   >
 
                     {slideProducts.map(
-                      (product) => (
+                      (
+                        product
+                      ) => (
 
-                        <FeaturedProductCard
+                        <ProductCard
                           key={
                             product.id
                           }
                           product={
                             product
                           }
+                          compact
                         />
 
                       )
@@ -224,16 +215,18 @@ export default function FeaturedProducts() {
 
               <div
                 className="
-                  h-[320px]
                   flex
                   items-center
                   justify-center
+                  min-h-[340px]
                 "
               >
 
                 <button
                   onClick={() =>
-                    navigate("/shop")
+                    navigate(
+                      "/shop"
+                    )
                   }
                   className="
                     w-full
@@ -282,7 +275,7 @@ export default function FeaturedProducts() {
                         text-sm
                       "
                     >
-                      Explore our complete premium collection
+                      Explore our complete collection
                     </p>
 
                   </div>
