@@ -358,12 +358,13 @@ pt-20
 >
   {banner.title}
 </p>
+          <div className="h-[120px]" />
 
                       {/* PRICE BOX */}
 
 <div
   className="
-  mt-5
+  mt-0
   grid
   grid-cols-3
   gap-2
@@ -515,7 +516,7 @@ md:text-lg
 
 <div
   className="
-  mt-6
+  mt-2
   grid
   grid-cols-3
   gap-2
