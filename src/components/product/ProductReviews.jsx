@@ -1,17 +1,17 @@
+// src/components/product/ProductReviews.jsx
+
 import {
   useEffect,
   useState,
 } from "react";
 
-
 import useAuth from "../../hooks/useAuth";
-
 
 import {
   addReview,
   getProductReviews,
+  hasUserReviewed,
 } from "../../services/reviewService";
-
 
 import {
   successToast,
@@ -20,43 +20,50 @@ import {
 
 
 
-
 export default function ProductReviews({
-  productId
-}){
+  productId,
+}) {
 
 
   const {
-    user
+    user,
   } = useAuth();
 
 
 
   const [
     reviews,
-    setReviews
+    setReviews,
   ] = useState([]);
 
 
 
   const [
     rating,
-    setRating
+    setRating,
   ] = useState(5);
 
 
 
   const [
     comment,
-    setComment
+    setComment,
   ] = useState("");
 
 
 
   const [
     loading,
-    setLoading
+    setLoading,
   ] = useState(false);
+
+
+
+  const [
+    reviewed,
+    setReviewed,
+  ] = useState(false);
+
 
 
 
@@ -70,6 +77,7 @@ export default function ProductReviews({
         await getProductReviews(
           productId
         );
+
 
       setReviews(data);
 
@@ -85,11 +93,49 @@ export default function ProductReviews({
 
 
 
+
+
+  const checkReviewed =
+  async()=>{
+
+
+    if(!user){
+
+      return;
+
+    }
+
+
+    const result =
+      await hasUserReviewed(
+        productId,
+        user.uid
+      );
+
+
+    setReviewed(result);
+
+
+  };
+
+
+
+
+
+
+
   useEffect(()=>{
 
     loadReviews();
 
-  },[productId]);
+    checkReviewed();
+
+  },[
+    productId,
+    user
+  ]);
+
+
 
 
 
@@ -108,7 +154,9 @@ export default function ProductReviews({
         /
         reviews.length
       ).toFixed(1)
+
       :
+
       "0.0";
 
 
@@ -133,6 +181,21 @@ export default function ProductReviews({
 
 
 
+
+    if(reviewed){
+
+      errorToast(
+        "You already reviewed this product"
+      );
+
+      return;
+
+    }
+
+
+
+
+
     if(!comment.trim()){
 
       errorToast(
@@ -142,6 +205,8 @@ export default function ProductReviews({
       return;
 
     }
+
+
 
 
 
@@ -155,6 +220,7 @@ export default function ProductReviews({
       await addReview({
 
         productId,
+
 
         userId:
           user.uid,
@@ -171,11 +237,16 @@ export default function ProductReviews({
 
         rating,
 
-        comment:
 
+        comment:
           comment.trim(),
 
+
+        verifiedBuyer:false,
+
+
       });
+
 
 
 
@@ -189,6 +260,7 @@ export default function ProductReviews({
 
       setRating(5);
 
+      setReviewed(true);
 
 
       loadReviews();
@@ -209,9 +281,12 @@ export default function ProductReviews({
     }
     finally{
 
+
       setLoading(false);
 
+
     }
+
 
 
   };
@@ -222,252 +297,255 @@ export default function ProductReviews({
 
 
 
-return (
+  return (
 
-<div className="
-mt-16
-">
+    <section className="
+      mt-16
+    ">
 
 
 
-{/* HEADER */}
+      {/* HEADER */}
 
-<div className="
-flex
-flex-col
-md:flex-row
-md:items-center
-md:justify-between
-gap-5
-mb-8
-">
+      <div className="
+        flex
+        flex-col
+        md:flex-row
+        md:justify-between
+        md:items-center
+        gap-5
+        mb-8
+      ">
 
 
-<div>
+        <div>
 
 
-<h2 className="
-text-3xl
-md:text-4xl
-font-black
-bg-gradient-to-r
-from-blue-700
-to-yellow-500
-bg-clip-text
-text-transparent
-">
-Customer Reviews
-</h2>
+          <h2 className="
+            text-3xl
+            md:text-4xl
+            font-black
+            bg-gradient-to-r
+            from-blue-900
+            to-yellow-500
+            bg-clip-text
+            text-transparent
+          ">
+            Customer Reviews
+          </h2>
 
 
-<p className="
-text-gray-500
-mt-2
-">
-Real reviews from our premium customers
-</p>
+          <p className="
+            mt-2
+            text-gray-500
+          ">
+            Trusted reviews from our customers
+          </p>
 
 
-</div>
+        </div>
 
 
 
 
 
-<div className="
-bg-gradient-to-r
-from-blue-900
-to-blue-700
-text-white
-rounded-3xl
-px-8
-py-5
-shadow-xl
-">
+        <div className="
+          bg-gradient-to-r
+          from-blue-900
+          to-blue-700
+          text-white
+          rounded-3xl
+          px-8
+          py-5
+          shadow-xl
+        ">
 
 
-<div className="
-text-3xl
-font-black
-">
-⭐ {averageRating}
-</div>
+          <div className="
+            text-3xl
+            font-black
+          ">
+            ⭐ {averageRating}
+          </div>
 
 
-<p className="
-text-sm
-text-yellow-300
-">
-{reviews.length} Reviews
-</p>
+          <div className="
+            text-yellow-300
+            text-sm
+          ">
+            {reviews.length} Reviews
+          </div>
 
 
-</div>
+        </div>
 
 
+      </div>
 
-</div>
 
 
 
 
 
 
+      {/* REVIEW FORM */}
 
-{/* REVIEW BOX */}
 
+      <div className="
+        bg-white
+        rounded-[32px]
+        border
+        border-yellow-100
+        shadow-xl
+        p-6
+        md:p-8
+      ">
 
-<div className="
-bg-white
-rounded-[32px]
-border
-border-yellow-100
-shadow-xl
-p-6
-md:p-8
-">
 
+        <h3 className="
+          text-xl
+          font-black
+          text-blue-900
+          mb-5
+        ">
+          Share Your Experience
+        </h3>
 
 
-<h3 className="
-text-xl
-font-bold
-text-blue-900
-mb-5
-">
-Share Your Experience
-</h3>
 
 
 
+        <div className="
+          flex
+          gap-2
+          mb-6
+        ">
 
 
-<div className="
-flex
-gap-2
-mb-6
-">
+          {
+            [1,2,3,4,5]
+            .map((star)=>(
 
+              <button
 
-{
-[1,2,3,4,5]
-.map((star)=>(
+                key={star}
 
-<button
+                onClick={()=>
+                  setRating(star)
+                }
 
-key={star}
+                className="
+                  text-4xl
+                  hover:scale-125
+                  transition
+                "
 
-onClick={()=>
-setRating(star)
-}
+              >
 
-className="
-text-4xl
-transition
-hover:scale-125
-"
+                {
+                  star <= rating
+                  ?
+                  "⭐"
+                  :
+                  "☆"
+                }
 
->
+              </button>
 
-{
-star<=rating
-?
-"⭐"
-:
-"☆"
-}
 
+            ))
+          }
 
-</button>
 
+        </div>
 
-))
-}
 
 
 
-</div>
 
 
+        <textarea
 
+          rows="4"
 
+          value={comment}
 
-<textarea
+          onChange={(e)=>
+            setComment(
+              e.target.value
+            )
+          }
 
-rows="4"
+          placeholder="
+          Write your premium experience...
+          "
 
-className="
-w-full
-rounded-2xl
-border
-border-gray-200
-p-4
-outline-none
-focus:ring-2
-focus:ring-blue-500
-"
+          className="
+            w-full
+            rounded-2xl
+            border
+            border-gray-200
+            p-4
+            outline-none
+            focus:ring-2
+            focus:ring-blue-500
+          "
 
-placeholder="
-Write your premium experience...
-"
+        />
 
-value={comment}
 
-onChange={(e)=>
-setComment(
-e.target.value
-)
-}
 
-/>
 
 
 
 
+        <button
 
+          onClick={submitReview}
 
+          disabled={
+            loading ||
+            reviewed
+          }
 
-<button
+          className="
+            mt-5
+            px-8
+            py-4
+            rounded-2xl
+            font-black
+            text-white
+            bg-gradient-to-r
+            from-blue-900
+            to-yellow-500
+            hover:scale-105
+            transition
+            disabled:opacity-50
+          "
 
-disabled={loading}
+        >
 
-onClick={submitReview}
+          {
+            loading
+            ?
+            "Submitting..."
 
-className="
-mt-5
-w-full
-md:w-auto
-px-8
-py-4
-rounded-2xl
-font-bold
-text-white
-bg-gradient-to-r
-from-blue-900
-via-blue-700
-to-yellow-500
-hover:scale-105
-transition
-shadow-lg
-disabled:opacity-50
-"
+            :
 
->
+            reviewed
+            ?
+            "Already Reviewed ✓"
 
-{
-loading
-?
-"Submitting..."
-:
-"Submit Review ⭐"
-}
+            :
+            "Submit Review ⭐"
+          }
 
 
-</button>
+        </button>
 
 
 
-</div>
+      </div>
 
 
 
@@ -477,149 +555,154 @@ loading
 
 
 
-{/* REVIEWS LIST */}
 
+      {/* REVIEW LIST */}
 
-<div className="
-mt-8
-space-y-5
-">
 
 
-{
-reviews.length===0
-?
+      <div className="
+        mt-8
+        space-y-5
+      ">
 
-<div className="
-bg-blue-50
-rounded-3xl
-p-8
-text-center
-">
 
-<div className="
-text-5xl
-">
-⭐
-</div>
+        {
+          reviews.length === 0
 
+          ?
 
-<p className="
-mt-3
-font-semibold
-text-blue-900
-">
-No reviews yet
-</p>
+          <div className="
+            bg-blue-50
+            rounded-3xl
+            p-8
+            text-center
+          ">
 
+            <div className="
+              text-5xl
+            ">
+              ⭐
+            </div>
 
-<p className="
-text-gray-500
-">
-Be the first customer to share your experience
-</p>
 
+            <p className="
+              mt-3
+              font-bold
+              text-blue-900
+            ">
+              No reviews yet
+            </p>
 
-</div>
 
+          </div>
 
-:
 
+          :
 
-reviews.map(review=>(
 
+          reviews.map((review)=>(
 
-<div
 
-key={review.id}
+            <div
 
-className="
-bg-gradient-to-br
-from-white
-to-blue-50
-rounded-3xl
-p-6
-border
-border-blue-100
-shadow-md
-hover:shadow-xl
-transition
-"
+              key={review.id}
 
+              className="
+                bg-gradient-to-br
+                from-white
+                to-blue-50
+                rounded-3xl
+                border
+                border-blue-100
+                p-6
+                shadow-md
+              "
 
->
+            >
 
 
-<div className="
-flex
-justify-between
-items-start
-">
+              <div className="
+                flex
+                justify-between
+                items-start
+              ">
 
 
-<div>
+                <div>
 
-<h4 className="
-font-black
-text-blue-900
-">
-{review.userName}
-</h4>
 
+                  <h4 className="
+                    font-black
+                    text-blue-900
+                  ">
+                    {review.userName}
+                  </h4>
 
-<p className="
-text-yellow-500
-mt-1
-">
-{"⭐".repeat(review.rating)}
-</p>
 
+                  <p className="
+                    text-yellow-500
+                    mt-1
+                  ">
+                    {"⭐".repeat(
+                      review.rating
+                    )}
+                  </p>
 
-</div>
 
+                </div>
 
-<span className="
-text-xs
-text-gray-400
-">
-Verified Buyer
-</span>
 
 
-</div>
 
 
+                {
+                  review.verifiedBuyer &&
 
+                  <span className="
+                    px-3
+                    py-1
+                    rounded-full
+                    bg-green-100
+                    text-green-700
+                    text-xs
+                    font-bold
+                  ">
+                    ✓ Verified Buyer
+                  </span>
 
+                }
 
-<p className="
-mt-4
-text-gray-600
-leading-relaxed
-">
-{review.comment}
-</p>
 
+              </div>
 
 
 
-</div>
 
 
-))
+              <p className="
+                mt-4
+                text-gray-600
+                leading-7
+              ">
+                {review.comment}
+              </p>
 
 
-}
 
+            </div>
 
 
-</div>
+          ))
+        }
 
 
+      </div>
 
 
-</div>
 
-);
+
+    </section>
+
+  );
 
 }
