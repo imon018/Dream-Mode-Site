@@ -57,7 +57,6 @@ import RefundPolicy from "../pages/RefundPolicy";
 import ShippingPolicy from "../pages/ShippingPolicy";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import Terms from "../pages/Terms";
-import SizeGuide from "../pages/SizeGuide";
 
 
 import NotFound from "../pages/NotFound";
@@ -231,43 +230,36 @@ element={<DeleteAccount />}
 
 
 <Route
-path="/return-policy"
+path="/page/returnpolicy"
 element={<ReturnPolicy />}
 />
 
 
 
 <Route
-path="/refund-policy"
+path="/page/refundpolicy"
 element={<RefundPolicy />}
 />
 
 
 
 <Route
-path="/shipping-policy"
+path="/page/shippingpolicy"
 element={<ShippingPolicy />}
 />
 
 
 
 <Route
-path="/privacy-policy"
+path="/page/privacypolicy"
 element={<PrivacyPolicy />}
 />
 
 
 
 <Route
-path="/terms"
+path="/page/terms"
 element={<Terms />}
-/>
-
-
-
-<Route
-path="/size-guide"
-element={<SizeGuide />}
 />
 
 
