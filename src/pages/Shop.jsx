@@ -109,14 +109,11 @@ export default function Shop() {
       {/* SEARCH */}
 
       <div
-        className="
-          sticky
-          top-24
-          z-20
-          mt-14
-          mb-10
-        "
-      >
+  className="
+    mt-3
+    mb-10
+  "
+>
 
         <div
           className="
