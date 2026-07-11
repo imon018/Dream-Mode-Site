@@ -305,7 +305,7 @@ export default function ProductCard({
     items-center
     gap-2
     mt-4
-    w-[90%]
+    w-full
   "
 >
 
@@ -318,6 +318,7 @@ export default function ProductCard({
 
   className="
     flex-1
+    min-w-0
 
     h-8
 
@@ -330,13 +331,11 @@ export default function ProductCard({
 
     text-white
 
-    text-[11px]
+    text-[10px]
 
     font-semibold
 
-    px-4
-
-    whitespace-nowrap
+    px-2
 
     flex
     items-center
@@ -348,13 +347,14 @@ export default function ProductCard({
       flex
       items-center
       justify-center
-      gap-1.5
+      gap-1
+
       whitespace-nowrap
     "
   >
 
     <FiShoppingCart
-      size={13}
+      size={12}
     />
 
     Add To Cart
@@ -377,19 +377,14 @@ export default function ProductCard({
   }
 
   className="
-    w-10
-
+    w-9
     h-8
 
     shrink-0
 
-    -ml-1
-
     rounded-lg
 
-    bg-white/40
-
-    backdrop-blur-xl
+    bg-white
 
     border
     border-amber-500
@@ -400,13 +395,10 @@ export default function ProductCard({
     items-center
     justify-center
 
-    transition
   "
 >
 
-  <FiEye
-    size={16}
-  />
+<FiEye size={15}/>
 
 </button>
 
