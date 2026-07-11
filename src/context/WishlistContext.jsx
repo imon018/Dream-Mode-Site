@@ -4,7 +4,9 @@ import {
   useState,
 } from "react";
 
+
 import useAuth from "../hooks/useAuth";
+
 
 import {
   getUserWishlist,
@@ -13,9 +15,16 @@ import {
 } from "../services/wishlistService";
 
 
+import {
+  successToast,
+  errorToast,
+} from "../components/ui/Toast";
+
+
 
 export const WishlistContext =
   createContext();
+
 
 
 
@@ -50,31 +59,25 @@ export default function WishlistProvider({
 
 
 
-  // LOAD FIRESTORE WISHLIST
-
-
   useEffect(()=>{
 
 
-    const loadWishlist =
-    async()=>{
+    const loadWishlist = async()=>{
+
+
+      if(!user){
+
+        setWishlist([]);
+
+        setLoading(false);
+
+        return;
+
+      }
+
 
 
       try{
-
-
-        setLoading(true);
-
-
-
-        if(!user){
-
-          setWishlist([]);
-
-          return;
-
-        }
-
 
 
         const data =
@@ -84,19 +87,24 @@ export default function WishlistProvider({
 
 
 
-        setWishlist(data);
+        setWishlist(
+          data
+        );
 
 
 
-      }
-      catch(error){
+      }catch(error){
+
 
         console.log(error);
 
-      }
-      finally{
+
+
+      }finally{
+
 
         setLoading(false);
+
 
       }
 
@@ -106,6 +114,7 @@ export default function WishlistProvider({
 
 
     loadWishlist();
+
 
 
   },[user]);
@@ -118,17 +127,17 @@ export default function WishlistProvider({
 
 
 
-  // CHECK ITEM EXISTS
 
-
-
-  const isWishlisted =
-  (productId)=>{
+  const isWishlisted = (
+    productId
+  )=>{
 
 
     return wishlist.some(
       item =>
-      item.productId === productId
+        item.productId === productId
+        ||
+        item.product?.id === productId
     );
 
 
@@ -142,163 +151,129 @@ export default function WishlistProvider({
 
 
 
-  // ADD TO WISHLIST
-
-
-
-  const addToWishlist =
-  async(product)=>{
+  const toggleWishlist = async(
+    product
+  )=>{
 
 
     if(!user){
 
+
+      errorToast(
+        "Please login first"
+      );
+
+
       return;
 
+
     }
+
+
+
 
 
 
     const exists =
-      isWishlisted(
-        product.id
+      wishlist.find(
+        item =>
+          item.productId === product.id
       );
 
 
 
-    if(exists){
 
-      return;
 
-    }
+    try{
 
 
 
-    await addWishlistItem(
-      user.uid,
-      product
-    );
+      if(exists){
 
 
 
+        await removeWishlistItem(
+          exists.firestoreId
+        );
 
-    setWishlist(prev=>[
 
-      ...prev,
 
-      {
+        setWishlist(
+          prev =>
+            prev.filter(
+              item =>
+                item.firestoreId !==
+                exists.firestoreId
+            )
+        );
 
-        productId:
-          product.id,
 
-        product,
+
+        successToast(
+          "Removed from wishlist"
+        );
+
+
+
 
       }
 
-    ]);
+      else{
 
 
 
-  };
+        await addWishlistItem(
+          user.uid,
+          product
+        );
 
 
 
+        setWishlist(
+          prev => [
+            ...prev,
+
+            {
+
+              productId:
+                product.id,
+
+              product,
+
+            }
+
+          ]
+        );
 
 
 
+        successToast(
+          "Added to wishlist"
+        );
 
 
 
-  // REMOVE
-
-
-
-  const removeFromWishlist =
-  async(productId)=>{
-
-
-
-    const item =
-      wishlist.find(
-        item =>
-        item.productId === productId
-      );
-
-
-
-    if(!item){
-
-      return;
-
-    }
-
-
-
-
-    await removeWishlistItem(
-      item.firestoreId
-    );
-
-
-
-    setWishlist(prev=>
-
-      prev.filter(
-        item =>
-        item.productId !== productId
-      )
-
-    );
-
-
-
-  };
+      }
 
 
 
 
+    }catch(error){
 
 
+      console.log(error);
 
 
-
-  // TOGGLE HEART BUTTON
-
-
-
-  const toggleWishlist =
-  async(product)=>{
-
-
-    const exists =
-      isWishlisted(
-        product.id
-      );
-
-
-
-    if(exists){
-
-
-      await removeFromWishlist(
-        product.id
-      );
-
-
-    }
-    else{
-
-
-      await addToWishlist(
-        product
+      errorToast(
+        error.message
       );
 
 
     }
 
 
+
   };
-
-
 
 
 
@@ -317,13 +292,6 @@ export default function WishlistProvider({
         wishlist,
 
         loading,
-
-        wishlistCount:
-          wishlist.length,
-
-        addToWishlist,
-
-        removeFromWishlist,
 
         toggleWishlist,
 
