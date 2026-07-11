@@ -84,11 +84,6 @@ const [collapsed, setCollapsed] = useState(false);
   icon: <FiMail />,
   path: "/admin/newsletter",
 },
-    {
-  name: "Newsletter",
-  icon: <FiSend />,
-  path: "/admin/newsletter",
-},
   ];
 
   return (
