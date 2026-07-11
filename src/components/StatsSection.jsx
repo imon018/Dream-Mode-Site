@@ -3,12 +3,10 @@ import {
   useState,
 } from "react";
 
-
 import {
   Swiper,
   SwiperSlide,
 } from "swiper/react";
-
 
 import {
   Autoplay,
@@ -29,10 +27,9 @@ import {
 
 
 import {
-  getLatestReviewsWithUser,
+  getLatestReviews,
   formatReviewDate,
 } from "../services/reviewService";
-
 
 
 
@@ -45,7 +42,6 @@ export default function StatsSection(){
   ] = useState([]);
 
 
-
   const [
     loading,
     setLoading,
@@ -55,19 +51,17 @@ export default function StatsSection(){
 
 
 
-
   useEffect(()=>{
 
 
-    async function loadReviews(){
-
+    const loadReviews =
+    async()=>{
 
       try{
 
 
         const data =
-          await getLatestReviewsWithUser();
-
+          await getLatestReviews(18);
 
 
         setReviews(data);
@@ -80,7 +74,6 @@ export default function StatsSection(){
         console.log(error);
 
 
-
       }finally{
 
 
@@ -90,15 +83,24 @@ export default function StatsSection(){
       }
 
 
-    }
-
+    };
 
 
     loadReviews();
 
 
-
   },[]);
+
+
+
+
+
+
+
+  const mobileReviews =
+    reviews.slice(0,10);
+
+
 
 
 
@@ -114,7 +116,10 @@ export default function StatsSection(){
     ">
 
 
-      <div className="container-box">
+      <div className="
+        container-box
+      ">
+
 
 
 
@@ -133,7 +138,6 @@ export default function StatsSection(){
             md:text-5xl
             font-black
             whitespace-nowrap
-            text-blue-950
             "
           >
 
@@ -143,21 +147,20 @@ export default function StatsSection(){
 
 
 
-
           <div
             className="
-            w-full
-            max-w-xs
-            h-[2px]
+            w-72
+            max-w-full
+            h-1.5
             bg-gradient-to-r
             from-transparent
             via-yellow-500
             to-transparent
+            rounded-full
             mx-auto
             mt-4
             "
           />
-
 
 
         </div>
@@ -177,19 +180,23 @@ export default function StatsSection(){
             <div className="
               text-center
               py-16
+              text-gray-500
             ">
 
               Loading Reviews...
 
-            </div>
 
+            </div>
 
           )
 
 
 
-          : reviews.length===0 ?
+          :
 
+
+
+          reviews.length === 0 ?
 
 
           (
@@ -197,14 +204,13 @@ export default function StatsSection(){
             <div className="
               text-center
               py-16
-              border
-              rounded-3xl
+              text-gray-500
             ">
 
               No Reviews Yet
 
-            </div>
 
+            </div>
 
           )
 
@@ -219,56 +225,72 @@ export default function StatsSection(){
           <Swiper
 
 
-            className="
-              max-w-6xl
-              mx-auto
-            "
-
-
             modules={[
               Autoplay,
               Pagination,
             ]}
 
 
+            className="
+              !pb-12
+              w-full
+            "
+
+
+
+            spaceBetween={20}
+
+
 
             autoplay={{
-              delay:3500,
+
+              delay:5000,
+
               disableOnInteraction:false,
+
             }}
-
-
-
-            loop={
-              reviews.length>3
-            }
 
 
 
             pagination={{
+
               clickable:true,
+
             }}
 
 
 
-            spaceBetween={24}
+            loop={true}
 
 
 
             breakpoints={{
 
+
               0:{
-                slidesPerView:1.1,
+
+                slidesPerView:1,
+
+                spaceBetween:20,
+
               },
 
+
+
               640:{
+
                 slidesPerView:2,
+
               },
+
 
 
               1024:{
+
                 slidesPerView:3,
+
               },
+
 
             }}
 
@@ -277,78 +299,88 @@ export default function StatsSection(){
           >
 
 
+            {
 
-
-          {
-            reviews.map(
-              (review)=>(
-
-
-
-              <SwiperSlide
-                key={review.id}
-              >
+              reviews.map((review)=>(
 
 
 
-                <div className="
-                  rounded-[32px]
-                  border
-                  border-slate-200
-                  bg-white
-                  p-7
-                  shadow-lg
-                ">
-
-
-
-                  <FaQuoteLeft
-                    className="
-                    text-5xl
-                    text-amber-100
-                    ml-auto
-                    "
-                  />
-
-
-
-
-
-                  <div className="
+                <SwiperSlide
+                  key={review.id}
+                  className="
                     flex
-                    items-center
-                    gap-4
-                  ">
+                    justify-center
+                  "
+                >
 
 
-                    {
+
+                  <div
+                    className="
+                    w-full
+                    max-w-sm
+                    rounded-[32px]
+                    bg-white
+                    border
+                    border-slate-200
+                    shadow-xl
+                    p-6
+                    relative
+                    "
+                  >
+
+
+
+                    <FaQuoteLeft
+
+                      className="
+                      absolute
+                      right-6
+                      top-6
+                      text-5xl
+                      text-yellow-100
+                      "
+
+                    />
+
+
+
+
+
+
+                    <div className="
+                      flex
+                      items-center
+                      gap-4
+                    ">
+
+
+                      {
+
+
                       review.photo ?
 
 
                       (
 
-                      <img
+                        <img
 
-                        src={
-                          review.photo
-                        }
+                          src={
+                            review.photo
+                          }
 
-                        alt={
-                          review.name
-                        }
+                          alt="customer"
 
+                          className="
+                          w-16
+                          h-16
+                          rounded-full
+                          object-cover
+                          border-2
+                          border-yellow-400
+                          "
 
-                        className="
-                        h-16
-                        w-16
-                        rounded-full
-                        object-cover
-                        border-2
-                        border-amber-400
-                        "
-
-                      />
-
+                        />
 
                       )
 
@@ -358,187 +390,181 @@ export default function StatsSection(){
 
                       (
 
-                      <FaUserCircle
-                        className="
-                        text-6xl
-                        text-slate-300
-                        "
-                      />
+                        <FaUserCircle
+
+                          className="
+                          text-6xl
+                          text-slate-300
+                          "
+
+                        />
 
                       )
 
 
-                    }
-
-
-
-
-                    <div>
-
-
-                      <h3 className="
-                        text-lg
-                        font-bold
-                      ">
-
-
-                        {
-                          review.name ||
-                          "Dream Mode Customer"
-                        }
-
-
-                      </h3>
-
-
-
-                      <div className="
-                        flex
-                        mt-2
-                      ">
-
-
-                      {
-                        Array.from({
-                          length:5
-                        }).map(
-                          (_,i)=>(
-
-                          <FaStar
-
-                            key={i}
-
-                            className={
-                              i <
-                              (
-                                review.rating ||
-                                5
-                              )
-
-                              ?
-
-                              "text-amber-500"
-
-                              :
-
-                              "text-gray-300"
-
-                            }
-
-                          />
-
-
-                          )
-                        )
-
                       }
+
+
+
+
+                      <div>
+
+
+                        <h3 className="
+                          font-bold
+                          text-lg
+                        ">
+
+
+                          {
+                            review.name ||
+                            "Dream Mode Customer"
+                          }
+
+
+                        </h3>
+
+
+
+                        <div className="
+                          flex
+                          mt-2
+                        ">
+
+
+                          {
+                            Array.from({
+                              length:5
+                            }).map(
+                              (_,i)=>(
+
+
+                              <FaStar
+
+                                key={i}
+
+                                className={
+                                  i <
+                                  (review.rating || 5)
+
+                                  ?
+
+                                  "text-yellow-500"
+
+                                  :
+
+                                  "text-gray-300"
+                                }
+
+
+                              />
+
+                            ))
+
+                          }
+
+
+                        </div>
 
 
                       </div>
 
 
+                    </div>
+
+
+
+
+
+
+
+                    <p className="
+                      mt-6
+                      text-gray-600
+                      leading-7
+                      min-h-[100px]
+                    ">
+
+
+                      {review.comment
+                        ? 
+                        `“${review.comment}”`
+                        :
+                        "Excellent quality product."
+                      }
+
+
+                    </p>
+
+
+
+
+
+
+
+                    <div className="
+                      mt-5
+                      pt-4
+                      border-t
+                      flex
+                      justify-between
+                      items-center
+                    ">
+
+
+                      <span className="
+                        text-xs
+                        text-gray-400
+                      ">
+
+
+                        {
+                          formatReviewDate(
+                            review.createdAt
+                          )
+                        }
+
+
+                      </span>
+
+
+
+
+
+                      <span className="
+                        flex
+                        items-center
+                        gap-1
+                        text-xs
+                        font-semibold
+                        text-emerald-700
+                      ">
+
+
+                        <FaCheckCircle/>
+
+
+                        Verified
+
+
+                      </span>
+
 
                     </div>
 
 
-                  </div>
-
-
-
-
-
-
-
-                  <p className="
-                    mt-6
-                    text-gray-600
-                    leading-7
-                    min-h-[120px]
-                  ">
-
-
-                    {
-                      review.comment
-                      ?
-
-                      `“${review.comment}”`
-
-                      :
-
-                      "Excellent quality product. Highly recommended."
-
-                    }
-
-
-                  </p>
-
-
-
-
-
-
-
-
-                  <div className="
-                    mt-6
-                    flex
-                    justify-between
-                    items-center
-                    border-t
-                    pt-5
-                  ">
-
-
-                    <span className="
-                      text-xs
-                      text-gray-400
-                    ">
-
-                      {
-                        formatReviewDate(
-                          review.createdAt
-                        )
-                      }
-
-                    </span>
-
-
-
-
-
-                    <span className="
-                      flex
-                      items-center
-                      gap-1
-                      text-xs
-                      font-semibold
-                      text-emerald-700
-                    ">
-
-
-                      <FaCheckCircle/>
-
-                      Verified Purchase
-
-
-                    </span>
-
-
 
                   </div>
 
 
 
-                </div>
+                </SwiperSlide>
 
 
-              </SwiperSlide>
 
+              ))
 
-              )
-            )
-          }
-
+            }
 
 
 
@@ -552,13 +578,12 @@ export default function StatsSection(){
 
 
 
-
       </div>
 
 
     </section>
 
-
   );
+
 
 }
