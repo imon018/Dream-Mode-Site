@@ -365,35 +365,48 @@ We Accept
 
 <div
 className="
-flex
-gap-4
+grid
+grid-cols-4
+gap-3
 items-center
-flex-wrap
 "
 >
 
-
 <img
   src="/payments/visa-logo.png"
-  className="h-12 w-auto object-contain"
+  className="
+    w-full
+    h-8
+    object-contain
+  "
 />
 
 <img
   src="/payments/mastercard-logo.png"
-  className="h-12 w-auto object-contain"
+  className="
+    w-full
+    h-8
+    object-contain
+  "
 />
 
 <img
   src="/payments/bkash-logo.png"
-  className="h-12 w-auto object-contain"
+  className="
+    w-full
+    h-8
+    object-contain
+  "
 />
 
 <img
   src="/payments/nagad-logo.png"
-  className="h-12 w-auto object-contain"
+  className="
+    w-full
+    h-8
+    object-contain
+  "
 />
-
-
 
 </div>
 
