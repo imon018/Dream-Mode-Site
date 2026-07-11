@@ -1,68 +1,182 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import {
-  getShopHeroBanner,
-} from "../services/firestoreShopHeroService";
+  getProductsFromDB,
+} from "../services/firestoreProductService";
 
-import Spinner from "./Spinner";
+import ProductCard from "../components/ProductCard";
+import Spinner from "../components/Spinner";
+import SearchBar from "../components/ui/SearchBar";
+import ShopHero from "../components/ShopHero";
 
-export default function ShopHero() {
-  const [banner, setBanner] =
-    useState(null);
+export default function Shop() {
+  const [products, setProducts] =
+    useState([]);
+
+  const [
+    filteredProducts,
+    setFilteredProducts,
+  ] = useState([]);
 
   const [loading, setLoading] =
     useState(true);
 
   useEffect(() => {
-    const loadBanner =
-      async () => {
-        try {
-          const data =
-            await getShopHeroBanner();
+    const fetchData = async () => {
+      const data =
+        await getProductsFromDB();
 
-          setBanner(data);
-        } finally {
-          setLoading(false);
-        }
-      };
+      setProducts(data);
+      setFilteredProducts(data);
+      setLoading(false);
+    };
 
-    loadBanner();
+    fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="w-full flex justify-center py-10">
-        <Spinner />
-      </div>
-    );
-  }
+  const handleSearch = (text) => {
+    const keyword =
+      text.toLowerCase();
 
-  if (!banner?.imageUrl) {
-    return null;
-  }
+    const filtered =
+      products.filter(
+        (product) =>
+          product.name
+            ?.toLowerCase()
+            .includes(keyword) ||
+          product.description
+            ?.toLowerCase()
+            .includes(keyword)
+      );
+
+    setFilteredProducts(
+      filtered
+    );
+  };
+
+  if (loading)
+    return <Spinner />;
 
   return (
-    <section
-      className="
-        w-full
-        mb-8
-        overflow-hidden
-      "
-    >
-      <img
-        src={banner.imageUrl}
-        alt="Shop Hero Banner"
+    <>
+      {/* HERO */}
+
+      <ShopHero />
+
+      {/* PAGE CONTENT */}
+
+      <div
         className="
-          block
-          w-full
-          h-auto
-          select-none
+          max-w-7xl
+          mx-auto
+          px-4
+          md:px-6
+          py-8
+          md:py-12
         "
-        draggable={false}
-      />
-    </section>
+      >
+        {/* SEARCH */}
+
+        <div
+          className="
+            sticky
+            top-24
+            z-20
+            mb-10
+          "
+        >
+          <div
+            className="
+              bg-white/90
+              backdrop-blur
+              p-3
+              rounded-3xl
+              shadow-lg
+            "
+          >
+            <SearchBar
+              onSearch={
+                handleSearch
+              }
+            />
+          </div>
+        </div>
+
+        {/* PRODUCT COUNT */}
+
+        <div className="mb-8">
+          <p className="text-gray-500">
+            Showing
+
+            <span
+              className="
+                font-bold
+                text-black
+                mx-2
+              "
+            >
+              {
+                filteredProducts.length
+              }
+            </span>
+
+            Products
+          </p>
+        </div>
+
+        {/* PRODUCTS */}
+
+        {filteredProducts.length ===
+        0 ? (
+          <div
+            className="
+              text-center
+              py-24
+              bg-white
+              rounded-[32px]
+              shadow-sm
+            "
+          >
+            <div className="text-6xl">
+              🔍
+            </div>
+
+            <h3
+              className="
+                mt-6
+                text-2xl
+                font-bold
+              "
+            >
+              No Products Found
+            </h3>
+
+            <p className="mt-3 text-gray-500">
+              Try another keyword.
+            </p>
+          </div>
+        ) : (
+          <div
+            className="
+              grid
+              grid-cols-2
+              lg:grid-cols-3
+              xl:grid-cols-4
+              gap-4
+              md:gap-8
+            "
+          >
+            {filteredProducts.map(
+              (product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                />
+              )
+            )}
+          </div>
+        )}
+      </div>
+    </>
   );
 }
