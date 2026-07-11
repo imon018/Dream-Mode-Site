@@ -60,20 +60,23 @@ setSubscribers(data);
 
 
 
-
 async function remove(id){
 
+  if(
+    !window.confirm(
+      "Delete this subscriber?"
+    )
+  ){
+    return;
+  }
 
-await deleteSubscriber(id);
+  await deleteSubscriber(id);
 
+  successToast(
+    "Subscriber deleted"
+  );
 
-successToast(
-"Subscriber deleted"
-);
-
-
-load();
-
+  load();
 
 }
 
