@@ -11,14 +11,12 @@ import {
   FiUser,
   FiLogOut,
   FiMenu,
+  FiMail,
+  FiSend,
   FiX,
 } from "react-icons/fi";
 
 import { logout } from "../services/authService";
-
-import {
- FiMail
-} from "react-icons/fi";
 
 export default function AdminLayout() {
 
@@ -84,6 +82,11 @@ const [collapsed, setCollapsed] = useState(false);
 {
   name: "Newsletter",
   icon: <FiMail />,
+  path: "/admin/newsletter",
+},
+    {
+  name: "Newsletter",
+  icon: <FiSend />,
   path: "/admin/newsletter",
 },
   ];
