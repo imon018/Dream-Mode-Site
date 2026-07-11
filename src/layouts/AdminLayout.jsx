@@ -77,10 +77,15 @@ const [collapsed, setCollapsed] = useState(false);
       path: "/admin/profile",
     },
     {
- title:"Subscribers",
- path:"/admin/subscribers",
- icon: FiMail
-}
+  name: "Subscribers",
+  icon: <FiMail />,
+  path: "/admin/subscribers",
+},
+{
+  name: "Newsletter",
+  icon: <FiMail />,
+  path: "/admin/newsletter",
+},
   ];
 
   return (
