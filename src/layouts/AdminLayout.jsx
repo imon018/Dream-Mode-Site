@@ -3,6 +3,7 @@ import { Outlet, NavLink } from "react-router-dom";
 import {
   FiGrid,
   FiBox,
+  FiImage,
   FiPlusCircle,
   FiUsers,
   FiShoppingCart,
@@ -87,6 +88,11 @@ const [collapsed, setCollapsed] = useState(false);
     {
   name: "Shop Hero",
   icon: <FiPlusCircle />,
+  path: "/admin/shop-hero",
+},
+    {
+  name: "Shop Hero",
+  icon: <FiImage />,
   path: "/admin/shop-hero",
 },
   ];
