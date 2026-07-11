@@ -1,135 +1,160 @@
-import { useState } from "react";
+import PolicyFAQ from "../components/PolicyFAQ";
 
 
-export default function PolicyFAQ({
-items=[]
-}){
+export default function FAQs() {
 
 
-return (
+  const faqItems = [
 
-<div
-className="
-mt-10
-space-y-4
-"
->
+    {
+      question:
+        "How can I place an order?",
 
-
-{
-items.map((item,index)=>(
-
-<FAQItem
-
-key={index}
-
-question={item.question}
-
-answer={item.answer}
-
-/>
-
-))
-
-}
+      answer:
+        "You can place an order by selecting your favorite product, adding it to your cart, and completing the checkout process."
+    },
 
 
-</div>
+    {
+      question:
+        "How long does delivery take?",
 
-);
-
-
-}
-
-
-
+      answer:
+        "Inside Dhaka delivery usually takes 1-3 working days and outside Dhaka delivery usually takes 3-5 working days."
+    },
 
 
-function FAQItem({
-question,
-answer
-}){
+    {
+      question:
+        "Do you provide return or exchange?",
+
+      answer:
+        "Yes, we provide return and exchange service according to our Return Policy. Please check our Return Policy page for details."
+    },
 
 
-const [open,setOpen]=useState(false);
+    {
+      question:
+        "What payment methods do you accept?",
+
+      answer:
+        "We accept available payment methods shown during checkout."
+    },
 
 
+    {
+      question:
+        "How can I contact customer support?",
 
-return (
-
-<div
-className="
-border
-border-slate-200
-rounded-2xl
-overflow-hidden
-"
->
+      answer:
+        "You can contact us through our Contact Us page or available customer support channels."
+    },
 
 
-<button
+    {
+      question:
+        "Are product colors exactly the same as images?",
 
-onClick={()=>setOpen(!open)}
-
-className="
-w-full
-flex
-justify-between
-items-center
-p-5
-text-left
-font-semibold
-text-blue-950
-"
-
->
+      answer:
+        "We try our best to show accurate product images. However, slight color differences may occur due to screen settings."
+    },
 
 
-<span>
-{question}
-</span>
-
-
-<span
-className="
-text-amber-500
-text-xl
-"
->
-
-{open ? "-" : "+"}
-
-</span>
-
-
-</button>
+  ];
 
 
 
-{
+  return (
 
-open &&
-
-<div
-className="
-px-5
-pb-5
-text-gray-600
-"
->
-
-{answer}
-
-</div>
-
-}
+    <section
+      className="
+      min-h-screen
+      bg-slate-50
+      py-10
+      md:py-20
+      "
+    >
 
 
+      <div
+        className="
+        max-w-5xl
+        mx-auto
+        px-4
+        sm:px-6
+        "
+      >
 
-</div>
+
+        <div
+          className="
+          bg-gradient-to-br
+          from-slate-950
+          via-blue-950
+          to-slate-900
+          rounded-[35px]
+          p-6
+          md:p-10
+          shadow-2xl
+          "
+        >
 
 
-);
+          <h1
+            className="
+            text-3xl
+            md:text-5xl
+            font-bold
+            text-amber-500
+            "
+          >
+            Frequently Asked Questions
+          </h1>
 
+
+
+          <p
+            className="
+            mt-4
+            text-slate-300
+            "
+          >
+            Find answers to common questions about
+            shopping, delivery, payment and services.
+          </p>
+
+
+
+          <div
+            className="
+            mt-8
+            bg-white
+            rounded-[30px]
+            p-6
+            md:p-10
+            "
+          >
+
+
+            <PolicyFAQ
+              items={faqItems}
+            />
+
+
+          </div>
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+    </section>
+
+  );
 
 }
