@@ -7,6 +7,8 @@ import {
   orderBy,
   serverTimestamp,
   limit,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebaseConfig";
@@ -28,17 +30,22 @@ const reviewsCollection =
 
 export async function addReview(reviewData) {
 
+
   await addDoc(
     reviewsCollection,
     {
+
       ...reviewData,
 
       createdAt:
         serverTimestamp(),
+
     }
   );
 
+
 }
+
 
 
 
@@ -47,10 +54,14 @@ export async function addReview(reviewData) {
 // GET PRODUCT REVIEWS
 // ================================
 
-export async function getProductReviews(productId) {
+export async function getProductReviews(
+  productId
+) {
+
 
   const q =
     query(
+
       reviewsCollection,
 
       where(
@@ -63,6 +74,7 @@ export async function getProductReviews(productId) {
         "createdAt",
         "desc"
       )
+
     );
 
 
@@ -75,12 +87,13 @@ export async function getProductReviews(productId) {
   return snapshot.docs.map(
     (doc)=>({
 
-      id: doc.id,
+      id:doc.id,
 
       ...doc.data(),
 
     })
   );
+
 
 }
 
@@ -138,9 +151,8 @@ export async function hasUserReviewed(
 
 
 
-
 // ================================
-// GET HOMEPAGE LATEST REVIEWS
+// GET LATEST REVIEWS
 // ================================
 
 export async function getLatestReviews() {
@@ -151,12 +163,10 @@ export async function getLatestReviews() {
 
       reviewsCollection,
 
-
       orderBy(
         "createdAt",
         "desc"
       ),
-
 
       limit(10)
 
@@ -186,11 +196,130 @@ export async function getLatestReviews() {
 
 
 
+
+// ================================
+// GET REVIEWS WITH USER PROFILE
+// ================================
+
+export async function getLatestReviewsWithUser() {
+
+
+  const reviews =
+    await getLatestReviews();
+
+
+
+  const updatedReviews =
+    await Promise.all(
+
+
+      reviews.map(
+        async(review)=>{
+
+
+          if(!review.userId){
+
+            return review;
+
+          }
+
+
+
+
+          try{
+
+
+            const userRef =
+              doc(
+                db,
+                "users",
+                review.userId
+              );
+
+
+
+            const userSnap =
+              await getDoc(
+                userRef
+              );
+
+
+
+            if(userSnap.exists()){
+
+
+              const user =
+                userSnap.data();
+
+
+
+              return {
+
+                ...review,
+
+
+                name:
+                  user.name ||
+                  review.userName ||
+                  "Dream Mode Customer",
+
+
+
+                photo:
+                  user.photoURL ||
+                  "",
+
+
+              };
+
+
+            }
+
+
+
+
+            return review;
+
+
+
+          }catch(error){
+
+
+            console.log(error);
+
+
+            return review;
+
+
+          }
+
+
+        }
+
+      )
+
+    );
+
+
+
+  return updatedReviews;
+
+
+}
+
+
+
+
+
+
+
 // ================================
 // FORMAT REVIEW DATE
 // ================================
 
-export function formatReviewDate(timestamp) {
+export function formatReviewDate(
+  timestamp
+) {
 
 
   if(!timestamp){
@@ -229,7 +358,6 @@ export function formatReviewDate(timestamp) {
 
 
     return "";
-
 
   }
 
