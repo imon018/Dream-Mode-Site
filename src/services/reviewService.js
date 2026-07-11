@@ -98,49 +98,76 @@ export async function getProductReviews(
 
 
 
-// CHECK USER ALREADY REVIEWED
+// GET PRODUCT REVIEWS
 
+export async function getProductReviews(productId) {
 
-export async function hasUserReviewed(
-  productId,
-  userId
-){
+  const q = query(
+    reviewsCollection,
+    where("productId", "==", productId),
+    orderBy("createdAt", "desc")
+  );
 
+  const snapshot = await getDocs(q);
 
-  const q =
-    query(
+  const reviews = await Promise.all(
 
-      reviewsCollection,
+    snapshot.docs.map(async (reviewDoc) => {
 
+      const review = {
+        id: reviewDoc.id,
+        ...reviewDoc.data(),
+      };
 
-      where(
-        "productId",
-        "==",
-        productId
-      ),
+      if (!review.userId) {
+        return review;
+      }
 
+      try {
 
-      where(
-        "userId",
-        "==",
-        userId
-      ),
+        const userRef = doc(
+          db,
+          "users",
+          review.userId
+        );
 
+        const userSnap = await getDoc(userRef);
 
-      limit(1)
+        if (userSnap.exists()) {
 
-    );
+          const user = userSnap.data();
 
+          return {
 
+            ...review,
 
+            userName:
+              user.name ||
+              review.userName ||
+              "Dream Mode Customer",
 
-  const snapshot =
-    await getDocs(q);
+            photoURL:
+              user.photoURL ||
+              review.photoURL ||
+              "",
 
+          };
 
+        }
 
-  return !snapshot.empty;
+      } catch (error) {
 
+        console.error(error);
+
+      }
+
+      return review;
+
+    })
+
+  );
+
+  return reviews;
 
 }
 
