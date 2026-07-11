@@ -1,182 +1,81 @@
 import { useEffect, useState } from "react";
 
 import {
-  getProductsFromDB,
-} from "../services/firestoreProductService";
+  getShopHeroBanner,
+} from "../services/firestoreShopHeroService";
 
-import ProductCard from "../components/ProductCard";
-import Spinner from "../components/Spinner";
-import SearchBar from "../components/ui/SearchBar";
-import ShopHero from "../components/ShopHero";
-
-export default function Shop() {
-  const [products, setProducts] =
-    useState([]);
-
-  const [
-    filteredProducts,
-    setFilteredProducts,
-  ] = useState([]);
+export default function ShopHero() {
+  const [banner, setBanner] =
+    useState(null);
 
   const [loading, setLoading] =
     useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data =
-        await getProductsFromDB();
+    const loadBanner =
+      async () => {
+        try {
+          const data =
+            await getShopHeroBanner();
 
-      setProducts(data);
-      setFilteredProducts(data);
-      setLoading(false);
-    };
+          setBanner(data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchData();
+    loadBanner();
   }, []);
 
-  const handleSearch = (text) => {
-    const keyword =
-      text.toLowerCase();
-
-    const filtered =
-      products.filter(
-        (product) =>
-          product.name
-            ?.toLowerCase()
-            .includes(keyword) ||
-          product.description
-            ?.toLowerCase()
-            .includes(keyword)
-      );
-
-    setFilteredProducts(
-      filtered
+  if (loading) {
+    return (
+      <div
+        className="
+          w-full
+          bg-gray-100
+          animate-pulse
+          aspect-[1536/801]
+        "
+      />
     );
-  };
+  }
 
-  if (loading)
-    return <Spinner />;
+  if (!banner?.imageUrl) {
+    return null;
+  }
 
   return (
-    <>
-      {/* HERO */}
-
-      <ShopHero />
-
-      {/* PAGE CONTENT */}
+    <section className="w-full bg-white">
 
       <div
         className="
+          w-full
           max-w-7xl
           mx-auto
           px-4
           md:px-6
-          py-8
-          md:py-12
+          py-4
         "
       >
-        {/* SEARCH */}
 
-        <div
+        <img
+          src={banner.imageUrl}
+          alt="Shop Hero Banner"
           className="
-            sticky
-            top-24
-            z-20
-            mb-10
+            w-full
+            h-auto
+            object-contain
+            rounded-3xl
+            shadow-lg
+            block
           "
-        >
-          <div
-            className="
-              bg-white/90
-              backdrop-blur
-              p-3
-              rounded-3xl
-              shadow-lg
-            "
-          >
-            <SearchBar
-              onSearch={
-                handleSearch
-              }
-            />
-          </div>
-        </div>
+          loading="lazy"
+        />
 
-        {/* PRODUCT COUNT */}
-
-        <div className="mb-8">
-          <p className="text-gray-500">
-            Showing
-
-            <span
-              className="
-                font-bold
-                text-black
-                mx-2
-              "
-            >
-              {
-                filteredProducts.length
-              }
-            </span>
-
-            Products
-          </p>
-        </div>
-
-        {/* PRODUCTS */}
-
-        {filteredProducts.length ===
-        0 ? (
-          <div
-            className="
-              text-center
-              py-24
-              bg-white
-              rounded-[32px]
-              shadow-sm
-            "
-          >
-            <div className="text-6xl">
-              🔍
-            </div>
-
-            <h3
-              className="
-                mt-6
-                text-2xl
-                font-bold
-              "
-            >
-              No Products Found
-            </h3>
-
-            <p className="mt-3 text-gray-500">
-              Try another keyword.
-            </p>
-          </div>
-        ) : (
-          <div
-            className="
-              grid
-              grid-cols-2
-              lg:grid-cols-3
-              xl:grid-cols-4
-              gap-4
-              md:gap-8
-            "
-          >
-            {filteredProducts.map(
-              (product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                />
-              )
-            )}
-          </div>
-        )}
       </div>
-    </>
+
+    </section>
   );
 }
