@@ -75,15 +75,18 @@ object-contain
 
 
 <h2
-className="
-text-2xl
-font-bold
-tracking-widest
-"
+  className="
+    text-2xl
+    font-bold
+    tracking-widest
+  "
 >
-
-DREAM MODE
-
+  <span className="text-white">
+    DREAM
+  </span>{" "}
+  <span className="text-amber-500">
+    MODE
+  </span>
 </h2>
 
 
@@ -216,28 +219,28 @@ text-sm
 
 
 <li>
-<Link to="/page/return-policy">
+<Link to="/page/returnpolicy">
 Return Policy
 </Link>
 </li>
 
 
 <li>
-<Link to="/page/refund-policy">
+<Link to="/page/refundpolicy">
 Refund Policy
 </Link>
 </li>
 
 
 <li>
-<Link to="/page/shipping-policy">
+<Link to="/page/shippingpolicy">
 Shipping Policy
 </Link>
 </li>
 
 
 <li>
-<Link to="/page/privacy-policy">
+<Link to="/page/privacypolicy">
 Privacy Policy
 </Link>
 </li>
