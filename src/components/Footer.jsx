@@ -2,25 +2,16 @@ import { Link } from "react-router-dom";
 
 import {
   FiFacebook,
-  FiInstagram,
   FiMail,
   FiPhone,
   FiMapPin,
-  FiYoutube,
 } from "react-icons/fi";
 
-import {
-  FaTiktok,
-} from "react-icons/fa";
-
-
-import {
-  siteConfig,
-} from "../config/siteConfig";
+import { siteConfig } from "../config/siteConfig";
 
 
 
-export default function Footer(){
+export default function Footer() {
 
 
   return (
@@ -29,47 +20,48 @@ export default function Footer(){
     <footer
 
       className="
-        bg-gradient-to-br
-        from-slate-950
-        via-blue-950
-        to-slate-900
-        text-white
-        mt-1
+      bg-gradient-to-br
+      from-slate-950
+      via-blue-950
+      to-slate-900
+      text-white
+      mt-2
       "
 
     >
 
 
+
       <div
 
         className="
-          max-w-7xl
-          mx-auto
-          px-5
-          sm:px-6
-          lg:px-8
-          py-14
-          lg:py-16
-          pb-28
-          md:pb-16
+        max-w-7xl
+        mx-auto
+        px-5
+        md:px-8
+        py-14
         "
 
       >
 
 
 
+
+
         <div
 
           className="
-            grid
-            grid-cols-1
-            sm:grid-cols-2
-            lg:grid-cols-4
-            gap-10
-            lg:gap-12
+          grid
+          md:grid-cols-2
+          lg:grid-cols-4
+          gap-10
           "
 
         >
+
+
+
+
 
 
 
@@ -79,68 +71,37 @@ export default function Footer(){
           <div>
 
 
-            <div
+
+            <img
+
+              src="/logo.png"
+
+              alt="Dream Mode"
 
               className="
-                flex
-                items-center
-                gap-3
+              w-32
+              mb-5
+              "
+
+            />
+
+
+
+
+            <p
+
+              className="
+              text-amber-500
+              italic
+              font-medium
+              text-lg
               "
 
             >
 
+              Dress Your Dream, Live Your Life
 
-              <img
-
-                src="/logo.png"
-
-                alt="Dream Mode Logo"
-
-                className="
-                  w-16
-                  h-16
-                  lg:w-20
-                  lg:h-20
-                  object-contain
-                "
-
-              />
-
-
-
-              <div>
-
-
-                <p
-
-                  className="
-                    text-xl
-                    font-bold
-                    text-white
-                  "
-
-                >
-                  Dream Mode
-                </p>
-
-
-
-                <p
-
-                  className="
-                    text-xs
-                    text-yellow-400
-                  "
-
-                >
-                  Premium Fashion Store
-                </p>
-
-
-              </div>
-
-
-            </div>
+            </p>
 
 
 
@@ -149,145 +110,26 @@ export default function Footer(){
             <p
 
               className="
-                mt-5
-                text-slate-300
-                leading-7
-                text-sm
-                lg:text-base
+              text-slate-300
+              mt-5
+              leading-7
               "
 
             >
 
-              Premium fashion &
-              lifestyle products
-              designed for modern
-              shoppers.
+              Dream Mode is your trusted destination
+              for Premium Dress. We ensure quality,
+              style & customer satisfaction.
 
             </p>
 
 
 
 
-
-            <div
-
-              className="
-                flex
-                gap-4
-                mt-6
-              "
-
-            >
-
-
-              <a
-
-                href="#"
-
-                className="
-                  w-9
-                  h-9
-                  rounded-full
-                  bg-white/10
-                  flex
-                  items-center
-                  justify-center
-                  hover:bg-yellow-400
-                  hover:text-black
-                  transition
-                "
-
-              >
-
-                <FiFacebook/>
-
-              </a>
-
-
-
-
-              <a
-
-                href="#"
-
-                className="
-                  w-9
-                  h-9
-                  rounded-full
-                  bg-white/10
-                  flex
-                  items-center
-                  justify-center
-                  hover:bg-yellow-400
-                  hover:text-black
-                  transition
-                "
-
-              >
-
-                <FiInstagram/>
-
-              </a>
-
-
-
-
-
-              <a
-
-                href="#"
-
-                className="
-                  w-9
-                  h-9
-                  rounded-full
-                  bg-white/10
-                  flex
-                  items-center
-                  justify-center
-                  hover:bg-yellow-400
-                  hover:text-black
-                  transition
-                "
-
-              >
-
-                <FaTiktok/>
-
-              </a>
-
-
-
-
-
-              <a
-
-                href="#"
-
-                className="
-                  w-9
-                  h-9
-                  rounded-full
-                  bg-white/10
-                  flex
-                  items-center
-                  justify-center
-                  hover:bg-yellow-400
-                  hover:text-black
-                  transition
-                "
-
-              >
-
-                <FiYoutube/>
-
-              </a>
-
-
-            </div>
-
-
           </div>
+
+
+
 
 
 
@@ -303,10 +145,9 @@ export default function Footer(){
             <h3
 
               className="
-                text-lg
-                font-bold
-                mb-5
-                text-yellow-400
+              text-xl
+              font-bold
+              mb-5
               "
 
             >
@@ -321,77 +162,175 @@ export default function Footer(){
             <div
 
               className="
-                flex
-                flex-col
-                gap-3
-                text-slate-300
+              flex
+              flex-col
+              gap-3
+              text-slate-300
               "
 
             >
 
 
               <Link
-
                 to="/"
-
-                className="hover:text-yellow-400 transition"
-
+                className="hover:text-amber-500 transition"
               >
-
                 Home
-
               </Link>
 
 
 
-
               <Link
-
                 to="/shop"
-
-                className="hover:text-yellow-400 transition"
-
+                className="hover:text-amber-500 transition"
               >
-
                 Shop
-
               </Link>
 
 
 
-
               <Link
-
                 to="/cart"
-
-                className="hover:text-yellow-400 transition"
-
+                className="hover:text-amber-500 transition"
               >
-
                 Cart
+              </Link>
 
+
+
+              <Link
+                to="/profile"
+                className="hover:text-amber-500 transition"
+              >
+                My Account
+              </Link>
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+          {/* CUSTOMER SERVICE */}
+
+
+          <div>
+
+
+            <h3
+
+              className="
+              text-xl
+              font-bold
+              mb-5
+              "
+
+            >
+
+              Customer Service
+
+            </h3>
+
+
+
+
+
+            <div
+
+              className="
+              flex
+              flex-col
+              gap-3
+              text-slate-300
+              "
+
+            >
+
+
+
+              <Link
+                to="/contact"
+                className="hover:text-amber-500 transition"
+              >
+                Contact Us
+              </Link>
+
+
+
+              <Link
+                to="/shipping-policy"
+                className="hover:text-amber-500 transition"
+              >
+                Shipping Policy
               </Link>
 
 
 
 
               <Link
-
-                to="/profile"
-
-                className="hover:text-yellow-400 transition"
-
+                to="/return-policy"
+                className="hover:text-amber-500 transition"
               >
-
-                Profile
-
+                Return Policy
               </Link>
+
+
+
+
+              <Link
+                to="/refund-policy"
+                className="hover:text-amber-500 transition"
+              >
+                Refund Policy
+              </Link>
+
+
+
+
+              <Link
+                to="/privacy-policy"
+                className="hover:text-amber-500 transition"
+              >
+                Privacy Policy
+              </Link>
+
+
+
+
+              <Link
+                to="/terms"
+                className="hover:text-amber-500 transition"
+              >
+                Terms & Conditions
+              </Link>
+
+
+
+
+              <Link
+                to="/size-guide"
+                className="hover:text-amber-500 transition"
+              >
+                Size Guide
+              </Link>
+
 
 
             </div>
 
 
           </div>
+
 
 
 
@@ -409,10 +348,9 @@ export default function Footer(){
             <h3
 
               className="
-                text-lg
-                font-bold
-                mb-5
-                text-yellow-400
+              text-xl
+              font-bold
+              mb-5
               "
 
             >
@@ -424,34 +362,33 @@ export default function Footer(){
 
 
 
+
             <div
 
               className="
-                space-y-5
-                text-slate-300
-                text-sm
+              space-y-5
+              text-slate-300
               "
 
             >
 
 
 
-              <div
 
-                className="
-                  flex
-                  gap-3
-                  items-center
-                "
 
-              >
+              <div className="flex gap-3 items-center">
 
-                <FiPhone/>
+
+                <FiPhone
+                  className="
+                  text-amber-500
+                  text-xl
+                  "
+                />
+
 
                 <span>
-
                   {siteConfig.phone}
-
                 </span>
 
 
@@ -462,200 +399,211 @@ export default function Footer(){
 
 
 
-              <div
 
-                className="
-                  flex
-                  gap-3
-                  items-center
-                "
-
-              >
-
-                <FiMail/>
-
-                <span className="break-all">
-
-                  {siteConfig.email}
-
-                </span>
+              <div className="flex gap-3 items-center">
 
 
-              </div>
-
-
-
-
-
-
-              <div
-
-                className="
-                  flex
-                  gap-3
-                  items-center
-                "
-
-              >
-
-                <FiMapPin/>
+                <FiMail
+                  className="
+                  text-amber-500
+                  text-xl
+                  "
+                />
 
 
                 <span>
-
-                  Dhaka, Bangladesh
-
+                  {siteConfig.email}
                 </span>
 
 
               </div>
 
 
-            </div>
-
-
-          </div>
 
 
 
 
 
 
+              <div className="flex gap-3 items-center">
 
 
-
-          {/* PAYMENT */}
-
-
-          <div>
-
-
-            <h3
-
-              className="
-                text-lg
-                font-bold
-                mb-5
-                text-yellow-400
-              "
-
-            >
-
-              Payment
-
-            </h3>
+                <FiMapPin
+                  className="
+                  text-amber-500
+                  text-xl
+                  "
+                />
 
 
+                <span>
+                  Dhaka, Bangladesh
+                </span>
 
-
-            <div
-
-              className="
-                flex
-                flex-wrap
-                gap-3
-              "
-
-            >
-
-
-
-              <div
-
-                className="
-                  bg-white
-                  text-black
-                  px-4
-                  py-2
-                  rounded-lg
-                  text-sm
-                  font-bold
-                "
-
-              >
-
-                VISA
 
               </div>
 
 
-
-
-
-              <div
-
-                className="
-                  bg-white
-                  text-black
-                  px-4
-                  py-2
-                  rounded-lg
-                  text-sm
-                  font-bold
-                "
-
-              >
-
-                Master
-
-              </div>
-
-
-
-
-
-              <div
-
-                className="
-                  bg-white
-                  text-black
-                  px-4
-                  py-2
-                  rounded-lg
-                  text-sm
-                  font-bold
-                "
-
-              >
-
-                bKash
-
-              </div>
-
-
-
-
-
-              <div
-
-                className="
-                  bg-white
-                  text-black
-                  px-4
-                  py-2
-                  rounded-lg
-                  text-sm
-                  font-bold
-                "
-
-              >
-
-                Nagad
-
-              </div>
 
 
 
             </div>
 
 
+
+
+
+
+            <a
+
+              href={siteConfig.facebook}
+
+              target="_blank"
+
+              rel="noopener noreferrer"
+
+              className="
+              inline-flex
+              items-center
+              gap-2
+              mt-6
+              bg-white/10
+              px-5
+              py-3
+              rounded-full
+              hover:bg-amber-500
+              hover:text-black
+              transition
+              "
+
+            >
+
+              <FiFacebook />
+
+              Facebook
+
+            </a>
+
+
+
           </div>
+
 
 
 
 
 
         </div>
+
+
+
+
+
+
+
+
+
+        {/* PAYMENT */}
+
+
+
+        <div
+
+          className="
+          mt-12
+          pt-8
+          border-t
+          border-white/10
+          "
+
+        >
+
+
+
+          <h3
+
+            className="
+            text-lg
+            font-bold
+            mb-5
+            "
+
+          >
+
+            We Accept
+
+          </h3>
+
+
+
+
+
+          <div
+
+            className="
+            flex
+            flex-wrap
+            items-center
+            gap-5
+            "
+
+          >
+
+
+            <img
+              src="/payments/visa.png"
+              alt="Visa"
+              className="h-10 w-auto"
+            />
+
+
+
+            <img
+              src="/payments/mastercard.png"
+              alt="Mastercard"
+              className="h-10 w-auto"
+            />
+
+
+
+            <img
+              src="/payments/bkash.png"
+              alt="bKash"
+              className="h-10 w-auto"
+            />
+
+
+
+            <img
+              src="/payments/nagad.png"
+              alt="Nagad"
+              className="h-10 w-auto"
+            />
+
+
+
+
+            <span
+              className="
+              text-slate-300
+              text-sm
+              "
+            >
+
+              bKash / Nagad:
+              <br/>
+              01628464209 (Personal)
+
+            </span>
+
+
+
+          </div>
+
+
+        </div>
+
+
 
 
 
@@ -670,17 +618,16 @@ export default function Footer(){
         <div
 
           className="
-            border-t
-            border-white/10
-            mt-12
-            pt-6
-            flex
-            flex-col
-            md:flex-row
-            justify-between
-            items-center
-            gap-3
-            text-center
+          mt-10
+          pt-6
+          border-t
+          border-white/10
+          flex
+          flex-col
+          md:flex-row
+          justify-between
+          items-center
+          gap-3
           "
 
         >
@@ -690,13 +637,14 @@ export default function Footer(){
           <p
 
             className="
-              text-slate-400
-              text-sm
+            text-slate-400
+            text-sm
+            text-center
             "
 
           >
 
-            © 2026 Dream Mode.
+            © 2026 DREAM MODE.
             All Rights Reserved.
 
           </p>
@@ -704,13 +652,12 @@ export default function Footer(){
 
 
 
-
           <p
 
             className="
-              text-yellow-400
-              text-sm
-              font-medium
+            text-amber-500
+            italic
+            text-sm
             "
 
           >
@@ -726,13 +673,15 @@ export default function Footer(){
 
 
 
+
+
       </div>
+
 
 
     </footer>
 
 
   );
-
 
 }
