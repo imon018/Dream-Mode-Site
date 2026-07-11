@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 
-import {
-  Swiper,
-  SwiperSlide,
-} from "swiper/react";
-
-import {
-  Autoplay,
-  Pagination,
-} from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -16,6 +9,8 @@ import "swiper/css/pagination";
 import {
   FaStar,
   FaUserCircle,
+  FaQuoteLeft,
+  FaCheckCircle,
 } from "react-icons/fa";
 
 import {
@@ -26,9 +21,7 @@ import {
 export default function StatsSection() {
 
   const [reviews, setReviews] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
 
@@ -36,14 +29,13 @@ export default function StatsSection() {
 
       try {
 
-        const data =
-          await getLatestReviews();
+        const data = await getLatestReviews();
 
         setReviews(data);
 
-      } catch (err) {
+      } catch (error) {
 
-        console.error(err);
+        console.error(error);
 
       } finally {
 
@@ -57,28 +49,19 @@ export default function StatsSection() {
 
   }, []);
 
-
   return (
 
-    <section className="py-12 md:py-16 bg-white">
+    <section className="py-14 md:py-20 bg-white">
 
       <div className="container-box">
 
-
         {/* Heading */}
 
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
 
-          <h2
-            className="
-            text-3xl
-            md:text-5xl
-            font-bold
-            "
-          >
+          <h2 className="section-title">
             What Our Customers Say
           </h2>
-
 
           <div
             className="
@@ -93,16 +76,35 @@ export default function StatsSection() {
 
         </div>
 
-
-
         {loading ? (
 
           <div className="text-center py-16">
 
-            <p className="text-gray-500">
-
+            <p className="text-gray-500 text-lg">
               Loading Reviews...
+            </p>
 
+          </div>
+
+        ) : reviews.length === 0 ? (
+
+          <div
+            className="
+            rounded-3xl
+            border
+            border-dashed
+            border-slate-300
+            py-16
+            text-center
+            "
+          >
+
+            <h3 className="text-xl font-semibold">
+              No Reviews Yet
+            </h3>
+
+            <p className="mt-3 text-gray-500">
+              Be the first customer to share your experience.
             </p>
 
           </div>
@@ -116,8 +118,6 @@ export default function StatsSection() {
               Pagination,
             ]}
 
-            spaceBetween={20}
-
             loop={reviews.length > 3}
 
             autoplay={{
@@ -129,24 +129,20 @@ export default function StatsSection() {
               clickable: true,
             }}
 
+            spaceBetween={24}
+
             breakpoints={{
 
               0: {
-
-                slidesPerView: 1.15,
-
+                slidesPerView: 1.1,
               },
 
               640: {
-
                 slidesPerView: 2,
-
               },
 
               1024: {
-
                 slidesPerView: 3,
-
               },
 
             }}
@@ -159,17 +155,37 @@ export default function StatsSection() {
 
                 <div
                   className="
+                  relative
                   h-full
-                  rounded-3xl
-                  bg-white
+                  overflow-hidden
+                  rounded-[32px]
                   border
                   border-slate-200
+                  bg-white
+                  p-7
                   shadow-lg
-                  p-6
-                  flex
-                  flex-col
+                  transition-all
+                  duration-500
+                  hover:-translate-y-2
+                  hover:shadow-2xl
                   "
                 >
+
+                  {/* Quote Icon */}
+
+                  <FaQuoteLeft
+                    className="
+                    absolute
+                    top-6
+                    right-6
+                    text-5xl
+                    text-amber-100
+                    "
+                  />
+
+
+
+                  {/* Customer */}
 
                   <div className="flex items-center gap-4">
 
@@ -179,10 +195,12 @@ export default function StatsSection() {
                         src={review.photo}
                         alt={review.name}
                         className="
-                        w-14
-                        h-14
+                        h-16
+                        w-16
                         rounded-full
                         object-cover
+                        border-2
+                        border-amber-400
                         "
                       />
 
@@ -190,36 +208,36 @@ export default function StatsSection() {
 
                       <FaUserCircle
                         className="
-                        text-5xl
-                        text-slate-400
+                        text-6xl
+                        text-slate-300
                         "
                       />
 
                     )}
 
 
+
                     <div>
 
                       <h3
                         className="
-                        font-semibold
                         text-lg
+                        font-bold
                         "
                       >
                         {review.name || "Dream Mode Customer"}
                       </h3>
 
-
-                      <div className="flex mt-1">
+                      <div className="mt-2 flex">
 
                         {Array.from({
                           length: 5,
-                        }).map((_, i) => (
+                        }).map((_, index) => (
 
                           <FaStar
-                            key={i}
+                            key={index}
                             className={
-                              i < (review.rating || 5)
+                              index < (review.rating || 5)
                                 ? "text-amber-500"
                                 : "text-gray-300"
                             }
@@ -235,32 +253,71 @@ export default function StatsSection() {
 
 
 
-                  <div className="mt-5 flex items-center justify-between">
+                  {/* Review */}
 
-  <span
-    className="
-    text-xs
-    text-gray-400
-    "
-  >
-    {formatReviewDate(review.createdAt)}
-  </span>
+                  <p
+                    className="
+                    mt-6
+                    text-[15px]
+                    leading-7
+                    text-slate-600
+                    min-h-[120px]
+                    "
+                  >
+                    {review.review
+                      ? `“${review.review}”`
+                      : "Excellent quality product. Highly recommended."}
+                  </p>
 
-  <span
-    className="
-    text-xs
-    font-medium
-    bg-emerald-100
-    text-emerald-700
-    px-3
-    py-1
-    rounded-full
-    "
-  >
-    ✓ Verified Purchase
-  </span>
 
-</div>
+
+                  {/* Footer */}
+
+                  <div
+                    className="
+                    mt-6
+                    flex
+                    items-center
+                    justify-between
+                    border-t
+                    border-slate-100
+                    pt-5
+                    "
+                  >
+
+                    <span
+                      className="
+                      text-xs
+                      text-gray-400
+                      "
+                    >
+                      {formatReviewDate(
+                        review.createdAt
+                      )}
+                    </span>
+
+                    <span
+                      className="
+                      inline-flex
+                      items-center
+                      gap-1
+                      rounded-full
+                      bg-emerald-50
+                      px-3
+                      py-1
+                      text-xs
+                      font-semibold
+                      text-emerald-700
+                      "
+                    >
+
+                      <FaCheckCircle />
+
+                      Verified Purchase
+
+                    </span>
+
+                  </div>
 
                 </div>
 
@@ -268,11 +325,9 @@ export default function StatsSection() {
 
             ))}
 
-          </Swiper>
+                      </Swiper>
 
         )}
-
-
 
       </div>
 
