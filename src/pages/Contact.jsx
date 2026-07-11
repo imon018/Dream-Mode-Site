@@ -1,56 +1,185 @@
+import PolicyLayout from "../components/PolicyLayout";
+
+import {
+FiPhone,
+FiMail,
+FiMapPin
+} from "react-icons/fi";
+
 import { siteConfig } from "../config/siteConfig";
 
-export default function Contact() {
-  return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
 
-      <h1 className="text-4xl font-bold">
-        Contact Us
-      </h1>
+export default function Contact(){
 
-      <div className="mt-6 space-y-2">
-  <p>
-    <strong>Phone:</strong> {siteConfig.phone}
-  </p>
 
-  <p>
-    <strong>Email:</strong> {siteConfig.email}
-  </p>
+return (
 
-  <a
-    href={siteConfig.facebook}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-blue-600 hover:underline"
-  >
-    Visit our Facebook Page
-  </a>
+<PolicyLayout
+
+title="Contact Us"
+
+description="We are always ready to help you with your shopping experience."
+
+>
+
+
+<div className="space-y-8">
+
+
+
+<p>
+Have questions about products, orders or policies?
+Feel free to contact Dream Mode support team.
+</p>
+
+
+
+
+<div className="grid md:grid-cols-3 gap-5">
+
+
+
+<div
+className="
+bg-slate-50
+rounded-2xl
+p-5
+"
+>
+
+<FiPhone
+className="
+text-amber-500
+text-3xl
+mb-3
+"
+/>
+
+
+<h3 className="font-bold">
+Phone
+</h3>
+
+
+<p>
+{siteConfig.phone}
+</p>
+
+
 </div>
 
-      <form className="mt-8 space-y-4">
 
-        <input
-          className="w-full border rounded-lg p-3"
-          placeholder="Your Name"
-        />
 
-        <input
-          className="w-full border rounded-lg p-3"
-          placeholder="Email"
-        />
 
-        <textarea
-          className="w-full border rounded-lg p-3"
-          rows="5"
-          placeholder="Message"
-        />
 
-        <button className="bg-primary text-white px-6 py-3 rounded-lg">
-          Send Message
-        </button>
+<div
+className="
+bg-slate-50
+rounded-2xl
+p-5
+"
+>
 
-      </form>
+<FiMail
+className="
+text-amber-500
+text-3xl
+mb-3
+"
+/>
 
-    </div>
-  );
+
+<h3 className="font-bold">
+Email
+</h3>
+
+
+<p>
+{siteConfig.email}
+</p>
+
+
+</div>
+
+
+
+
+
+<div
+className="
+bg-slate-50
+rounded-2xl
+p-5
+"
+>
+
+<FiMapPin
+className="
+text-amber-500
+text-3xl
+mb-3
+"
+/>
+
+
+<h3 className="font-bold">
+Location
+</h3>
+
+
+<p>
+Dhaka, Bangladesh
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<a
+
+href={siteConfig.whatsapp}
+
+target="_blank"
+
+rel="noopener noreferrer"
+
+className="
+inline-flex
+items-center
+justify-center
+bg-amber-500
+text-black
+font-bold
+px-8
+py-4
+rounded-full
+hover:scale-105
+transition
+"
+
+>
+
+Chat On WhatsApp
+
+</a>
+
+
+
+
+
+</div>
+
+
+</PolicyLayout>
+
+
+);
+
 }
