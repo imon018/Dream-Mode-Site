@@ -112,7 +112,7 @@ export default function Shop() {
           sticky
           top-24
           z-20
-          mt-10
+          mt-6
           mb-10
         "
       >
