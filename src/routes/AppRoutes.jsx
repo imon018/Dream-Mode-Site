@@ -38,6 +38,13 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import OrderSuccess from "../pages/OrderSuccess";
 import MyOrders from "../pages/MyOrders";
+import ReturnPolicy from "../pages/ReturnPolicy";
+import RefundPolicy from "../pages/RefundPolicy";
+import ShippingPolicy from "../pages/ShippingPolicy";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+import Terms from "../pages/Terms";
+import SizeGuide from "../pages/SizeGuide";
+import Contact from "../pages/Contact";
 
 import NotFound from "../pages/NotFound";
 
@@ -147,6 +154,41 @@ export default function AppRoutes() {
 />
 
       </Route>
+
+      {
+ path:"/return-policy",
+ element:<ReturnPolicy/>
+},
+
+{
+ path:"/refund-policy",
+ element:<RefundPolicy/>
+},
+
+{
+ path:"/shipping-policy",
+ element:<ShippingPolicy/>
+},
+
+{
+ path:"/privacy-policy",
+ element:<PrivacyPolicy/>
+},
+
+{
+ path:"/terms",
+ element:<Terms/>
+},
+
+{
+ path:"/size-guide",
+ element:<SizeGuide/>
+},
+
+{
+ path:"/contact",
+ element:<Contact/>
+},
 
 
 
