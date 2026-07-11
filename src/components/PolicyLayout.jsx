@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import PolicySidebar from "./PolicySidebar";
 import PolicyCTA from "./PolicyCTA";
 
 
@@ -24,7 +22,7 @@ export default function PolicyLayout({
 
       <div
         className="
-        max-w-7xl
+        max-w-5xl
         mx-auto
         px-4
         sm:px-6
@@ -32,183 +30,111 @@ export default function PolicyLayout({
       >
 
 
-        {/* Breadcrumb */}
 
-        <div
-          className="
-          mb-8
-          text-sm
-          text-slate-500
-          flex
-          gap-2
-          "
-        >
+        {/* Main Content */}
 
-          <Link
-            to="/"
-            className="hover:text-amber-500"
-          >
-            Home
-          </Link>
+        <div>
 
-          <span>
-            /
-          </span>
-
-          <span>
-            Customer Service
-          </span>
-
-          <span>
-            /
-          </span>
-
-          <span
-            className="
-            text-amber-500
-            "
-          >
-            {title}
-          </span>
-
-
-        </div>
-
-
-
-
-
-        <div
-          className="
-          grid
-          lg:grid-cols-4
-          gap-8
-          "
-        >
-
-
-          {/* Sidebar */}
 
           <div
             className="
-            lg:col-span-1
+            bg-gradient-to-br
+            from-slate-950
+            via-blue-950
+            to-slate-900
+            rounded-[35px]
+            p-6
+            md:p-10
+            shadow-2xl
             "
           >
 
-            <PolicySidebar />
 
 
-          </div>
+            <h1
+              className="
+              text-3xl
+              md:text-5xl
+              font-bold
+              text-amber-500
+              "
+            >
+
+              {title}
+
+            </h1>
 
 
 
+            <p
+              className="
+              mt-4
+              text-slate-300
+              leading-relaxed
+              "
+            >
+
+              {description}
+
+            </p>
 
 
-
-          {/* Main Content */}
-
-          <div
-            className="
-            lg:col-span-3
-            "
-          >
 
 
             <div
               className="
-              bg-gradient-to-br
-              from-slate-950
-              via-blue-950
-              to-slate-900
-              rounded-[35px]
+              mt-8
+              bg-white
+              rounded-[30px]
               p-6
               md:p-10
-              shadow-2xl
+              text-gray-700
+              leading-8
+              shadow-sm
               "
             >
 
-
-
-              <h1
-                className="
-                text-3xl
-                md:text-5xl
-                font-bold
-                text-amber-500
-                "
-              >
-
-                {title}
-
-              </h1>
-
-
-
-              <p
-                className="
-                mt-4
-                text-slate-300
-                "
-              >
-
-                {description}
-
-              </p>
-
-
-
-
-              <div
-                className="
-                mt-8
-                bg-white
-                rounded-[30px]
-                p-6
-                md:p-10
-                text-gray-700
-                leading-8
-                "
-              >
-
-
-                {children}
-
-
-              </div>
-
-
-
-              {/* Last Updated */}
-
-              <p
-                className="
-                text-slate-400
-                text-sm
-                mt-6
-                "
-              >
-
-                Last Updated:
-                July 2026
-
-              </p>
-
-
-
-              <PolicyCTA />
-
+              {children}
 
             </div>
 
 
 
+
+
+            {/* Last Updated */}
+
+            <p
+              className="
+              text-slate-400
+              text-sm
+              mt-6
+              "
+            >
+
+              Last Updated:
+              July 2026
+
+            </p>
+
+
+
+
+
+            <PolicyCTA />
+
+
+
           </div>
+
 
 
         </div>
 
 
+
       </div>
+
 
 
     </section>
