@@ -22,6 +22,7 @@ import Analytics from "../pages/admin/Analytics";
 import Settings from "../pages/admin/Settings";
 import VerifyEmail from "../pages/VerifyEmail";
 import Subscribers from "../pages/admin/Subscribers";
+import Newsletter from "../pages/admin/Newsletter";
 
 import Home from "../pages/Home";
 import Shop from "../pages/Shop";
@@ -228,6 +229,11 @@ export default function AppRoutes() {
         <Route
  path="subscribers"
  element={<Subscribers />}
+/>
+
+        <Route
+  path="newsletter"
+  element={<Newsletter />}
 />
         
 
