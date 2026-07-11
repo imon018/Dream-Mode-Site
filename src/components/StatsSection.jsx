@@ -125,6 +125,7 @@ export default function StatsSection() {
         ) : (
 
           <Swiper
+  className="max-w-6xl mx-auto"
 
             modules={[
               Autoplay,
@@ -164,7 +165,10 @@ export default function StatsSection() {
 
                         {reviews.map((review) => (
 
-              <SwiperSlide key={review.id}>
+              <SwiperSlide
+  key={review.id}
+  className="flex justify-center"
+>
 
                 <div
                   className="
