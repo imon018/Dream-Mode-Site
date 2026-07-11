@@ -303,9 +303,9 @@ export default function ProductCard({
   className="
     flex
     items-center
-    gap-1
+    gap-2
     mt-4
-    w-full
+    w-[95%]
   "
 >
 
