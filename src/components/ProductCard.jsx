@@ -2,6 +2,14 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import Button from "./ui/Button";
+
+import useCart from "../hooks/useCart";
+import useWishlist from "../hooks/useWishlist";
+
+import {
+  successToast,
+} from "./ui/Toast";
 
 import {
   FiEye,
@@ -9,34 +17,18 @@ import {
 } from "react-icons/fi";
 
 
-import Button from "./ui/Button";
-
-
-import useCart from "../hooks/useCart";
-import useWishlist from "../hooks/useWishlist";
-
-
-import {
-  successToast,
-} from "./ui/Toast";
-
-
-
 export default function ProductCard({
   product,
   compact = false,
 }) {
 
-
   const navigate =
     useNavigate();
-
 
 
   const {
     addToCart,
   } = useCart();
-
 
 
   const {
@@ -45,234 +37,176 @@ export default function ProductCard({
   } = useWishlist();
 
 
-
-
   const liked =
     isWishlisted(
       product.id
     );
 
 
-
-
   const handleAdd = () => {
 
-
     addToCart(product);
-
 
     successToast(
       "Added to cart successfully"
     );
 
-
   };
-
-
-
 
 
   return (
 
     <div
+      className={`
+        group
+        bg-white
+        overflow-hidden
 
-      className="
+        border
+        border-amber-500/20
 
-      group
+        transition-all
+        duration-500
 
-      bg-white
-
-      rounded-[24px]
-
-      overflow-hidden
-
-      border
-
-      border-amber-500/20
-
-      shadow-[0_8px_25px_rgba(0,0,0,.07)]
-
-      transition-all
-
-      duration-300
-
-      hover:-translate-y-1
-
-      "
-
+        ${
+          compact
+            ? `
+              rounded-[24px]
+              shadow-[0_0_15px_rgba(245,158,11,.12)]
+            `
+            : `
+              rounded-[32px]
+              shadow-lg
+              hover:shadow-2xl
+              hover:-translate-y-2
+            `
+        }
+      `}
     >
-
-
 
 
       {/* IMAGE */}
 
-
       <div
-
         className="
-
-        relative
-
-        overflow-hidden
-
-        h-52
-
-        md:h-60
-
+          relative
+          overflow-hidden
         "
-
       >
 
-
-
         <img
-
           src={
             product.image ||
             "https://via.placeholder.com/600"
           }
 
-
           alt={
             product.name
           }
 
+          className={`
+            w-full
+            object-cover
 
-          className="
+            transition
+            duration-700
 
-          w-full
+            group-hover:scale-110
 
-          h-full
-
-          object-cover
-
-          transition
-
-          duration-500
-
-          group-hover:scale-105
-
-          "
-
+            ${
+              compact
+              ?
+              "h-36 md:h-44"
+              :
+              "h-64 sm:h-72 md:h-80"
+            }
+          `}
         />
-
-
-
-
-
-        {/* NEW BADGE */}
-
-
-
-        <span
-
-          className="
-
-          absolute
-
-          top-2
-
-          left-2
-
-
-          px-2
-
-          py-[2px]
-
-
-          rounded-full
-
-
-          text-[8px]
-
-
-          font-semibold
-
-
-          text-amber-400
-
-
-          border
-
-          border-amber-400
-
-
-          bg-black/30
-
-
-          backdrop-blur-md
-
-          "
-
-        >
-
-          ✨ New
-
-        </span>
-
-
-
 
 
 
         {/* WISHLIST */}
 
-
         <button
-
           onClick={() =>
             toggleWishlist(
               product
             )
           }
 
-
           className="
+            absolute
+            top-3
+            right-3
 
-          absolute
+            w-8
+            h-8
 
-          top-2
+            rounded-full
 
-          right-2
+            bg-white/90
 
+            backdrop-blur-md
 
-          text-lg
+            shadow-xl
 
+            flex
+            items-center
+            justify-center
 
-          text-white
+            text-base
 
+            hover:scale-110
 
-          drop-shadow-[0_2px_6px_rgba(0,0,0,.8)]
-
-
-          hover:scale-110
-
-
-          transition
-
+            transition
           "
-
         >
 
           {
-
-          liked
-
-          ?
-
-          "♥"
-
-          :
-
-          "♡"
-
+            liked
+            ?
+            "❤️"
+            :
+            "🤍"
           }
-
 
         </button>
 
 
+
+        {/* NEW BADGE */}
+
+        <div
+          className="
+            absolute
+            top-3
+            left-2
+
+            px-2
+            py-1
+
+            rounded-full
+
+            border
+            border-amber-500
+
+            bg-transparent
+
+            text-amber-500
+
+            font-bold
+
+            text-[9px]
+
+            shadow-[0_0_20px_rgba(245,158,11,.35)]
+
+            backdrop-blur-md
+          "
+        >
+
+          ✨ New
+
+        </div>
 
 
       </div>
@@ -281,167 +215,85 @@ export default function ProductCard({
 
 
 
-
-
-
       {/* CONTENT */}
 
-
-
       <div
+        className={`
+          ${
+            compact
+              ? "p-3"
+              : "p-5"
+          }
 
-        className="
+          -mt-[14px]
 
-        p-3
+          relative
+          z-20
 
-        "
+          bg-white
 
+          rounded-t-[22px]
+
+          shadow-[0_-8px_25px_rgba(0,0,0,.08)]
+        `}
       >
 
 
 
-
-
-        {/* NAME */}
-
-
         <h3
+          className={`
+            font-black
+            text-slate-900
+            line-clamp-1
 
-          className="
-
-          text-[16px]
-
-          font-bold
-
-          text-slate-900
-
-          truncate
-
-          "
-
+            ${
+              compact
+              ?
+              "text-sm"
+              :
+              "text-xl"
+            }
+          `}
         >
 
-          {
-            product.name
-          }
-
+          {product.name}
 
         </h3>
 
 
 
-
-
-
-
-        {/* RATING */}
-
-
-        <div
-
+        <p
           className="
-
-          flex
-
-          items-center
-
-          gap-1
-
-          mt-1
-
-          text-xs
-
-          text-gray-500
-
+            mt-1
+            text-sm
+            font-bold
+            text-amber-600
           "
-
         >
 
-          <span
-            className="
-            text-amber-500
-            "
-          >
-            ★
-          </span>
+          ৳ {product.price}
 
-
-          <span>
-            4.8
-          </span>
-
-
-          <span>
-            (120)
-          </span>
-
-
-        </div>
+        </p>
 
 
 
 
-
-
-
-        {/* PRICE FLOAT */}
-
-
-
-        <div
-
-          className="
-
-          mt-2
-
-          inline-flex
-
-          px-2
-
-          py-[3px]
-
-          rounded-md
-
-
-          bg-white
-
-
-          border
-
-          border-amber-500/30
-
-
-          shadow-sm
-
-          "
-
-        >
+        {!compact && (
 
           <p
-
             className="
-
-            text-base
-
-            leading-none
-
-            font-bold
-
-            text-amber-600
-
+              mt-3
+              text-sm
+              text-gray-500
+              line-clamp-2
             "
-
           >
 
-            ৳ {product.price}
+            {product.description}
 
           </p>
 
-
-        </div>
-
-
-
+        )}
 
 
 
@@ -450,31 +302,19 @@ export default function ProductCard({
 
         {/* BUTTONS */}
 
-
-
         <div
-
           className="
-
-          flex
-
-          items-center
-
-          gap-2
-
-          mt-4
-
+            flex
+            flex-col
+            gap-2
+            mt-4
+            w-full
           "
-
         >
 
 
 
-
-
-          {/* ADD TO CART */}
-
-
+          {/* ADD CART */}
 
           <Button
 
@@ -482,67 +322,35 @@ export default function ProductCard({
               handleAdd
             }
 
-
             className="
+              w-full
+              h-10
 
-            flex-1
+              rounded-lg
 
-            h-10
+              bg-[#021B4A]
 
+              backdrop-blur-md
 
-            rounded-xl
+              border
+              border-amber-500
 
+              text-white
 
-            bg-black
+              font-medium
+              text-[11px]
 
-
-            border
-
-            border-amber-500
-
-
-            text-white
-
-
-            text-[11px]
-
-
-            font-semibold
-
-
-            px-2
-
-
-            whitespace-nowrap
-
-
+              shadow-[0_0_20px_rgba(245,158,11,.18)]
             "
-
           >
 
-
-            <span
-
-              className="
-
-              flex
-
-              items-center
-
-              justify-center
-
-              gap-1
-
-              "
-
-            >
+            <span className="flex items-center justify-center gap-2">
 
               <FiShoppingCart
-                size={14}
+                className="text-base"
               />
 
               Add To Cart
-
 
             </span>
 
@@ -553,15 +361,9 @@ export default function ProductCard({
 
 
 
-
-
-
           {/* VIEW */}
 
-
-
-          <button
-
+          <Button
 
             onClick={() =>
               navigate(
@@ -571,73 +373,45 @@ export default function ProductCard({
 
 
             className="
+              w-full
+              h-10
 
-            w-12
+              rounded-lg
 
-            h-10
+              bg-purple-900/70
 
+              backdrop-blur-md
 
-            shrink-0
+              border
+              border-amber-500
 
+              text-white
 
-            rounded-xl
+              font-medium
+              text-[11px]
 
-
-            bg-white/60
-
-
-            backdrop-blur-xl
-
-
-            border
-
-            border-amber-500
-
-
-            text-amber-500
-
-
-            flex
-
-            items-center
-
-            justify-center
-
-
-            shadow-sm
-
-
-            hover:bg-amber-500
-
-            hover:text-white
-
-
-            transition
-
+              shadow-[0_0_20px_rgba(245,158,11,.18)]
             "
-
           >
 
-            <FiEye
-              size={18}
-            />
+            <span className="flex items-center justify-center gap-2">
+
+              <FiEye
+                className="text-base"
+              />
+
+              View Details
+
+            </span>
 
 
-          </button>
-
-
-
-
+          </Button>
 
 
         </div>
 
 
-
-
       </div>
-
-
 
 
     </div>
