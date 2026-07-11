@@ -16,25 +16,89 @@ import ShopHero from "../components/ShopHero";
 export default function Shop() {
 
 
-  const [products, setProducts] =
+  const [products,setProducts] =
     useState([]);
 
 
-  const [
-    filteredProducts,
-    setFilteredProducts,
-  ] = useState([]);
+  const [filteredProducts,setFilteredProducts] =
+    useState([]);
 
 
-  const [loading, setLoading] =
+  const [loading,setLoading] =
     useState(true);
 
 
 
-  useEffect(() => {
+  const [currentPage,setCurrentPage] =
+    useState(1);
+
+
+
+  const [itemsPerPage,setItemsPerPage] =
+    useState(16);
+
+
+
+
+
+  // MOBILE / DESKTOP LIMIT
+
+  useEffect(()=>{
+
+
+    const updateLimit = ()=>{
+
+
+      if(window.innerWidth >= 768){
+
+        setItemsPerPage(24);
+
+      }
+
+      else{
+
+        setItemsPerPage(16);
+
+      }
+
+
+    };
+
+
+
+    updateLimit();
+
+
+    window.addEventListener(
+      "resize",
+      updateLimit
+    );
+
+
+    return ()=>{
+
+      window.removeEventListener(
+        "resize",
+        updateLimit
+      );
+
+    };
+
+
+  },[]);
+
+
+
+
+
+
+
+  useEffect(()=>{
+
 
     const fetchData =
-      async () => {
+      async()=>{
+
 
         const data =
           await getProductsFromDB();
@@ -46,18 +110,22 @@ export default function Shop() {
 
         setLoading(false);
 
+
       };
 
 
     fetchData();
 
-  }, []);
+
+  },[]);
 
 
 
 
 
-  const handleSearch = (text) => {
+
+
+  const handleSearch = (text)=>{
 
 
     const keyword =
@@ -67,17 +135,17 @@ export default function Shop() {
 
     const filtered =
       products.filter(
-        (product) =>
+        (product)=>
 
           product.name
-            ?.toLowerCase()
-            .includes(keyword)
+          ?.toLowerCase()
+          .includes(keyword)
 
           ||
 
           product.description
-            ?.toLowerCase()
-            .includes(keyword)
+          ?.toLowerCase()
+          .includes(keyword)
 
       );
 
@@ -86,14 +154,55 @@ export default function Shop() {
     setFilteredProducts(filtered);
 
 
+    // search করলে প্রথম page
+
+    setCurrentPage(1);
+
+
   };
 
 
 
 
 
-  if (loading)
+
+
+  if(loading)
     return <Spinner />;
+
+
+
+
+
+
+
+  // PAGINATION
+
+
+  const totalPages =
+    Math.ceil(
+      filteredProducts.length /
+      itemsPerPage
+    );
+
+
+
+  const startIndex =
+    (currentPage - 1)
+    *
+    itemsPerPage;
+
+
+
+  const currentProducts =
+    filteredProducts.slice(
+      startIndex,
+      startIndex + itemsPerPage
+    );
+
+
+
+
 
 
 
@@ -104,10 +213,7 @@ export default function Shop() {
     <>
 
 
-      {/* HERO */}
-
       <ShopHero />
-
 
 
 
@@ -164,7 +270,7 @@ export default function Shop() {
 
 
 
-        {/* PRODUCT COUNT */}
+        {/* COUNT */}
 
         <div
           className="
@@ -213,7 +319,7 @@ export default function Shop() {
 
 
         {
-          filteredProducts.length === 0 ? (
+          currentProducts.length === 0 ? (
 
 
             <div
@@ -226,11 +332,7 @@ export default function Shop() {
               "
             >
 
-              <div
-                className="
-                  text-6xl
-                "
-              >
+              <div className="text-6xl">
                 🔍
               </div>
 
@@ -260,56 +362,152 @@ export default function Shop() {
 
 
 
-          ) : (
+          )
+
+          :
 
 
 
-            <div
-              className="
-                grid
-                grid-cols-2
-                lg:grid-cols-3
-                gap-4
-                md:gap-6
-              "
-            >
+          (
+
+          <div
+            className="
+              grid
+              grid-cols-2
+              lg:grid-cols-3
+              gap-4
+              md:gap-6
+            "
+          >
 
 
-              {
-                filteredProducts.map(
-                  (product) => (
+            {
+              currentProducts.map(
+                (product)=>(
 
 
-                    <ProductCard
+                  <ProductCard
 
-                      key={
-                        product.id
-                      }
-
-
-                      product={
-                        product
-                      }
+                    key={
+                      product.id
+                    }
 
 
-                      compact={
-                        true
-                      }
-
-                    />
+                    product={
+                      product
+                    }
 
 
-                  )
+                    compact={true}
+
+
+                  />
+
+
                 )
-              }
+              )
+            }
 
 
 
-            </div>
-
+          </div>
 
           )
+
         }
+
+
+
+
+
+
+
+        {/* PAGINATION */}
+
+
+        {
+          totalPages > 1 && (
+
+          <div
+            className="
+              flex
+              justify-center
+              items-center
+              gap-2
+              mt-12
+              flex-wrap
+            "
+          >
+
+
+            {
+              Array.from(
+                {
+                  length: totalPages
+                },
+                (_,i)=>i+1
+              )
+              .map((page)=>(
+
+
+                <button
+
+                  key={page}
+
+
+                  onClick={()=>{
+
+                    setCurrentPage(page);
+
+                    window.scrollTo({
+                      top:0,
+                      behavior:"smooth"
+                    });
+
+                  }}
+
+
+                  className={`
+                    w-10
+                    h-10
+                    rounded-full
+                    font-bold
+                    transition
+
+                    ${
+                      currentPage === page
+
+                      ?
+
+                      "bg-amber-500 text-black"
+
+                      :
+
+                      "bg-white border border-gray-200 text-gray-600"
+
+                    }
+
+                  `}
+
+                >
+
+                  {page}
+
+                </button>
+
+
+              ))
+            }
+
+
+
+          </div>
+
+          )
+
+        }
+
+
 
 
 
