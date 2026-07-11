@@ -321,24 +321,30 @@ export default function ProductCard({
 
             className="
   flex-1
-  h-10
 
-              rounded-lg
+  h-8
 
-              bg-[#021B4A]
+  rounded-lg
 
-              backdrop-blur-md
+  bg-black
 
-              border
-              border-amber-500
+  border
+  border-amber-500
 
-              text-white
+  text-white
 
-              font-medium
-              text-[11px]
+  text-[11px]
 
-              shadow-[0_0_20px_rgba(245,158,11,.18)]
-            "
+  font-semibold
+
+  px-3
+
+  whitespace-nowrap
+
+  flex
+  items-center
+  justify-center
+"
           >
 
             <span className="flex items-center justify-center gap-2">
@@ -369,27 +375,28 @@ export default function ProductCard({
             }
 
 
-            className="
-            w-12
-h-10
-shrink-0
+  className="
+  w-12
 
-              rounded-lg
+  h-8
 
-              bg-purple-900/70
+  shrink-0
 
-              backdrop-blur-md
+  rounded-lg
 
-              border
-              border-amber-500
+  bg-white/50
 
-              text-white
+  backdrop-blur-xl
 
-              font-medium
-              text-[11px]
+  border
+  border-amber-500
 
-              shadow-[0_0_20px_rgba(245,158,11,.18)]
-            "
+  text-amber-500
+
+  flex
+  items-center
+  justify-center
+"
           >
 
             <span className="flex items-center justify-center gap-2">
