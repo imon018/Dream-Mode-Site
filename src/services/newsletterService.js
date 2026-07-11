@@ -2,110 +2,58 @@ import {
   collection,
   addDoc,
   getDocs,
-  deleteDoc,
-  doc,
-  serverTimestamp,
   query,
+  where,
+  limit,
+  serverTimestamp,
   orderBy,
 } from "firebase/firestore";
 
+import { db } from "../firebase/firebaseConfig";
 
-import {
-  db
-} from "../firebase/firebaseConfig";
-
-
-
-const subscribersCollection =
-collection(
-  db,
-  "subscribers"
-);
+const subscribersRef = collection(db, "subscribers");
 
 
 
+// Subscribe
 
-// ADD SUBSCRIBER
+export async function subscribeEmail(email) {
 
-export async function addSubscriber(email){
-
-
-  await addDoc(
-
-    subscribersCollection,
-
-    {
-
-      email,
-
-      createdAt:
-        serverTimestamp(),
-
-    }
-
+  const q = query(
+    subscribersRef,
+    where("email", "==", email),
+    limit(1)
   );
 
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    throw new Error("Email already subscribed.");
+  }
+
+  await addDoc(subscribersRef, {
+    email,
+    active: true,
+    createdAt: serverTimestamp(),
+  });
 }
 
 
 
+// Admin List
 
-// GET ALL SUBSCRIBERS
+export async function getSubscribers() {
 
-export async function getSubscribers(){
-
-
-  const q =
-  query(
-
-    subscribersCollection,
-
-    orderBy(
-      "createdAt",
-      "desc"
-    )
-
+  const q = query(
+    subscribersRef,
+    orderBy("createdAt", "desc")
   );
 
+  const snapshot = await getDocs(q);
 
-
-  const snapshot =
-  await getDocs(q);
-
-
-
-  return snapshot.docs.map(
-    doc => ({
-
-      id:doc.id,
-
-      ...doc.data()
-
-    })
-  );
-
-
-}
-
-
-
-
-
-
-// DELETE SUBSCRIBER
-
-export async function deleteSubscriber(id){
-
-
-  await deleteDoc(
-
-    doc(
-      db,
-      "subscribers",
-      id
-    )
-
-  );
-
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 
 }
