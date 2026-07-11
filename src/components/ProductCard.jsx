@@ -2,29 +2,23 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-
 import {
   FiEye,
   FiShoppingCart,
 } from "react-icons/fi";
 
-
 import Button from "./ui/Button";
-
 
 import useCart from "../hooks/useCart";
 import useWishlist from "../hooks/useWishlist";
-
 
 import {
   successToast,
 } from "./ui/Toast";
 
 
-
 export default function ProductCard({
   product,
-  compact = false,
 }) {
 
 
@@ -32,18 +26,15 @@ export default function ProductCard({
     useNavigate();
 
 
-
   const {
     addToCart,
   } = useCart();
-
 
 
   const {
     toggleWishlist,
     isWishlisted,
   } = useWishlist();
-
 
 
 
@@ -54,71 +45,50 @@ export default function ProductCard({
 
 
 
-
-  const handleAdd = () => {
-
+  const handleCart = ()=>{
 
     addToCart(product);
-
 
     successToast(
       "Added to cart successfully"
     );
-
 
   };
 
 
 
 
-
   return (
 
-
     <div
-
-      className={`
-      group
-
+      className="
       bg-white
-
-      rounded-[28px]
-
+      rounded-[24px]
       overflow-hidden
 
       border
-
       border-amber-500/20
 
-      transition-all
+      shadow-[0_10px_30px_rgba(0,0,0,.08)]
 
-      duration-500
+      transition
+      duration-300
 
-      shadow-[0_10px_35px_rgba(0,0,0,.06)]
-
-      hover:-translate-y-2
-
-      hover:shadow-2xl
-
-      `}
-
+      hover:-translate-y-1
+      "
     >
-
 
 
 
       {/* IMAGE AREA */}
 
-
       <div
-
         className="
         relative
-
+        h-[180px]
+        md:h-[220px]
         overflow-hidden
-
         "
-
       >
 
 
@@ -129,177 +99,91 @@ export default function ProductCard({
             "https://via.placeholder.com/600"
           }
 
-
           alt={
             product.name
           }
 
-
-          className={`
+          className="
           w-full
-
+          h-full
           object-cover
 
           transition
+          duration-500
 
-          duration-700
-
-          group-hover:scale-110
-
-          ${
-            compact
-
-            ?
-
-            "h-40"
-
-            :
-
-            "h-64 md:h-72"
-
-          }
-
-          `}
+          hover:scale-105
+          "
 
         />
 
 
 
+        {/* NEW */}
 
-
-        {/* NEW BADGE */}
-
-
-        <div
-
+        <span
           className="
           absolute
+          top-2
+          left-2
 
-          top-3
-
-          left-3
-
-
-          px-3
-
-          py-1
-
+          px-2
+          py-[3px]
 
           rounded-full
 
-
-          bg-white/20
-
-
-          backdrop-blur-xl
-
-
-          border
-
-          border-amber-500
-
-
-          text-amber-500
-
-
-          text-[10px]
-
+          text-[9px]
 
           font-bold
 
-          "
+          text-amber-500
 
+          border
+          border-amber-500
+
+          bg-black/20
+
+          backdrop-blur-md
+          "
         >
 
           ✨ New
 
-
-        </div>
-
+        </span>
 
 
 
 
-
-        {/* WISHLIST BUTTON */}
-
-
+        {/* WISHLIST */}
 
         <button
 
-
-          onClick={() =>
-            toggleWishlist(
-              product
-            )
-          }
-
-
+          onClick={()=>toggleWishlist(product)}
 
           className="
-
           absolute
+          top-2
+          right-2
 
-          top-3
-
-          right-3
-
-
-          w-10
-
-          h-10
-
-
-          rounded-full
-
-
-          bg-white/20
-
-
-          backdrop-blur-xl
-
-
-          border
-
-          border-white/40
-
-
-          flex
-
-          items-center
-
-          justify-center
-
-
+          text-white
 
           text-xl
 
+          drop-shadow-lg
+
+          hover:scale-125
 
           transition
-
-
-          hover:scale-110
-
           "
-
 
         >
 
-
           {
-
-          liked
-
-          ?
-
-          "♥"
-
-          :
-
-          "♡"
-
+            liked
+            ?
+            "❤️"
+            :
+            "♡"
           }
-
 
 
         </button>
@@ -312,89 +196,67 @@ export default function ProductCard({
 
 
 
-
-
-
       {/* CONTENT */}
 
 
-
       <div
-
         className="
         p-4
-
         "
-
       >
 
 
 
-
-        {/* TITLE */}
-
-
         <h3
-
           className="
+          text-[17px]
+
           font-bold
 
           text-slate-900
 
-          text-base
-
-          line-clamp-1
-
+          truncate
           "
-
         >
 
-          {
-            product.name
-          }
+          {product.name}
 
 
         </h3>
 
 
 
-
-
         {/* RATING */}
 
-
         <div
-
           className="
           flex
-
           items-center
-
           gap-1
 
           mt-2
 
-          text-xs
-
+          text-sm
+          text-gray-500
           "
-
         >
-
-          <span>
-
-            ⭐
-
-          </span>
-
 
           <span
             className="
-            text-gray-500
+            text-amber-500
             "
           >
+            ★
+          </span>
 
-            4.8 (120)
 
+          <span>
+            4.8
+          </span>
+
+
+          <span>
+            (120)
           </span>
 
 
@@ -404,25 +266,18 @@ export default function ProductCard({
 
 
 
-
-
         {/* PRICE */}
 
-
-
         <p
-
           className="
           mt-2
 
-          text-lg
+          text-xl
 
           font-bold
 
           text-amber-600
-
           "
-
         >
 
           ৳ {product.price}
@@ -434,130 +289,71 @@ export default function ProductCard({
 
 
 
-        {
-          !compact && product.description && (
 
-
-            <p
-
-              className="
-              mt-2
-
-              text-xs
-
-              text-gray-500
-
-              line-clamp-2
-
-              "
-
-            >
-
-              {
-                product.description
-              }
-
-
-            </p>
-
-
-          )
-        }
-
-
-
-
-
-
-
-
-        {/* BUTTONS */}
-
+        {/* BUTTON AREA */}
 
 
         <div
-
           className="
           flex
+          items-center
+          gap-3
 
-          gap-2
-
-          mt-4
-
+          mt-5
           "
-
         >
 
 
 
 
-          {/* ADD CART */}
-
-
+          {/* CART */}
 
           <Button
 
-
             onClick={
-              handleAdd
+              handleCart
             }
 
 
-
             className="
-
             flex-1
 
-            h-10
-
+            h-12
 
             rounded-xl
 
-
             bg-black
 
-
             border
-
             border-amber-500
-
 
             text-white
 
+            text-sm
 
-            text-[11px]
+            font-semibold
 
-
-            font-medium
-
+            shadow-lg
 
             "
-
           >
 
 
             <span
-
               className="
               flex
-
               items-center
-
               justify-center
-
               gap-2
-
               "
-
             >
 
-              <FiShoppingCart/>
+              <FiShoppingCart />
 
-              Cart
+              Add To Cart
 
 
             </span>
-
 
 
           </Button>
@@ -567,80 +363,50 @@ export default function ProductCard({
 
 
 
-
-          {/* VIEW DETAILS */}
-
-
-
+          {/* VIEW */}
 
           <button
 
-
-            onClick={() =>
-              navigate(
-                `/product/${product.id}`
-              )
-            }
-
+            onClick={()=>navigate(
+              `/product/${product.id}`
+            )}
 
 
             className="
-
-            w-11
-
-            h-10
-
+            w-14
+            h-12
 
             rounded-xl
 
-
-
-            bg-white/20
-
-
+            bg-white/70
 
             backdrop-blur-xl
 
-
-
             border
-
             border-amber-500
-
-
 
             text-amber-500
 
-
-
             flex
-
             items-center
-
             justify-center
 
+            text-xl
 
+            shadow-md
 
-            hover:bg-amber-500/10
-
-
+            hover:bg-amber-500
+            hover:text-white
 
             transition
-
-
             "
 
           >
 
-
-            <FiEye
-              size={18}
-            />
+            <FiEye />
 
 
           </button>
-
-
 
 
 
@@ -648,9 +414,7 @@ export default function ProductCard({
 
 
 
-
       </div>
-
 
 
 
