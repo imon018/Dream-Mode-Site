@@ -227,8 +227,11 @@ export default function ProductReviews({
 
 
         userName:
-          user.displayName ||
-          "Premium Customer",
+  user.name ||
+  "Dream Mode Customer",
+
+photoURL:
+  user.photoURL || "",
 
 
         userEmail:
