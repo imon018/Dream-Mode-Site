@@ -47,35 +47,20 @@ export default function ShopHero() {
   }
 
   return (
-    <section className="w-full bg-white">
+    <section className="w-full bg-white m-0 p-0">
 
-      <div
-        className="
-          w-full
-          max-w-7xl
-          mx-auto
-          px-4
-          md:px-6
-          py-4
-        "
-      >
+  <img
+    src={banner.imageUrl}
+    alt="Shop Hero Banner"
+    className="
+      w-full
+      h-auto
+      object-cover
+      block
+    "
+    loading="lazy"
+  />
 
-        <img
-          src={banner.imageUrl}
-          alt="Shop Hero Banner"
-          className="
-            w-full
-            h-auto
-            object-contain
-            rounded-3xl
-            shadow-lg
-            block
-          "
-          loading="lazy"
-        />
-
-      </div>
-
-    </section>
+</section>
   );
 }
