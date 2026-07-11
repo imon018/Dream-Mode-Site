@@ -85,21 +85,23 @@ export default function Shop() {
 
   return (
 
-    <div
-      className="
-        max-w-7xl
-        mx-auto
-        px-4
-        md:px-6
-        py-10
-        md:py-16
-      "
-    >
+    <>
 
-
-      {/* HERO */}
+      {/* HERO FULL WIDTH */}
 
       <ShopHero />
+
+
+      <div
+        className="
+          max-w-7xl
+          mx-auto
+          px-4
+          md:px-6
+          py-10
+          md:py-16
+        "
+      >
 
 
 
@@ -263,8 +265,10 @@ export default function Shop() {
       }
 
 
-    </div>
+          
+
+      </div>
+
+    </>
 
   );
-
-}
