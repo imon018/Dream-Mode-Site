@@ -15,16 +15,20 @@ import ShopHero from "../components/ShopHero";
 
 export default function Shop() {
 
+
   const [products, setProducts] =
     useState([]);
+
 
   const [
     filteredProducts,
     setFilteredProducts,
   ] = useState([]);
 
+
   const [loading, setLoading] =
     useState(true);
+
 
 
   useEffect(() => {
@@ -35,11 +39,13 @@ export default function Shop() {
         const data =
           await getProductsFromDB();
 
+
         setProducts(data);
 
         setFilteredProducts(data);
 
         setLoading(false);
+
       };
 
 
@@ -49,10 +55,14 @@ export default function Shop() {
 
 
 
+
+
   const handleSearch = (text) => {
+
 
     const keyword =
       text.toLowerCase();
+
 
 
     const filtered =
@@ -61,7 +71,9 @@ export default function Shop() {
 
           product.name
             ?.toLowerCase()
-            .includes(keyword) ||
+            .includes(keyword)
+
+          ||
 
           product.description
             ?.toLowerCase()
@@ -70,11 +82,13 @@ export default function Shop() {
       );
 
 
-    setFilteredProducts(
-      filtered
-    );
+
+    setFilteredProducts(filtered);
+
 
   };
+
+
 
 
 
@@ -83,189 +97,224 @@ export default function Shop() {
 
 
 
+
+
   return (
 
     <>
 
-      {/* HERO FULL WIDTH */}
+
+      {/* HERO */}
 
       <ShopHero />
 
 
-      <div
-  className="
-    max-w-7xl
-    mx-auto
-    px-4
-    md:px-6
-    pt-2
-    pb-10
-    md:pb-16
-  "
->
 
 
-
-      {/* SEARCH */}
-
-      <div
-  className="
-    mt-3
-    mb-10
-  "
->
-
-        <div
-          className="
-            bg-white/90
-            backdrop-blur
-            p-3
-            rounded-3xl
-            shadow-lg
-          "
-        >
-
-          <SearchBar
-            onSearch={
-              handleSearch
-            }
-          />
-
-        </div>
-
-      </div>
-
-
-
-      {/* PRODUCT COUNT */}
 
       <div
         className="
-          mb-8
+          max-w-7xl
+          mx-auto
+          px-4
+          md:px-6
+          pt-2
+          pb-10
+          md:pb-16
         "
       >
 
-        <p
+
+
+
+
+        {/* SEARCH */}
+
+        <div
           className="
-            text-gray-500
+            mt-3
+            mb-10
           "
         >
 
-          Showing
-
-          <span
-            className="
-              font-bold
-              text-black
-              mx-2
-            "
-          >
-
-            {
-              filteredProducts.length
-            }
-
-          </span>
-
-          Products
-
-        </p>
-
-      </div>
-
-
-
-      {/* PRODUCTS */}
-
-      {
-        filteredProducts.length === 0 ? (
-
           <div
             className="
-              text-center
-              py-24
-              bg-white
-              rounded-[32px]
-              shadow-sm
+              bg-white/90
+              backdrop-blur
+              p-3
+              rounded-3xl
+              shadow-lg
             "
           >
+
+            <SearchBar
+              onSearch={
+                handleSearch
+              }
+            />
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+
+        {/* PRODUCT COUNT */}
+
+        <div
+          className="
+            mb-8
+          "
+        >
+
+          <p
+            className="
+              text-gray-500
+            "
+          >
+
+            Showing
+
+            <span
+              className="
+                font-bold
+                text-black
+                mx-2
+              "
+            >
+
+              {
+                filteredProducts.length
+              }
+
+            </span>
+
+            Products
+
+
+          </p>
+
+
+        </div>
+
+
+
+
+
+
+
+
+        {/* PRODUCTS */}
+
+
+        {
+          filteredProducts.length === 0 ? (
+
 
             <div
               className="
-                text-6xl
+                text-center
+                py-24
+                bg-white
+                rounded-[32px]
+                shadow-sm
               "
             >
-              🔍
+
+              <div
+                className="
+                  text-6xl
+                "
+              >
+                🔍
+              </div>
+
+
+              <h3
+                className="
+                  mt-6
+                  text-2xl
+                  font-bold
+                "
+              >
+                No Products Found
+              </h3>
+
+
+              <p
+                className="
+                  mt-3
+                  text-gray-500
+                "
+              >
+                Try another keyword.
+              </p>
+
+
             </div>
 
 
-            <h3
+
+          ) : (
+
+
+
+            <div
               className="
-                mt-6
-                text-2xl
-                font-bold
+                grid
+                grid-cols-2
+                lg:grid-cols-3
+                gap-4
+                md:gap-6
               "
             >
-              No Products Found
-            </h3>
 
 
-            <p
-              className="
-                mt-3
-                text-gray-500
-              "
-            >
-              Try another keyword.
-            </p>
+              {
+                filteredProducts.map(
+                  (product) => (
 
 
-          </div>
+                    <ProductCard
+
+                      key={
+                        product.id
+                      }
 
 
-        ) : (
+                      product={
+                        product
+                      }
 
 
-          <div
-            className="
-              grid
-              grid-cols-2
-              lg:grid-cols-3
-              xl:grid-cols-4
-              gap-4
-              md:gap-8
-            "
-          >
+                      compact={
+                        true
+                      }
 
-            {
-              filteredProducts.map(
-                (product) => (
+                    />
 
-                  <ProductCard
-                    key={
-                      product.id
-                    }
-                    product={
-                      product
-                    }
-                  />
 
+                  )
                 )
-              )
-            }
+              }
 
 
-          </div>
+
+            </div>
 
 
-        )
+          )
+        }
 
-      }
 
-
-          
 
       </div>
+
 
     </>
 
