@@ -367,26 +367,23 @@ flex-wrap
 
 
 <img
-src="/payments/visa-logo.png"
-className="h-8 w-auto"
+  src="/payments/visa-logo.png"
+  className="h-12 w-auto object-contain"
 />
 
-
 <img
-src="/payments/mastercard-logo.png"
-className="h-8 w-auto"
+  src="/payments/mastercard-logo.png"
+  className="h-12 w-auto object-contain"
 />
 
-
 <img
-src="/payments/bkash-logo.png"
-className="h-8 w-auto"
+  src="/payments/bkash-logo.png"
+  className="h-12 w-auto object-contain"
 />
 
-
 <img
-src="/payments/nagad-logo.png"
-className="h-8 w-auto"
+  src="/payments/nagad-logo.png"
+  className="h-12 w-auto object-contain"
 />
 
 
