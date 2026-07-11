@@ -10,7 +10,7 @@ import { Toaster } from "react-hot-toast";
 
 import useAuth from "./hooks/useAuth";
 
-
+import ScrollToTop from "./components/ScrollToTop";
 
 
 
@@ -126,6 +126,8 @@ export default function App(){
 
 
     </AuthProvider>
+
+    <ScrollToTop />
 
 
   );
