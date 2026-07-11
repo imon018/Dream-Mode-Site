@@ -2,14 +2,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import Button from "./ui/Button";
-
-import useCart from "../hooks/useCart";
-import useWishlist from "../hooks/useWishlist";
-
-import {
-  successToast,
-} from "./ui/Toast";
 
 import {
   FiEye,
@@ -17,343 +9,653 @@ import {
 } from "react-icons/fi";
 
 
+import Button from "./ui/Button";
+
+
+import useCart from "../hooks/useCart";
+import useWishlist from "../hooks/useWishlist";
+
+
+import {
+  successToast,
+} from "./ui/Toast";
+
+
+
 export default function ProductCard({
   product,
   compact = false,
 }) {
 
+
   const navigate =
     useNavigate();
+
+
 
   const {
     addToCart,
   } = useCart();
+
+
 
   const {
     toggleWishlist,
     isWishlisted,
   } = useWishlist();
 
+
+
+
   const liked =
     isWishlisted(
       product.id
     );
 
+
+
+
   const handleAdd = () => {
+
+
     addToCart(product);
+
 
     successToast(
       "Added to cart successfully"
     );
+
+
   };
 
+
+
+
+
   return (
+
+
     <div
+
       className={`
-        group
-        bg-white
-        overflow-hidden
+      group
 
-        border
-        border-amber-500/20
+      bg-white
 
-        transition-all
-        duration-500
+      rounded-[28px]
 
-        ${
-          compact
-            ? `
-              rounded-[24px]
-              shadow-[0_0_15px_rgba(245,158,11,.12)]
-            `
-            : `
-              rounded-[32px]
-              shadow-lg
-              hover:shadow-2xl
-              hover:-translate-y-2
-            `
-        }
+      overflow-hidden
+
+      border
+
+      border-amber-500/20
+
+      transition-all
+
+      duration-500
+
+      shadow-[0_10px_35px_rgba(0,0,0,.06)]
+
+      hover:-translate-y-2
+
+      hover:shadow-2xl
+
       `}
+
     >
 
-      {/* IMAGE */}
+
+
+
+      {/* IMAGE AREA */}
+
 
       <div
+
         className="
-          relative
-          overflow-hidden
+        relative
+
+        overflow-hidden
+
         "
+
       >
 
+
         <img
+
           src={
             product.image ||
             "https://via.placeholder.com/600"
           }
+
+
           alt={
             product.name
           }
+
+
           className={`
-            w-full
-            object-cover
+          w-full
 
-            transition
-            duration-700
+          object-cover
 
-            group-hover:scale-110
+          transition
 
-            ${
-              compact
-              ?
-              "h-36 md:h-44"
-              :
-              "h-64 sm:h-72 md:h-80"
-            }
+          duration-700
+
+          group-hover:scale-110
+
+          ${
+            compact
+
+            ?
+
+            "h-40"
+
+            :
+
+            "h-64 md:h-72"
+
+          }
+
           `}
+
         />
 
-        {/* WISHLIST */}
+
+
+
+
+        {/* NEW BADGE */}
+
+
+        <div
+
+          className="
+          absolute
+
+          top-3
+
+          left-3
+
+
+          px-3
+
+          py-1
+
+
+          rounded-full
+
+
+          bg-white/20
+
+
+          backdrop-blur-xl
+
+
+          border
+
+          border-amber-500
+
+
+          text-amber-500
+
+
+          text-[10px]
+
+
+          font-bold
+
+          "
+
+        >
+
+          ✨ New
+
+
+        </div>
+
+
+
+
+
+
+        {/* WISHLIST BUTTON */}
+
+
 
         <button
+
+
           onClick={() =>
             toggleWishlist(
               product
             )
           }
+
+
+
           className="
-            absolute
-            top-3
-            right-3
 
-            w-8
-            h-8
+          absolute
 
-            rounded-full
+          top-3
 
-            bg-white/90
+          right-3
 
-            backdrop-blur-md
 
-            shadow-xl
+          w-10
 
-            flex
-            items-center
-            justify-center
+          h-10
 
-            text-base
 
-            hover:scale-110
+          rounded-full
 
-            transition
+
+          bg-white/20
+
+
+          backdrop-blur-xl
+
+
+          border
+
+          border-white/40
+
+
+          flex
+
+          items-center
+
+          justify-center
+
+
+
+          text-xl
+
+
+          transition
+
+
+          hover:scale-110
+
           "
+
+
         >
 
+
           {
-            liked
-            ?
-            "❤️"
-            :
-            "🤍"
+
+          liked
+
+          ?
+
+          "♥"
+
+          :
+
+          "♡"
+
           }
+
+
 
         </button>
 
-        {/* NEW BADGE */}
 
-        <div
-          className="
-            absolute
-            top-3
-            left-2
-
-            px-2
-            py-1
-
-            rounded-full
-
-            border
-            border-amber-500
-
-            bg-transparent
-
-            text-amber-500
-
-            font-bold
-
-            text-[9px]
-
-            shadow-[0_0_20px_rgba(245,158,11,.35)]
-
-            backdrop-blur-md
-          "
-        >
-
-          ✨ New
-
-        </div>
 
       </div>
 
+
+
+
+
+
+
+
       {/* CONTENT */}
 
+
+
       <div
-        className={`
-          ${
-            compact
-              ? "p-3"
-              : "p-5"
-          }
 
-          -mt-[14px]
+        className="
+        p-4
 
-          relative
-          z-20
+        "
 
-          bg-white
-
-          rounded-t-[22px]
-
-          shadow-[0_-8px_25px_rgba(0,0,0,.08)]
-        `}
       >
 
-        <h3
-          className={`
-            font-black
-            text-slate-900
-            line-clamp-1
 
-            ${
-              compact
-              ?
-              "text-sm"
-              :
-              "text-xl"
-            }
-          `}
+
+
+        {/* TITLE */}
+
+
+        <h3
+
+          className="
+          font-bold
+
+          text-slate-900
+
+          text-base
+
+          line-clamp-1
+
+          "
+
         >
 
-          {product.name}
+          {
+            product.name
+          }
+
 
         </h3>
 
-        <p
+
+
+
+
+        {/* RATING */}
+
+
+        <div
+
           className="
-            mt-1
-            text-sm
-            font-bold
-            text-amber-600
+          flex
+
+          items-center
+
+          gap-1
+
+          mt-2
+
+          text-xs
+
           "
+
         >
-          ৳ {product.price}
-        </p>
 
-        {!compact && (
+          <span>
 
-          <p
+            ⭐
+
+          </span>
+
+
+          <span
             className="
-              mt-3
-              text-sm
-              text-gray-500
-              line-clamp-2
+            text-gray-500
             "
           >
 
-            {product.description}
+            4.8 (120)
 
-          </p>
+          </span>
 
-        )}
+
+        </div>
+
+
+
+
+
+
+
+        {/* PRICE */}
+
+
+
+        <p
+
+          className="
+          mt-2
+
+          text-lg
+
+          font-bold
+
+          text-amber-600
+
+          "
+
+        >
+
+          ৳ {product.price}
+
+
+        </p>
+
+
+
+
+
+        {
+          !compact && product.description && (
+
+
+            <p
+
+              className="
+              mt-2
+
+              text-xs
+
+              text-gray-500
+
+              line-clamp-2
+
+              "
+
+            >
+
+              {
+                product.description
+              }
+
+
+            </p>
+
+
+          )
+        }
+
+
+
+
+
+
+
 
         {/* BUTTONS */}
 
+
+
         <div
+
           className="
-            flex
-            flex-col
-            gap-2
-            mt-4
-            w-full
+          flex
+
+          gap-2
+
+          mt-4
+
           "
+
         >
+
+
+
 
           {/* ADD CART */}
 
+
+
           <Button
+
+
             onClick={
               handleAdd
             }
+
+
+
             className="
-              w-full
-              h-10
 
-              rounded-lg
+            flex-1
 
-              bg-[#021B4A]
+            h-10
 
-              backdrop-blur-md
 
-              border
-              border-amber-500
+            rounded-xl
 
-              text-white
 
-              font-medium
-              text-[11px]
+            bg-black
 
-              shadow-[0_0_20px_rgba(245,158,11,.18)]
+
+            border
+
+            border-amber-500
+
+
+            text-white
+
+
+            text-[11px]
+
+
+            font-medium
+
+
             "
+
           >
-            
-<span className="flex items-center justify-center gap-2">
-  <FiShoppingCart className="text-base" />
-  Add To Cart
-</span>
+
+
+            <span
+
+              className="
+              flex
+
+              items-center
+
+              justify-center
+
+              gap-2
+
+              "
+
+            >
+
+              <FiShoppingCart/>
+
+              Cart
+
+
+            </span>
+
+
 
           </Button>
 
-          {/* VIEW */}
 
-          <Button
+
+
+
+
+
+          {/* VIEW DETAILS */}
+
+
+
+
+          <button
+
+
             onClick={() =>
               navigate(
                 `/product/${product.id}`
               )
             }
+
+
+
             className="
-              w-full
-              h-10
 
-              rounded-lg
+            w-11
 
-              bg-purple-900/70
+            h-10
 
-              backdrop-blur-md
 
-              border
-              border-amber-500
+            rounded-xl
 
-              text-white
 
-              font-medium
-              text-[11px]
 
-              shadow-[0_0_20px_rgba(245,158,11,.18)]
+            bg-white/20
+
+
+
+            backdrop-blur-xl
+
+
+
+            border
+
+            border-amber-500
+
+
+
+            text-amber-500
+
+
+
+            flex
+
+            items-center
+
+            justify-center
+
+
+
+            hover:bg-amber-500/10
+
+
+
+            transition
+
+
             "
+
           >
 
-            <span className="flex items-center justify-center gap-2">
-  <FiEye className="text-base" />
-  View Details
-</span>
 
-          </Button>
+            <FiEye
+              size={18}
+            />
+
+
+          </button>
+
+
+
+
 
         </div>
 
+
+
+
       </div>
 
+
+
+
     </div>
+
 
   );
 
