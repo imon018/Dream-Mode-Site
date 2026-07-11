@@ -29,6 +29,7 @@ import Analytics from "../pages/admin/Analytics";
 import Settings from "../pages/admin/Settings";
 import Subscribers from "../pages/admin/Subscribers";
 import Newsletter from "../pages/admin/Newsletter";
+import ShopHeroBanner from "../pages/admin/ShopHeroBanner";
 
 
 /* Public Pages */
@@ -374,6 +375,11 @@ element={<HeroBanners />}
 <Route
 path="subscribers"
 element={<Subscribers />}
+/>
+
+      <Route
+  path="shop-hero"
+  element={<ShopHeroBanner />}
 />
 
 
