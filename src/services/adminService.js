@@ -8,21 +8,15 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-
-import {
-  db,
-} from "../firebase/firestore";
+import { db } from "../firebase/firestore";
 
 
 
-
-
-// ===============================
+// =========================
 // GET ALL USERS
-// ===============================
+// =========================
 
 export async function getUsers(search = "") {
-
 
   const usersRef =
     collection(
@@ -39,7 +33,6 @@ export async function getUsers(search = "") {
         "desc"
       )
     );
-
 
 
   const snapshot =
@@ -60,24 +53,22 @@ export async function getUsers(search = "") {
 
 
 
+  // Search filter
 
-
-  if(search){
-
+  if(search.trim()) {
 
     users =
       users.filter(
         (user)=>
 
-
           user.email
           ?.toLowerCase()
           .includes(
-            search.toLowerCase()
+            search
+            .toLowerCase()
           )
 
       );
-
 
   }
 
@@ -85,7 +76,6 @@ export async function getUsers(search = "") {
 
   return users;
 
-
 }
 
 
@@ -93,18 +83,15 @@ export async function getUsers(search = "") {
 
 
 
-
-// ===============================
-// CHANGE USER ROLE
-// ===============================
-
+// =========================
+// CHANGE ROLE
+// =========================
 
 export async function changeRole(
   userId,
   role
 ){
 
-
   const userRef =
     doc(
       db,
@@ -113,16 +100,14 @@ export async function changeRole(
     );
 
 
-
   await updateDoc(
     userRef,
     {
 
-      role: role,
+      role,
 
     }
   );
-
 
 }
 
@@ -132,15 +117,14 @@ export async function changeRole(
 
 
 
-// ===============================
-// DELETE USER
-// ===============================
 
+// =========================
+// DELETE USER
+// =========================
 
 export async function deleteUser(
   userId
 ){
-
 
   const userRef =
     doc(
@@ -150,10 +134,8 @@ export async function deleteUser(
     );
 
 
-
   await deleteDoc(
     userRef
   );
-
 
 }
