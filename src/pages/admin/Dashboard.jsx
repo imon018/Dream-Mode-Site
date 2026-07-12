@@ -370,12 +370,13 @@ mb-6
       {/* STATS */}
 
       <div className="
-      grid
-      grid-cols-2
-      xl:grid-cols-5
-      gap-4
-      md:gap-6
-      ">
+grid
+grid-cols-1
+sm:grid-cols-2
+xl:grid-cols-5
+gap-4
+md:gap-6
+">
 
         {cards.map((card) => (
 
@@ -438,21 +439,21 @@ mb-6
       {/* CHARTS */}
 
       <div className="
-      mt-8
-      grid
-      grid-cols-1
-      xl:grid-cols-2
-      gap-6
-      ">
+mt-8
+grid
+grid-cols-1
+2xl:grid-cols-2
+gap-6
+">
 
         <div className="
-        bg-secondary
-        rounded-3xl
-        p-6
-        border
-        border-accent/20
-        shadow-xl
-        ">
+bg-secondary
+rounded-3xl
+p-4 md:p-6
+border
+border-accent/20
+shadow-xl
+">
 
           <h2 className="
           text-2xl
@@ -469,13 +470,13 @@ mb-6
         </div>
 
         <div className="
-        bg-secondary
-        rounded-3xl
-        p-6
-        border
-        border-accent/20
-        shadow-xl
-        ">
+bg-secondary
+rounded-3xl
+p-4 md:p-6
+border
+border-accent/20
+shadow-xl
+">
 
           <h2 className="
           text-2xl
