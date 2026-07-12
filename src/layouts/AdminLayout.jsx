@@ -94,16 +94,26 @@ export default function AdminLayout() {
       </button>
 
       {/* Sidebar */}
+
+      
       <aside
-        className={`
-          fixed lg:fixed
-          top-0 left-0
-          h-screen
-          bg-white
-          border-r border-amber-100
-          shadow-xl
-          transition-all duration-300
-          z-50
+className={`
+  fixed
+  top-0
+  left-0
+  h-screen
+
+  flex
+  flex-col
+
+  bg-white
+  border-r border-amber-100
+  shadow-xl
+
+  transition-all duration-300
+  z-50
+
+  overflow-hidden
           ${collapsed ? "lg:w-24" : "lg:w-72"}
           w-72
           ${
@@ -115,67 +125,116 @@ export default function AdminLayout() {
       >
 
         {/* Mobile Close */}
-        <div className="lg:hidden flex justify-end p-4">
+        <div className="
+lg:hidden
+flex
+justify-end
+"
+>
+
+<button onClick={()=>setSidebarOpen(false)}>
+<FiX size={28}/>
+</button>
+  
           <button onClick={() => setSidebarOpen(false)}>
             <FiX size={28} />
           </button>
         </div>
 
         {/* Logo */}
-        <div className="px-6 py-6 border-b border-amber-100">
+      <div
+className="
+shrink-0
+px-6
+py-5
+border-b
+border-amber-100
+"
+>
 
-          {!collapsed && (
-            <>
-              <h1 className="text-2xl font-bold text-amber-600">
-                Dream Mode
-              </h1>
 
-              <p className="text-sm text-gray-500">
-                Luxury Admin
-              </p>
-            </>
-          )}
+<h1 className="
+text-2xl
+font-bold
+text-amber-600
+">
+Dream Mode
+</h1>
 
-          {collapsed && (
-            <div className="text-center text-3xl font-bold text-amber-500">
-              D
-            </div>
-          )}
 
-        </div>
+<p className="
+text-sm
+text-gray-500
+">
+Luxury Admin
+</p>
 
-        {/* Admin Profile */}
-        <div className="px-5 py-6 border-b border-amber-100">
 
-          <div className="flex items-center gap-4">
 
-            <img
-              src={
-                user?.photoURL ||
-                "https://ui-avatars.com/api/?name=Admin&background=F59E0B&color=fff"
-              }
-              alt="Admin"
-              className="w-14 h-14 rounded-full object-cover border-4 border-amber-200"
-            />
+<div className="
+mt-5
+flex
+items-center
+gap-4
+">
 
-            {!collapsed && (
-              <div>
-                <h3 className="font-bold text-slate-800">
-                  {user?.name || "Administrator"}
-                </h3>
 
-                <p className="text-sm text-gray-500">
-                  {user?.email}
-                </p>
-              </div>
-            )}
+<img
+src={
+user?.photoURL ||
+"https://ui-avatars.com/api/?name=Admin"
+}
 
-          </div>
+className="
+w-14
+h-14
+rounded-full
+object-cover
+border-4
+border-amber-200
+"
+/>
 
-        </div>
+
+<div>
+
+<h3 className="
+font-bold
+text-slate-800
+">
+{user?.name || "Administrator"}
+</h3>
+
+
+<p className="
+text-sm
+text-gray-500
+truncate
+max-w-[150px]
+">
+{user?.email}
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
 
         {/* Main Menu */}
-        <nav className="flex-1 overflow-y-auto px-4 py-5 space-y-2">
+        
+        <nav
+className="
+flex-1
+overflow-y-auto
+px-4
+py-5
+space-y-2
+"
+>
 
           {menu.map((item) => (
 
@@ -341,8 +400,17 @@ export default function AdminLayout() {
         </nav>
 
       {/* Bottom Menu */}
-      <div className="border-t border-amber-100 p-4 space-y-2">
-
+        
+      <div
+className="
+shrink-0
+border-t
+border-amber-100
+p-4
+space-y-2
+bg-white
+"
+>
         <NavLink
           to="/admin/settings"
           className={({ isActive }) =>
