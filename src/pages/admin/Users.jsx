@@ -958,13 +958,7 @@ user.role==="admin"
 
 <button
 
-onClick={()=>{
-
-setSelectedUser(user);
-
-setShowAction(true);
-
-}}
+onClick={()=>removeUser(user)}
 
 className="
 w-9
@@ -1251,18 +1245,12 @@ onChange={(e)=>{
 const newRole = e.target.value;
 
 
-const confirmChange = window.confirm(
+if(
+window.confirm(
+`Are you sure you want to make ${newRole}?`
+)
 
-`Are you sure you want to change role to ${newRole}?`
-
-);
-
-
-if(!confirmChange){
-return;
-}
-
-
+){
 
 changeRole(
 selectedUser.id,
@@ -1272,15 +1260,11 @@ newRole
 
 loadUsers();
 
-setSelectedUser({
-...selectedUser,
-role:newRole
-});
-
 setShowAction(false);
 
 });
 
+}
 
 }}
 
@@ -1292,24 +1276,18 @@ rounded-xl
 bg-amber-50
 text-amber-600
 font-semibold
-appearance-none
-outline-none
 "
 
 >
 
 
-<option value="user">
-
-Make User
-
+<option value="admin">
+Make Admin
 </option>
 
 
-<option value="admin">
-
-Make Admin
-
+<option value="user">
+Make User
 </option>
 
 
@@ -1341,7 +1319,7 @@ pointer-events-none
 
 <button
 
-onClick={()=>removeUser(user)}
+onClick={()=>removeUser(selectedUser)}
 
 className="
 w-9
