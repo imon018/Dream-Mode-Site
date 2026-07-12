@@ -30,7 +30,7 @@ import Settings from "../pages/admin/Settings";
 import Subscribers from "../pages/admin/Subscribers";
 import Newsletter from "../pages/admin/Newsletter";
 import ShopHeroBanner from "../pages/admin/ShopHeroBanner";
-
+import OrderDetails from "../pages/admin/OrderDetails";
 
 /* Public Pages */
 
@@ -144,6 +144,10 @@ export default function AppRoutes() {
         <Route path="shop-hero" element={<ShopHeroBanner />} />
         <Route path="subscribers" element={<Subscribers />} />
         <Route path="newsletter" element={<Newsletter />} />
+        <Route 
+path="orders/:id" 
+element={<OrderDetails />} 
+/>
       </Route>
 
       {/* =========================
