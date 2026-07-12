@@ -1,40 +1,159 @@
 import {
   collection,
   getDocs,
+  doc,
   updateDoc,
   deleteDoc,
-  doc,
+  query,
+  orderBy,
 } from "firebase/firestore";
 
-import { db } from "../firebase/firestore";
+
+import {
+  db,
+} from "../firebase/firestore";
+
+
+
+
+
+// ===============================
+// GET ALL USERS
+// ===============================
 
 export async function getUsers(search = "") {
-  const snap = await getDocs(collection(db, "users"));
 
-  const users = snap.docs.map((item) => ({
-    id: item.id,
-    ...item.data(),
-  }));
 
-  if (!search) return users;
+  const usersRef =
+    collection(
+      db,
+      "users"
+    );
 
-  return users.filter((user) =>
-    user.email?.toLowerCase().includes(search.toLowerCase())
+
+  const q =
+    query(
+      usersRef,
+      orderBy(
+        "createdAt",
+        "desc"
+      )
+    );
+
+
+
+  const snapshot =
+    await getDocs(q);
+
+
+
+  let users =
+    snapshot.docs.map(
+      (doc)=>({
+
+        id: doc.id,
+
+        ...doc.data(),
+
+      })
+    );
+
+
+
+
+
+  if(search){
+
+
+    users =
+      users.filter(
+        (user)=>
+
+
+          user.email
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          )
+
+      );
+
+
+  }
+
+
+
+  return users;
+
+
+}
+
+
+
+
+
+
+
+// ===============================
+// CHANGE USER ROLE
+// ===============================
+
+
+export async function changeRole(
+  userId,
+  role
+){
+
+
+  const userRef =
+    doc(
+      db,
+      "users",
+      userId
+    );
+
+
+
+  await updateDoc(
+    userRef,
+    {
+
+      role: role,
+
+    }
   );
+
+
 }
 
-export async function changeRole(id, role) {
-  await updateDoc(doc(db, "users", id), {
-    role,
-  });
-}
 
-export async function togglePremium(id, premium) {
-  await updateDoc(doc(db, "users", id), {
-    premium,
-  });
-}
 
-export async function deleteUser(id) {
-  await deleteDoc(doc(db, "users", id));
+
+
+
+
+// ===============================
+// DELETE USER
+// ===============================
+
+
+export async function deleteUser(
+  userId
+){
+
+
+  const userRef =
+    doc(
+      db,
+      "users",
+      userId
+    );
+
+
+
+  await deleteDoc(
+    userRef
+  );
+
+
 }
