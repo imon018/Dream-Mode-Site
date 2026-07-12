@@ -1,26 +1,35 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useEffect,
+  useState
+} from "react";
+
+import {
+  useNavigate
+} from "react-router-dom";
+
 
 import {
   FiSearch,
-  FiChevronDown,
-  FiEye,
-  FiTrash2,
-  FiPackage,
+  FiShoppingBag,
   FiClock,
   FiTruck,
   FiCheckCircle,
+  FiEye,
+  FiTrash2,
+  FiMoreVertical
 } from "react-icons/fi";
+
 
 import {
   getAllOrders,
   updateOrderStatus,
-  deleteOrder,
+  deleteOrder
 } from "../../services/orderService";
+
 
 import {
   successToast,
-  errorToast,
+  errorToast
 } from "../../components/ui/Toast";
 
 
@@ -46,15 +55,13 @@ useState("");
 
 
 
+const [menuOpen,setMenuOpen] =
+useState(null);
+
+
+
 const [statusFilter,setStatusFilter] =
-useState("all");
-
-
-
-const [filterOpen,setFilterOpen] =
-useState(false);
-
-
+useState("All Status");
 
 
 
@@ -68,12 +75,9 @@ loadOrders();
 
 
 
-
 const loadOrders = async()=>{
 
-
 try{
-
 
 const data =
 await getAllOrders();
@@ -82,19 +86,17 @@ await getAllOrders();
 setOrders(data);
 
 
-
-}
-catch(error){
+}catch(error){
 
 console.log(error);
 
 }
+
 finally{
 
 setLoading(false);
 
 }
-
 
 };
 
@@ -103,9 +105,7 @@ setLoading(false);
 
 
 
-
-
-const handleStatusChange =
+const changeStatus =
 async(id,status)=>{
 
 
@@ -118,7 +118,6 @@ status
 );
 
 
-
 setOrders(prev=>
 
 prev.map(order=>
@@ -126,14 +125,12 @@ prev.map(order=>
 order.id===id
 
 ?
-
 {
 ...order,
 status
 }
 
 :
-
 order
 
 )
@@ -142,12 +139,12 @@ order
 
 
 
-}
-catch(error){
+}catch(error){
 
 console.log(error);
 
 }
+
 
 
 };
@@ -158,23 +155,18 @@ console.log(error);
 
 
 
-
-
-const handleDeleteOrder =
+const removeOrder =
 async(id)=>{
 
 
-const confirmDelete =
+const confirm =
 window.confirm(
-"Delete this order permanently?"
+"Delete this order?"
 );
 
 
-
-if(!confirmDelete)
+if(!confirm)
 return;
-
-
 
 
 
@@ -188,7 +180,7 @@ await deleteOrder(id);
 setOrders(prev=>
 
 prev.filter(
-order=>order.id!==id
+o=>o.id!==id
 )
 
 );
@@ -196,21 +188,16 @@ order=>order.id!==id
 
 
 successToast(
-"Order deleted successfully."
+"Order deleted"
 );
 
 
 
-}
-catch(error){
-
-
-console.log(error);
-
+}catch(error){
 
 
 errorToast(
-"Failed to delete order."
+"Delete failed"
 );
 
 
@@ -227,14 +214,12 @@ errorToast(
 
 
 
-
 const filteredOrders =
 
 orders.filter(order=>{
 
 
-const matchSearch =
-
+const searchMatch =
 
 order.customerName
 ?.toLowerCase()
@@ -242,22 +227,19 @@ order.customerName
 search.toLowerCase()
 )
 
-
 ||
 
-order.email
+order.id
 ?.toLowerCase()
 .includes(
 search.toLowerCase()
-)
-
-;
+);
 
 
 
-const matchStatus =
+const statusMatch =
 
-statusFilter==="all"
+statusFilter==="All Status"
 
 ?
 
@@ -270,10 +252,8 @@ order.status===statusFilter;
 
 
 return (
-
-matchSearch &&
-matchStatus
-
+searchMatch &&
+statusMatch
 );
 
 
@@ -285,30 +265,25 @@ matchStatus
 
 
 
-
-
-const totalOrders =
+const total =
 orders.length;
 
 
-
-const pendingOrders =
+const pending =
 orders.filter(
 o=>o.status==="Pending"
 ).length;
 
 
 
-
-const processingOrders =
+const processing =
 orders.filter(
 o=>o.status==="Processing"
 ).length;
 
 
 
-
-const deliveredOrders =
+const delivered =
 orders.filter(
 o=>o.status==="Delivered"
 ).length;
@@ -319,31 +294,23 @@ o=>o.status==="Delivered"
 
 
 
-
 if(loading){
-
 
 return(
 
-
 <div className="
-min-h-[60vh]
+min-h-screen
 flex
 items-center
 justify-center
-text-xl
 font-bold
 ">
 
-
 Loading Orders...
-
 
 </div>
 
-
-);
-
+)
 
 }
 
@@ -352,16 +319,14 @@ Loading Orders...
 
 
 
-return(
-
+return (
 
 <div className="
-space-y-6
+space-y-8
 ">
 
 
-{/* HEADER */}
-
+{/* TITLE */}
 
 <div>
 
@@ -372,23 +337,21 @@ font-black
 text-slate-800
 ">
 
-Order Management
+Orders
 
 </h1>
 
 
 <p className="
 text-gray-500
-mt-1
 ">
 
-Manage customer orders
+Dashboard  › Orders
 
 </p>
 
 
 </div>
-
 
 
 
@@ -401,213 +364,81 @@ Manage customer orders
 grid
 grid-cols-2
 lg:grid-cols-4
-gap-3
+gap-4
 ">
 
 
 
-<div className="
-bg-white
-rounded-3xl
-p-4
-shadow-sm
-">
+<StatCard
 
-<div className="
-w-10
-h-10
-rounded-xl
-bg-blue-50
-text-blue-600
-flex
-items-center
-justify-center
-">
+icon={<FiShoppingBag/>}
 
-<FiPackage size={22}/>
+title="Total Orders"
 
-</div>
+value={total}
+
+color="orange"
+
+/>
 
 
-<p className="
-text-xs
-text-gray-500
-mt-3
-">
-
-Total Orders
-
-</p>
 
 
-<h2 className="
-text-2xl
-font-black
-">
+<StatCard
 
-{totalOrders}
+icon={<FiClock/>}
 
-</h2>
+title="Pending"
 
+value={pending}
 
-</div>
+color="yellow"
+
+/>
 
 
 
 
 
-<div className="
-bg-white
-rounded-3xl
-p-4
-">
+<StatCard
 
-<div className="
-w-10
-h-10
-rounded-xl
-bg-yellow-50
-text-yellow-600
-flex
-items-center
-justify-center
-">
+icon={<FiTruck/>}
 
-<FiClock size={22}/>
+title="Processing"
 
-</div>
+value={processing}
+
+color="blue"
+
+/>
 
 
-<p className="
-text-xs
-text-gray-500
-mt-3
-">
-
-Pending
-
-</p>
 
 
-<h2 className="
-text-2xl
-font-black
-">
 
-{pendingOrders}
+<StatCard
 
-</h2>
+icon={<FiCheckCircle/>}
+
+title="Delivered"
+
+value={delivered}
+
+color="green"
+
+/>
+
 
 
 </div>
 
-
-
-
-
-<div className="
-bg-white
-rounded-3xl
-p-4
-">
-
-<div className="
-w-10
-h-10
-rounded-xl
-bg-orange-50
-text-orange-600
-flex
-items-center
-justify-center
-">
-
-<FiTruck size={22}/>
-
-</div>
-
-
-<p className="
-text-xs
-text-gray-500
-mt-3
-">
-
-Processing
-
-</p>
-
-
-<h2 className="
-text-2xl
-font-black
-">
-
-{processingOrders}
-
-</h2>
-
-
-</div>
-
-
-
-
-
-
-<div className="
-bg-white
-rounded-3xl
-p-4
-">
-
-<div className="
-w-10
-h-10
-rounded-xl
-bg-green-50
-text-green-600
-flex
-items-center
-justify-center
-">
-
-<FiCheckCircle size={22}/>
-
-</div>
-
-
-<p className="
-text-xs
-text-gray-500
-mt-3
-">
-
-Delivered
-
-</p>
-
-
-<h2 className="
-text-2xl
-font-black
-">
-
-{deliveredOrders}
-
-</h2>
-
-
-</div>
-
-
-</div>
 
 
 
 
 
 {/* SEARCH */}
+
 
 
 <div className="
@@ -619,8 +450,8 @@ relative
 
 className="
 absolute
-left-4
-top-4
+left-5
+top-5
 text-gray-400
 "
 
@@ -636,19 +467,19 @@ setSearch(e.target.value)
 }
 
 placeholder="
-Search order/customer...
+Search order ID / customer...
 "
 
 className="
 w-full
 bg-white
 rounded-2xl
-py-4
-pl-12
-pr-4
+py-5
+pl-14
 border
 border-gray-200
 outline-none
+shadow-sm
 "
 
 />
@@ -661,113 +492,52 @@ outline-none
 
 
 
+
 {/* FILTER */}
 
 
 <div className="
-relative
+grid
+grid-cols-3
+gap-3
 ">
+
+
+{
+
+[
+"All Status",
+"Payment",
+"Date"
+
+].map(item=>(
 
 
 <button
 
-onClick={()=>
-setFilterOpen(!filterOpen)
-}
+key={item}
 
 className="
-w-full
 bg-white
 rounded-2xl
-px-5
 py-4
+px-4
 border
 border-gray-200
 flex
-items-center
 justify-between
+items-center
+text-sm
 "
 
 >
 
+{item}
 
 <span>
-
-{
-statusFilter==="all"
-?
-"All Orders"
-:
-statusFilter
-}
-
+⌄
 </span>
 
-
-<FiChevronDown/>
-
-
-</button>
-
-
-
-{
-filterOpen &&
-
-<div className="
-absolute
-top-14
-left-0
-right-0
-bg-white
-rounded-2xl
-shadow-xl
-border
-z-30
-overflow-hidden
-">
-
-
-{
-[
-"all",
-"Pending",
-"Processing",
-"Shipped",
-"Delivered",
-"Cancelled"
-
-].map(status=>(
-
-
-<button
-
-key={status}
-
-onClick={()=>{
-
-setStatusFilter(status);
-setFilterOpen(false);
-
-}}
-
-className="
-w-full
-text-left
-px-5
-py-3
-hover:bg-amber-50
-"
-
->
-
-{
-status==="all"
-?
-"All Orders"
-:
-status
-}
 
 </button>
 
@@ -777,52 +547,17 @@ status
 }
 
 
-</div>
-
-
-}
-
-
 
 </div>
 
-  {/* ORDERS LIST */}
-
-{
-filteredOrders.length === 0 ?
-
-(
-
-<div className="
-bg-white
-rounded-3xl
-p-10
-text-center
-text-gray-500
-">
-
-No Orders Found
-
-</div>
-
-)
-
-:
-
-(
-
-
-<>
-
-
-{/* =====================
-        MOBILE VIEW
-===================== */}
+  {/* =========================
+        MOBILE ORDER CARD
+========================= */}
 
 
 <div className="
 lg:hidden
-space-y-4
+space-y-5
 ">
 
 
@@ -841,44 +576,261 @@ p-5
 shadow-sm
 border
 border-gray-100
+relative
 "
 
 
 >
 
 
+{/* TOP */}
+
+
 <div className="
 flex
 justify-between
 items-start
-mb-5
 ">
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<img
+
+src={
+order.customerPhoto ||
+`https://ui-avatars.com/api/?name=${encodeURIComponent(
+order.customerName || "User"
+)}`
+}
+
+className="
+w-12
+h-12
+rounded-full
+object-cover
+"
+
+/>
+
 
 
 <div>
 
 
 <h3 className="
-font-black
+font-bold
 text-slate-800
 ">
 
-#{order.id.slice(0,8)}
+{
+order.customerName ||
+"Customer"
+}
 
 </h3>
 
 
 <p className="
-text-sm
+text-xs
 text-gray-500
 ">
 
-{order.customerName}
+{
+order.email
+}
 
 </p>
 
 
 </div>
+
+
+
+</div>
+
+
+
+
+
+<div className="relative">
+
+
+<button
+
+onClick={()=>setMenuOpen(
+menuOpen===order.id
+?
+null
+:
+order.id
+)}
+
+className="
+w-9
+h-9
+rounded-xl
+bg-gray-50
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiMoreVertical/>
+
+</button>
+
+
+
+
+{
+menuOpen===order.id &&
+
+<div
+
+className="
+absolute
+right-0
+top-11
+w-40
+bg-white
+rounded-xl
+shadow-xl
+border
+z-30
+overflow-hidden
+"
+
+>
+
+
+<button
+
+onClick={()=>navigate(
+`/admin/orders/${order.id}`
+)}
+
+className="
+w-full
+px-4
+py-3
+text-left
+text-sm
+hover:bg-blue-50
+flex
+gap-2
+items-center
+"
+
+>
+
+<FiEye/>
+
+View Details
+
+</button>
+
+
+
+
+<button
+
+onClick={()=>
+removeOrder(order.id)
+}
+
+className="
+w-full
+px-4
+py-3
+text-left
+text-sm
+text-red-600
+hover:bg-red-50
+flex
+gap-2
+items-center
+"
+
+>
+
+<FiTrash2/>
+
+Delete
+
+</button>
+
+
+
+</div>
+
+}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* ORDER INFO */}
+
+
+<div className="
+mt-5
+flex
+justify-between
+items-center
+">
+
+
+<div>
+
+
+<p className="
+font-black
+text-slate-800
+">
+
+#
+{
+order.id.slice(0,8)
+}
+
+</p>
+
+
+<p className="
+text-xs
+text-gray-500
+">
+
+{
+new Date(
+order.createdAt
+).toLocaleDateString()
+}
+
+</p>
+
+
+</div>
+
+
 
 
 
@@ -896,7 +848,6 @@ ${
 order.status==="Delivered"
 
 ?
-
 "bg-green-100 text-green-700"
 
 :
@@ -941,58 +892,31 @@ order.status || "Pending"
 
 
 
+{/* PRICE */}
+
 
 <div className="
-space-y-3
+mt-5
+flex
+justify-between
+items-center
+">
+
+
+<div>
+
+
+<p className="
 text-sm
-">
-
-
-<div className="
-flex
-justify-between
-">
-
-<span className="
-text-gray-500
-">
-
-Customer
-
-</span>
-
-
-<span className="
-font-semibold
-">
-
-{order.customerName}
-
-</span>
-
-
-</div>
-
-
-
-
-
-<div className="
-flex
-justify-between
-">
-
-
-<span className="
 text-gray-500
 ">
 
 Items
 
-</span>
+</p>
 
 
-<span className="
+<p className="
 font-bold
 ">
 
@@ -1000,7 +924,9 @@ font-bold
 order.items?.length || 0
 }
 
-</span>
+Products
+
+</p>
 
 
 </div>
@@ -1009,29 +935,30 @@ order.items?.length || 0
 
 
 
-
 <div className="
-flex
-justify-between
+text-right
 ">
 
-<span className="
+
+<p className="
+text-sm
 text-gray-500
 ">
 
 Total
 
-</span>
+</p>
 
 
-<span className="
+<p className="
 font-black
 text-blue-700
+text-xl
 ">
 
 ৳ {order.total}
 
-</span>
+</p>
 
 
 </div>
@@ -1044,41 +971,16 @@ text-blue-700
 
 
 
+
+{/* ACTION */}
 
 
 
 <div className="
 mt-5
-grid
-grid-cols-3
-gap-2
-">
-
-
-<button
-
-onClick={()=>
-navigate(`/admin/orders/${order.id}`)
-}
-
-className="
-h-11
-rounded-xl
-bg-blue-50
-text-blue-600
 flex
-items-center
-justify-center
-"
-
->
-
-<FiEye size={18}/>
-
-</button>
-
-
-
+gap-3
+">
 
 
 <select
@@ -1088,23 +990,22 @@ order.status || "Pending"
 }
 
 onChange={(e)=>
-
-handleStatusChange(
+changeStatus(
 order.id,
 e.target.value
 )
-
 }
 
 className="
-rounded-xl
+flex-1
 border
-px-2
+rounded-xl
+px-3
+py-3
 text-sm
 "
 
 >
-
 
 <option>
 Pending
@@ -1135,15 +1036,16 @@ Cancelled
 
 <button
 
-onClick={()=>
-handleDeleteOrder(order.id)
-}
+onClick={()=>navigate(
+`/admin/orders/${order.id}`
+)}
 
 className="
-h-11
+w-12
+h-12
 rounded-xl
-bg-red-500
-text-white
+bg-blue-50
+text-blue-600
 flex
 items-center
 justify-center
@@ -1151,7 +1053,7 @@ justify-center
 
 >
 
-<FiTrash2 size={18}/>
+<FiEye/>
 
 </button>
 
@@ -1181,9 +1083,9 @@ justify-center
 
 
 
-{/* =====================
-        DESKTOP VIEW
-===================== */}
+{/* =========================
+        DESKTOP TABLE
+========================= */}
 
 
 
@@ -1204,7 +1106,6 @@ w-full
 
 <thead className="
 bg-gray-50
-border-b
 ">
 
 
@@ -1298,7 +1199,6 @@ Action
 
 
 
-
 <tbody>
 
 
@@ -1312,12 +1212,11 @@ filteredOrders.map(order=>(
 key={order.id}
 
 className="
-border-b
+border-t
 hover:bg-gray-50
 "
 
 >
-
 
 
 <td className="
@@ -1326,7 +1225,10 @@ py-5
 font-bold
 ">
 
-#{order.id.slice(0,8)}
+#
+{
+order.id.slice(0,8)
+}
 
 </td>
 
@@ -1340,26 +1242,63 @@ py-5
 ">
 
 
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<img
+
+src={
+order.customerPhoto ||
+`https://ui-avatars.com/api/?name=${order.customerName}`
+}
+
+className="
+w-10
+h-10
+rounded-full
+"
+
+/>
+
+
+<div>
+
 <p className="
 font-semibold
 ">
 
-{order.customerName}
+{
+order.customerName
+}
 
 </p>
 
 
 <p className="
-text-sm
+text-xs
 text-gray-500
 ">
 
-{order.email}
+{
+order.email
+}
 
 </p>
 
 
+</div>
+
+
+</div>
+
+
 </td>
+
+
 
 
 
@@ -1375,7 +1314,6 @@ order.items?.length || 0
 }
 
 </td>
-
 
 
 
@@ -1396,7 +1334,6 @@ text-blue-700
 
 
 
-
 <td className="
 px-6
 py-5
@@ -1410,12 +1347,10 @@ order.status || "Pending"
 }
 
 onChange={(e)=>
-
-handleStatusChange(
+changeStatus(
 order.id,
 e.target.value
 )
-
 }
 
 className="
@@ -1428,34 +1363,17 @@ py-2
 >
 
 
-<option>
-Pending
-</option>
-
-<option>
-Processing
-</option>
-
-<option>
-Shipped
-</option>
-
-<option>
-Delivered
-</option>
-
-<option>
-Cancelled
-</option>
+<option>Pending</option>
+<option>Processing</option>
+<option>Shipped</option>
+<option>Delivered</option>
+<option>Cancelled</option>
 
 
 </select>
 
 
 </td>
-
-
-
 
 
 
@@ -1473,12 +1391,11 @@ gap-2
 ">
 
 
-
 <button
 
-onClick={() =>
-navigate(`/admin/orders/${order.id}`)
-}
+onClick={()=>navigate(
+`/admin/orders/${order.id}`
+)}
 
 className="
 w-10
@@ -1489,14 +1406,11 @@ text-blue-600
 flex
 items-center
 justify-center
-hover:bg-blue-100
 "
 
 >
 
-
 <FiEye/>
-
 
 </button>
 
@@ -1504,13 +1418,9 @@ hover:bg-blue-100
 
 
 
-
-
 <button
 
-onClick={() =>
-handleDeleteOrder(order.id)
-}
+onClick={()=>removeOrder(order.id)}
 
 className="
 w-10
@@ -1521,17 +1431,13 @@ text-white
 flex
 items-center
 justify-center
-hover:bg-red-600
 "
 
 >
 
-
 <FiTrash2/>
 
-
 </button>
-
 
 
 
@@ -1543,16 +1449,12 @@ hover:bg-red-600
 
 
 
-
-
 </tr>
 
 
 ))
 
-
 }
-
 
 
 </tbody>
@@ -1561,14 +1463,10 @@ hover:bg-red-600
 </table>
 
 
-
 </div>
 
 
-
 </>
-
-
 )
 
 }
@@ -1577,5 +1475,94 @@ hover:bg-red-600
 </div>
 
 );
+
+}
+
+
+
+
+
+
+
+// ===============================
+// STAT CARD COMPONENT
+// ===============================
+
+
+function StatCard({
+icon,
+title,
+value,
+color
+}){
+
+
+const colors={
+
+orange:
+"bg-orange-50 text-orange-500",
+
+yellow:
+"bg-yellow-50 text-yellow-500",
+
+blue:
+"bg-blue-50 text-blue-500",
+
+green:
+"bg-green-50 text-green-500",
+
+};
+
+
+return(
+
+<div className="
+bg-white
+rounded-3xl
+p-4
+shadow-sm
+">
+
+
+<div className={`
+w-10
+h-10
+rounded-xl
+flex
+items-center
+justify-center
+${colors[color]}
+`}>
+
+{icon}
+
+</div>
+
+
+<p className="
+text-xs
+text-gray-500
+mt-3
+">
+
+{title}
+
+</p>
+
+
+<h2 className="
+text-2xl
+font-black
+">
+
+{value}
+
+</h2>
+
+
+</div>
+
+)
+
 
 }
