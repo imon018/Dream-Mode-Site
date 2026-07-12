@@ -262,7 +262,7 @@ export default function AdminLayout() {
 
       })}
 
-      {/* Uploads */}
+            {/* Uploads */}
 
       <button
         onClick={() => setUploadOpen(!uploadOpen)}
@@ -422,4 +422,3 @@ export default function AdminLayout() {
   </main>
 
 </div>
-
