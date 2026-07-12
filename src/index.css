@@ -511,3 +511,149 @@ select{
 .checkout-input::placeholder {
   color: #9ca3af;
 }
+
+
+/* ==========================
+   ADMIN PANEL DARK AMBER THEME
+========================== */
+
+.admin-bg{
+  background:#111111;
+  min-height:100vh;
+  color:#ffffff;
+}
+
+
+.admin-card{
+
+  background:#181818;
+
+  border:1px solid #2A2A2A;
+
+  border-radius:20px;
+
+  padding:20px;
+
+  transition:.3s;
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,.25);
+
+}
+
+
+.admin-card:hover{
+
+  transform:translateY(-5px);
+
+  box-shadow:
+  0 20px 40px rgba(245,158,11,.15);
+
+}
+
+
+
+.admin-sidebar{
+
+ background:#151515;
+
+ border-right:1px solid #2A2A2A;
+
+}
+
+
+
+.admin-active{
+
+ background:#F59E0B;
+
+ color:#111111;
+
+}
+
+
+
+.admin-btn{
+
+ background:#F59E0B;
+
+ color:#111111;
+
+ padding:12px 24px;
+
+ border-radius:12px;
+
+ font-weight:600;
+
+ transition:.3s;
+
+}
+
+
+.admin-btn:hover{
+
+ background:#D97706;
+
+ transform:translateY(-2px);
+
+}
+
+
+
+.product-card{
+
+ background:#181818;
+
+ border:1px solid #2A2A2A;
+
+ border-radius:20px;
+
+ overflow:hidden;
+
+}
+
+
+
+.admin-input{
+
+ width:100%;
+
+ background:#181818;
+
+ border:1px solid #333;
+
+ color:white;
+
+ padding:14px 16px;
+
+ border-radius:14px;
+
+ outline:none;
+
+}
+
+
+.admin-input:focus{
+
+ border-color:#F59E0B;
+
+ box-shadow:
+ 0 0 0 4px rgba(245,158,11,.15);
+
+}
+
+
+
+.amber-text{
+
+ color:#F59E0B;
+
+}
+
+
+
+.amber-border{
+
+ border-color:#F59E0B;
+
+}
