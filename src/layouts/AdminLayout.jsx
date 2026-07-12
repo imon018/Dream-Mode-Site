@@ -22,11 +22,14 @@ import { logout } from "../services/authService";
 
 export default function AdminLayout() {
 
+
   const [sidebarOpen,setSidebarOpen] = useState(false);
+
   const [collapsed,setCollapsed] = useState(false);
 
 
-  const menu=[
+
+  const menu = [
 
     {
       name:"Dashboard",
@@ -34,11 +37,13 @@ export default function AdminLayout() {
       path:"/admin"
     },
 
+
     {
       name:"Products",
       icon:<FiBox/>,
       path:"/admin/products"
     },
+
 
     {
       name:"Hero Banners",
@@ -46,11 +51,13 @@ export default function AdminLayout() {
       path:"/admin/banners"
     },
 
+
     {
       name:"Add Product",
       icon:<FiPlusCircle/>,
       path:"/admin/add-product"
     },
+
 
     {
       name:"Orders",
@@ -58,11 +65,13 @@ export default function AdminLayout() {
       path:"/admin/orders"
     },
 
+
     {
       name:"Add Order",
       icon:<FiPlusCircle/>,
       path:"/admin/add-order"
     },
+
 
     {
       name:"Users",
@@ -70,11 +79,13 @@ export default function AdminLayout() {
       path:"/admin/users"
     },
 
+
     {
       name:"Analytics",
       icon:<FiBarChart2/>,
       path:"/admin/analytics"
     },
+
 
     {
       name:"Settings",
@@ -82,11 +93,13 @@ export default function AdminLayout() {
       path:"/admin/settings"
     },
 
+
     {
       name:"Admin Profile",
       icon:<FiUser/>,
       path:"/admin/profile"
     },
+
 
     {
       name:"Subscribers",
@@ -94,25 +107,39 @@ export default function AdminLayout() {
       path:"/admin/subscribers"
     },
 
+
     {
       name:"Newsletter",
       icon:<FiMail/>,
       path:"/admin/newsletter"
     },
 
+
     {
       name:"Shop Hero",
       icon:<FiImage/>,
       path:"/admin/shop-hero"
-    }
+    },
+
 
   ];
 
 
 
+
 return (
 
-<div className="min-h-screen w-full bg-dark flex overflow-hidden">
+
+<div className="
+min-h-screen
+w-full
+flex
+bg-warm
+overflow-hidden
+">
+
+
+
 
 
 {/* MOBILE OVERLAY */}
@@ -121,21 +148,28 @@ return (
 sidebarOpen &&
 
 <div
+
 className="
-fixed inset-0
-bg-black/70
+fixed
+inset-0
+bg-black/30
+backdrop-blur-sm
 z-40
 lg:hidden
 "
+
 onClick={()=>setSidebarOpen(false)}
-/>
+
+></div>
 
 }
 
 
 
 
+
 {/* MOBILE MENU BUTTON */}
+
 
 <button
 
@@ -148,13 +182,15 @@ top-4
 left-4
 z-50
 
-bg-amber-500
-text-black
+bg-gold-gradient
+
+text-white
 
 p-3
+
 rounded-xl
 
-shadow-lg
+shadow-gold
 
 "
 
@@ -168,7 +204,10 @@ shadow-lg
 
 
 
+
+
 {/* SIDEBAR */}
+
 
 <aside
 
@@ -177,54 +216,80 @@ className={`
 fixed
 lg:static
 
-top-0
-left-0
+top:0
+left:0
 
 h-screen
 
-${collapsed ? "lg:w-24":"lg:w-72"}
+
+${collapsed 
+? "lg:w-24"
+: "lg:w-72"
+}
+
 
 w-72
 
-bg-[#151515]
+
+bg-card
 
 border-r
-border-[#2A2A2A]
 
-text-white
+border-border
+
 
 flex
+
 flex-col
+
 
 z-50
 
+
 transition-all
+
 duration-300
 
 
-${sidebarOpen
+shadow-luxury
+
+
+${
+sidebarOpen
+
 ?
+
 "translate-x-0"
+
 :
+
 "-translate-x-full lg:translate-x-0"
+
 }
 
 `}
+
 
 >
 
 
 
 
+
+
+
 {/* MOBILE CLOSE */}
 
+
 <div
+
 className="
 lg:hidden
 flex
 justify-end
 p-4
 "
+
 >
 
 <button
@@ -233,8 +298,10 @@ onClick={()=>setSidebarOpen(false)}
 
 className="
 p-2
-rounded-lg
-hover:bg-white/10
+rounded-xl
+
+hover:bg-gray-100
+
 "
 
 >
@@ -243,26 +310,33 @@ hover:bg-white/10
 
 </button>
 
+
 </div>
 
 
 
 
 
-{/* LOGO AREA */}
+
+
+{/* HEADER */}
+
+
 
 <div
 
 className="
 h-24
+px-6
+
 flex
 items-center
 justify-between
 
-px-6
 
 border-b
-border-[#2A2A2A]
+
+border-border
 
 "
 
@@ -270,6 +344,7 @@ border-[#2A2A2A]
 
 
 {
+
 !collapsed &&
 
 <div>
@@ -279,7 +354,9 @@ border-[#2A2A2A]
 className="
 text-2xl
 font-bold
-text-amber-500
+
+text-amber-600
+
 "
 
 >
@@ -289,10 +366,15 @@ Dream Mode
 </h1>
 
 
-<p className="
+<p
+
+className="
 text-sm
-text-gray-400
-">
+text-muted
+
+"
+
+>
 
 Admin Panel
 
@@ -305,6 +387,8 @@ Admin Panel
 
 
 
+
+
 <button
 
 onClick={()=>setCollapsed(!collapsed)}
@@ -313,7 +397,7 @@ className="
 hidden
 lg:block
 
-text-gray-400
+text-gray-500
 
 hover:text-amber-500
 
@@ -326,7 +410,10 @@ hover:text-amber-500
 </button>
 
 
+
 </div>
+
+
 
 
 
@@ -336,10 +423,13 @@ hover:text-amber-500
 
 {/* MENU */}
 
+
+
 <nav
 
 className="
 flex-1
+
 overflow-y-auto
 
 p-4
@@ -352,34 +442,42 @@ space-y-2
 
 
 {
-menu.map(item=>(
+menu.map((item)=>(
 
 
 <NavLink
+
 
 key={item.path}
 
 to={item.path}
 
+
 onClick={()=>setSidebarOpen(false)}
 
-className={({isActive})=>
 
-`
+
+className={({isActive})=>`
 
 flex
+
 items-center
 
 gap-3
 
+
 px-4
+
 py-3
 
+
 rounded-xl
+
 
 transition-all
 
 duration-300
+
 
 
 ${
@@ -387,21 +485,20 @@ isActive
 
 ?
 
-"bg-amber-500 text-black shadow-lg"
+"bg-gold-gradient text-white shadow-gold"
 
 :
 
-"hover:bg-white/10 text-gray-300"
+"text-gray-700 hover:bg-amber-50"
 
 }
 
 
-`
-
-}
+`}
 
 
 >
+
 
 
 <span className="text-xl">
@@ -411,16 +508,21 @@ isActive
 </span>
 
 
+
 {
+
 !collapsed &&
 
-<span>
+<span className="
+font-medium
+">
 
 {item.name}
 
 </span>
 
 }
+
 
 
 </NavLink>
@@ -440,7 +542,10 @@ isActive
 
 
 
+
 {/* LOGOUT */}
+
+
 
 <div
 
@@ -449,7 +554,7 @@ p-4
 
 border-t
 
-border-[#2A2A2A]
+border-border
 
 "
 
@@ -458,32 +563,47 @@ border-[#2A2A2A]
 
 <button
 
+
 onClick={()=>logout()}
+
 
 className="
 
 w-full
 
 flex
+
 items-center
+
 justify-center
+
 gap-2
 
-bg-red-600
 
-hover:bg-red-700
+bg-red-500
+
+hover:bg-red-600
+
+
+text-white
+
 
 py-3
 
+
 rounded-xl
 
+
 transition
+
 
 "
 
 >
 
+
 <FiLogOut/>
+
 
 {
 
@@ -491,10 +611,15 @@ transition
 
 }
 
+
 </button>
 
 
 </div>
+
+
+
+
 
 
 
@@ -507,7 +632,10 @@ transition
 
 
 
-{/* CONTENT AREA */}
+
+{/* MAIN CONTENT */}
+
+
 
 <main
 
@@ -517,16 +645,21 @@ flex-1
 
 min-h-screen
 
+
 w-full
 
-bg-[#111111]
+
+bg-warm
+
 
 overflow-y-auto
+
 
 
 pt-20
 
 lg:pt-8
+
 
 px-4
 
@@ -534,7 +667,9 @@ sm:px-6
 
 lg:px-8
 
+
 "
+
 
 >
 
@@ -543,6 +678,10 @@ lg:px-8
 
 
 </main>
+
+
+
+
 
 
 
