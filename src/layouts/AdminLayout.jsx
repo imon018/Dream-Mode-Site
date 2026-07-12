@@ -129,8 +129,9 @@ className={`
 lg:hidden
 flex
 justify-end
-"
->
+px-4
+py-1
+">
 
 <button onClick={()=>setSidebarOpen(false)}>
 <FiX size={28}/>
@@ -383,36 +384,28 @@ pb-10
           </NavLink>
 
           <NavLink
-            to="/admin/newsletter"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl ${
-                isActive
-                  ? "bg-amber-500 text-white"
-                  : "hover:bg-amber-50 text-slate-700"
-              }`
-            }
-          >
-            <FiMail size={20} />
-            {!collapsed && <span>Newsletter</span>}
-          </NavLink>
-        </nav>
-
-      {/* Bottom Menu */}
- <NavLink
   to="/admin/newsletter"
   className={({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl ${
       isActive
         ? "bg-amber-500 text-white"
-        : "hover:bg-amber-50 text-slate-700"
+        : "text-slate-700 hover:bg-amber-50"
     }`
   }
 >
-  <FiMail size={20} />
-  {!collapsed && <span>Newsletter</span>}
+
+<FiMail size={20}/>
+
+{!collapsed && (
+<span>
+Newsletter
+</span>
+)}
+
 </NavLink>
 
-        {/* Settings */}
+
+{/* Settings */}
 
 <NavLink
 to="/admin/settings"
@@ -424,7 +417,6 @@ gap-3
 px-4
 py-3
 rounded-xl
-transition
 
 ${
 isActive
@@ -461,16 +453,16 @@ w-full
 flex
 items-center
 gap-3
+
 px-4
 py-3
+
 rounded-xl
 
 bg-red-500
 hover:bg-red-600
 
 text-white
-
-transition
 
 "
 
@@ -485,34 +477,4 @@ Logout
 )}
 
 </button>
-        
-    </aside>
-
-    {/* Main Content */}
-    <main
-      className={`
-        flex-1
-        min-h-screen
-        bg-[#F8F5EF]
-        transition-all
-        duration-300
-        ${
-          collapsed
-            ? "lg:ml-24"
-            : "lg:ml-72"
-        }
-      `}
-    >
-
-      <div className="p-4 lg:p-8">
-
-        <Outlet />
-
-      </div>
-
-    </main>
-
-  </div>
-);
-}
 
