@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import { 
+  useEffect, 
+  useState 
+} from "react";
+
 
 import {
   useParams,
@@ -8,12 +12,12 @@ import {
 
 import {
   FiArrowLeft,
-  FiTrash2,
-  FiPackage,
-  FiUser,
-  FiMapPin,
+  FiMoreVertical,
   FiPhone,
   FiMail,
+  FiMapPin,
+  FiTrash2,
+  FiPackage,
 } from "react-icons/fi";
 
 
@@ -36,22 +40,17 @@ import {
 export default function OrderDetails(){
 
 
+const {id}=useParams();
 
-const { id } = useParams();
-
-
-const navigate = useNavigate();
+const navigate=useNavigate();
 
 
 
+const [order,setOrder]=useState(null);
 
-const [order,setOrder] =
-useState(null);
+const [loading,setLoading]=useState(true);
 
-
-const [loading,setLoading] =
-useState(true);
-
+const [menuOpen,setMenuOpen]=useState(false);
 
 
 
@@ -68,45 +67,37 @@ loadOrder();
 
 
 
-
 async function loadOrder(){
-
 
 try{
 
 
-const data =
-await getAllOrders();
+const data=await getAllOrders();
 
 
-
-const found =
-data.find(
+const found=data.find(
 (item)=>item.id===id
 );
-
 
 
 setOrder(found);
 
 
-
 }
+
 catch(error){
 
 console.log(error);
 
 }
+
 finally{
 
 setLoading(false);
 
 }
 
-
 }
-
-
 
 
 
@@ -115,7 +106,6 @@ setLoading(false);
 
 
 async function changeStatus(status){
-
 
 try{
 
@@ -130,35 +120,30 @@ status
 setOrder(prev=>({
 
 ...prev,
-
 status
 
 }));
 
 
-
 successToast(
-"Order status updated."
+"Status updated"
 );
 
 
-
 }
+
 catch(error){
 
 console.log(error);
 
 errorToast(
-"Failed to update status."
+"Update failed"
 );
 
 
 }
 
-
 }
-
-
 
 
 
@@ -169,16 +154,13 @@ errorToast(
 async function removeOrder(){
 
 
-const confirmDelete =
-window.confirm(
-"Delete this order permanently?"
+const ok=window.confirm(
+"Delete this order?"
 );
 
 
-
-if(!confirmDelete)
+if(!ok)
 return;
-
 
 
 
@@ -188,27 +170,21 @@ try{
 await deleteOrder(id);
 
 
-
 successToast(
-"Order deleted successfully."
+"Order deleted"
 );
-
 
 
 navigate("/admin/orders");
 
 
-
 }
+
 catch(error){
 
-console.log(error);
-
-
 errorToast(
-"Failed to delete order."
+"Delete failed"
 );
-
 
 }
 
@@ -223,26 +199,21 @@ errorToast(
 
 if(loading){
 
-
 return(
 
 <div className="
-min-h-[60vh]
+min-h-screen
 flex
 items-center
 justify-center
 font-bold
-text-xl
 ">
 
-
 Loading Order...
-
 
 </div>
 
 );
-
 
 }
 
@@ -253,22 +224,21 @@ Loading Order...
 
 if(!order){
 
-
 return(
 
 <div className="
-min-h-[60vh]
+min-h-screen
 flex
-flex-col
-gap-5
 items-center
 justify-center
+flex-col
+gap-4
 ">
 
 
 <h2 className="
-text-2xl
 font-bold
+text-xl
 ">
 
 Order Not Found
@@ -276,31 +246,28 @@ Order Not Found
 </h2>
 
 
-
 <button
 
 onClick={()=>navigate(-1)}
 
 className="
-bg-amber-500
+px-4
+py-2
+bg-black
 text-white
-px-5
-py-3
-rounded-xl
+rounded-lg
 "
 
 >
 
-Go Back
+Back
 
 </button>
 
 
 </div>
 
-
 );
-
 
 }
 
@@ -310,15 +277,14 @@ Go Back
 
 
 
-
 return(
 
-
 <div className="
-space-y-6
+bg-[#faf9f6]
+min-h-screen
+p-4
+space-y-3
 ">
-
-
 
 
 
@@ -326,14 +292,11 @@ space-y-6
 
 {/* HEADER */}
 
-
-
 <div className="
 flex
-flex-col
-md:flex-row
+items-center
 justify-between
-gap-4
+mb-2
 ">
 
 
@@ -342,27 +305,81 @@ gap-4
 onClick={()=>navigate(-1)}
 
 className="
+w-9
+h-9
+rounded-lg
 bg-white
-px-5
-py-3
-rounded-2xl
-shadow-sm
+border
+border-gray-100
 flex
 items-center
-gap-2
-font-semibold
+justify-center
 "
 
 >
 
 <FiArrowLeft/>
 
-Back
+</button>
+
+
+
+
+<h1 className="
+font-bold
+text-lg
+">
+
+Order Details
+
+</h1>
+
+
+
+
+
+
+<div className="
+relative
+">
+
+
+<button
+
+onClick={()=>setMenuOpen(!menuOpen)}
+
+className="
+w-9
+h-9
+rounded-lg
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiMoreVertical/>
 
 </button>
 
 
 
+{
+menuOpen &&
+
+<div className="
+absolute
+right-0
+top-10
+w-32
+bg-white
+border
+border-gray-100
+rounded-lg
+shadow-lg
+z-50
+">
 
 
 <button
@@ -370,79 +387,32 @@ Back
 onClick={removeOrder}
 
 className="
-bg-red-500
-text-white
-px-5
-py-3
-rounded-2xl
+w-full
 flex
 items-center
-justify-center
 gap-2
+px-3
+py-2
+text-sm
+text-red-600
 "
 
 >
 
 <FiTrash2/>
 
-Delete Order
+Delete
 
 </button>
 
 
 </div>
 
+}
 
 
+</div>
 
-
-
-
-
-
-
-{/* ORDER TOP CARD */}
-
-
-
-<div className="
-bg-white
-rounded-3xl
-p-6
-shadow-sm
-">
-
-
-<div className="
-flex
-flex-col
-md:flex-row
-justify-between
-gap-5
-">
-
-
-<div>
-
-
-<p className="
-text-gray-500
-text-sm
-">
-
-Order ID
-
-</p>
-
-
-<h1 className="
-text-2xl
-font-black
-">
-
-#{order.id.slice(0,10)}
-
-</h1>
 
 
 </div>
@@ -451,18 +421,852 @@ font-black
 
 
 
+
+
+{/* ORDER CARD */}
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+<div className="
+flex
+justify-between
+items-start
+">
+
+
+<div>
+
+
+<h2 className="
+text-2xl
+font-black
+text-slate-900
+">
+
+#{order.id?.slice(0,10)}
+
+</h2>
+
+
+<p className="
+text-xs
+text-gray-500
+mt-1
+">
+
+{
+new Date(order.createdAt)
+.toLocaleString()
+}
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<span className={`
+
+text-xs
+font-bold
+px-3
+py-1.5
+rounded-full
+
+
+${
+order.status==="Delivered"
+
+?
+"bg-green-100 text-green-700"
+
+:
+
+order.status==="Processing"
+
+?
+"bg-blue-100 text-blue-700"
+
+:
+
+order.status==="Cancelled"
+
+?
+"bg-red-100 text-red-700"
+
+:
+
+"bg-yellow-100 text-yellow-700"
+
+}
+
+`}>
+
+{order.status}
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+
+<hr className="
+my-4
+border-gray-100
+"/>
+
+
+
+
+
+
+
+{/* CUSTOMER */}
+
+<h3 className="
+font-bold
+text-sm
+mb-3
+">
+
+Customer
+
+</h3>
+
+
+
+<div className="
+flex
+justify-between
+items-center
+">
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<img
+
+src={
+order.customerPhoto ||
+`https://ui-avatars.com/api/?name=${order.customerName}`
+}
+
+className="
+w-12
+h-12
+rounded-full
+object-cover
+"
+
+/>
+
+
 <div>
 
 
 <p className="
-text-gray-500
+font-bold
 text-sm
-mb-2
 ">
 
-Order Status
+{order.customerName}
 
 </p>
+
+
+<p className="
+text-xs
+text-gray-500
+">
+
+{order.email}
+
+</p>
+
+
+<p className="
+text-xs
+text-gray-600
+mt-1
+">
+
+{order.phone}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
+flex
+gap-2
+">
+
+
+<a
+
+href={`tel:${order.phone}`}
+
+className="
+w-9
+h-9
+rounded-full
+bg-gray-50
+border
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiPhone size={16}/>
+
+</a>
+
+
+
+<a
+
+href={`mailto:${order.email}`}
+
+className="
+w-9
+h-9
+rounded-full
+bg-gray-50
+border
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiMail size={16}/>
+
+</a>
+
+
+</div>
+
+
+</div>
+
+  {/* SHIPPING ADDRESS */}
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+<h3 className="
+font-bold
+text-sm
+mb-3
+">
+
+Shipping Address
+
+</h3>
+
+
+
+<div className="
+flex
+gap-3
+text-sm
+text-gray-700
+">
+
+
+<FiMapPin
+className="
+mt-1
+text-gray-500
+"
+/>
+
+
+
+<p>
+
+{
+order.address ||
+"No address available"
+}
+
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* PRODUCTS */}
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+
+<div className="
+flex
+items-center
+gap-2
+mb-4
+">
+
+
+<FiPackage
+className="
+text-blue-600
+"
+/>
+
+
+<h3 className="
+font-bold
+text-sm
+">
+
+Products
+
+</h3>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
+space-y-3
+">
+
+
+{
+
+order.items?.map(
+
+(item,index)=>(
+
+
+<div
+
+key={
+item.id || index
+}
+
+className="
+flex
+items-center
+justify-between
+border-b
+border-gray-100
+pb-3
+"
+
+
+>
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<img
+
+src={
+item.image ||
+"https://via.placeholder.com/60"
+}
+
+className="
+w-14
+h-14
+rounded-lg
+object-cover
+bg-gray-50
+"
+
+/>
+
+
+
+
+<div>
+
+
+<h4 className="
+text-sm
+font-bold
+">
+
+{item.name}
+
+</h4>
+
+
+
+<p className="
+text-xs
+text-gray-500
+mt-1
+">
+
+{
+item.size &&
+`Size: ${item.size}`
+}
+
+
+{
+item.color &&
+` / Color: ${item.color}`
+}
+
+
+</p>
+
+
+<p className="
+text-xs
+text-gray-500
+">
+
+Qty: {item.quantity}
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
+text-right
+">
+
+
+<p className="
+font-bold
+text-sm
+">
+
+৳ {item.price * item.quantity}
+
+</p>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+)
+
+)
+
+
+}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* ORDER SUMMARY */}
+
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+
+<h3 className="
+font-bold
+text-sm
+mb-4
+">
+
+Order Summary
+
+</h3>
+
+
+
+
+<div className="
+space-y-3
+text-sm
+">
+
+
+
+<div className="
+flex
+justify-between
+">
+
+<span className="
+text-gray-500
+">
+
+Subtotal
+
+</span>
+
+
+<span className="
+font-semibold
+">
+
+৳ {order.subtotal || order.total}
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
+flex
+justify-between
+">
+
+
+<span className="
+text-gray-500
+">
+
+Shipping
+
+</span>
+
+
+<span className="
+font-semibold
+">
+
+৳ {order.shipping || 0}
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
+flex
+justify-between
+">
+
+
+<span className="
+text-gray-500
+">
+
+Discount
+
+</span>
+
+
+<span className="
+font-semibold
+text-red-500
+">
+
+-৳ {order.discount || 0}
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+<hr className="
+border-gray-100
+"/>
+
+
+
+
+
+
+<div className="
+flex
+justify-between
+font-black
+text-base
+">
+
+
+<span>
+
+Total Amount
+
+</span>
+
+
+<span>
+
+৳ {order.total}
+
+</span>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* PAYMENT METHOD */}
+
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+
+<h3 className="
+font-bold
+text-sm
+mb-3
+">
+
+Payment Method
+
+</h3>
+
+
+
+
+<div className="
+flex
+items-center
+justify-between
+">
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<div className="
+w-9
+h-9
+rounded-lg
+bg-green-50
+flex
+items-center
+justify-center
+text-green-600
+">
+
+💳
+
+</div>
+
+
+
+<p className="
+text-sm
+font-semibold
+">
+
+{
+order.paymentMethod ||
+"Cash on Delivery"
+}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+<span className="
+text-xs
+font-bold
+px-3
+py-1.5
+rounded-full
+bg-green-100
+text-green-700
+">
+
+Paid
+
+</span>
+
+
+
+</div>
+
+
+
+</div>
+
+  // =========================
+// UPDATE STATUS
+// =========================
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+<h3 className="
+font-bold
+text-sm
+mb-3
+">
+
+Update Order Status
+
+</h3>
 
 
 
@@ -478,13 +1282,46 @@ e.target.value
 )
 }
 
-className="
-border
-rounded-xl
-px-5
-py-3
-font-semibold
-"
+className={`
+w-full
+h-11
+px-3
+rounded-lg
+text-sm
+font-bold
+outline-none
+
+
+${
+order.status==="Delivered"
+
+?
+
+"bg-green-100 text-green-700"
+
+:
+
+order.status==="Processing"
+
+?
+
+"bg-blue-100 text-blue-700"
+
+:
+
+order.status==="Cancelled"
+
+?
+
+"bg-red-100 text-red-700"
+
+:
+
+"bg-yellow-100 text-yellow-700"
+
+}
+
+`}
 
 >
 
@@ -514,15 +1351,10 @@ Cancelled
 </option>
 
 
+
 </select>
 
 
-</div>
-
-
-
-</div>
-
 
 </div>
 
@@ -532,413 +1364,37 @@ Cancelled
 
 
 
-
-
-{/* CUSTOMER INFO */}
+{/* DELETE BUTTON */}
 
 
 
-<div className="
-bg-white
-rounded-3xl
-p-6
-shadow-sm
-">
+<button
 
+onClick={removeOrder}
 
-<div className="
-flex
-items-center
-gap-3
-mb-5
-">
-
-
-<FiUser
 className="
-text-amber-500
-"
-size={24}
-/>
-
-
-<h2 className="
-text-xl
-font-black
-">
-
-Customer Information
-
-</h2>
-
-
-</div>
-
-
-
-
-
-<div className="
-grid
-md:grid-cols-2
-gap-5
-">
-
-
-<div className="
-flex
-gap-3
-">
-
-<FiUser/>
-
-<p>
-{order.customerName}
-</p>
-
-</div>
-
-
-
-
-
-<div className="
-flex
-gap-3
-">
-
-<FiMail/>
-
-<p>
-{order.email}
-</p>
-
-</div>
-
-
-
-
-
-<div className="
-flex
-gap-3
-">
-
-<FiPhone/>
-
-<p>
-{order.phone}
-</p>
-
-</div>
-
-
-
-
-
-<div className="
-flex
-gap-3
-">
-
-<FiMapPin/>
-
-<p>
-{order.address}
-</p>
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* REQUEST ALERT */}
-
-
-
-{
-
-(order.cancelRequested ||
-order.returnRequested)
-
-&&
-
-
-<div className="
-bg-yellow-50
-rounded-3xl
-p-6
-">
-
-
-<h2 className="
-font-black
-mb-3
-">
-
-Customer Request
-
-</h2>
-
-
-
-{
-order.cancelRequested &&
-
-<p className="
-text-red-600
+w-full
+h-11
+rounded-lg
+bg-red-500
+text-white
 font-bold
-">
-
-⚠ Cancel Request Received
-
-</p>
-
-}
-
-
-
-
-{
-order.returnRequested &&
-
-<p className="
-text-blue-600
-font-bold
-">
-
-🔄 Return Request Received
-
-</p>
-
-}
-
-
-
-</div>
-
-
-}
-
-
-
-
-
-
-
-
-
-{/* PRODUCTS */}
-
-
-
-<div className="
-bg-white
-rounded-3xl
-p-6
-shadow-sm
-">
-
-
-<div className="
+text-sm
 flex
 items-center
-gap-3
-mb-5
-">
-
-
-<FiPackage
-className="
-text-blue-600
-"
-size={24}
-/>
-
-
-<h2 className="
-text-xl
-font-black
-">
-
-Products
-
-</h2>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="
-space-y-4
-">
-
-
-{
-
-order.items?.map(
-(item,index)=>(
-
-
-<div
-
-key={item.id || index}
-
-className="
-flex
-items-center
-justify-between
-border-b
-pb-4
-gap-4
+justify-center
+gap-2
 "
 
 >
 
 
-<div className="
-flex
-items-center
-gap-4
-">
+<FiTrash2/>
 
+Delete Order
 
-<img
+</button>
 
-src={
-item.image ||
-"https://via.placeholder.com/80"
-}
-
-className="
-w-16
-h-16
-rounded-xl
-object-cover
-"
-
-/>
-
-
-
-<div>
-
-
-<h3 className="
-font-bold
-">
-
-{item.name}
-
-</h3>
-
-
-
-<p className="
-text-sm
-text-gray-500
-">
-
-Qty:
-{item.quantity}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<p className="
-font-black
-">
-
-৳ {item.price * item.quantity}
-
-</p>
-
-
-
-</div>
-
-
-)
-
-)
-
-
-}
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-
-{/* TOTAL */}
-
-
-
-<div className="
-bg-blue-900
-text-white
-rounded-3xl
-p-6
-flex
-justify-between
-text-xl
-font-black
-">
-
-
-<span>
-
-Total Amount
-
-</span>
-
-
-<span>
-
-৳ {order.total}
-
-</span>
-
-
-</div>
 
 
 
@@ -946,7 +1402,6 @@ Total Amount
 
 
 </div>
-
 
 );
 
