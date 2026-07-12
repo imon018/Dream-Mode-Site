@@ -794,12 +794,11 @@ text-xs
 
 <div className="
 lg:hidden
-space-y-3
+space-y-2
 ">
 
 
 {
-
 filteredOrders.map(order=>(
 
 
@@ -809,15 +808,18 @@ key={order.id}
 
 className="
 bg-white
+rounded-2xl
 border
 border-gray-100
-rounded-xl
-p-3
+p-4
 shadow-sm
 "
 
+
 >
 
+
+{/* HEADER */}
 
 <div className="
 flex
@@ -826,50 +828,29 @@ items-start
 ">
 
 
-<div className="
-flex
-items-center
-gap-3
-">
-
-
-<img
-
-src={
-order.customerPhoto ||
-
-`https://ui-avatars.com/api/?name=${order.customerName}`
-}
-
-className="
-w-9
-h-9
-rounded-full
-object-cover
-"
-
-/>
-
-
 <div>
 
-
 <h3 className="
+font-black
 text-sm
-font-bold
+text-slate-900
 ">
 
-{order.customerName || "Customer"}
+#{order.id?.slice(0,8)}
 
 </h3>
 
 
 <p className="
-text-[11px]
-text-gray-500
+text-xs
+text-gray-400
+mt-1
 ">
 
-{order.email}
+{
+new Date(order.createdAt)
+.toLocaleDateString()
+}
 
 </p>
 
@@ -877,16 +858,14 @@ text-gray-500
 </div>
 
 
-</div>
-
-
-
-
 
 
 
 <div className="
-relative
+flex
+flex-col
+items-end
+gap-2
 ">
 
 
@@ -904,8 +883,8 @@ className="
 w-8
 h-8
 rounded-lg
-bg-gray-50
 border
+bg-gray-50
 flex
 items-center
 justify-center
@@ -919,142 +898,10 @@ justify-center
 
 
 
-
-
-{
-menuOpen===order.id &&
-
-
-<div className="
-absolute
-right-0
-top-9
-w-32
-bg-white
-border
-rounded-xl
-shadow-lg
-z-50
-overflow-hidden
-">
-
-
-<button
-
-onClick={()=>navigate(
-`/admin/orders/${order.id}`
-)}
-
-className="
-w-full
-px-3
-py-2
-text-xs
-flex
-items-center
-gap-2
-hover:bg-gray-50
-"
-
->
-
-<FiEye/>
-
-View
-
-</button>
-
-
-
-<button
-
-onClick={()=>removeOrder(order.id)}
-
-className="
-w-full
-px-3
-py-2
-text-xs
-text-red-600
-flex
-items-center
-gap-2
-hover:bg-red-50
-"
-
->
-
-<FiTrash2/>
-
-Delete
-
-</button>
-
-
-</div>
-
-
-}
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="
-flex
-justify-between
-mt-3
-">
-
-
-<div>
-
-
-<p className="
-text-xs
-font-bold
-">
-
-#{order.id?.slice(0,8)}
-
-</p>
-
-
-<p className="
-text-[11px]
-text-gray-400
-">
-
-{
-new Date(order.createdAt)
-.toLocaleDateString()
-}
-
-</p>
-
-
-</div>
-
-
-
-
-<div className="
-text-right
-">
-
-
 <p className="
 font-black
-text-sm
+text-base
+text-slate-900
 ">
 
 ৳ {order.total}
@@ -1062,12 +909,75 @@ text-sm
 </p>
 
 
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* CUSTOMER */}
+
+
+<div className="
+mt-4
+flex
+justify-between
+items-center
+">
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<img
+
+src={
+order.customerPhoto ||
+
+`https://ui-avatars.com/api/?name=${encodeURIComponent(
+order.customerName || "User"
+)}`
+}
+
+className="
+w-10
+h-10
+rounded-full
+object-cover
+"
+
+/>
+
+
+<div>
+
 <p className="
-text-[11px]
+font-bold
+text-sm
+">
+
+{order.customerName}
+
+</p>
+
+
+<p className="
+text-xs
 text-gray-500
 ">
 
-{order.items?.length || 0} Items
+{order.email}
 
 </p>
 
@@ -1081,10 +991,36 @@ text-gray-500
 
 
 
+<p className="
+text-xs
+text-gray-500
+font-semibold
+">
+
+{
+order.items?.length || 0
+}
+ Items
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* FOOTER */}
 
 
 <div className="
-mt-3
+mt-4
 flex
 justify-between
 items-center
@@ -1093,9 +1029,7 @@ items-center
 
 <select
 
-value={
-order.status || "Pending"
-}
+value={order.status || "Pending"}
 
 onChange={(e)=>
 changeStatus(
@@ -1109,7 +1043,7 @@ className={`
 text-xs
 font-bold
 px-3
-py-1.5
+py-2
 rounded-lg
 outline-none
 
@@ -1124,7 +1058,6 @@ order.status==="Delivered"
 order.status==="Processing"
 
 ?
-
 "bg-blue-100 text-blue-700"
 
 :
@@ -1132,7 +1065,6 @@ order.status==="Processing"
 order.status==="Cancelled"
 
 ?
-
 "bg-red-100 text-red-700"
 
 :
@@ -1145,12 +1077,28 @@ order.status==="Cancelled"
 
 >
 
-<option>Pending</option>
-<option>Processing</option>
-<option>Delivered</option>
-<option>Cancelled</option>
+
+<option>
+Pending
+</option>
+
+<option>
+Processing
+</option>
+
+<option>
+Delivered
+</option>
+
+<option>
+Cancelled
+</option>
+
 
 </select>
+
+
+
 
 
 
@@ -1162,8 +1110,8 @@ onClick={()=>navigate(
 )}
 
 className="
-w-8
-h-8
+w-9
+h-9
 rounded-lg
 bg-blue-50
 text-blue-600
@@ -1174,14 +1122,57 @@ justify-center
 
 >
 
-<FiEye size={15}/>
+<FiEye size={16}/>
 
 </button>
 
 
+</div>
+
+
+
+
+
+
+
+
+{
+menuOpen===order.id &&
+
+<div className="
+absolute
+bg-white
+border
+rounded-lg
+shadow-lg
+right-5
+mt-[-40px]
+w-28
+z-50
+">
+
+
+<button
+
+onClick={()=>removeOrder(order.id)}
+
+className="
+px-3
+py-2
+text-xs
+text-red-600
+"
+
+>
+
+Delete
+
+</button>
+
 
 </div>
 
+}
 
 
 
@@ -1195,6 +1186,8 @@ justify-center
 
 
 </div>
+
+
 
 
 	{/* DESKTOP TABLE */}
