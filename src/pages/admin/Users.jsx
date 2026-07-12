@@ -1187,5 +1187,6 @@ disabled:opacity-40
 }
 
 </div>
-):
+  );
+}
 
