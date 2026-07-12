@@ -39,6 +39,8 @@ export default function Users() {
   const [roleFilter,setRoleFilter] =
     useState("all");
 
+  const [filterOpen, setFilterOpen] = useState(false);
+
 
   const [selectedUser,setSelectedUser] =
     useState(null);
@@ -157,31 +159,34 @@ export default function Users() {
 
   async function removeUser(user){
 
-
-    try{
-
-
-      await deleteUser(
-        user.id
-      );
+const confirmDelete = window.confirm(
+  `Are you sure you want to delete ${user.email}?`
+);
 
 
-      await loadUsers();
+if(!confirmDelete){
+  return;
+}
 
 
-      setShowAction(false);
+try{
+
+  await deleteUser(user.id);
+
+  await loadUsers();
+
+  setShowAction(false);
+
+  setSelectedUser(null);
 
 
+}catch(error){
 
-    }
-    catch(error){
+  console.log(error);
 
-      console.log(error);
+}
 
-    }
-
-
-  }
+}
 
 
 
@@ -305,9 +310,8 @@ Users
 
 <div className="
 grid
-grid-cols-2
-lg:grid-cols-4
-gap-3
+grid-cols-4
+gap-2
 mb-6
 ">
 
@@ -315,13 +319,13 @@ mb-6
 <div className="
 bg-white
 rounded-2xl
-p-4
+p-3
 shadow-sm
 ">
 
 <div className="
-w-10
-h-10
+w-8
+h-8
 rounded-xl
 bg-orange-50
 text-orange-500
@@ -337,7 +341,7 @@ mb-3
 
 
 <p className="
-text-xs
+text-[10px]
 text-gray-500
 ">
 
@@ -347,7 +351,7 @@ Total Users
 
 
 <h2 className="
-text-2xl
+text-xl
 font-bold
 ">
 
@@ -589,48 +593,25 @@ focus:ring-amber-400
 {/* Role Filter */}
 
 
+<div className="relative mb-5">
+
+
 <button
 
-onClick={()=>{
-
-
-setRoleFilter(
-
-roleFilter==="all"
-
-?
-
-"admin"
-
-:
-
-roleFilter==="admin"
-
-?
-
-"user"
-
-:
-
-"all"
-
-);
-
-
-}}
+onClick={()=>setFilterOpen(!filterOpen)}
 
 className="
 w-full
 bg-white
-rounded-xl
 border
 border-gray-200
+rounded-xl
 px-4
 py-3
 flex
 items-center
 justify-between
-mb-5
+text-slate-700
 "
 
 >
@@ -647,9 +628,8 @@ roleFilter==="admin"
 ?
 "Admins"
 :
-"Normal Users"
+"Users"
 }
-
 
 </span>
 
@@ -658,6 +638,119 @@ roleFilter==="admin"
 
 
 </button>
+
+
+
+
+
+{
+filterOpen && (
+
+<div
+
+className="
+absolute
+top-14
+left-0
+right-0
+bg-white
+border
+border-gray-200
+rounded-xl
+shadow-lg
+z-20
+overflow-hidden
+"
+
+>
+
+
+<button
+
+onClick={()=>{
+
+setRoleFilter("all");
+setFilterOpen(false);
+
+}}
+
+className="
+w-full
+text-left
+px-4
+py-3
+hover:bg-amber-50
+"
+
+>
+
+All Users
+
+</button>
+
+
+
+
+<button
+
+onClick={()=>{
+
+setRoleFilter("admin");
+setFilterOpen(false);
+
+}}
+
+className="
+w-full
+text-left
+px-4
+py-3
+hover:bg-amber-50
+"
+
+>
+
+Admins
+
+</button>
+
+
+
+
+
+<button
+
+onClick={()=>{
+
+setRoleFilter("user");
+setFilterOpen(false);
+
+}}
+
+className="
+w-full
+text-left
+px-4
+py-3
+hover:bg-amber-50
+"
+
+>
+
+Users
+
+</button>
+
+
+
+</div>
+
+)
+
+}
+
+
+</div>
 
 
 
@@ -827,7 +920,12 @@ gap-2
 ">
 
 
-<span className={`
+<button
+onClick={()=>{
+  setSelectedUser(user);
+  setShowAction(true);
+}}
+className={`
 text-xs
 px-3
 py-1
@@ -836,18 +934,14 @@ font-medium
 
 ${
 user.role==="admin"
-
 ?
-
 "bg-amber-50 text-amber-600"
-
 :
-
 "bg-blue-50 text-blue-600"
-
 }
 
-`}>
+`}
+>
 
 {
 user.role==="admin"
@@ -857,7 +951,7 @@ user.role==="admin"
 "User"
 }
 
-</span>
+</button>
 
 
 
@@ -907,7 +1001,7 @@ justify-center
 
 }
 
-  id="users-last"
+  
 {/* Pagination */}
 
 
@@ -1195,30 +1289,22 @@ selectedUser.role==="admin"
 
 <button
 
-onClick={()=>
-removeUser(selectedUser)
-}
+onClick={()=>removeUser(user)}
 
 className="
-w-full
-py-4
+w-9
+h-9
 rounded-xl
-bg-red-50
-text-red-600
+bg-red-500
+text-white
 flex
 items-center
-gap-3
-px-4
-font-medium
+justify-center
 "
 
 >
 
-
 <FiTrash2/>
-
-Delete User
-
 
 </button>
 
