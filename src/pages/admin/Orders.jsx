@@ -790,61 +790,55 @@ text-xs
 
 
 
-{/* MOBILE CARD */}
+	{/* ==========================
+        MOBILE ORDER CARD
+========================== */}
 
 <div className="
 lg:hidden
-space-y-2
+space-y-3
 ">
-
 
 {
 filteredOrders.map(order=>(
 
-
 <div
-
 key={order.id}
-
 className="
 bg-white
-rounded-2xl
 border
 border-gray-100
-p-4
+rounded-lg
+px-3
+py-3
 shadow-sm
+relative
 "
-
-
 >
 
 
-{/* HEADER */}
+{/* TOP ROW */}
 
 <div className="
 flex
 justify-between
-items-start
+items-center
 ">
 
-
-<div>
-
-<h3 className="
-font-black
+<p className="
+font-bold
 text-sm
 text-slate-900
 ">
 
 #{order.id?.slice(0,8)}
 
-</h3>
+</p>
 
 
 <p className="
 text-xs
-text-gray-400
-mt-1
+text-gray-500
 ">
 
 {
@@ -861,72 +855,12 @@ new Date(order.createdAt)
 
 
 
-<div className="
-flex
-flex-col
-items-end
-gap-2
-">
 
 
-<button
-
-onClick={()=>setMenuOpen(
-menuOpen===order.id
-?
-null
-:
-order.id
-)}
-
-className="
-w-8
-h-8
-rounded-lg
-border
-bg-gray-50
-flex
-items-center
-justify-center
-"
-
->
-
-<FiMoreVertical size={15}/>
-
-</button>
-
-
-
-<p className="
-font-black
-text-base
-text-slate-900
-">
-
-৳ {order.total}
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* CUSTOMER */}
-
+{/* CUSTOMER ROW */}
 
 <div className="
-mt-4
+mt-2
 flex
 justify-between
 items-center
@@ -936,7 +870,7 @@ items-center
 <div className="
 flex
 items-center
-gap-3
+gap-2
 ">
 
 
@@ -944,15 +878,14 @@ gap-3
 
 src={
 order.customerPhoto ||
-
 `https://ui-avatars.com/api/?name=${encodeURIComponent(
 order.customerName || "User"
 )}`
 }
 
 className="
-w-10
-h-10
+w-9
+h-9
 rounded-full
 object-cover
 "
@@ -962,39 +895,61 @@ object-cover
 
 <div>
 
+
 <p className="
-font-bold
 text-sm
-">
-
-{order.customerName}
-
-</p>
-
-
-<p className="
-text-xs
-text-gray-500
-">
-
-{order.email}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<p className="
-text-xs
-text-gray-500
 font-semibold
+text-slate-800
+">
+
+{
+order.customerName || "Customer"
+}
+
+</p>
+
+
+<p className="
+text-[11px]
+text-gray-500
+">
+
+{
+order.email
+}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div className="
+text-right
+">
+
+
+<p className="
+text-sm
+font-black
+text-slate-900
+">
+
+৳ {order.total}
+
+</p>
+
+
+<p className="
+text-[11px]
+text-gray-500
 ">
 
 {
@@ -1005,6 +960,8 @@ order.items?.length || 0
 </p>
 
 
+</div>
+
 
 </div>
 
@@ -1015,21 +972,23 @@ order.items?.length || 0
 
 
 
-
-{/* FOOTER */}
-
+{/* BOTTOM ROW */}
 
 <div className="
-mt-4
+mt-3
 flex
 justify-between
 items-center
 ">
 
 
+{/* STATUS */}
+
 <select
 
-value={order.status || "Pending"}
+value={
+order.status || "Pending"
+}
 
 onChange={(e)=>
 changeStatus(
@@ -1038,14 +997,17 @@ e.target.value
 )
 }
 
+
 className={`
 
-text-xs
+text-[11px]
 font-bold
 px-3
-py-2
-rounded-lg
+py-1
+rounded-full
 outline-none
+border-none
+
 
 ${
 order.status==="Delivered"
@@ -1058,6 +1020,7 @@ order.status==="Delivered"
 order.status==="Processing"
 
 ?
+
 "bg-blue-100 text-blue-700"
 
 :
@@ -1065,6 +1028,7 @@ order.status==="Processing"
 order.status==="Cancelled"
 
 ?
+
 "bg-red-100 text-red-700"
 
 :
@@ -1087,6 +1051,10 @@ Processing
 </option>
 
 <option>
+Shipped
+</option>
+
+<option>
 Delivered
 </option>
 
@@ -1103,6 +1071,15 @@ Cancelled
 
 
 
+{/* ACTION */}
+
+<div className="
+flex
+items-center
+gap-1
+">
+
+
 <button
 
 onClick={()=>navigate(
@@ -1110,9 +1087,9 @@ onClick={()=>navigate(
 )}
 
 className="
-w-9
-h-9
-rounded-lg
+w-8
+h-8
+rounded-md
 bg-blue-50
 text-blue-600
 flex
@@ -1122,13 +1099,44 @@ justify-center
 
 >
 
-<FiEye size={16}/>
+<FiEye size={15}/>
 
 </button>
 
 
-</div>
 
+
+
+<div className="
+relative
+">
+
+
+<button
+
+onClick={()=>setMenuOpen(
+menuOpen===order.id
+?
+null
+:
+order.id
+)}
+
+className="
+w-8
+h-8
+rounded-md
+bg-gray-100
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiMoreVertical size={16}/>
+
+</button>
 
 
 
@@ -1139,17 +1147,24 @@ justify-center
 {
 menuOpen===order.id &&
 
-<div className="
+<div
+
+className="
 absolute
+right-0
+bottom-10
+w-28
 bg-white
 border
-rounded-lg
+border-gray-100
 shadow-lg
-right-5
-mt-[-40px]
-w-28
+rounded-md
+overflow-hidden
 z-50
-">
+"
+
+
+>
 
 
 <button
@@ -1157,10 +1172,13 @@ z-50
 onClick={()=>removeOrder(order.id)}
 
 className="
+w-full
+text-left
 px-3
 py-2
 text-xs
 text-red-600
+hover:bg-red-50
 "
 
 >
@@ -1175,12 +1193,24 @@ Delete
 }
 
 
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
 
 </div>
 
 
 ))
-
 
 }
 
