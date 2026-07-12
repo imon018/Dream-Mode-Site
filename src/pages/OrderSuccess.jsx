@@ -3,6 +3,11 @@ import {
   useLocation,
 } from "react-router-dom";
 
+import {
+  FiCheckCircle,
+  FiShoppingBag,
+} from "react-icons/fi";
+
 
 
 export default function OrderSuccess(){
@@ -18,25 +23,99 @@ export default function OrderSuccess(){
 
 
 
-
   return (
 
-    <div className="min-h-screen flex items-center justify-center px-6">
+    <div
+      className="
+        min-h-screen
+        bg-[#FCFAF5]
+        flex
+        items-center
+        justify-center
+
+        px-4
+        md:px-8
+
+        py-12
+      "
+    >
 
 
-      <div className="bg-white shadow-xl rounded-3xl p-10 text-center max-w-lg w-full">
+
+      <div
+        className="
+          w-full
+          max-w-lg
+
+          bg-white
+
+          rounded-[36px]
+
+          border
+          border-amber-500/20
+
+          shadow-xl
+
+          p-8
+          md:p-10
+
+          text-center
+        "
+      >
 
 
-        <div className="text-6xl mb-6">
 
-          ✅
+
+        {/* ICON */}
+
+
+        <div
+          className="
+            w-24
+            h-24
+
+            mx-auto
+
+            rounded-full
+
+            bg-amber-50
+
+            border
+            border-amber-500/30
+
+            flex
+            items-center
+            justify-center
+
+            mb-6
+          "
+        >
+
+          <FiCheckCircle
+            size={55}
+            className="
+              text-amber-500
+            "
+          />
 
         </div>
 
 
 
 
-        <h1 className="text-4xl font-bold text-green-600">
+
+
+
+        <h1
+          className="
+            text-4xl
+            md:text-5xl
+
+            font-black
+
+            text-black
+          "
+        >
 
           Order Successful
 
@@ -45,9 +124,27 @@ export default function OrderSuccess(){
 
 
 
-        <p className="mt-4 text-gray-600">
 
-          Thank you for your purchase.
+        <p
+          className="
+            mt-4
+
+            text-gray-500
+
+            leading-relaxed
+          "
+        >
+
+          Thank you for shopping with
+          <span
+            className="
+              font-bold
+              text-black
+              mx-1
+            "
+          >
+            Dream Mode
+          </span>
 
           Your order has been placed successfully.
 
@@ -58,13 +155,32 @@ export default function OrderSuccess(){
 
 
 
+
+
         {
           orderId && (
 
-            <div className="mt-6 bg-gray-100 rounded-xl p-4">
+            <div
+              className="
+                mt-8
 
+                bg-[#FCFAF5]
 
-              <p className="font-bold">
+                border
+                border-amber-500/20
+
+                rounded-2xl
+
+                p-5
+              "
+            >
+
+              <p
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
 
                 Order ID
 
@@ -72,18 +188,28 @@ export default function OrderSuccess(){
 
 
 
-              <p className="text-sm break-all mt-2">
+              <p
+                className="
+                  mt-2
+
+                  font-bold
+
+                  text-sm
+
+                  break-all
+
+                  text-black
+                "
+              >
 
                 {orderId}
 
               </p>
 
 
-
             </div>
 
           )
-
         }
 
 
@@ -91,17 +217,51 @@ export default function OrderSuccess(){
 
 
 
-        <div className="flex flex-col gap-4 mt-8">
+
+
+        <div
+          className="
+            mt-8
+
+            flex
+            flex-col
+
+            gap-4
+          "
+        >
 
 
 
           <Link
+            to="/profile/orders"
 
-            to="/my-orders"
+            className="
+              h-14
 
-            className="bg-primary text-white py-3 rounded-xl font-semibold"
+              rounded-2xl
 
+              bg-black
+
+              border
+              border-amber-500
+
+              text-white
+
+              font-bold
+
+              flex
+              items-center
+              justify-center
+
+              gap-2
+
+              transition
+
+              hover:scale-[1.02]
+            "
           >
+
+            <FiShoppingBag size={20}/>
 
             View My Orders
 
@@ -111,12 +271,30 @@ export default function OrderSuccess(){
 
 
 
-          <Link
 
+          <Link
             to="/shop"
 
-            className="border py-3 rounded-xl font-semibold"
+            className="
+              h-14
 
+              rounded-2xl
+
+              border
+              border-amber-500
+
+              text-amber-600
+
+              font-bold
+
+              flex
+              items-center
+              justify-center
+
+              transition
+
+              hover:bg-amber-50
+            "
           >
 
             Continue Shopping
@@ -131,11 +309,14 @@ export default function OrderSuccess(){
 
 
 
+
+
       </div>
 
 
-    </div>
 
+
+    </div>
 
   );
 
