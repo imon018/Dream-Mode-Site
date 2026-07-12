@@ -98,40 +98,52 @@ export default function AdminLayout() {
       
       <aside
 className={`
-  fixed
-  top-0
-  left-0
-  h-screen
+fixed
+top-0
+left-0
 
-  flex
-  flex-col
+h-dvh
 
-  bg-white
-  border-r border-amber-100
-  shadow-xl
+flex
+flex-col
 
-  transition-all duration-300
-  z-50
+bg-white
 
-  overflow-hidden
-          ${collapsed ? "lg:w-24" : "lg:w-72"}
-          w-72
-          ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full lg:translate-x-0"
-          }
-        `}
-      >
+border-r
+border-amber-100
+
+shadow-xl
+
+transition-all
+duration-300
+
+z-50
+
+
+${collapsed ? "lg:w-24" : "lg:w-72"}
+
+w-72
+
+
+${
+sidebarOpen
+? "translate-x-0"
+: "-translate-x-full lg:translate-x-0"
+}
+
+`}
+>
 
         {/* Mobile Close */}
-        <div className="
+   <div
+className="
 lg:hidden
 flex
 justify-end
 px-4
-py-1
-">
+pt-3
+"
+>
 
 <button onClick={()=>setSidebarOpen(false)}>
 <FiX size={28}/>
@@ -226,12 +238,16 @@ max-w-[150px]
         
         <nav
 className="
-h-screen
+flex-1
 overflow-y-auto
+
 px-4
 py-5
+
 space-y-2
+
 pb-10
+
 "
 >
 
@@ -478,3 +494,48 @@ Logout
 
 </button>
 
+        </nav>
+
+
+      </aside>
+
+
+
+      {/* Main Content */}
+
+
+      <main
+      className={`
+      flex-1
+      min-h-screen
+
+      bg-[#F8F5EF]
+
+      transition-all
+      duration-300
+
+      ${
+      collapsed
+      ? "lg:ml-24"
+      : "lg:ml-72"
+      }
+
+      `}
+      >
+
+
+      <div className="p-4 lg:p-8">
+
+      <Outlet />
+
+      </div>
+
+
+      </main>
+
+
+
+    </div>
+
+  );
+}
