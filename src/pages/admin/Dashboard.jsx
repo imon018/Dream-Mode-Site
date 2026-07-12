@@ -255,10 +255,11 @@ export default function Dashboard() {
   return (
 
     <div className="
-    min-h-screen
-    bg-primary
-    text-white
-    ">
+w-full
+min-h-screen
+bg-primary
+text-white
+">
 
       {/* HERO */}
 
