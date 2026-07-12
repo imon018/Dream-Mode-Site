@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   FiSearch,
@@ -27,6 +28,10 @@ import {
 export default function Orders(){
 
 
+const navigate = useNavigate();
+
+
+
 const [orders,setOrders] =
 useState([]);
 
@@ -35,16 +40,20 @@ const [loading,setLoading] =
 useState(true);
 
 
+
 const [search,setSearch] =
 useState("");
+
 
 
 const [statusFilter,setStatusFilter] =
 useState("all");
 
 
+
 const [filterOpen,setFilterOpen] =
 useState(false);
+
 
 
 
@@ -59,9 +68,12 @@ loadOrders();
 
 
 
+
 const loadOrders = async()=>{
 
+
 try{
+
 
 const data =
 await getAllOrders();
@@ -70,7 +82,9 @@ await getAllOrders();
 setOrders(data);
 
 
-}catch(error){
+
+}
+catch(error){
 
 console.log(error);
 
@@ -81,7 +95,9 @@ setLoading(false);
 
 }
 
+
 };
+
 
 
 
@@ -100,6 +116,7 @@ await updateOrderStatus(
 id,
 status
 );
+
 
 
 setOrders(prev=>
@@ -125,7 +142,8 @@ order
 
 
 
-}catch(error){
+}
+catch(error){
 
 console.log(error);
 
@@ -133,6 +151,8 @@ console.log(error);
 
 
 };
+
+
 
 
 
@@ -150,8 +170,11 @@ window.confirm(
 );
 
 
+
 if(!confirmDelete)
 return;
+
+
 
 
 
@@ -178,10 +201,12 @@ successToast(
 
 
 
-}catch(error){
+}
+catch(error){
 
 
 console.log(error);
+
 
 
 errorToast(
@@ -192,7 +217,9 @@ errorToast(
 }
 
 
+
 };
+
 
 
 
@@ -208,18 +235,23 @@ orders.filter(order=>{
 
 const matchSearch =
 
+
 order.customerName
 ?.toLowerCase()
 .includes(
 search.toLowerCase()
 )
 
+
 ||
+
 order.email
 ?.toLowerCase()
 .includes(
 search.toLowerCase()
-);
+)
+
+;
 
 
 
@@ -238,8 +270,10 @@ order.status===statusFilter;
 
 
 return (
+
 matchSearch &&
 matchStatus
+
 );
 
 
@@ -251,8 +285,11 @@ matchStatus
 
 
 
+
+
 const totalOrders =
 orders.length;
+
 
 
 const pendingOrders =
@@ -262,10 +299,12 @@ o=>o.status==="Pending"
 
 
 
+
 const processingOrders =
 orders.filter(
 o=>o.status==="Processing"
 ).length;
+
 
 
 
@@ -283,7 +322,9 @@ o=>o.status==="Delivered"
 
 if(loading){
 
+
 return(
+
 
 <div className="
 min-h-[60vh]
@@ -294,11 +335,15 @@ text-xl
 font-bold
 ">
 
+
 Loading Orders...
+
 
 </div>
 
+
 );
+
 
 }
 
@@ -307,20 +352,19 @@ Loading Orders...
 
 
 
-
-
 return(
+
 
 <div className="
 space-y-6
 ">
 
 
-
 {/* HEADER */}
 
 
 <div>
+
 
 <h1 className="
 text-3xl
@@ -350,7 +394,6 @@ Manage customer orders
 
 
 
-
 {/* STATS */}
 
 
@@ -369,7 +412,6 @@ rounded-3xl
 p-4
 shadow-sm
 ">
-
 
 <div className="
 w-10
@@ -420,7 +462,6 @@ rounded-3xl
 p-4
 ">
 
-
 <div className="
 w-10
 h-10
@@ -469,7 +510,6 @@ bg-white
 rounded-3xl
 p-4
 ">
-
 
 <div className="
 w-10
@@ -521,7 +561,6 @@ rounded-3xl
 p-4
 ">
 
-
 <div className="
 w-10
 h-10
@@ -562,16 +601,13 @@ font-black
 </div>
 
 
-
 </div>
 
 
 
 
 
-
 {/* SEARCH */}
-
 
 
 <div className="
@@ -610,15 +646,16 @@ rounded-2xl
 py-4
 pl-12
 pr-4
-outline-none
 border
 border-gray-200
+outline-none
 "
 
 />
 
 
 </div>
+
 
 
 
@@ -644,14 +681,15 @@ bg-white
 rounded-2xl
 px-5
 py-4
-flex
-justify-between
-items-center
 border
 border-gray-200
+flex
+items-center
+justify-between
 "
 
 >
+
 
 <span>
 
@@ -672,6 +710,7 @@ statusFilter
 </button>
 
 
+
 {
 filterOpen &&
 
@@ -683,9 +722,9 @@ right-0
 bg-white
 rounded-2xl
 shadow-xl
-z-20
-overflow-hidden
 border
+z-30
+overflow-hidden
 ">
 
 
@@ -747,17 +786,7 @@ status
 
 </div>
 
-
-
-
-
-{/* CONTINUE PART 2 */}
-
-
-  // =========================
-// MOBILE + DESKTOP ORDERS
-// =========================
-
+  {/* ORDERS LIST */}
 
 {
 filteredOrders.length === 0 ?
@@ -786,9 +815,9 @@ No Orders Found
 <>
 
 
-{/* ======================
+{/* =====================
         MOBILE VIEW
-====================== */}
+===================== */}
 
 
 <div className="
@@ -818,12 +847,11 @@ border-gray-100
 >
 
 
-
 <div className="
 flex
 justify-between
 items-start
-mb-4
+mb-5
 ">
 
 
@@ -854,13 +882,14 @@ text-gray-500
 
 
 
+
 <span
 
 className={`
-text-xs
 px-3
 py-1
 rounded-full
+text-xs
 font-bold
 
 ${
@@ -896,9 +925,12 @@ order.status==="Processing"
 
 >
 
-{order.status || "Pending"}
+{
+order.status || "Pending"
+}
 
 </span>
+
 
 
 </div>
@@ -908,8 +940,10 @@ order.status==="Processing"
 
 
 
+
+
 <div className="
-space-y-2
+space-y-3
 text-sm
 ">
 
@@ -919,13 +953,23 @@ flex
 justify-between
 ">
 
-<span className="text-gray-500">
-Email
+<span className="
+text-gray-500
+">
+
+Customer
+
 </span>
 
-<span className="font-medium truncate max-w-[180px]">
-{order.email}
+
+<span className="
+font-semibold
+">
+
+{order.customerName}
+
 </span>
+
 
 </div>
 
@@ -938,15 +982,29 @@ flex
 justify-between
 ">
 
-<span className="text-gray-500">
+
+<span className="
+text-gray-500
+">
+
 Items
+
 </span>
 
-<span className="font-bold">
-{order.items?.length || 0}
+
+<span className="
+font-bold
+">
+
+{
+order.items?.length || 0
+}
+
 </span>
+
 
 </div>
+
 
 
 
@@ -957,9 +1015,14 @@ flex
 justify-between
 ">
 
-<span className="text-gray-500">
+<span className="
+text-gray-500
+">
+
 Total
+
 </span>
+
 
 <span className="
 font-black
@@ -970,11 +1033,14 @@ text-blue-700
 
 </span>
 
+
+</div>
+
+
 </div>
 
 
 
-</div>
 
 
 
@@ -983,9 +1049,36 @@ text-blue-700
 
 <div className="
 mt-5
-flex
+grid
+grid-cols-3
 gap-2
 ">
+
+
+<button
+
+onClick={()=>
+navigate(`/admin/orders/${order.id}`)
+}
+
+className="
+h-11
+rounded-xl
+bg-blue-50
+text-blue-600
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiEye size={18}/>
+
+</button>
+
+
+
 
 
 <select
@@ -1004,15 +1097,14 @@ e.target.value
 }
 
 className="
-flex-1
-border
 rounded-xl
-px-3
-py-2
+border
+px-2
 text-sm
 "
 
 >
+
 
 <option>
 Pending
@@ -1048,7 +1140,6 @@ handleDeleteOrder(order.id)
 }
 
 className="
-w-11
 h-11
 rounded-xl
 bg-red-500
@@ -1060,7 +1151,7 @@ justify-center
 
 >
 
-<FiTrash2/>
+<FiTrash2 size={18}/>
 
 </button>
 
@@ -1088,9 +1179,11 @@ justify-center
 
 
 
-{/* ======================
-        DESKTOP TABLE
-====================== */}
+
+
+{/* =====================
+        DESKTOP VIEW
+===================== */}
 
 
 
@@ -1119,9 +1212,9 @@ border-b
 
 
 <th className="
-text-left
 px-6
 py-4
+text-left
 text-sm
 text-gray-500
 ">
@@ -1131,11 +1224,10 @@ Order
 </th>
 
 
-
 <th className="
-text-left
 px-6
 py-4
+text-left
 text-sm
 text-gray-500
 ">
@@ -1145,11 +1237,10 @@ Customer
 </th>
 
 
-
 <th className="
-text-left
 px-6
 py-4
+text-left
 text-sm
 text-gray-500
 ">
@@ -1159,11 +1250,10 @@ Items
 </th>
 
 
-
 <th className="
-text-left
 px-6
 py-4
+text-left
 text-sm
 text-gray-500
 ">
@@ -1173,11 +1263,10 @@ Amount
 </th>
 
 
-
 <th className="
-text-left
 px-6
 py-4
+text-left
 text-sm
 text-gray-500
 ">
@@ -1187,11 +1276,10 @@ Status
 </th>
 
 
-
 <th className="
-text-left
 px-6
 py-4
+text-left
 text-sm
 text-gray-500
 ">
@@ -1215,6 +1303,7 @@ Action
 
 
 {
+
 filteredOrders.map(order=>(
 
 
@@ -1228,6 +1317,7 @@ hover:bg-gray-50
 "
 
 >
+
 
 
 <td className="
@@ -1249,7 +1339,6 @@ px-6
 py-5
 ">
 
-<div>
 
 <p className="
 font-semibold
@@ -1270,11 +1359,7 @@ text-gray-500
 </p>
 
 
-</div>
-
 </td>
-
-
 
 
 
@@ -1285,10 +1370,11 @@ px-6
 py-5
 ">
 
-{order.items?.length || 0}
+{
+order.items?.length || 0
+}
 
 </td>
-
 
 
 
@@ -1304,6 +1390,7 @@ text-blue-700
 ৳ {order.total}
 
 </td>
+
 
 
 
@@ -1345,21 +1432,17 @@ py-2
 Pending
 </option>
 
-
 <option>
 Processing
 </option>
-
 
 <option>
 Shipped
 </option>
 
-
 <option>
 Delivered
 </option>
-
 
 <option>
 Cancelled
@@ -1370,6 +1453,7 @@ Cancelled
 
 
 </td>
+
 
 
 
@@ -1389,7 +1473,12 @@ gap-2
 ">
 
 
+
 <button
+
+onClick={() =>
+navigate(`/admin/orders/${order.id}`)
+}
 
 className="
 w-10
@@ -1400,11 +1489,14 @@ text-blue-600
 flex
 items-center
 justify-center
+hover:bg-blue-100
 "
 
 >
 
+
 <FiEye/>
+
 
 </button>
 
@@ -1412,9 +1504,11 @@ justify-center
 
 
 
+
+
 <button
 
-onClick={()=>
+onClick={() =>
 handleDeleteOrder(order.id)
 }
 
@@ -1427,13 +1521,17 @@ text-white
 flex
 items-center
 justify-center
+hover:bg-red-600
 "
 
 >
 
+
 <FiTrash2/>
 
+
 </button>
+
 
 
 
@@ -1444,18 +1542,24 @@ justify-center
 
 
 
+
+
+
 </tr>
 
 
 ))
 
+
 }
+
 
 
 </tbody>
 
 
 </table>
+
 
 
 </div>
@@ -1468,8 +1572,6 @@ justify-center
 )
 
 }
-
-
 
 
 </div>
