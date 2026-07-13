@@ -746,13 +746,17 @@ w-full
 
 h-12
 
-rounded-xl
+rounded-lg
 
-bg-amber-500
+bg-gradient-to-r
+
+from-amber-400
+
+to-amber-500
 
 text-white
 
-font-bold
+font-black
 
 text-sm
 
@@ -777,7 +781,6 @@ loading
 }
 
 </Button>
-
 
 
 
