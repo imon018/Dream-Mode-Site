@@ -1,5 +1,5 @@
-import { 
-  useState 
+import {
+  useState
 } from "react";
 
 
@@ -34,7 +34,6 @@ import {
 export default function AddProduct(){
 
 
-
 const [name,setName]=useState("");
 
 const [description,setDescription]=useState("");
@@ -57,7 +56,6 @@ const handleSubmit=async(e)=>{
 
 
 e.preventDefault();
-
 
 
 if(
@@ -127,18 +125,13 @@ successToast(
 );
 
 
-
 setName("");
-
 setDescription("");
-
 setPrice("");
-
 setStock("");
-
 setImages([]);
-
 setHeroBanner(false);
+
 
 
 }
@@ -169,19 +162,22 @@ error.message ||
 
 return(
 
-
-<div className="
+<div
+className="
 min-h-screen
 bg-[#FAF7F2]
 p-4
 md:p-8
-">
+"
+>
 
 
-<div className="
-max-w-4xl
+<div
+className="
+max-w-3xl
 mx-auto
-">
+"
+>
 
 
 
@@ -190,34 +186,41 @@ mx-auto
 {/* HEADER */}
 
 
-<div className="
+<div
+className="
 flex
 items-center
 justify-between
-mb-6
-">
+mb-5
+"
+>
 
 
 <div>
 
 
-<h1 className="
-text-3xl
+<h1
+className="
+text-2xl
 font-black
 text-[#172033]
-">
+"
+>
 
 Add Product
 
 </h1>
 
 
-<p className="
+<p
+className="
+text-sm
 text-gray-500
-mt-2
-">
+mt-1
+"
+>
 
-Fill in the details to add a new product
+Fill product information
 
 </p>
 
@@ -225,25 +228,28 @@ Fill in the details to add a new product
 </div>
 
 
-<div className="
-w-14
-h-14
-rounded-full
+
+<div
+className="
+w-11
+h-11
+rounded-xl
 bg-[#FFF7E8]
 flex
 items-center
 justify-center
 text-amber-500
-text-2xl
-">
+text-xl
+"
+>
 
 🛍️
 
 </div>
 
 
-</div>
 
+</div>
 
 
 
@@ -257,16 +263,17 @@ onSubmit={handleSubmit}
 
 className="
 bg-white
-rounded-3xl
-p-6
-md:p-8
+rounded-xl
+p-5
+md:p-6
 shadow-sm
 border
 border-gray-100
-space-y-6
+space-y-5
 "
 
 >
+
 
 
 
@@ -281,22 +288,25 @@ space-y-6
 <div>
 
 
-<label className="
+<label
+className="
 block
 font-bold
+text-sm
 text-[#172033]
-mb-3
-">
+mb-2
+"
+>
 
 Product Name
 
-<span className="
+<span
+className="
 text-amber-500
 ml-1
-">
-
+"
+>
 *
-
 </span>
 
 
@@ -304,29 +314,34 @@ ml-1
 
 
 
-<div className="
+<div
+className="
 relative
-">
+"
+>
 
 
-<div className="
+<div
+className="
 absolute
-left-4
+left-3
 top-1/2
 -translate-y-1/2
-w-10
-h-10
-rounded-xl
+w-8
+h-8
+rounded-lg
 bg-[#FFF7E8]
 flex
 items-center
 justify-center
 text-amber-500
-">
+"
+>
 
-<FiTag/>
+<FiTag size={16}/>
 
 </div>
+
 
 
 
@@ -334,15 +349,14 @@ text-amber-500
 
 className="
 w-full
-h-16
-pl-16
-pr-4
-rounded-2xl
+h-12
+pl-12
+pr-3
+rounded-lg
 border
 border-gray-200
 outline-none
-text-gray-700
-placeholder:text-gray-400
+text-sm
 focus:border-amber-400
 "
 
@@ -350,6 +364,7 @@ placeholder="Enter product name"
 
 
 value={name}
+
 
 onChange={
 e=>setName(
@@ -380,14 +395,27 @@ e.target.value
 <div>
 
 
-<label className="
+<label
+className="
 block
 font-bold
+text-sm
 text-[#172033]
-mb-3
-">
+mb-2
+"
+>
 
 Product Description
+
+
+<span
+className="
+text-amber-500
+ml-1
+"
+>
+*
+</span>
 
 
 </label>
@@ -395,28 +423,31 @@ Product Description
 
 
 
-<div className="
+
+<div
+className="
 relative
-">
+"
+>
 
 
-<div className="
+<div
+className="
 absolute
-left-4
-top-5
-w-10
-h-10
-rounded-xl
+left-3
+top-3
+w-8
+h-8
+rounded-lg
 bg-[#FFF7E8]
 flex
 items-center
 justify-center
 text-amber-500
-">
+"
+>
 
-
-<FiFileText/>
-
+<FiFileText size={16}/>
 
 </div>
 
@@ -426,22 +457,21 @@ text-amber-500
 <textarea
 
 
-rows="5"
+rows="4"
 
 
 className="
 w-full
-pl-16
-pt-5
-pr-4
-rounded-2xl
+pl-12
+pt-3
+pr-3
+rounded-lg
 border
 border-gray-200
 outline-none
-text-gray-700
-placeholder:text-gray-400
-focus:border-amber-400
+text-sm
 resize-none
+focus:border-amber-400
 "
 
 
@@ -465,91 +495,74 @@ e.target.value
 </div>
 
 
-
 </div>
 
 
 
 
 
+{/* CONTINUE PART 2 */}
 
 
+  {/* PRICE + STOCK */}
 
-
-
-
-
-{/* PRICE + STOCK */}
-
-
-
-<div className="
+<div
+className="
 grid
 grid-cols-1
 md:grid-cols-2
-gap-5
-">
-
-
-
-
+gap-4
+"
+>
 
 
 {/* PRICE */}
 
-
 <div>
 
-
-<label className="
+<label
+className="
 block
 font-bold
+text-sm
 text-[#172033]
-mb-3
-">
+mb-2
+"
+>
 
 Price (৳)
 
-<span className="
-text-amber-500
-ml-1
-">
-
+<span className="text-amber-500 ml-1">
 *
-
 </span>
-
 
 </label>
 
 
+<div className="relative">
 
 
-<div className="
-relative
-">
-
-
-<div className="
+<div
+className="
 absolute
-left-4
+left-3
 top-1/2
 -translate-y-1/2
-w-10
-h-10
-rounded-xl
+w-8
+h-8
+rounded-lg
 bg-[#FFF7E8]
 flex
 items-center
 justify-center
 text-amber-500
 font-bold
-">
+"
+>
 
 ৳
 
 </div>
-
 
 
 <input
@@ -558,28 +571,24 @@ type="number"
 
 className="
 w-full
-h-16
-pl-16
-pr-4
-rounded-2xl
+h-12
+pl-12
+pr-3
+rounded-xl
 border
 border-gray-200
 outline-none
 focus:border-amber-400
+text-sm
 "
 
 placeholder="Enter price"
 
-
 value={price}
 
-
-onChange={
-e=>setPrice(
-e.target.value
-)
+onChange={(e)=>
+setPrice(e.target.value)
 }
-
 
 />
 
@@ -588,9 +597,6 @@ e.target.value
 
 
 </div>
-
-
-
 
 
 
@@ -598,92 +604,77 @@ e.target.value
 
 {/* STOCK */}
 
-
 <div>
 
 
-<label className="
+<label
+className="
 block
 font-bold
+text-sm
 text-[#172033]
-mb-3
-">
+mb-2
+"
+>
 
 Stock Quantity
 
-<span className="
-text-amber-500
-ml-1
-">
-
+<span className="text-amber-500 ml-1">
 *
-
 </span>
-
 
 </label>
 
 
-
-<div className="
-relative
-">
+<div className="relative">
 
 
-<div className="
+<div
+className="
 absolute
-left-4
+left-3
 top-1/2
 -translate-y-1/2
-w-10
-h-10
-rounded-xl
+w-8
+h-8
+rounded-lg
 bg-[#FFF7E8]
 flex
 items-center
 justify-center
 text-amber-500
-">
+"
+>
 
 📦
 
 </div>
 
 
-
 <input
-
 
 type="number"
 
-
 className="
 w-full
-h-16
-pl-16
-pr-4
-rounded-2xl
+h-12
+pl-12
+pr-3
+rounded-xl
 border
 border-gray-200
 outline-none
 focus:border-amber-400
+text-sm
 "
-
 
 placeholder="Enter stock"
 
-
-
 value={stock}
 
-
-
-onChange={
-e=>setStock(
-e.target.value
-)
+onChange={(e)=>
+setStock(e.target.value)
 }
-
 
 />
 
@@ -696,8 +687,6 @@ e.target.value
 
 
 </div>
-
-
 
 
 
@@ -708,37 +697,41 @@ e.target.value
 {/* HERO BANNER */}
 
 
-
-<div className="
+<div
+className="
 bg-[#FFF9ED]
-rounded-2xl
-p-5
+rounded-xl
+p-4
 flex
 items-center
 justify-between
 border
 border-[#FDECC8]
-">
+"
+>
 
 
-<div className="
+<div
+className="
 flex
-gap-4
 items-center
-">
+gap-3
+"
+>
 
 
-<div className="
-w-12
-h-12
-rounded-xl
+<div
+className="
+w-10
+h-10
+rounded-lg
 bg-white
 flex
 items-center
 justify-center
 text-amber-500
-text-xl
-">
+"
+>
 
 ⭐
 
@@ -746,31 +739,31 @@ text-xl
 
 
 
-
 <div>
 
 
-<h3 className="
+<h3
+className="
 font-bold
+text-sm
 text-[#172033]
-">
-
+"
+>
 
 Use this product as Hero Banner
-
 
 </h3>
 
 
-
-<p className="
-text-sm
+<p
+className="
+text-xs
 text-gray-500
 mt-1
-">
+"
+>
 
-Show this product on homepage banner
-
+Show on homepage banner
 
 </p>
 
@@ -783,37 +776,33 @@ Show this product on homepage banner
 
 
 
-
-
-<label className="
-relative
+<label
+className="
 cursor-pointer
-">
+"
+>
 
 
 <input
 
 type="checkbox"
 
-className="
-sr-only
-"
+className="sr-only"
 
 checked={heroBanner}
 
-onChange={
-e=>setHeroBanner(
-e.target.checked
-)
+onChange={(e)=>
+setHeroBanner(e.target.checked)
 }
-
 
 />
 
 
-<div className={`
-w-14
-h-8
+
+<div
+className={`
+w-12
+h-6
 rounded-full
 transition
 ${
@@ -823,31 +812,31 @@ heroBanner
 :
 "bg-gray-300"
 }
-`}>
+`}
+>
 
 
-
-<div className={`
-w-6
-h-6
+<div
+className={`
+w-5
+h-5
 bg-white
 rounded-full
-mt-1
-transition
+mt-[2px]
 shadow
-
+transition
 ${
 heroBanner
 ?
-"translate-x-7"
+"translate-x-6"
 :
 "translate-x-1"
 }
+`}
+>
 
-`}>
 
 </div>
-
 
 
 </div>
@@ -857,7 +846,6 @@ heroBanner
 
 
 </div>
-
 
 
 
@@ -869,43 +857,50 @@ heroBanner
 {/* IMAGE UPLOAD */}
 
 
-
 <div>
 
 
-<label className="
+<label
+className="
 block
 font-bold
+text-sm
 text-[#172033]
-mb-3
-">
+mb-2
+"
+>
 
 Product Images
 
+<span className="text-amber-500 ml-1">
+*
+</span>
 
 </label>
 
 
 
-<div className="
+<div
+className="
 border
 border-gray-200
-rounded-2xl
-p-5
-">
+rounded-xl
+p-4
+"
+>
 
 
-
-<p className="
-text-sm
+<p
+className="
+text-xs
 text-gray-500
-mb-4
-">
+mb-3
+"
+>
 
 Add up to 5 images
 
 </p>
-
 
 
 
@@ -915,10 +910,10 @@ Add up to 5 images
 htmlFor="product-image"
 
 className="
-h-40
-rounded-2xl
-border
+h-32
+rounded-xl
 border-dashed
+border
 border-gray-300
 bg-[#FAF7F2]
 flex
@@ -926,41 +921,43 @@ flex-col
 items-center
 justify-center
 cursor-pointer
-text-gray-500
-hover:bg-gray-50
 "
-
 
 >
 
 
-<div className="
+<div
+className="
 text-amber-500
-text-3xl
-mb-2
-">
+text-2xl
+"
+>
 
 ☁️
 
 </div>
 
 
-<p className="
+<p
+className="
+text-sm
 font-semibold
-">
+"
+>
 
-Tap to upload images
+Upload Images
 
 </p>
 
 
-
-<p className="
+<p
+className="
 text-xs
-mt-1
-">
+text-gray-400
+"
+>
 
-PNG, JPG or WEBP
+PNG JPG WEBP
 
 </p>
 
@@ -980,58 +977,46 @@ multiple
 
 accept="image/*"
 
-className="
-hidden
-"
+className="hidden"
 
-
-onChange={
-e=>
+onChange={(e)=>
 setImages(
-Array.from(
-e.target.files
-)
+Array.from(e.target.files)
 )
 }
-
 
 />
 
 
 
 
-
-
 {
+images.length>0 &&
 
-images.length > 0 &&
-
-<div className="
+<div
+className="
 flex
-gap-3
-mt-4
+gap-2
+mt-3
 flex-wrap
-">
-
+"
+>
 
 {
 
-images.map(
-(img,index)=>(
-
+images.map((img,index)=>(
 
 <div
 
 key={index}
 
 className="
-w-20
-h-20
-rounded-xl
+w-16
+h-16
+rounded-lg
 overflow-hidden
 border
 "
-
 
 >
 
@@ -1054,10 +1039,11 @@ object-cover
 </div>
 
 
-)
+))
 
-)
+}
 
+</div>
 
 }
 
@@ -1065,13 +1051,6 @@ object-cover
 </div>
 
 
-}
-
-
-
-</div>
-
-
 </div>
 
 
@@ -1080,11 +1059,7 @@ object-cover
 
 
 
-
-
-{/* SAVE BUTTON */}
-
-
+{/* BUTTON */}
 
 <Button
 
@@ -1092,25 +1067,20 @@ type="submit"
 
 className="
 w-full
-h-14
-rounded-2xl
-bg-gradient-to-r
-from-amber-400
-to-amber-500
+h-12
+rounded-xl
+bg-amber-500
 text-white
-font-black
-text-lg
-shadow-lg
+font-bold
+text-sm
+shadow
 "
-
 
 >
 
 💾 Save Product
 
-
 </Button>
-
 
 
 
