@@ -11,13 +11,15 @@ import {
 } from "react-chartjs-2";
 
 
+
 export default function MobileDashboard({data}){
 
 
 const {
-  stats,
-  orders
+stats,
+orders
 }=data;
+
 
 
 
@@ -48,6 +50,8 @@ icon:<FiDollarSign/>
 }
 
 ];
+
+
 
 
 
@@ -89,6 +93,8 @@ tension:.4
 
 
 
+
+
 const overviewData={
 
 labels:[
@@ -121,6 +127,7 @@ backgroundColor:"#F59E0B"
 
 
 
+
 const recentOrders =
 [...orders]
 .sort(
@@ -135,54 +142,57 @@ new Date(a.createdAt)
 
 
 
-return (
+return(
 
-<div
-className="
-w-full
+<div className="
 min-h-screen
 bg-[#FAF7F2]
-text-gray-900
 p-4
-"
->
+text-gray-900
+space-y-3
+">
+
+
+
 
 
 {/* HEADER */}
 
-<div
-className="
+<div className="
 bg-white
-rounded-[28px]
-p-5
-shadow-sm
+rounded-lg
+p-4
 border
 border-gray-100
-mb-5
-"
->
+shadow-sm
+">
 
-<h1
-className="
-text-2xl
+
+<h1 className="
+text-xl
 font-bold
-"
->
+">
+
 Welcome back, Admin 👋
+
 </h1>
 
 
-<p
-className="
+<p className="
+text-xs
 text-gray-500
-text-sm
 mt-1
-"
->
+">
+
 Here's what's happening with your store today.
+
 </p>
 
+
 </div>
+
+
+
 
 
 
@@ -190,75 +200,83 @@ Here's what's happening with your store today.
 
 {/* STATS */}
 
-<div
-className="
+<div className="
 grid
 grid-cols-2
-gap-4
-"
->
+gap-3
+">
+
 
 {
 cards.map(card=>(
 
+
 <div
+
 key={card.title}
+
 className="
 bg-white
-rounded-[26px]
-p-4
+rounded-lg
+p-3
 border
 border-gray-100
 shadow-sm
 "
+
+
 >
 
-<div
-className="
-w-10
-h-10
-rounded-xl
+
+<div className="
+w-9
+h-9
+rounded-lg
 bg-amber-100
 text-amber-500
 flex
 items-center
 justify-center
-text-xl
-"
->
+text-lg
+">
 
 {card.icon}
 
 </div>
 
 
-<p
-className="
+
+
+<p className="
 text-gray-500
 text-xs
-mt-4
-"
->
+mt-3
+">
+
 {card.title}
+
 </p>
 
 
-<h2
-className="
-text-xl
-font-bold
+
+<h2 className="
+text-lg
+font-black
 mt-1
-"
->
+">
+
 {card.value}
+
 </h2>
 
 
 </div>
 
+
 ))
 
 }
+
 
 </div>
 
@@ -268,28 +286,27 @@ mt-1
 
 
 
-{/* REVENUE CHART */}
 
-<div
-className="
-mt-5
+{/* REVENUE */}
+
+<div className="
 bg-white
-rounded-[28px]
-p-5
+rounded-lg
+p-4
 border
 border-gray-100
 shadow-sm
-"
->
+">
 
-<h2
-className="
+
+<h2 className="
 font-bold
-text-lg
-mb-5
-"
->
+text-sm
+mb-3
+">
+
 Revenue Overview
+
 </h2>
 
 
@@ -306,28 +323,28 @@ data={revenueData}
 
 
 
-{/* OVERVIEW CHART */}
 
-<div
-className="
-mt-5
+
+{/* OVERVIEW */}
+
+<div className="
 bg-white
-rounded-[28px]
-p-5
+rounded-lg
+p-4
 border
 border-gray-100
 shadow-sm
-"
->
+">
 
-<h2
-className="
+
+<h2 className="
 font-bold
-text-lg
-mb-5
-"
->
+text-sm
+mb-3
+">
+
 Store Overview
+
 </h2>
 
 
@@ -345,48 +362,43 @@ data={overviewData}
 
 
 
-
 {/* RECENT ORDERS */}
 
-<div
-className="
-mt-5
+<div className="
 bg-white
-rounded-[28px]
-p-5
+rounded-lg
+p-4
 border
 border-gray-100
 shadow-sm
-"
->
+">
 
 
-<div
-className="
+<div className="
 flex
 justify-between
 items-center
-mb-5
-"
->
+mb-3
+">
 
-<h2
-className="
-text-xl
+
+<h2 className="
 font-bold
-"
->
+text-sm
+">
+
 Recent Orders
+
 </h2>
 
 
-<span
-className="
+<span className="
 text-amber-500
-text-sm
-"
->
+text-xs
+">
+
 Latest 5
+
 </span>
 
 
@@ -395,23 +407,28 @@ Latest 5
 
 
 
-<div
-className="
-space-y-4
-"
->
+
+
+<div className="
+space-y-2
+">
+
 
 {
-recentOrders.length===0?
 
-<p
-className="
+recentOrders.length===0
+
+?
+
+<p className="
 text-gray-400
 text-center
-py-10
-"
->
+py-6
+text-sm
+">
+
 No Orders Found
+
 </p>
 
 
@@ -421,39 +438,46 @@ recentOrders.map(order=>(
 
 
 <div
+
 key={order.id}
+
 className="
 bg-[#FAF7F2]
-rounded-2xl
-p-4
+rounded-lg
+p-3
 border
 border-gray-100
 "
+
+
 >
 
 
-<div
-className="
+<div className="
 flex
 justify-between
-"
->
+items-center
+">
 
-<h3
-className="
+
+<h3 className="
 font-semibold
-"
->
+text-sm
+">
+
 {order.customerName}
+
 </h3>
 
 
-<span
-className="
-text-amber-500
-"
->
+<span className="
+text-xs
+text-amber-600
+font-semibold
+">
+
 {order.status}
+
 </span>
 
 
@@ -461,30 +485,41 @@ text-amber-500
 
 
 
-<p
-className="
-mt-3
+
+<div className="
+flex
+justify-between
+mt-2
+">
+
+
+<p className="
 font-bold
-"
->
+text-sm
+">
+
 ৳ {order.total}
+
 </p>
 
 
-<p
-className="
+
+<p className="
 text-xs
 text-gray-400
-mt-2
-"
->
+">
+
 {
 new Date(
 order.createdAt
 )
 .toLocaleDateString()
 }
+
 </p>
+
+
+</div>
 
 
 </div>
@@ -492,19 +527,24 @@ order.createdAt
 
 ))
 
+
 }
 
-</div>
-
 
 </div>
 
 
+</div>
+
+
+
 
 
 
 </div>
+
 
 );
+
 
 }
