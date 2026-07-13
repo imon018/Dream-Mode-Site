@@ -6,6 +6,7 @@ import {
 import useCart from "../hooks/useCart";
 import useAuth from "../hooks/useAuth";
 import useWishlist from "../hooks/useWishlist";
+import { useSettings } from "../context/SettingsContext";
 
 
 
@@ -29,6 +30,10 @@ export default function Navbar() {
     wishlistCount,
   } = useWishlist();
 
+
+  const {
+  settings,
+} = useSettings();
 
 
 
@@ -89,7 +94,7 @@ export default function Navbar() {
 
         >
 
-          Dream Mode ✨
+          {settings.storeName} ✨
 
         </Link>
 
