@@ -1,14 +1,5 @@
 import { useState } from "react";
 
-import {
-  FiUploadCloud,
-  FiImage,
-  FiStar,
-  FiTag,
-  FiDollarSign,
-  FiBox,
-} from "react-icons/fi";
-
 import Button from "../../components/ui/Button";
 
 import {
@@ -23,6 +14,7 @@ import {
   successToast,
   errorToast,
 } from "../../components/ui/Toast";
+
 
 
 
@@ -60,7 +52,7 @@ images.length===0
 ){
 
 errorToast(
-"Please fill in all fields."
+"Please fill all fields."
 );
 
 return;
@@ -133,19 +125,22 @@ setHeroBanner(false);
 
 
 
-const file =
+const input =
 document.getElementById(
 "product-image"
 );
 
 
-if(file)
-file.value="";
+if(input)
+input.value="";
 
 
 
 }
+
 catch(error){
+
+console.log(error);
 
 
 errorToast(
@@ -162,59 +157,55 @@ error.message ||
 
 
 
-
-
-
 return(
 
-<div
-className="
+
+<div className="
 min-h-screen
 bg-[#FAF7F2]
 p-4
-md:p-8
-"
->
+md:p-6
+">
 
 
-<div
-className="
-max-w-4xl
+<div className="
+max-w-3xl
 mx-auto
-"
->
+">
 
 
 {/* HEADER */}
 
-<div
-className="
-mb-6
-"
->
 
-<h1
-className="
-text-3xl
-md:text-4xl
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-5
+shadow-sm
+mb-4
+">
+
+
+<h1 className="
+text-xl
+md:text-2xl
 font-black
-text-slate-900
-"
->
+">
 
 Add Product
 
 </h1>
 
 
-<p
-className="
+<p className="
+text-sm
 text-gray-500
-mt-2
-"
->
+mt-1
+">
 
-Fill in the details to add a new product
+Create new product for your store
 
 </p>
 
@@ -225,6 +216,7 @@ Fill in the details to add a new product
 
 
 
+{/* FORM CARD */}
 
 
 <form
@@ -235,400 +227,268 @@ className="
 bg-white
 border
 border-gray-100
-rounded-xl
-shadow-sm
+rounded-lg
 p-5
-md:p-7
-space-y-6
+shadow-sm
+space-y-3
 "
+
 
 >
-
-
-
-
-
-{/* NAME */}
-
-<div>
-
-<label
-className="
-text-sm
-font-bold
-block
-mb-2
-"
->
-
-Product Name
-
-</label>
-
-
-<div
-className="
-relative
-"
->
-
-<FiTag
-className="
-absolute
-left-4
-top-4
-text-gray-400
-"
-/>
 
 
 <input
 
-value={name}
-
-onChange={(e)=>
-setName(e.target.value)
-}
-
-placeholder="Enter product name"
-
 className="
 w-full
-h-12
+h-11
+px-3
+rounded-lg
 border
 border-gray-200
-rounded-xl
-pl-12
-pr-4
 outline-none
+text-sm
 focus:border-amber-400
 "
 
+placeholder="Product Name"
+
+
+value={name}
+
+onChange={
+e=>setName(e.target.value)
+}
+
+
 />
-
-
-</div>
-
-</div>
-
-
-
-
-
-
-
-
-{/* DESCRIPTION */}
-
-<div>
-
-
-<label
-className="
-text-sm
-font-bold
-block
-mb-2
-"
->
-
-Product Description
-
-</label>
 
 
 
 <textarea
 
-value={description}
-
-onChange={(e)=>
-setDescription(e.target.value)
-}
-
-placeholder="Write about your product..."
-
-rows="5"
+rows="4"
 
 className="
 w-full
+p-3
+rounded-lg
 border
 border-gray-200
-rounded-xl
-p-4
 outline-none
-resize-none
+text-sm
 focus:border-amber-400
 "
 
+placeholder="Product Description"
+
+
+value={description}
+
+onChange={
+e=>setDescription(
+e.target.value
+)
+}
+
+
 />
 
 
-</div>
 
-
-
-
-
-
-
-
-
-{/* PRICE STOCK */}
-
-<div
-className="
+<div className="
 grid
-grid-cols-1
-md:grid-cols-2
-gap-4
-"
->
-
-
-<div>
-
-
-<label
-className="
-text-sm
-font-bold
-block
-mb-2
-"
->
-
-Price
-
-</label>
-
-
-
-<div
-className="
-relative
-"
->
-
-<FiDollarSign
-className="
-absolute
-left-4
-top-4
-text-gray-400
-"
-/>
+grid-cols-2
+gap-3
+">
 
 
 <input
 
 type="number"
+
+className="
+h-11
+px-3
+rounded-lg
+border
+border-gray-200
+outline-none
+text-sm
+"
+
+placeholder="Price"
+
 
 value={price}
 
-onChange={(e)=>
-setPrice(e.target.value)
+onChange={
+e=>setPrice(e.target.value)
 }
 
-placeholder="Enter price"
-
-className="
-w-full
-h-12
-border
-border-gray-200
-rounded-xl
-pl-12
-"
 
 />
 
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div>
-
-
-<label
-className="
-text-sm
-font-bold
-block
-mb-2
-"
->
-
-Stock Quantity
-
-</label>
-
-
-<div
-className="
-relative
-"
->
-
-<FiBox
-className="
-absolute
-left-4
-top-4
-text-gray-400
-"
-/>
 
 
 <input
 
 type="number"
 
-value={stock}
-
-onChange={(e)=>
-setStock(e.target.value)
-}
-
-placeholder="Enter stock"
-
 className="
-w-full
-h-12
+h-11
+px-3
+rounded-lg
 border
 border-gray-200
-rounded-xl
-pl-12
+outline-none
+text-sm
 "
+
+placeholder="Stock"
+
+
+value={stock}
+
+onChange={
+e=>setStock(e.target.value)
+}
+
 
 />
 
 
-</div>
+</div>  
 
 
-</div>
+{/* HERO BANNER TOGGLE */}
 
 
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* HERO */}
-
-<div
-
-className="
+<div className="
 flex
 items-center
 justify-between
-bg-amber-50
 border
-border-amber-100
-rounded-xl
-p-4
-"
-
->
-
-
-<div
-className="
-flex
-gap-3
-items-center
-"
->
-
-
-<div
-className="
-w-10
-h-10
-rounded-xl
-bg-white
-flex
-items-center
-justify-center
-text-amber-500
-"
->
-
-<FiStar/>
-
-</div>
-
+border-gray-100
+rounded-lg
+p-3
+bg-gray-50
+">
 
 
 <div>
 
-<p
-className="
-font-bold
+<p className="
 text-sm
-"
->
+font-bold
+">
 
-Use this product as Hero Banner
+Hero Banner Product
 
 </p>
 
 
-<p
-className="
+<p className="
 text-xs
 text-gray-500
-"
->
+mt-1
+">
 
-Show this product on homepage
+Show this product on homepage banner
 
 </p>
 
 </div>
 
 
-</div>
 
 
+<label className="
+relative
+inline-flex
+items-center
+cursor-pointer
+">
 
 
 <input
 
 type="checkbox"
 
+className="sr-only"
+
 checked={heroBanner}
 
-onChange={(e)=>
-setHeroBanner(e.target.checked)
+onChange={
+e=>setHeroBanner(
+e.target.checked
+)
 }
-
-className="
-w-5
-h-5
-accent-amber-500
-"
 
 />
 
 
+
+<div className={`
+w-11
+h-6
+rounded-full
+transition
+
+
+${
+heroBanner
+
+?
+
+"bg-amber-500"
+
+:
+
+"bg-gray-300"
+
+}
+
+`}>
+
+
+
+<div className={`
+w-5
+h-5
+bg-white
+rounded-full
+mt-0.5
+transition
+
+
+${
+heroBanner
+
+?
+
+"translate-x-5"
+
+:
+
+"translate-x-0.5"
+
+}
+
+`}
+
+>
+
 </div>
 
+
+</div>
+
+
+</label>
+
+
+</div>
 
 
 
@@ -640,22 +500,25 @@ accent-amber-500
 {/* IMAGE UPLOAD */}
 
 
-<div>
+
+<div className="
+border
+border-dashed
+border-gray-300
+rounded-lg
+p-4
+">
 
 
-<label
-className="
+<p className="
 text-sm
 font-bold
-block
-mb-3
-"
->
+mb-2
+">
 
 Product Images
 
-</label>
-
+</p>
 
 
 <label
@@ -663,53 +526,25 @@ Product Images
 htmlFor="product-image"
 
 className="
-h-32
-border-2
-border-dashed
+h-28
+rounded-lg
+bg-gray-50
+border
 border-gray-200
-rounded-xl
 flex
-flex-col
 items-center
 justify-center
 cursor-pointer
-hover:bg-gray-50
-"
-
->
-
-
-<FiUploadCloud
-size={32}
-className="
-text-amber-500
-"
-/>
-
-
-<p
-className="
-font-semibold
-mt-2
 text-sm
+text-gray-500
+hover:bg-gray-100
 "
+
+
 >
 
-Upload Images
 
-</p>
-
-
-<p
-className="
-text-xs
-text-gray-400
-"
->
-
-PNG JPG WEBP
-
-</p>
+Choose Images
 
 
 </label>
@@ -730,11 +565,15 @@ className="
 hidden
 "
 
-onChange={(e)=>
+onChange={
+e=>
 setImages(
-Array.from(e.target.files)
+Array.from(
+e.target.files
+)
 )
 }
+
 
 />
 
@@ -742,49 +581,19 @@ Array.from(e.target.files)
 
 
 
-
-
 {
+
 images.length>0 &&
 
-<div
-className="
-flex
-gap-3
-mt-4
-flex-wrap
-"
->
+<p className="
+text-xs
+text-gray-500
+mt-3
+">
 
-{
-images.map(
-(img,index)=>(
+{images.length} image selected
 
-<img
-
-key={index}
-
-src={
-URL.createObjectURL(img)
-}
-
-className="
-w-16
-h-16
-rounded-lg
-object-cover
-border
-"
-
-/>
-
-)
-
-)
-
-}
-
-</div>
+</p>
 
 }
 
@@ -797,6 +606,8 @@ border
 
 
 
+
+{/* BUTTON */}
 
 
 
@@ -806,8 +617,8 @@ type="submit"
 
 className="
 w-full
-h-12
-rounded-xl
+h-11
+rounded-lg
 bg-amber-500
 text-white
 font-bold
