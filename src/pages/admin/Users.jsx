@@ -1,4 +1,13 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState
+} from "react";
+
+
+import {
+  useNavigate
+} from "react-router-dom";
+
 
 import {
   FiSearch,
@@ -6,6 +15,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiTrash2,
+  FiEdit,
   FiShield,
   FiUser,
   FiLoader,
@@ -20,122 +30,161 @@ import {
 
 
 
-export default function Users() {
 
 
-  const [users,setUsers] =
-    useState([]);
+export default function Users(){
 
 
-  const [loading,setLoading] =
-    useState(true);
-
-
-  const [search,setSearch] =
-    useState("");
-
-
-  const [roleFilter,setRoleFilter] =
-    useState("all");
-
-  const [roleMenu,setRoleMenu] = useState(null);
-
-  const [filterOpen, setFilterOpen] = useState(false);
-
-
-  const [page,setPage] =
-    useState(1);
+const navigate = useNavigate();
 
 
 
-  const usersPerPage = 6;
+const [users,setUsers] =
+useState([]);
+
+
+const [loading,setLoading] =
+useState(true);
+
+
+const [search,setSearch] =
+useState("");
 
 
 
+const [roleFilter,setRoleFilter] =
+useState("all");
 
 
-  useEffect(()=>{
-
-    loadUsers();
-
-  },[search]);
+const [roleMenu,setRoleMenu] =
+useState(null);
 
 
+const [filterOpen,setFilterOpen] =
+useState(false);
 
 
-  useEffect(()=>{
 
-    setPage(1);
+const [page,setPage] =
+useState(1);
 
-  },[
-    search,
-    roleFilter
-  ]);
+
+
+const usersPerPage = 6;
 
 
 
 
 
+useEffect(()=>{
 
-  async function loadUsers(){
+loadUsers();
 
-    try{
-
-      setLoading(true);
-
-
-      const data =
-        await getUsers(search);
-
-
-      setUsers(data);
-
-
-    }
-    catch(error){
-
-      console.log(error);
-
-    }
-    finally{
-
-      setLoading(false);
-
-    }
-
-  }
+},[search]);
 
 
 
 
 
-  async function removeUser(user){
+useEffect(()=>{
 
-const confirmDelete = window.confirm(
-  `Are you sure you want to delete ${user.email}?`
-);
+setPage(1);
+
+},[
+search,
+roleFilter
+]);
 
 
-if(!confirmDelete){
-  return;
-}
+
+
+
+
+
+async function loadUsers(){
 
 
 try{
 
-  await deleteUser(user.id);
+
+setLoading(true);
+
+
+
+const data =
+await getUsers(search);
+
+
+
+setUsers(data);
+
+
+
+}
+
+catch(error){
+
+console.log(error);
+
+}
+
+
+finally{
+
+setLoading(false);
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+async function removeUser(user){
+
+
+const confirmDelete =
+window.confirm(
+`Are you sure you want to delete ${user.email}?`
+);
+
+
+
+if(!confirmDelete)
+return;
+
+
+
+try{
+
+
+await deleteUser(
+user.id
+);
+
+
 
 await loadUsers();
+
+
 
 setRoleMenu(null);
 
 
-}catch(error){
+}
 
-  console.log(error);
+catch(error){
+
+console.log(error);
 
 }
 
+
 }
 
 
@@ -144,102 +193,128 @@ setRoleMenu(null);
 
 
 
-  const filteredUsers =
+const filteredUsers =
 
-    roleFilter==="all"
+roleFilter==="all"
 
-    ?
+?
 
-    users
+users
 
-    :
+:
 
-    users.filter(
-      user =>
-      user.role===roleFilter
-    );
-
-
+users.filter(
+user =>
+user.role===roleFilter
+);
 
 
 
 
 
-  const totalUsers =
-    users.length;
 
 
 
-  const totalAdmins =
-    users.filter(
-      user =>
-      user.role==="admin"
-    ).length;
+const totalUsers =
+users.length;
 
 
 
-
-  const totalActive =
-    users.filter(
-      user =>
-      user.status!=="inactive"
-    ).length;
+const totalAdmins =
+users.filter(
+user =>
+user.role==="admin"
+).length;
 
 
 
 
-
-  const totalPages =
-    Math.ceil(
-      filteredUsers.length /
-      usersPerPage
-    );
+const totalActive =
+users.filter(
+user =>
+user.status!=="inactive"
+).length;
 
 
 
 
 
-  const currentUsers =
-    filteredUsers.slice(
 
-      (page-1)*usersPerPage,
+const totalPages =
+Math.ceil(
+filteredUsers.length /
+usersPerPage
+);
 
-      page*usersPerPage
 
-    );
 
-  return (
 
-<div className="
+
+
+const currentUsers =
+filteredUsers.slice(
+
+(page-1)*usersPerPage,
+
+page*usersPerPage
+
+);
+
+
+
+
+
+return (
+
+<div
+className="
 min-h-screen
-bg-[#F8F5EF]
+bg-[#FAF7F2]
 p-4
-lg:p-8
-">
+md:p-8
+"
+>
 
 
-{/* Header */}
+<div
+className="
+max-w-5xl
+mx-auto
+"
+>
 
-<div className="mb-6">
+
+{/* HEADER */}
 
 
-<h1 className="
-text-3xl
-font-bold
-text-slate-800
-">
+<div
+className="
+mb-6
+"
+>
+
+
+<h1
+className="
+text-2xl
+md:text-3xl
+font-black
+text-[#172033]
+"
+>
 
 Users
 
 </h1>
 
 
-
-<p className="
+<p
+className="
 text-sm
 text-gray-500
 mt-1
-">
+"
+>
 
 Dashboard
 <span className="mx-2">
@@ -256,54 +331,73 @@ Users
 
 
 
-{/* Stats */}
+{/* STATS */}
 
-<div className="
+
+<div
+className="
 grid
-grid-cols-4
-gap-2
+grid-cols-2
+md:grid-cols-4
+gap-3
 mb-6
-">
+"
+>
 
 
-<div className="
+
+<div
+className="
 bg-white
-rounded-2xl
-p-3
-shadow-sm
-">
-
-<div className="
-w-8
-h-8
 rounded-xl
-bg-orange-50
-text-orange-500
+p-4
+shadow-sm
+border
+border-gray-100
+"
+>
+
+
+<div
+className="
+w-10
+h-10
+rounded-xl
+bg-[#FFF7E8]
+text-amber-500
 flex
 items-center
 justify-center
 mb-3
-">
+"
+>
 
-<FiUser size={22}/>
+<FiUser size={20}/>
 
 </div>
 
 
-<p className="
-text-[10px]
+
+<p
+className="
+text-xs
 text-gray-500
-">
+"
+>
 
 Total Users
 
 </p>
 
 
-<h2 className="
-text-xl
-font-bold
-">
+
+<h2
+className="
+text-2xl
+font-black
+text-[#172033]
+"
+>
 
 {totalUsers}
 
@@ -317,45 +411,56 @@ font-bold
 
 
 
-<div className="
+
+<div
+className="
 bg-white
-rounded-2xl
+rounded-xl
 p-4
 shadow-sm
-">
+border
+border-gray-100
+"
+>
 
 
-<div className="
+<div
+className="
 w-10
 h-10
 rounded-xl
-bg-amber-50
+bg-[#FFF7E8]
 text-amber-500
 flex
 items-center
 justify-center
 mb-3
-">
+"
+>
 
-<FiShield size={22}/>
+<FiShield size={20}/>
 
 </div>
 
 
-<p className="
+<p
+className="
 text-xs
 text-gray-500
-">
+"
+>
 
 Admins
 
 </p>
 
 
-<h2 className="
+<h2
+className="
 text-2xl
-font-bold
-">
+font-black
+"
+>
 
 {totalAdmins}
 
@@ -369,15 +474,20 @@ font-bold
 
 
 
-<div className="
+<div
+className="
 bg-white
-rounded-2xl
+rounded-xl
 p-4
 shadow-sm
-">
+border
+border-gray-100
+"
+>
 
 
-<div className="
+<div
+className="
 w-10
 h-10
 rounded-xl
@@ -387,29 +497,32 @@ flex
 items-center
 justify-center
 mb-3
-">
+"
+>
 
-<FiShield size={22}/>
+<FiShield size={20}/>
 
 </div>
 
 
-
-<p className="
+<p
+className="
 text-xs
 text-gray-500
-">
+"
+>
 
 Active Users
 
 </p>
 
 
-
-<h2 className="
+<h2
+className="
 text-2xl
-font-bold
-">
+font-black
+"
+>
 
 {totalActive}
 
@@ -423,15 +536,20 @@ font-bold
 
 
 
-<div className="
+<div
+className="
 bg-white
-rounded-2xl
+rounded-xl
 p-4
 shadow-sm
-">
+border
+border-gray-100
+"
+>
 
 
-<div className="
+<div
+className="
 w-10
 h-10
 rounded-xl
@@ -441,29 +559,32 @@ flex
 items-center
 justify-center
 mb-3
-">
+"
+>
 
-<FiUser size={22}/>
+<FiUser size={20}/>
 
 </div>
 
 
-
-<p className="
+<p
+className="
 text-xs
 text-gray-500
-">
+"
+>
 
 New Users
 
 </p>
 
 
-
-<h2 className="
+<h2
+className="
 text-2xl
-font-bold
-">
+font-black
+"
+>
 
 0
 
@@ -477,18 +598,14 @@ font-bold
 </div>
 
 
+  {/* SEARCH */}
 
-
-
-
-
-{/* Search */}
-
-
-<div className="
+<div
+className="
 relative
 mb-4
-">
+"
+>
 
 
 <FiSearch
@@ -517,16 +634,16 @@ Search users by email...
 
 className="
 w-full
+h-12
 bg-white
 rounded-xl
-py-3
 pl-11
 pr-4
 border
 border-gray-200
 outline-none
-focus:ring-2
-focus:ring-amber-400
+text-sm
+focus:border-amber-400
 "
 
 />
@@ -540,28 +657,37 @@ focus:ring-amber-400
 
 
 
-{/* Role Filter */}
+
+{/* ROLE FILTER */}
 
 
-<div className="relative mb-5">
+<div
+className="
+relative
+mb-6
+"
+>
 
 
 <button
 
-onClick={()=>setFilterOpen(!filterOpen)}
+onClick={()=>
+setFilterOpen(!filterOpen)
+}
 
 className="
 w-full
+h-12
 bg-white
-border
-border-gray-200
 rounded-xl
 px-4
-py-3
+border
+border-gray-200
 flex
 items-center
 justify-between
-text-slate-700
+text-sm
+text-[#172033]
 "
 
 >
@@ -586,7 +712,6 @@ roleFilter==="admin"
 
 <FiChevronDown/>
 
-
 </button>
 
 
@@ -594,7 +719,7 @@ roleFilter==="admin"
 
 
 {
-filterOpen && (
+filterOpen &&
 
 <div
 
@@ -604,12 +729,12 @@ top-14
 left-0
 right-0
 bg-white
-border
-border-gray-200
 rounded-xl
+border
+border-gray-100
 shadow-lg
-z-20
 overflow-hidden
+z-20
 "
 
 >
@@ -629,7 +754,8 @@ w-full
 text-left
 px-4
 py-3
-hover:bg-amber-50
+text-sm
+hover:bg-[#FFF7E8]
 "
 
 >
@@ -637,6 +763,7 @@ hover:bg-amber-50
 All Users
 
 </button>
+
 
 
 
@@ -655,7 +782,8 @@ w-full
 text-left
 px-4
 py-3
-hover:bg-amber-50
+text-sm
+hover:bg-[#FFF7E8]
 "
 
 >
@@ -663,6 +791,7 @@ hover:bg-amber-50
 Admins
 
 </button>
+
 
 
 
@@ -682,7 +811,8 @@ w-full
 text-left
 px-4
 py-3
-hover:bg-amber-50
+text-sm
+hover:bg-[#FFF7E8]
 "
 
 >
@@ -692,10 +822,8 @@ Users
 </button>
 
 
-
 </div>
 
-)
 
 }
 
@@ -707,23 +835,31 @@ Users
 
 
 
-{/* Loading */}
+
+
+
+{/* LOADING */}
 
 
 {
 loading &&
 
-<div className="
+<div
+className="
 bg-white
-rounded-2xl
+rounded-xl
 p-10
+shadow-sm
+border
+border-gray-100
 flex
 justify-center
-">
+"
+>
 
 <FiLoader
-className="animate-spin"
 size={30}
+className="animate-spin text-amber-500"
 />
 
 
@@ -736,44 +872,26 @@ size={30}
 
 
 
-{/* Empty */}
-
-
-{
-!loading &&
-currentUsers.length===0 &&
-
-<div className="
-bg-white
-rounded-2xl
-p-10
-text-center
-text-gray-500
-">
-
-No Users Found
-
-</div>
-
-}
 
 
 
 
-
-
-{/* User List */}
+{/* USERS LIST */}
 
 
 {
 !loading &&
 
-<div className="
+<div
+className="
 bg-white
-rounded-2xl
-overflow-hidden
+rounded-xl
 shadow-sm
-">
+border
+border-gray-100
+overflow-hidden
+"
+>
 
 
 {
@@ -793,16 +911,21 @@ border-b
 last:border-none
 "
 
-
 >
 
 
-<div className="
+{/* USER INFO */}
+
+
+<div
+className="
 flex
 items-center
 gap-3
 min-w-0
-">
+flex-1
+"
+>
 
 
 <img
@@ -814,25 +937,34 @@ user.email || "User"
 )}`
 }
 
-
 className="
 w-12
 h-12
 rounded-full
 object-cover
+border
+border-gray-100
 "
 
 />
 
 
-<div className="min-w-0">
+
+<div
+className="
+min-w-0
+"
+>
 
 
-<h3 className="
-font-semibold
-text-slate-800
+<h3
+className="
+font-bold
+text-sm
+text-[#172033]
 truncate
-">
+"
+>
 
 {
 user.name ||
@@ -843,11 +975,13 @@ user.name ||
 
 
 
-<p className="
+<p
+className="
 text-xs
 text-gray-500
 truncate
-">
+"
+>
 
 {user.email}
 
@@ -863,50 +997,79 @@ truncate
 
 
 
-<div className="
+
+
+
+
+{/* ACTIONS */}
+
+
+<div
+className="
 flex
 items-center
 gap-2
-">
+ml-3
+"
+>
 
 
-<div className="relative">
+
+
+{/* ROLE */}
+
+
+<div
+className="
+relative
+"
+>
+
 
 <button
 
 onClick={()=>{
 
 setRoleMenu(
-roleMenu === user.id
-? null
-: user.id
+roleMenu===user.id
+?
+null
+:
+user.id
 );
 
 }}
 
 className={`
+
 text-xs
 px-3
-py-1
-rounded-lg
-font-medium
+py-2
+rounded-xl
+font-semibold
 flex
 items-center
 gap-1
 
+
 ${
 user.role==="admin"
+
 ?
-"bg-amber-50 text-amber-600"
+
+"bg-[#FFF7E8] text-amber-600"
+
 :
+
 "bg-blue-50 text-blue-600"
+
 }
 
 `}
 
 >
 
-<span>
+
 {
 user.role==="admin"
 ?
@@ -914,28 +1077,31 @@ user.role==="admin"
 :
 "User"
 }
-</span>
+
 
 <FiChevronDown size={14}/>
+
 
 </button>
 
 
 
+
+
 {
-roleMenu === user.id && (
+roleMenu===user.id &&
 
 <div
 
 className="
 absolute
 right-0
-top-10
+top-11
 w-36
 bg-white
-border
-border-gray-200
 rounded-xl
+border
+border-gray-100
 shadow-lg
 z-50
 overflow-hidden
@@ -957,16 +1123,18 @@ user.role==="admin"
 "admin";
 
 
+
 const confirm =
 window.confirm(
 `Are you sure you want to make ${
-newRole === "admin"
+newRole==="admin"
 ?
 "Admin"
 :
 "User"
 }?`
 );
+
 
 
 if(!confirm)
@@ -995,7 +1163,7 @@ px-4
 py-3
 text-left
 text-sm
-hover:bg-amber-50
+hover:bg-[#FFF7E8]
 "
 
 >
@@ -1008,12 +1176,11 @@ user.role==="admin"
 "Make Admin"
 }
 
+
 </button>
 
 
 </div>
-
-)
 
 }
 
@@ -1023,9 +1190,53 @@ user.role==="admin"
 
 
 
+
+
+
+
+
+{/* EDIT */}
+
+
 <button
 
-onClick={()=>removeUser(user)}
+onClick={()=>
+navigate(`/admin/users/${user.id}`)
+}
+
+className="
+w-9
+h-9
+rounded-xl
+bg-[#FFF7E8]
+text-amber-500
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiEdit size={16}/>
+
+</button>
+
+
+
+
+
+
+
+
+
+{/* DELETE */}
+
+
+<button
+
+onClick={()=>
+removeUser(user)
+}
 
 className="
 w-9
@@ -1046,8 +1257,9 @@ justify-center
 
 
 
-</div>
 
+
+</div>
 
 
 </div>
@@ -1062,20 +1274,58 @@ justify-center
 
 }
 
+
   
-{/* Pagination */}
+{/* EMPTY STATE */}
+
+
+{
+!loading &&
+currentUsers.length===0 &&
+
+<div
+className="
+bg-white
+rounded-xl
+p-10
+text-center
+text-gray-500
+border
+border-gray-100
+shadow-sm
+"
+>
+
+No Users Found
+
+</div>
+
+}
+
+
+
+
+
+
+
+
+
+{/* PAGINATION */}
+
 
 
 {
 totalPages > 1 &&
 
-<div className="
+<div
+className="
 flex
 justify-center
 items-center
 gap-2
 mt-6
-">
+"
+>
 
 
 <button
@@ -1092,6 +1342,7 @@ h-10
 rounded-xl
 bg-white
 border
+border-gray-200
 flex
 items-center
 justify-center
@@ -1108,7 +1359,9 @@ disabled:opacity-40
 
 
 
+
 {
+
 Array.from(
 {
 length: totalPages
@@ -1129,7 +1382,9 @@ className={`
 w-10
 h-10
 rounded-xl
-font-medium
+font-bold
+text-sm
+
 
 ${
 page===index+1
@@ -1140,7 +1395,7 @@ page===index+1
 
 :
 
-"bg-white border"
+"bg-white border border-gray-200"
 
 }
 
@@ -1161,6 +1416,8 @@ page===index+1
 
 
 
+
+
 <button
 
 disabled={page===totalPages}
@@ -1175,6 +1432,7 @@ h-10
 rounded-xl
 bg-white
 border
+border-gray-200
 flex
 items-center
 justify-center
@@ -1191,9 +1449,18 @@ disabled:opacity-40
 
 </div>
 
+
+
+
+
 }
+
+
 
 </div>
-  );
-}
 
+</div>
+
+);
+
+}
