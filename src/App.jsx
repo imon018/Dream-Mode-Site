@@ -6,11 +6,17 @@ import CartProvider from "./context/CartContext";
 
 import WishlistProvider from "./context/WishlistContext";
 
+import {
+  SettingsProvider
+} from "./context/SettingsContext";
+
 import { Toaster } from "react-hot-toast";
 
 import useAuth from "./hooks/useAuth";
 
 import ScrollToTop from "./components/ScrollToTop";
+
+
 
 
 
@@ -91,7 +97,6 @@ function AppContent() {
 
     </>
 
-
   );
 
 }
@@ -111,22 +116,28 @@ export default function App(){
     <AuthProvider>
 
 
-      <CartProvider>
+      <SettingsProvider>
 
 
-        <WishlistProvider>
+        <CartProvider>
 
 
-          <ScrollToTop />
+          <WishlistProvider>
 
 
-          <AppContent />
+            <ScrollToTop />
 
 
-        </WishlistProvider>
+            <AppContent />
 
 
-      </CartProvider>
+          </WishlistProvider>
+
+
+        </CartProvider>
+
+
+      </SettingsProvider>
 
 
     </AuthProvider>
