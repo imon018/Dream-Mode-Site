@@ -468,7 +468,7 @@ text-sm
 "
 >
 
-© 2026 {settings.storeName || "Dream Mode"} All Rights Reserved by Dream Mode.
+© 2026 All Rights Reserved by {settings.storeName || "DREAM MODE"}
 
 </div>
 
