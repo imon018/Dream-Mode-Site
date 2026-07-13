@@ -150,6 +150,11 @@ element={<OrderDetails />}
 />
       </Route>
 
+      <Route
+path="users/:id"
+element={<UserDetails />}
+/>
+
       {/* =========================
           404 NOT FOUND
       ========================= */}
