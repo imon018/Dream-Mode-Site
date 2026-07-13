@@ -12,13 +12,8 @@ import {
 
 import {
   FiArrowLeft,
-  FiUser,
   FiMail,
   FiPhone,
-  FiShoppingBag,
-  FiCheckCircle,
-  FiClock,
-  FiXCircle,
 } from "react-icons/fi";
 
 
@@ -37,13 +32,10 @@ import {
 export default function UserDetails(){
 
 
-const {
-id
-} = useParams();
+const { id } = useParams();
 
 
-const navigate =
-useNavigate();
+const navigate = useNavigate();
 
 
 
@@ -91,7 +83,6 @@ setUser(userData);
 
 
 
-
 if(userData?.email){
 
 
@@ -101,21 +92,18 @@ userData.email
 );
 
 
-setOrders(orderData);
+setOrders(orderData || []);
 
 
 }
 
 
-
 }
-
 catch(error){
 
 console.log(error);
 
 }
-
 finally{
 
 setLoading(false);
@@ -131,6 +119,7 @@ setLoading(false);
 
 
 
+
 const totalOrders =
 orders.length;
 
@@ -138,32 +127,28 @@ orders.length;
 
 const delivered =
 orders.filter(
-order =>
-order.status==="Delivered"
+order=>order.status==="Delivered"
 ).length;
 
 
 
 const processing =
 orders.filter(
-order =>
-order.status==="Processing"
+order=>order.status==="Processing"
 ).length;
 
 
 
 const pending =
 orders.filter(
-order =>
-order.status==="Pending"
+order=>order.status==="Pending"
 ).length;
 
 
 
 const cancelled =
 orders.filter(
-order =>
-order.status==="Cancelled"
+order=>order.status==="Cancelled"
 ).length;
 
 
@@ -181,6 +166,7 @@ sum + Number(order.total || 0),
 
 
 
+
 if(loading){
 
 return(
@@ -189,11 +175,11 @@ return(
 className="
 min-h-screen
 bg-[#FAF7F2]
-p-4
-md:p-8
 flex
 items-center
 justify-center
+font-bold
+text-gray-500
 "
 >
 
@@ -234,9 +220,6 @@ mx-auto
 
 
 
-{/* HEADER */}
-
-
 <div
 className="
 flex
@@ -249,9 +232,7 @@ mb-6
 
 <button
 
-onClick={()=>
-navigate(-1)
-}
+onClick={()=>navigate(-1)}
 
 className="
 w-10
@@ -263,7 +244,6 @@ border-gray-100
 flex
 items-center
 justify-center
-text-gray-600
 "
 
 >
@@ -276,7 +256,6 @@ text-gray-600
 
 <div>
 
-
 <h1
 className="
 text-2xl
@@ -284,9 +263,7 @@ font-black
 text-[#172033]
 "
 >
-
 User Details
-
 </h1>
 
 
@@ -294,12 +271,9 @@ User Details
 className="
 text-sm
 text-gray-500
-mt-1
 "
 >
-
 Dashboard › Users
-
 </p>
 
 
@@ -311,12 +285,6 @@ Dashboard › Users
 
 
 
-
-
-
-
-
-{/* PROFILE CARD */}
 
 
 <div
@@ -346,7 +314,9 @@ gap-4
 
 src={
 user?.photoURL ||
-`https://ui-avatars.com/api/?name=${user?.name}`
+`https://ui-avatars.com/api/?name=${encodeURIComponent(
+user?.name || "User"
+)}`
 }
 
 className="
@@ -355,15 +325,12 @@ h-20
 rounded-full
 object-cover
 border
-border-gray-100
 "
-
 />
 
 
 
 <div>
-
 
 <h2
 className="
@@ -373,9 +340,7 @@ text-[#172033]
 "
 >
 
-{
-user?.name || "User"
-}
+{user?.name || "User"}
 
 </h2>
 
@@ -392,7 +357,6 @@ text-gray-500
 </p>
 
 
-
 <span
 className="
 inline-block
@@ -407,9 +371,7 @@ font-semibold
 "
 >
 
-{
-user?.role || "User"
-}
+{user?.role || "User"}
 
 </span>
 
@@ -424,11 +386,9 @@ user?.role || "User"
 
 
 
-
 <div
 className="
 grid
-grid-cols-1
 md:grid-cols-2
 gap-4
 mt-6
@@ -436,7 +396,6 @@ mt-6
 >
 
 
-
 <div
 className="
 flex
@@ -448,33 +407,21 @@ p-3
 "
 >
 
-<FiMail
-className="
-text-amber-500
-"
-/>
+<FiMail className="text-amber-500"/>
 
 <div>
 
-<p className="
-text-xs
-text-gray-500
-">
+<p className="text-xs text-gray-500">
 Email
 </p>
 
-<p className="
-text-sm
-font-semibold
-">
+<p className="text-sm font-semibold">
 {user?.email}
 </p>
 
 </div>
 
-
 </div>
-
 
 
 
@@ -490,36 +437,22 @@ p-3
 "
 >
 
-<FiPhone
-className="
-text-amber-500
-"
-/>
-
+<FiPhone className="text-amber-500"/>
 
 <div>
 
-<p className="
-text-xs
-text-gray-500
-">
+<p className="text-xs text-gray-500">
 Phone
 </p>
 
 
-<p className="
-text-sm
-font-semibold
-">
-{
-user?.phone || "Not added"
-}
+<p className="text-sm font-semibold">
+{user?.phone || "Not added"}
 </p>
 
 
 </div>
 
-
 </div>
 
 
@@ -527,18 +460,9 @@ user?.phone || "Not added"
 </div>
 
 
-
 </div>
 
-
-
-
-
-
-
-
-
-{/* ORDER SUMMARY */}
+  {/* ORDER SUMMARY */}
 
 
 <div
@@ -567,6 +491,7 @@ text-[#172033]
 Order Summary
 
 </h2>
+
 
 
 
@@ -623,6 +548,7 @@ className="
 text-xl
 font-black
 mt-1
+text-[#172033]
 "
 >
 
@@ -645,7 +571,6 @@ mt-1
 
 
 </div>
-
 
 
 
@@ -686,6 +611,7 @@ Recent Orders
 
 
 
+
 <div
 className="
 space-y-3
@@ -694,7 +620,9 @@ space-y-3
 
 
 {
-orders.slice(0,5)
+
+orders
+.slice(0,5)
 .map(
 (order)=>(
 
@@ -707,27 +635,83 @@ className="
 flex
 items-center
 justify-between
+gap-3
 bg-[#FAF7F2]
 rounded-xl
-p-4
+p-3
 "
-
 >
 
 
-<div>
+{/* PRODUCT INFO */}
+
+
+<div
+className="
+flex
+items-center
+gap-3
+min-w-0
+"
+>
+
+
+<img
+
+src={
+
+order.items?.[0]?.image ||
+
+order.items?.[0]?.productImage ||
+
+"https://via.placeholder.com/80"
+
+}
+
+className="
+w-14
+h-14
+rounded-xl
+object-cover
+border
+border-gray-100
+"
+
+/>
+
+
+
+<div
+className="
+min-w-0
+"
+>
 
 
 <h3
 className="
 font-bold
 text-sm
+text-[#172033]
+truncate
 "
 >
 
-#{order.id}
+
+{
+
+order.items?.[0]?.name ||
+
+order.items?.[0]?.productName ||
+
+"Product"
+
+}
+
 
 </h3>
+
+
 
 
 <p
@@ -737,7 +721,9 @@ text-gray-500
 "
 >
 
-{order.productName || "Product"}
+#
+
+{order.id?.slice(0,10)}
 
 </p>
 
@@ -745,22 +731,35 @@ text-gray-500
 </div>
 
 
+</div>
+
+
+
+
+
+
+
+
+{/* PRICE + STATUS */}
+
 
 <div
 className="
 text-right
+shrink-0
 "
 >
 
 
 <p
 className="
-font-bold
+font-black
 text-sm
+text-[#172033]
 "
 >
 
-৳{order.total}
+৳{order.total || 0}
 
 </p>
 
@@ -769,8 +768,8 @@ text-sm
 <span
 className="
 text-xs
-text-amber-600
 font-semibold
+text-amber-600
 "
 >
 
@@ -782,12 +781,32 @@ font-semibold
 </div>
 
 
+
 </div>
 
 
 )
 
 )
+
+}
+
+
+{
+orders.length===0 &&
+
+<p
+className="
+text-center
+text-sm
+text-gray-500
+py-5
+"
+>
+
+No Orders Found
+
+</p>
 
 }
 
@@ -804,10 +823,10 @@ font-semibold
 
 
 
-</div>
 
 </div>
 
+</div>
 
 );
 
