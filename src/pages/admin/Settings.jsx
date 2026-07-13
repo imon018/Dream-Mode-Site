@@ -70,7 +70,10 @@ setLogoFile
 ]=useState(null);
 
 
-
+const [
+logoPreview,
+setLogoPreview
+]=useState("");
 
 
 
