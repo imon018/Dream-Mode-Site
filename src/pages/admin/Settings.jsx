@@ -11,6 +11,7 @@ import {
   FiMapPin,
   FiFacebook,
   FiMessageCircle,
+  FiUploadCloud,
 } from "react-icons/fi";
 
 
@@ -43,6 +44,19 @@ whatsapp:"",
 
 
 
+const [
+logoPreview,
+setLogoPreview
+]=useState("");
+
+
+
+const [
+maintenanceMode,
+setMaintenanceMode
+]=useState(false);
+
+
 
 
 
@@ -62,6 +76,25 @@ e.target.value,
 
 };
 
+
+
+
+
+const handleLogoChange=(e)=>{
+
+
+const file=e.target.files[0];
+
+
+if(file){
+
+setLogoPreview(
+URL.createObjectURL(file)
+);
+
+}
+
+};
 
 
 
@@ -303,6 +336,188 @@ handleSave();
 
 
 
+
+
+{/* STORE LOGO */}
+
+
+<div>
+
+
+<label
+
+className="
+
+block
+
+font-bold
+
+text-sm
+
+text-[#172033]
+
+mb-2
+
+"
+
+>
+
+Store Logo
+
+</label>
+
+
+
+
+<label
+
+htmlFor="logo"
+
+className="
+
+h-36
+
+rounded-xl
+
+border-dashed
+
+border
+
+border-gray-300
+
+bg-[#FAF7F2]
+
+flex
+
+flex-col
+
+items-center
+
+justify-center
+
+cursor-pointer
+
+overflow-hidden
+
+"
+
+>
+
+
+{
+
+logoPreview ?
+
+
+<img
+
+src={logoPreview}
+
+className="
+
+w-28
+
+h-28
+
+object-contain
+
+rounded-xl
+
+"
+
+/>
+
+
+:
+
+
+<>
+
+
+<FiUploadCloud
+
+className="
+
+text-amber-500
+
+text-3xl
+
+mb-2
+
+"
+
+/>
+
+
+<p
+
+className="
+
+text-sm
+
+font-semibold
+
+"
+
+>
+
+Upload Store Logo
+
+</p>
+
+
+<p
+
+className="
+
+text-xs
+
+text-gray-400
+
+"
+
+>
+
+PNG JPG WEBP
+
+</p>
+
+
+</>
+
+}
+
+
+
+</label>
+
+
+
+<input
+
+id="logo"
+
+type="file"
+
+accept="image/*"
+
+className="hidden"
+
+onChange={handleLogoChange}
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+
+
 {/* STORE NAME */}
 
 
@@ -403,6 +618,7 @@ className={inputClass}
 
 
 </div>
+
 
 
 
@@ -512,16 +728,7 @@ className={inputClass}
 
 </div>
 
-
-
-
-
-
-
-
-
-{/* PHONE */}
-
+  {/* PHONE */}
 
 
 <div>
@@ -530,17 +737,11 @@ className={inputClass}
 <label
 
 className="
-
 block
-
 font-bold
-
 text-sm
-
 text-[#172033]
-
 mb-2
-
 "
 
 >
@@ -558,17 +759,12 @@ Phone Number
 <div
 
 className="
-
 absolute
-
 left-3
-
 top-1/2
-
 -translate-y-1/2
 
 w-8
-
 h-8
 
 rounded-lg
@@ -576,13 +772,10 @@ rounded-lg
 bg-[#FFF7E8]
 
 flex
-
 items-center
-
 justify-center
 
 text-amber-500
-
 "
 
 >
@@ -630,24 +823,17 @@ className={inputClass}
 {/* ADDRESS */}
 
 
-
 <div>
 
 
 <label
 
 className="
-
 block
-
 font-bold
-
 text-sm
-
 text-[#172033]
-
 mb-2
-
 "
 
 >
@@ -665,15 +851,11 @@ Store Address
 <div
 
 className="
-
 absolute
-
 left-3
-
 top-3
 
 w-8
-
 h-8
 
 rounded-lg
@@ -681,13 +863,10 @@ rounded-lg
 bg-[#FFF7E8]
 
 flex
-
 items-center
-
 justify-center
 
 text-amber-500
-
 "
 
 >
@@ -718,13 +897,9 @@ placeholder="Store address"
 
 
 className="
-
 w-full
-
 pl-12
-
 pt-3
-
 pr-3
 
 rounded-lg
@@ -764,24 +939,17 @@ focus:border-amber-400
 {/* FACEBOOK */}
 
 
-
 <div>
 
 
 <label
 
 className="
-
 block
-
 font-bold
-
 text-sm
-
 text-[#172033]
-
 mb-2
-
 "
 
 >
@@ -799,17 +967,12 @@ Facebook URL
 <div
 
 className="
-
 absolute
-
 left-3
-
 top-1/2
-
 -translate-y-1/2
 
 w-8
-
 h-8
 
 rounded-lg
@@ -817,13 +980,10 @@ rounded-lg
 bg-[#FFF7E8]
 
 flex
-
 items-center
-
 justify-center
 
 text-amber-500
-
 "
 
 >
@@ -871,24 +1031,17 @@ className={inputClass}
 {/* WHATSAPP */}
 
 
-
 <div>
 
 
 <label
 
 className="
-
 block
-
 font-bold
-
 text-sm
-
 text-[#172033]
-
 mb-2
-
 "
 
 >
@@ -906,17 +1059,12 @@ WhatsApp Number
 <div
 
 className="
-
 absolute
-
 left-3
-
 top-1/2
-
 -translate-y-1/2
 
 w-8
-
 h-8
 
 rounded-lg
@@ -924,13 +1072,10 @@ rounded-lg
 bg-[#FFF7E8]
 
 flex
-
 items-center
-
 justify-center
 
 text-amber-500
-
 "
 
 >
@@ -975,6 +1120,196 @@ className={inputClass}
 
 
 
+{/* MAINTENANCE MODE */}
+
+
+<div
+
+className="
+bg-[#FFF9ED]
+
+rounded-xl
+
+p-4
+
+border
+
+border-[#FDECC8]
+
+flex
+
+items-center
+
+justify-between
+
+"
+
+>
+
+
+<div>
+
+
+<h3
+
+className="
+font-bold
+text-sm
+text-[#172033]
+"
+
+>
+
+Maintenance Mode
+
+</h3>
+
+
+<p
+
+className="
+text-xs
+text-gray-500
+mt-1
+"
+
+>
+
+Temporarily disable website
+
+</p>
+
+
+</div>
+
+
+
+
+
+<label
+
+className="
+cursor-pointer
+"
+
+>
+
+
+<input
+
+
+type="checkbox"
+
+
+className="sr-only"
+
+
+checked={maintenanceMode}
+
+
+onChange={(e)=>
+
+setMaintenanceMode(
+e.target.checked
+)
+
+}
+
+
+/>
+
+
+
+<div
+
+className={`
+
+w-12
+
+h-6
+
+rounded-full
+
+transition
+
+
+${
+maintenanceMode
+
+?
+
+"bg-amber-500"
+
+:
+
+"bg-gray-300"
+
+}
+
+`}
+
+>
+
+
+<div
+
+className={`
+
+w-5
+
+h-5
+
+bg-white
+
+rounded-full
+
+mt-[2px]
+
+shadow
+
+transition
+
+
+${
+maintenanceMode
+
+?
+
+"translate-x-6"
+
+:
+
+"translate-x-1"
+
+}
+
+`}
+
+>
+
+</div>
+
+
+</div>
+
+
+</label>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* SAVE BUTTON */}
+
+
+
 <Button
 
 
@@ -1004,7 +1339,6 @@ text-sm
 shadow
 
 "
-
 
 >
 
