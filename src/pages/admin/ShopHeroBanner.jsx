@@ -746,7 +746,7 @@ w-full
 
 h-12
 
-rounded-lg
+rounded-xl
 
 bg-amber-500
 
@@ -775,7 +775,6 @@ loading
 "Save Shop Hero Banner"
 
 }
-
 
 </Button>
 
