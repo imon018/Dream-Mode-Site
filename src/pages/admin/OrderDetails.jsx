@@ -538,154 +538,143 @@ border-gray-100
 
 
 
+{/* =========================
+    CUSTOMER
+========================= */}
 
-
-
-{/* CUSTOMER */}
-
-<h3 className="
-font-bold
-text-sm
-mb-3
-">
-
-Customer
-
-</h3>
-
-
-
-<div className="
-flex
-justify-between
-items-center
-">
-
-
-<div className="
-flex
-items-center
-gap-3
-">
-
-
-<img
-
-src={
-order.customerPhoto ||
-`https://ui-avatars.com/api/?name=${order.customerName}`
-}
-
-className="
-w-12
-h-12
-rounded-full
-object-cover
+<div
+  className="
+  bg-white
+  border
+  border-gray-100
+  rounded-lg
+  p-4
+  shadow-sm
 "
-
-/>
-
-
-<div>
-
-
-<p className="
-font-bold
-text-sm
-">
-
-{order.customerName}
-
-</p>
-
-
-<p className="
-text-xs
-text-gray-500
-">
-
-{order.email}
-
-</p>
-
-
-<p className="
-text-xs
-text-gray-600
-mt-1
-">
-
-{order.phone}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="
-flex
-gap-2
-">
-
-
-<a
-
-href={`tel:${order.phone}`}
-
-className="
-w-9
-h-9
-rounded-full
-bg-gray-50
-border
-flex
-items-center
-justify-center
-"
-
 >
 
-<FiPhone size={16}/>
+  <h3
+    className="
+    font-bold
+    text-sm
+    mb-3
+  "
+  >
+    Customer
+  </h3>
 
-</a>
+  <div
+    className="
+    flex
+    justify-between
+    items-center
+  "
+  >
 
+    <div
+      className="
+      flex
+      items-center
+      gap-3
+    "
+    >
 
+      <img
+        src={
+          order.customerPhoto ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            order.customerName || "User"
+          )}`
+        }
+        className="
+        w-12
+        h-12
+        rounded-full
+        object-cover
+        "
+      />
 
-<a
+      <div>
 
-href={`mailto:${order.email}`}
+        <p
+          className="
+          font-bold
+          text-sm
+        "
+        >
+          {order.customerName}
+        </p>
 
-className="
-w-9
-h-9
-rounded-full
-bg-gray-50
-border
-flex
-items-center
-justify-center
-"
+        <p
+          className="
+          text-xs
+          text-gray-500
+        "
+        >
+          {order.email}
+        </p>
 
->
+        <p
+          className="
+          text-xs
+          text-gray-500
+          mt-1
+        "
+        >
+          {order.phone}
+        </p>
 
-<FiMail size={16}/>
+      </div>
 
-</a>
+    </div>
 
+    <div
+      className="
+      flex
+      gap-2
+    "
+    >
+
+      <a
+        href={`tel:${order.phone}`}
+        className="
+        w-9
+        h-9
+        rounded-lg
+        border
+        border-gray-100
+        bg-gray-50
+        flex
+        items-center
+        justify-center
+        "
+      >
+        <FiPhone size={16}/>
+      </a>
+
+      <a
+        href={`mailto:${order.email}`}
+        className="
+        w-9
+        h-9
+        rounded-lg
+        border
+        border-gray-100
+        bg-gray-50
+        flex
+        items-center
+        justify-center
+        "
+      >
+        <FiMail size={16}/>
+      </a>
+
+    </div>
+
+  </div>
 
 </div>
 
-
-</div>
 
   {/* SHIPPING ADDRESS */}
 
@@ -1243,9 +1232,10 @@ Paid
 
 </div>
 
-  // =========================
-// UPDATE STATUS
-// =========================
+  {/* =========================
+    UPDATE STATUS
+========================= */}
+
 
 
 <div className="
