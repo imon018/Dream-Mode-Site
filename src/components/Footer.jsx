@@ -9,11 +9,18 @@ FiMail,
 FiMapPin
 } from "react-icons/fi";
 
+import {
+  useSettings
+} from "../context/SettingsContext";
 
 
 export default function Footer(){
 
+const {
+  settings
+}=useSettings();
 
+  
 return (
 
 <footer
@@ -62,7 +69,14 @@ mb-5
 
 
 <img
-src="/logo.png"
+src={
+  settings.logoUrl ||
+  "/logo.png"
+}
+alt={
+  settings.storeName ||
+  "Dream Mode"
+}
 className="
 w-14
 h-14
@@ -82,11 +96,19 @@ object-contain
   "
 >
   <span className="text-white">
-    DREAM
-  </span>{" "}
-  <span className="text-amber-500">
-    MODE
-  </span>
+{
+(settings.storeName || "DREAM MODE")
+.split(" ")[0]
+}
+</span>{" "}
+
+<span className="text-amber-500">
+{
+(settings.storeName || "DREAM MODE")
+.split(" ").slice(1).join(" ")
+}
+</span>
+  
 </h2>
 
 
@@ -116,7 +138,7 @@ text-sm
 "
 >
 
-Dream Mode is your trusted destination for premium dress. We ensure quality, style and customer satisfaction.
+{settings.storeName || "Dream Mode"} is your trusted destination for premium dress. We ensure quality, style and customer satisfaction.
 
 </p>
 
@@ -318,19 +340,19 @@ text-sm
 
 <p className="flex gap-3">
 <FiPhone className="text-amber-500"/>
-+8801406978619
+{settings.phone || "+8801406978619"}
 </p>
 
 
 <p className="flex gap-3">
 <FiMail className="text-amber-500"/>
-dreammode27@gmail.com
+{settings.email || "dreammode27@gmail.com"}
 </p>
 
 
 <p className="flex gap-3">
 <FiMapPin className="text-amber-500"/>
-Dhaka, Bangladesh
+{settings.address || "Dhaka, Bangladesh"}
 </p>
 
 
