@@ -201,7 +201,7 @@ export default function WhatsAppButton() {
 
       ref={buttonRef}
 
-      href={settings.whatsapp || "#"}}
+      href={settings.whatsapp || "#"}
 
       target="_blank"
 
