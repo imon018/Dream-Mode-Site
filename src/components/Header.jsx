@@ -14,7 +14,9 @@ import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
 
 import { logout } from "../services/authService";
-import useSettings from "../hooks/useSettings";
+import {
+  useSettings
+} from "../context/SettingsContext";
 
 export default function Header() {
 
