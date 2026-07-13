@@ -1,145 +1,104 @@
 import AppRoutes from "./routes/AppRoutes";
 
+
 import AuthProvider from "./context/AuthContext";
+
 
 import CartProvider from "./context/CartContext";
 
+
 import WishlistProvider from "./context/WishlistContext";
 
+
 import {
-  SettingsProvider,
-  useSettings,
+  SettingsProvider
 } from "./context/SettingsContext";
+
+
+import MaintenanceGuard from "./components/MaintenanceGuard";
+
 
 import {
   Toaster
 } from "react-hot-toast";
 
+
 import useAuth from "./hooks/useAuth";
+
 
 import ScrollToTop from "./components/ScrollToTop";
 
-import MaintenancePage from "./components/MaintenancePage";
 
 
 
 
 
-function AppContent() {
 
+function AppContent(){
 
-  const {
-    loading,
-    user,
-  } = useAuth();
 
+const {
+loading
+}=useAuth();
 
 
 
-  const {
-    settings,
-    loading: settingsLoading,
-  } = useSettings();
 
+if(loading){
 
 
+return (
 
+<div className="
+min-h-screen
+flex
+items-center
+justify-center
+">
 
 
-  if(
-    loading ||
-    settingsLoading
-  ){
+Loading Dream Mode...
 
 
-    return (
+</div>
 
-      <div className="min-h-screen flex items-center justify-center">
+);
 
 
-        <div className="text-center">
+}
 
 
-          <div className="text-4xl mb-4">
-            ⏳
-          </div>
 
 
 
-          <h2 className="text-2xl font-bold">
+return (
 
-            Loading Dream Mode...
+<>
 
-          </h2>
 
+<MaintenanceGuard>
 
 
-          <p className="text-gray-500 mt-2">
+<AppRoutes />
 
-            Checking authentication
 
-          </p>
+</MaintenanceGuard>
 
 
-        </div>
 
 
-      </div>
+<Toaster
 
-    );
+position="top-right"
 
+/>
 
-  }
 
+</>
 
 
+);
 
-
-
-
-  const isAdmin =
-    user?.role === "admin";
-
-
-
-
-
-  if(
-    settings.maintenanceMode &&
-    !isAdmin
-  ){
-
-    return (
-      <MaintenancePage />
-    );
-
-  }
-
-
-
-
-
-
-
-  return (
-
-    <>
-
-
-      <AppRoutes />
-
-
-
-      <Toaster
-
-        position="top-right"
-
-      />
-
-
-    </>
-
-  );
 
 }
 
@@ -152,40 +111,39 @@ function AppContent() {
 export default function App(){
 
 
-  return (
+return (
+
+<AuthProvider>
 
 
-    <AuthProvider>
+<SettingsProvider>
 
 
-      <SettingsProvider>
+<CartProvider>
 
 
-        <CartProvider>
+<WishlistProvider>
 
 
-          <WishlistProvider>
+<ScrollToTop/>
 
 
-            <ScrollToTop />
+<AppContent/>
 
 
-            <AppContent />
+</WishlistProvider>
 
 
-          </WishlistProvider>
+</CartProvider>
 
 
-        </CartProvider>
+</SettingsProvider>
 
 
-      </SettingsProvider>
+</AuthProvider>
 
 
-    </AuthProvider>
-
-
-  );
+);
 
 
 }
