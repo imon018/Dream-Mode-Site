@@ -14,6 +14,7 @@ import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
 
 import { logout } from "../services/authService";
+import useSettings from "../hooks/useSettings";
 
 export default function Header() {
 
@@ -22,6 +23,10 @@ export default function Header() {
   const { cartCount } = useCart();
 
   const navigate = useNavigate();
+
+    const {
+    settings
+  } = useSettings();
 
   const [mobileOpen, setMobileOpen] =
     useState(false);
@@ -138,16 +143,22 @@ export default function Header() {
               >
 
                 <img
-                  src="/logo.png"
-                  alt="Dream Mode"
-                  className="
-                  w-10
-                  h-10
-                  md:w-12
-                  md:h-12
-                  object-contain
-                "
-                />
+  src={
+    settings.logoUrl ||
+    "/logo.png"
+  }
+  alt={
+    settings.storeName ||
+    "Dream Mode"
+  }
+  className="
+  w-10
+  h-10
+  md:w-12
+  md:h-12
+  object-contain
+"
+/>
 
                 <div
   className="
@@ -172,7 +183,11 @@ export default function Header() {
       textShadow: "0 2px 10px rgba(0,0,0,.08)"
     }}
   >
-    DREAM MODE
+    {
+ settings.storeName ||
+ "DREAM MODE"
+}
+    
   </h2>
 
   <p
@@ -450,14 +465,20 @@ export default function Header() {
             >
 
               <img
-                src="/logo.png"
-                alt=""
-                className="
-                w-10
-                h-10
-                object-contain
-              "
-              />
+ src={
+   settings.logoUrl ||
+   "/logo.png"
+ }
+ alt={
+   settings.storeName ||
+   "Dream Mode"
+ }
+ className="
+ w-10
+ h-10
+ object-contain
+ "
+/>
 
               <div>
 
@@ -467,7 +488,10 @@ export default function Header() {
                   font-bold
                 "
                 >
-                  DREAM MODE
+                  {
+ settings.storeName ||
+ "DREAM MODE"
+}
                 </h2>
 
                 <p
@@ -703,16 +727,22 @@ export default function Header() {
           >
 
             <img
-              src="/logo.png"
-              alt="Dream Mode"
-              className="
-              w-14
-              h-14
-              mx-auto
-              mb-3
-              object-contain
-            "
-            />
+ src={
+   settings.logoUrl ||
+   "/logo.png"
+ }
+ alt={
+   settings.storeName ||
+   "Dream Mode"
+ }
+ className="
+ w-14
+ h-14
+ mx-auto
+ mb-3
+ object-contain
+ "
+/>
 
             <h3
               className="
@@ -720,7 +750,10 @@ export default function Header() {
               font-bold
             "
             >
-              Dream Mode
+              {
+ settings.storeName ||
+ "Dream Mode"
+}
             </h3>
 
             <p
