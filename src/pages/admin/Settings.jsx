@@ -24,6 +24,10 @@ import {
   getSettings,
 } from "../../services/settingsService";
 
+import {
+  uploadImages,
+} from "../../services/uploadService";
+
 
 
 
@@ -61,9 +65,9 @@ maintenanceMode:false,
 
 
 const [
-logoPreview,
-setLogoPreview
-]=useState("");
+logoFile,
+setLogoFile
+]=useState(null);
 
 
 
@@ -167,10 +171,11 @@ const file=e.target.files[0];
 if(file){
 
 
+setLogoFile(file);
+
+
 setLogoPreview(
-
 URL.createObjectURL(file)
-
 );
 
 
@@ -194,7 +199,42 @@ const handleSave=async()=>{
 try{
 
 
-await saveSettings(settings);
+let logoData={};
+
+
+
+if(logoFile){
+
+
+const uploaded =
+await uploadImages([logoFile]);
+
+
+
+logoData={
+
+logoUrl:
+uploaded[0].imageUrl,
+
+
+logoPublicId:
+uploaded[0].publicId
+
+};
+
+
+}
+
+
+
+
+await saveSettings({
+
+...settings,
+
+...logoData
+
+});
 
 
 
