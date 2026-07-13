@@ -134,6 +134,10 @@ export default function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="profile" element={<AdminProfile />} />
         <Route path="users" element={<Users />} />
+        <Route
+path="users/:id"
+element={<UserDetails />}
+/>
         <Route path="products" element={<Products />} />
         <Route path="add-product" element={<AddProduct />} />
         <Route path="edit-product/:id" element={<EditProduct />} />
@@ -151,10 +155,7 @@ element={<OrderDetails />}
 />
       </Route>
 
-      <Route
-path="users/:id"
-element={<UserDetails />}
-/>
+      
 
       {/* =========================
           404 NOT FOUND
