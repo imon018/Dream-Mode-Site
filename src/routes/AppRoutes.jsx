@@ -31,6 +31,7 @@ import Subscribers from "../pages/admin/Subscribers";
 import Newsletter from "../pages/admin/Newsletter";
 import ShopHeroBanner from "../pages/admin/ShopHeroBanner";
 import OrderDetails from "../pages/admin/OrderDetails";
+import UserDetails from "../pages/admin/UserDetails";
 
 /* Public Pages */
 
