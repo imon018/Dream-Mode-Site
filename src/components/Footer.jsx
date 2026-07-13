@@ -193,6 +193,17 @@ Shop
 </li>
 
 
+  <li>
+<a
+href={settings.facebook || "#"}
+target="_blank"
+rel="noopener noreferrer"
+>
+Facebook
+</a>
+</li>
+  
+
 <li>
 <Link to="/about">
 About Us
@@ -457,7 +468,7 @@ text-sm
 "
 >
 
-© 2026 Dream Mode. All Rights Reserved by Dream Mode.
+© 2026 {settings.storeName || "Dream Mode"} All Rights Reserved by Dream Mode.
 
 </div>
 
