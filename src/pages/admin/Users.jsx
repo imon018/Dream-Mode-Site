@@ -337,9 +337,8 @@ Users
 <div
 className="
 grid
-grid-cols-2
-md:grid-cols-4
-gap-3
+grid-cols-4
+gap-2
 mb-6
 "
 >
@@ -350,7 +349,7 @@ mb-6
 className="
 bg-white
 rounded-xl
-p-4
+p-3
 shadow-sm
 border
 border-gray-100
@@ -360,8 +359,8 @@ border-gray-100
 
 <div
 className="
-w-10
-h-10
+w-8
+h-8
 rounded-xl
 bg-[#FFF7E8]
 text-amber-500
@@ -372,7 +371,7 @@ mb-3
 "
 >
 
-<FiUser size={20}/>
+<FiUser size={16}/>
 
 </div>
 
@@ -380,7 +379,7 @@ mb-3
 
 <p
 className="
-text-xs
+text-[10px]
 text-gray-500
 "
 >
@@ -393,7 +392,7 @@ Total Users
 
 <h2
 className="
-text-2xl
+text-lg
 font-black
 text-[#172033]
 "
@@ -416,7 +415,7 @@ text-[#172033]
 className="
 bg-white
 rounded-xl
-p-4
+p-3
 shadow-sm
 border
 border-gray-100
@@ -426,8 +425,8 @@ border-gray-100
 
 <div
 className="
-w-10
-h-10
+w-8
+h-8
 rounded-xl
 bg-[#FFF7E8]
 text-amber-500
@@ -438,14 +437,14 @@ mb-3
 "
 >
 
-<FiShield size={20}/>
+<FiShield size={16}/>
 
 </div>
 
 
 <p
 className="
-text-xs
+text-[10px]
 text-gray-500
 "
 >
@@ -457,7 +456,7 @@ Admins
 
 <h2
 className="
-text-2xl
+text-lg
 font-black
 "
 >
@@ -478,7 +477,7 @@ font-black
 className="
 bg-white
 rounded-xl
-p-4
+p-3
 shadow-sm
 border
 border-gray-100
@@ -488,8 +487,8 @@ border-gray-100
 
 <div
 className="
-w-10
-h-10
+w-8
+h-8
 rounded-xl
 bg-green-50
 text-green-500
@@ -500,14 +499,14 @@ mb-3
 "
 >
 
-<FiShield size={20}/>
+<FiShield size={16}/>
 
 </div>
 
 
 <p
 className="
-text-xs
+text-[10px]
 text-gray-500
 "
 >
@@ -519,7 +518,7 @@ Active Users
 
 <h2
 className="
-text-2xl
+text-lg
 font-black
 "
 >
@@ -540,7 +539,7 @@ font-black
 className="
 bg-white
 rounded-xl
-p-4
+p-3
 shadow-sm
 border
 border-gray-100
@@ -550,8 +549,8 @@ border-gray-100
 
 <div
 className="
-w-10
-h-10
+w-8
+h-8
 rounded-xl
 bg-blue-50
 text-blue-500
@@ -562,14 +561,14 @@ mb-3
 "
 >
 
-<FiUser size={20}/>
+<FiUser size={16}/>
 
 </div>
 
 
 <p
 className="
-text-xs
+text-[10px]
 text-gray-500
 "
 >
@@ -581,7 +580,7 @@ New Users
 
 <h2
 className="
-text-2xl
+text-lg
 font-black
 "
 >
