@@ -1,8 +1,15 @@
 import PolicyLayout from "../components/PolicyLayout";
 import PolicyFAQ from "../components/PolicyFAQ";
+import {
+  useSettings
+} from "../context/SettingsContext";
 
 
 export default function RefundPolicy(){
+
+  const {
+  settings
+}=useSettings();
 
 
 const faq=[
@@ -41,7 +48,7 @@ description="Understand our refund process, eligibility and payment guidelines."
 
 
 <p>
-Dream Mode provides refunds for eligible cases after
+{settings.storeName || "DREAM MODE"} provides refunds for eligible cases after
 proper verification.
 </p>
 
