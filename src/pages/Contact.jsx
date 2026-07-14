@@ -8,7 +8,9 @@ import {
   FiSend,
 } from "react-icons/fi";
 
-import { siteConfig } from "../config/siteConfig";
+import {
+  useSettings,
+} from "../context/SettingsContext";
 
 
 
@@ -48,7 +50,7 @@ export default function Contact() {
 
         <p>
           Have questions about products, orders, delivery or
-          policies? Contact Dream Mode support team and we
+          policies? Contact {settings.storeName || "DREAM MODE"} support team and we
           will assist you as soon as possible.
         </p>
 
@@ -104,7 +106,7 @@ export default function Contact() {
               mt-2
               "
             >
-              {siteConfig.phone}
+              {settings.phone}
             </p>
 
 
@@ -151,7 +153,7 @@ export default function Contact() {
               break-all
               "
             >
-              {siteConfig.email}
+              {settings.email}
             </p>
 
 
@@ -198,7 +200,7 @@ export default function Contact() {
               mt-2
               "
             >
-              Dhaka, Bangladesh
+              {settings.address}
             </p>
 
 
@@ -230,7 +232,7 @@ export default function Contact() {
 
           <a
 
-            href={siteConfig.facebook}
+            href={settings.facebook}
 
             target="_blank"
 
@@ -265,7 +267,7 @@ export default function Contact() {
 
           <a
 
-            href={siteConfig.whatsapp}
+            href={`https://wa.me/${settings.whatsapp}`}
 
             target="_blank"
 
