@@ -1,8 +1,15 @@
 import PolicyLayout from "../components/PolicyLayout";
 import PolicyFAQ from "../components/PolicyFAQ";
+import {
+  useSettings
+} from "../context/SettingsContext";
 
 
 export default function PrivacyPolicy(){
+
+  const {
+  settings
+}=useSettings();
 
 
 const faq=[
@@ -41,7 +48,7 @@ description="Learn how Dream Mode collects, uses and protects your personal info
 
 
 <p>
-Dream Mode respects your privacy and is committed to
+{settings.storeName || "DREAM MODE"} respects your privacy and is committed to
 protecting your personal information.
 </p>
 
