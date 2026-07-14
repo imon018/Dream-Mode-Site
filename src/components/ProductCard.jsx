@@ -22,13 +22,16 @@ export default function ProductCard({
   compact = false,
 }) {
 
+
   const navigate =
     useNavigate();
+
 
 
   const {
     addToCart,
   } = useCart();
+
 
 
   const {
@@ -37,10 +40,15 @@ export default function ProductCard({
   } = useWishlist();
 
 
+
+
   const liked =
     isWishlisted(
       product.id
     );
+
+
+
 
 
   const handleAdd = () => {
@@ -54,9 +62,25 @@ export default function ProductCard({
   };
 
 
+
+
+
+  const productImage =
+    product.images?.length
+      ?
+      product.images[0]
+      :
+      product.image ||
+      "https://via.placeholder.com/600";
+
+
+
+
+
   return (
 
     <div
+
       className={`
         group
         bg-white
@@ -70,94 +94,128 @@ export default function ProductCard({
 
         ${
           compact
-            ? `
-              rounded-[24px]
-              shadow-[0_0_15px_rgba(245,158,11,.12)]
-            `
-            : `
-              rounded-[32px]
-              shadow-lg
-              hover:shadow-2xl
-              hover:-translate-y-2
-            `
+
+          ?
+
+          `
+          rounded-[24px]
+          shadow-[0_0_15px_rgba(245,158,11,.12)]
+          `
+
+          :
+
+          `
+          rounded-[32px]
+          shadow-lg
+          hover:shadow-2xl
+          hover:-translate-y-2
+          `
+
         }
+
       `}
+
     >
+
+
+
 
 
       {/* IMAGE */}
 
+
       <div
+
         className="
           relative
           overflow-hidden
+          bg-white
+          flex
+          items-center
+          justify-center
         "
+
       >
 
-        <img
-          src={
-            product.image ||
-            "https://via.placeholder.com/600"
-          }
 
-          alt={
-            product.name
-          }
+        <img
+
+          src={productImage}
+
+          alt={product.name}
+
 
           className={`
             w-full
-            object-cover
+
+            object-contain
 
             transition
             duration-700
 
-            group-hover:scale-110
+            group-hover:scale-105
+
 
             ${
               compact
+
               ?
+
               "h-36 md:h-44"
+
               :
+
               "h-64 sm:h-72 md:h-80"
+
             }
+
           `}
+
         />
+
+
 
 
 
         {/* WISHLIST */}
 
+
         <button
-          onClick={() =>
-            toggleWishlist(
-              product
-            )
+
+          onClick={()=>
+            toggleWishlist(product)
           }
 
+
           className="
-  absolute
+            absolute
+            top-2
+            right-2
 
-  top-1
-  right-1
+            text-sm
 
-  text-sm
+            bg-white/70
 
-  bg-transparent
+            backdrop-blur-sm
 
-  backdrop-blur-sm
+            rounded-full
 
-  text-white
+            w-8
+            h-8
 
-  drop-shadow-[0_1px_4px_rgba(0,0,0,.9)]
+            flex
+            items-center
+            justify-center
 
-  opacity-90
+            text-black
 
-  hover:scale-110
+            shadow
 
-  transition-all
+            hover:scale-110
 
-  duration-300
-"
+            transition
+          "
+
         >
 
           {
@@ -168,58 +226,66 @@ export default function ProductCard({
             "🤍"
           }
 
+
         </button>
+
+
 
 
 
         {/* NEW BADGE */}
 
+
         <div
-  className="
-    absolute
 
-    top-1.5
-    left-1.5
+          className="
+            absolute
 
-    px-1.5
-    py-[1px]
+            top-2
+            left-2
 
-    rounded-full
+            px-2
+            py-1
 
-    border
-    border-amber-400/70
+            rounded-full
 
-    bg-black/20
+            border
+            border-amber-400/70
 
-    backdrop-blur-md
+            bg-black/20
 
-    text-amber-400
+            backdrop-blur-md
 
-    font-semibold
+            text-amber-500
 
-    text-[7px]
+            font-bold
 
-    shadow-[0_0_10px_rgba(245,158,11,.25)]
-  "
->
-  ✨ New
-</div>
+            text-[9px]
+
+          "
+
+        >
+
+          ✨ New
+
+        </div>
+
 
 
       </div>
 
+            {/* CONTENT */}
 
-
-
-
-      {/* CONTENT */}
 
       <div
+
         className={`
           ${
             compact
-              ? "p-3"
-              : "p-5"
+            ?
+            "p-3"
+            :
+            "p-5"
           }
 
           -mt-[14px]
@@ -232,15 +298,20 @@ export default function ProductCard({
           rounded-t-[22px]
 
           shadow-[0_-8px_25px_rgba(0,0,0,.08)]
+
         `}
+
       >
 
 
 
+
         <h3
+
           className={`
             font-black
             text-slate-900
+
             line-clamp-1
 
             ${
@@ -250,7 +321,9 @@ export default function ProductCard({
               :
               "text-xl"
             }
+
           `}
+
         >
 
           {product.name}
@@ -259,13 +332,17 @@ export default function ProductCard({
 
 
 
+
+
         <p
+
           className="
             mt-1
             text-sm
             font-bold
             text-amber-600
           "
+
         >
 
           ৳ {product.price}
@@ -275,22 +352,31 @@ export default function ProductCard({
 
 
 
-        {!compact && (
 
-          <p
-            className="
-              mt-3
-              text-sm
-              text-gray-500
-              line-clamp-2
-            "
-          >
 
-            {product.description}
 
-          </p>
+        {
+          !compact && (
 
-        )}
+            <p
+
+              className="
+                mt-3
+                text-sm
+                text-gray-500
+                line-clamp-2
+              "
+
+            >
+
+              {product.description}
+
+            </p>
+
+          )
+        }
+
+
 
 
 
@@ -299,117 +385,195 @@ export default function ProductCard({
 
         {/* BUTTONS */}
 
+
+
         <div
-  className="
-    flex
-    items-center
-    gap-2
-    mt-4
-    w-full
-  "
->
 
+          className="
+            flex
+            items-center
+            gap-2
+            mt-4
+            w-full
+          "
 
-  {/* ADD CART */}
-
-  <Button
-    onClick={handleAdd}
-
-    className="
-      flex-1
-      h-8
-      rounded-lg
-      bg-black
-      border
-      border-amber-500
-      text-white
-      text-[10px]
-      font-semibold
-      px-2
-      flex
-      items-center
-      justify-center
-    "
-  >
-
-    <span
-      className="
-        flex
-        items-center
-        justify-center
-        gap-1
-        whitespace-nowrap
-      "
-    >
-
-      <FiShoppingCart size={12}/>
-
-      Add To Cart
-
-    </span>
-
-
-  </Button>
+        >
 
 
 
 
 
-  {/* VIEW DETAIL */}
+          {/* ADD CART */}
 
 
-  <button
+          <Button
 
-    onClick={() =>
-      navigate(
-        `/product/${product.id}`
-      )
-    }
+            onClick={handleAdd}
 
 
-    className="
-      flex-1
-      h-8
-      rounded-lg
-      bg-white
-      border
-      border-amber-500
-      text-amber-500
-      text-[10px]
-      font-semibold
-      flex
-      items-center
-      justify-center
-    "
+            className="
+              flex-1
 
-  >
+              h-9
 
-    <span
-      className="
-        flex
-        items-center
-        justify-center
-        gap-1
-        whitespace-nowrap
-      "
-    >
+              rounded-lg
 
-      <FiEye size={12}/>
+              bg-black
 
-    
+              border
+              border-amber-500
 
-    </span>
+              text-white
+
+              text-[11px]
+
+              font-semibold
+
+              px-3
+
+              flex
+              items-center
+              justify-center
+
+            "
+
+          >
 
 
-  </button>
+            <span
+
+              className="
+                flex
+                items-center
+                justify-center
+                gap-1
+
+                whitespace-nowrap
+              "
+
+            >
+
+              <FiShoppingCart size={13}/>
+
+              Add To Cart
 
 
-</div>
+            </span>
+
+
+          </Button>
+
+
+
+
+
+
+
+
+
+          {/* VIEW DETAIL */}
+
+
+
+          <button
+
+
+            onClick={()=>
+
+
+              navigate(
+
+                `/product/${product.id}`
+
+              )
+
+            }
+
+
+
+            className="
+
+              flex-[1.15]
+
+              h-9
+
+              rounded-lg
+
+              bg-white
+
+              border
+
+              border-amber-500
+
+              text-amber-500
+
+              text-[11px]
+
+              font-semibold
+
+
+              flex
+
+              items-center
+
+              justify-center
+
+
+              px-3
+
+            "
+
+
+          >
+
+
+
+            <span
+
+              className="
+
+                flex
+
+                items-center
+
+                justify-center
+
+                gap-1
+
+                whitespace-nowrap
+
+              "
+
+            >
+
+              <FiEye size={13}/>
+
+
+              View Detail
+
+
+            </span>
+
+
+
+          </button>
+
+
+
+
+
+        </div>
+
+
+
+
 
       </div>
 
 
+
     </div>
+
 
   );
 
