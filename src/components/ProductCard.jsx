@@ -388,21 +388,20 @@ export default function ProductCard({
 <Button
   onClick={handleAdd}
   className="
-    flex-[0.75]
-    h-8
-    rounded-lg
-    bg-black
-    border
-    border-amber-500
-    text-white
-    text-[10px]
-    font-semibold
-    px-2
-    flex
-    items-center
-    justify-center
-  "
->
+  w-[65%]
+  h-8
+  rounded-lg
+  bg-black
+  border
+  border-amber-500
+  text-white
+  text-[10px]
+  font-semibold
+  px-2
+  flex
+  items-center
+  justify-center
+"
 
 <span
  className="
