@@ -11,8 +11,8 @@ import {
 
 import {
   doc,
-  setDoc,
   getDoc,
+  setDoc,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -33,6 +33,11 @@ import {
 } from "../utils/notificationHelper";
 
 
+import {
+  sendNotification,
+} from "./notificationService";
+
+
 
 
 
@@ -41,7 +46,6 @@ import {
 // =================================
 
 const getStoreName = async()=>{
-
 
   try{
 
@@ -57,18 +61,20 @@ const getStoreName = async()=>{
 
 
 
-    if(settingsDoc.exists()){
-
+    if(
+      settingsDoc.exists()
+    ){
 
       return (
-        settingsDoc.data().storeName
-        ||
+        settingsDoc.data().storeName ||
         "Dream Mode"
       );
 
-
     }
 
+
+
+    return "Dream Mode";
 
 
   }
@@ -79,11 +85,10 @@ const getStoreName = async()=>{
       error
     );
 
+
+    return "Dream Mode";
+
   }
-
-
-
-  return "Dream Mode";
 
 
 };
@@ -145,6 +150,8 @@ export const login = async(
 
 
 
+  // Login Security Notification
+
   await createUserNotification({
 
     userId:
@@ -185,6 +192,7 @@ export const login = async(
 // REGISTER
 // =================================
 
+
 export const register = async(
   name,
   email,
@@ -218,21 +226,18 @@ export const register = async(
 
 
 
-
     const userRef =
     doc(
-
       db,
-
       "users",
-
       result.user.uid
-
     );
 
 
 
 
+
+    // Save User Data
 
     await setDoc(
 
@@ -245,6 +250,7 @@ export const register = async(
         email:
         result.user.email,
 
+
         phone:"",
 
         address:"",
@@ -252,6 +258,7 @@ export const register = async(
         photoURL:"",
 
         role:"user",
+
 
         createdAt:
         serverTimestamp(),
@@ -275,17 +282,17 @@ export const register = async(
 
 
 
-    // USER WELCOME NOTIFICATION
+    // Welcome Notification
 
 
-    await createUserNotification({
+    await sendNotification({
 
-      userId:
+      receiverId:
       result.user.uid,
 
 
       title:
-      `🎉 Welcome to ${storeName}`,
+      `Welcome to ${storeName} 🎉`,
 
 
       message:
@@ -304,7 +311,37 @@ export const register = async(
 
 
 
-    // ADMIN NEW USER NOTIFICATION
+    // Extra User Notification
+
+
+    await createUserNotification({
+
+      userId:
+      result.user.uid,
+
+
+      title:
+      `🎉 Welcome to ${storeName}`,
+
+
+      message:
+      `Your ${storeName} account has been created successfully.`,
+
+
+      type:
+      "system",
+
+    });
+
+
+
+
+
+
+
+
+
+    // Admin Notification
 
 
     await createAdminNotification({
@@ -321,6 +358,7 @@ export const register = async(
       "system",
 
     });
+
 
 
 
@@ -362,6 +400,7 @@ export const register = async(
 // RESEND EMAIL VERIFICATION
 // =================================
 
+
 export const resendVerificationEmail =
 async(user)=>{
 
@@ -384,6 +423,7 @@ async(user)=>{
 // =================================
 // FORGOT PASSWORD
 // =================================
+
 
 export const forgotPassword =
 async(email)=>{
@@ -408,6 +448,7 @@ async(email)=>{
 // =================================
 // CHANGE PASSWORD
 // =================================
+
 
 export const changePassword =
 async(
@@ -436,6 +477,7 @@ async(
 // SEND VERIFICATION
 // =================================
 
+
 export const sendVerificationEmail =
 async(user)=>{
 
@@ -459,6 +501,7 @@ async(user)=>{
 // DELETE ACCOUNT
 // =================================
 
+
 export const deleteUserAccount =
 async(user)=>{
 
@@ -481,6 +524,7 @@ async(user)=>{
 // =================================
 // LOGOUT
 // =================================
+
 
 export const logout = ()=>{
 
