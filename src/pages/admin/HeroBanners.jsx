@@ -23,6 +23,10 @@ import {
   uploadSingleImage,
 } from "../../services/uploadService";
 
+import {
+  useSettings
+} from "../../context/SettingsContext";
+
 
 import {
   addBanner,
@@ -50,6 +54,10 @@ export default function HeroBanners(){
 
 const [products,setProducts]=useState([]);
 
+  const {
+  settings
+}=useSettings();
+
 const [banners,setBanners]=useState([]);
 
 const [loading,setLoading]=useState(false);
@@ -66,7 +74,7 @@ const [productName,setProductName]=useState("");
 const [
 whatsappNumber,
 setWhatsappNumber
-]=useState("8801406978619");
+]=useState("");
 
 
 const [offerPrice,setOfferPrice]=useState("");
@@ -88,7 +96,17 @@ useEffect(()=>{
 
 loadData();
 
-},[]);
+if(settings.whatsapp){
+
+setWhatsappNumber(
+settings.whatsapp
+);
+
+}
+
+},[
+settings.whatsapp
+]);
 
 
 
