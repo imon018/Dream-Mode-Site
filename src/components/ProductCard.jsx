@@ -388,7 +388,7 @@ export default function ProductCard({
 <Button
   onClick={handleAdd}
   className="
-  w-[65%]
+  w-[75%]
   h-8
   rounded-lg
   bg-black
