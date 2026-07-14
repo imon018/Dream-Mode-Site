@@ -11,6 +11,7 @@ import {
 
 import {
   sendNotification,
+  sendNotificationToAllUsers,
 } from "../../services/notificationService";
 
 
@@ -95,40 +96,41 @@ export default function SendNotification() {
       if(sendToAll){
 
 
-        for(const user of users){
+  await sendNotificationToAllUsers(
+
+    users,
+
+    {
+
+      title:form.title,
+
+      message:form.message,
+
+      type:form.type,
+
+    }
+
+  );
 
 
-          await sendNotification({
-
-            receiverId:user.id,
-
-            title:form.title,
-
-            message:form.message,
-
-            type:form.type,
-
-          });
+}else{
 
 
-        }
+  await sendNotification({
 
+    receiverId:
+      form.receiverId,
 
+    title:
+      form.title,
 
-      }else{
+    message:
+      form.message,
 
+    type:
+      form.type,
 
-        await sendNotification({
-
-          receiverId:form.receiverId,
-
-          title:form.title,
-
-          message:form.message,
-
-          type:form.type,
-
-        });
+  });
 
 
       }
