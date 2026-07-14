@@ -376,7 +376,7 @@ export default function ProductCard({
   className="
     flex
     items-center
-    gap-3
+    gap-1
     mt-4
     w-full
   "
@@ -437,31 +437,20 @@ onClick={() =>
 }
 
 className="
-w-[42px]
-sm:w-[46px]
-h-8
-
-rounded-lg
-
-bg-white
-
-border
-border-amber-500
-
-text-amber-500
-
-flex
-items-center
-justify-center
-
-shrink-0
-
-hover:bg-amber-50
-
-transition
+  flex-[0.55]
+  h-8
+  rounded-lg
+  bg-white
+  border
+  border-amber-500/70
+  text-amber-500
+  text-[10px]
+  font-semibold
+  flex
+  items-center
+  justify-center
+  px-2
 "
-
->
 
 <FiEye size={14}/>
 
