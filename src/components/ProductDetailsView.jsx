@@ -9,147 +9,121 @@ import { useSettings } from "../context/SettingsContext";
 
 import useCart from "../hooks/useCart";
 
-import { getProductById } from "../services/firestoreProductService";
+import {
+  getProductById,
+} from "../services/firestoreProductService";
+
 
 export default function ProductDetailsView() {
 
+
   const { id } = useParams();
 
-  const { addToCart } = useCart();
 
-  const { settings } = useSettings();
+  const {
+    addToCart,
+  } = useCart();
 
-  const [product, setProduct] = useState(null);
 
-  const [loading, setLoading] = useState(true);
 
-  const [selectedImage, setSelectedImage] = useState("");
+  const {
+    settings
+  } = useSettings();
 
-  const [zoom, setZoom] = useState(false);
 
-  useEffect(() => {
 
-    const loadProduct = async () => {
+  const [product,setProduct] =
+    useState(null);
 
-      try {
 
-        const data = await getProductById(id);
+  const [loading,setLoading] =
+    useState(true);
+
+
+  const [selectedImage,setSelectedImage] =
+    useState("");
+
+
+
+  useEffect(()=>{
+
+
+    const loadProduct = async()=>{
+
+
+      try{
+
+
+        const data =
+          await getProductById(id);
+
+
 
         setProduct(data);
 
-        if (data?.images?.length) {
 
-          setSelectedImage(data.images[0]);
 
-        } else {
+        if(data?.images?.length){
 
-          setSelectedImage(data.image);
+          setSelectedImage(
+            data.images[0]
+          );
+
+        }else{
+
+          setSelectedImage(
+            data.image
+          );
 
         }
 
-      } catch (error) {
+
+
+      }catch(error){
 
         console.log(error);
 
-      } finally {
+      }
+      finally{
 
         setLoading(false);
 
       }
 
+
     };
+
 
     loadProduct();
 
-  }, [id]);
+
+  },[id]);
 
 
 
-  if (loading) {
-
-    return (
-
-      <div
-        className="
-          min-h-screen
-          flex
-          items-center
-          justify-center
-          bg-[#FAF7F2]
-        "
-      >
-
-        <div className="text-center">
-
-          <div
-            className="
-              w-12
-              h-12
-              mx-auto
-              border-4
-              border-amber-500
-              border-t-transparent
-              rounded-full
-              animate-spin
-            "
-          />
-
-          <p
-            className="
-              mt-4
-              text-[#172033]
-              font-semibold
-            "
-          >
-            Loading Product...
-          </p>
-
-        </div>
-
-      </div>
-
-    );
-
-  }
 
 
-
-  if (!product) {
+  if(loading){
 
     return (
 
       <div
         className="
           min-h-screen
+          bg-[#FAF7F2]
           flex
           items-center
           justify-center
-          bg-[#FAF7F2]
         "
       >
 
         <div
           className="
-            bg-white
-            rounded-xl
-            border
-            border-red-100
-            px-8
-            py-10
-            text-center
+            text-[#172033]
+            font-bold
           "
         >
-
-          <h2
-            className="
-              text-2xl
-              font-bold
-              text-red-600
-            "
-          >
-            Product Not Found
-          </h2>
-
+          Loading Product...
         </div>
 
       </div>
@@ -160,10 +134,52 @@ export default function ProductDetailsView() {
 
 
 
+
+
+  if(!product){
+
+    return (
+
+      <div
+        className="
+          min-h-screen
+          bg-[#FAF7F2]
+          flex
+          items-center
+          justify-center
+        "
+      >
+
+        <h2
+          className="
+            text-2xl
+            font-black
+            text-red-600
+          "
+        >
+          Product Not Found
+        </h2>
+
+      </div>
+
+    );
+
+  }
+
+
+
+
+
   const galleryImages =
     product.images?.length
-      ? product.images
-      : [product.image];
+      ?
+      product.images
+      :
+      [
+        product.image
+      ];
+
+
 
 
 
@@ -173,10 +189,10 @@ export default function ProductDetailsView() {
       className="
         min-h-screen
         bg-[#FAF7F2]
-        py-6
-        md:py-10
+        py-8
       "
     >
+
 
       <div
         className="
@@ -187,54 +203,68 @@ export default function ProductDetailsView() {
         "
       >
 
+
+
         <div
           className="
             grid
             lg:grid-cols-2
             gap-8
-            items-start
           "
         >
 
+
+
+
           {/* IMAGE SECTION */}
+
+
 
           <div>
 
+
             <div
-              onMouseEnter={() => setZoom(true)}
-              onMouseLeave={() => setZoom(false)}
               className="
                 bg-white
                 rounded-xl
                 border
                 border-amber-500/20
                 shadow-sm
-                overflow-hidden
                 p-4
+                overflow-hidden
               "
             >
 
+
               <img
+
                 src={selectedImage}
+
                 alt={product.name}
-                className={`
+
+                className="
                   w-full
-                  h-[360px]
+                  h-[380px]
                   md:h-[520px]
                   object-contain
-                  transition-all
-                  duration-500
-                  ${
-                    zoom
-                      ? "scale-105"
-                      : "scale-100"
-                  }
-                `}
+                "
+
               />
+
 
             </div>
 
-            {galleryImages.length > 1 && (
+
+
+
+
+            {/* THUMBNAILS */}
+
+
+
+            {
+              galleryImages.length > 1 &&
+
 
               <div
                 className="
@@ -245,70 +275,90 @@ export default function ProductDetailsView() {
                 "
               >
 
-                                {galleryImages.map((img, index) => (
 
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(img)}
-                    className={`
-                      w-20
-                      h-20
-                      rounded-xl
-                      overflow-hidden
-                      border
-                      transition-all
+                {
+                  galleryImages.map(
+                    (img,index)=>(
 
-                      ${
-                        selectedImage === img
-                          ? "border-amber-500"
-                          : "border-gray-200"
-                      }
-                    `}
-                  >
 
-                    <img
-                      src={img}
-                      alt=""
-                      className="
-                        w-full
-                        h-full
-                        object-cover
-                      "
-                    />
+                      <button
 
-                  </button>
+                        key={index}
 
-                ))}
+                        onClick={()=>
+                          setSelectedImage(img)
+                        }
+
+                        className={`
+                          w-20
+                          h-20
+                          rounded-xl
+                          overflow-hidden
+                          border
+
+                          ${
+                            selectedImage===img
+                            ?
+                            "border-amber-500"
+                            :
+                            "border-gray-200"
+                          }
+
+                        `}
+
+                      >
+
+                        <img
+
+                          src={img}
+
+                          alt=""
+
+                          className="
+                            w-full
+                            h-full
+                            object-cover
+                          "
+
+                        />
+
+                      </button>
+
+
+                    )
+                  )
+                }
+
 
               </div>
 
-            )}
+
+            }
+
+
 
           </div>
 
+                    {/* PRODUCT INFO */}
 
-
-
-
-          {/* PRODUCT INFO */}
 
           <div>
 
-            <span
+
+            <div
               className="
                 inline-flex
-                items-center
-                rounded-xl
-                bg-amber-100
-                text-amber-700
-                text-xs
-                font-semibold
                 px-3
                 py-2
+                rounded-xl
+                bg-black
+                text-amber-400
+                text-xs
+                font-bold
               "
             >
-              💎 Premium Collection
-            </span>
+              ✨ Premium Collection
+            </div>
 
 
 
@@ -316,15 +366,17 @@ export default function ProductDetailsView() {
 
             <h1
               className="
-                mt-4
+                mt-5
                 text-3xl
                 md:text-5xl
                 font-black
-                text-[#172033]
                 leading-tight
+                text-[#172033]
               "
             >
+
               {product.name}
+
             </h1>
 
 
@@ -334,96 +386,142 @@ export default function ProductDetailsView() {
             <div
               className="
                 mt-5
+                flex
+                items-center
+                justify-between
                 bg-white
-                rounded-xl
                 border
                 border-amber-500/20
-                p-5
+                rounded-xl
+                p-4
               "
             >
 
-              <div
-                className="
-                  flex
-                  justify-between
-                  items-center
-                "
-              >
 
-                <div>
+              <div>
 
-                  <p className="text-xs text-gray-500">
-                    Price
-                  </p>
 
-                  <h2
-                    className="
-                      text-3xl
-                      font-black
-                      text-amber-600
-                    "
-                  >
-                    ৳ {product.price}
-                  </h2>
-
-                </div>
-
-                <span
+                <p
                   className="
-                    bg-green-100
-                    text-green-700
-                    px-3
-                    py-2
-                    rounded-xl
                     text-xs
-                    font-semibold
+                    text-gray-500
                   "
                 >
-                  {product.stock > 0
-                    ? `✓ Stock (${product.stock})`
-                    : "Out Of Stock"}
-                </span>
+                  Price
+                </p>
+
+
+
+                <h2
+                  className="
+                    text-3xl
+                    font-black
+                    text-amber-600
+                  "
+                >
+                  ৳ {product.price}
+                </h2>
+
 
               </div>
+
+
+
+
+
+              <div>
+
+                {
+                  product.stock > 0
+
+                  ?
+
+                  <span
+                    className="
+                      px-3
+                      py-2
+                      rounded-xl
+                      bg-green-50
+                      text-green-600
+                      text-xs
+                      font-bold
+                    "
+                  >
+                    ✓ Stock {product.stock}
+                  </span>
+
+
+                  :
+
+                  <span
+                    className="
+                      px-3
+                      py-2
+                      rounded-xl
+                      bg-red-50
+                      text-red-600
+                      text-xs
+                      font-bold
+                    "
+                  >
+                    Out Of Stock
+                  </span>
+
+                }
+
+
+              </div>
+
+
 
             </div>
 
 
+
+
+
+
+
+
+            {/* DESCRIPTION */}
 
 
 
             <div
               className="
                 mt-5
-                bg-white
-                rounded-xl
-                border
-                border-gray-200
-                p-5
               "
             >
 
               <h3
                 className="
-                  font-bold
+                  text-lg
+                  font-black
                   text-[#172033]
-                  mb-3
+                  mb-2
                 "
               >
-                Description
+                Product Description
               </h3>
+
+
 
               <p
                 className="
                   text-gray-600
                   leading-7
-                  whitespace-pre-line
+                  text-sm
+                  md:text-base
                 "
               >
                 {product.description}
               </p>
 
+
             </div>
+
+
+
 
 
 
@@ -431,17 +529,26 @@ export default function ProductDetailsView() {
 
             {/* ACTION BUTTONS */}
 
+
+
             <div
               className="
                 grid
                 grid-cols-2
                 gap-3
-                mt-6
+                mt-8
               "
             >
 
+
+
+
               <Button
-                onClick={() => addToCart(product)}
+
+                onClick={()=>
+                  addToCart(product)
+                }
+
                 className="
                   h-12
                   rounded-xl
@@ -449,30 +556,61 @@ export default function ProductDetailsView() {
                   border
                   border-amber-500
                   text-white
+                  font-bold
+                  hover:bg-amber-500
+                  hover:text-black
+                  transition
                 "
+
               >
+
                 🛒 Add To Cart
+
+
               </Button>
 
+
+
+
+
+
+
+
               <a
+
                 href={`https://wa.me/${settings.whatsapp?.replace(/\D/g,"")}?text=I'm interested in ${product.name}`}
+
                 target="_blank"
+
                 rel="noreferrer"
+
                 className="
                   h-12
                   rounded-xl
                   bg-green-600
                   text-white
-                  font-semibold
+                  font-bold
                   flex
                   items-center
                   justify-center
+                  hover:bg-green-700
+                  transition
                 "
+
               >
+
                 WhatsApp Order
+
+
               </a>
 
+
+
+
             </div>
+
+
+
 
 
 
@@ -480,104 +618,150 @@ export default function ProductDetailsView() {
 
             {/* PREMIUM FEATURES */}
 
+
+
             <div
               className="
-                mt-6
-                space-y-3
+                mt-8
+                grid
+                gap-3
               "
             >
 
+
               <div
                 className="
                   bg-white
                   rounded-xl
                   border
-                  border-gray-200
+                  border-amber-500/20
                   p-4
+                  text-sm
+                  font-semibold
+                  text-[#172033]
                 "
               >
+
                 🚚 Fast & Secure Delivery
+
               </div>
+
+
+
 
               <div
                 className="
                   bg-white
                   rounded-xl
                   border
-                  border-gray-200
+                  border-amber-500/20
                   p-4
+                  text-sm
+                  font-semibold
+                  text-[#172033]
                 "
               >
-                🔒 Secure Payment
+
+                🔒 Secure Payment System
+
               </div>
+
+
+
 
               <div
                 className="
                   bg-white
                   rounded-xl
                   border
-                  border-gray-200
+                  border-amber-500/20
                   p-4
+                  text-sm
+                  font-semibold
+                  text-[#172033]
                 "
               >
+
                 💎 Premium Quality Guarantee
+
               </div>
+
+
 
             </div>
 
+
+
           </div>
+
+
 
         </div>
 
-              {/* REVIEWS */}
-
-      <div className="mt-10">
-
-        <ProductReviews
-          productId={product.id}
-        />
-
-      </div>
+                {/* REVIEWS */}
 
 
+        <div
+          className="
+            mt-12
+          "
+        >
 
-      {/* RELATED PRODUCTS */}
+          <ProductReviews
+            productId={product.id}
+          />
 
-      <div className="mt-12">
+        </div>
 
-        <div className="mb-5">
+
+
+
+
+
+
+        {/* RELATED PRODUCTS */}
+
+
+
+        <div
+          className="
+            mt-12
+          "
+        >
+
 
           <h2
             className="
               text-2xl
               font-black
               text-[#172033]
+              mb-5
             "
           >
+
             Related Products
+
           </h2>
 
-          <p
-            className="
-              text-sm
-              text-gray-500
-              mt-1
-            "
-          >
-            You may also like these products.
-          </p>
+
+
+          <RelatedProducts
+            currentId={product.id}
+          />
+
 
         </div>
 
-        <RelatedProducts
-          currentId={product.id}
-        />
+
+
+
 
       </div>
 
+
     </div>
 
-  </div>
+  );
 
-);
+
 }
