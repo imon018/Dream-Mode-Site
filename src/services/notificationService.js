@@ -4,12 +4,12 @@ import {
   query,
   where,
   orderBy,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc,
-  writeBatch,
   serverTimestamp,
+  updateDoc,
+  doc,
+  deleteDoc,
+  getDocs,
+  writeBatch,
 } from "firebase/firestore";
 
 
@@ -20,253 +20,57 @@ import {
 
 
 
+
 // ==============================
-// CREATE NOTIFICATION
+// SEND NOTIFICATION
 // ==============================
 
-export async function createNotification(data){
+export async function sendNotification(data){
 
   try{
 
 
-    await addDoc(
-
+    const notificationRef =
       collection(
         db,
         "notifications"
-      ),
+      );
 
+
+
+    await addDoc(
+      notificationRef,
       {
 
-        userId:
-          data.userId || null,
+        title:data.title,
 
+        message:data.message,
 
-        role:
-          data.role || "user",
+        userId:data.userId || "all",
 
-
-        title:
-          data.title,
-
-
-        message:
-          data.message,
-
-
-        type:
-          data.type || "system",
-
-
-        action:
-          data.action || null,
-
-
-        relatedId:
-          data.relatedId || null,
-
+        type:data.type || "general",
 
         isRead:false,
-
 
         createdAt:
           serverTimestamp(),
 
       }
-
     );
+
 
 
   }
   catch(error){
 
     console.log(
-      "Notification create error:",
+      "Send notification error:",
       error
     );
 
+    throw error;
+
   }
-
-}
-
-
-
-
-
-
-
-
-
-// ==============================
-// USER NOTIFICATION
-// ==============================
-
-export async function createUserNotification({
-
-  userId,
-
-  title,
-
-  message,
-
-  type,
-
-  action,
-
-  relatedId,
-
-}){
-
-
-  return createNotification({
-
-    userId,
-
-    role:"user",
-
-    title,
-
-    message,
-
-    type,
-
-    action,
-
-    relatedId,
-
-  });
-
-
-}
-
-
-
-
-
-
-
-
-
-// ==============================
-// ADMIN NOTIFICATION
-// ==============================
-
-export async function createAdminNotification({
-
-  title,
-
-  message,
-
-  type,
-
-  action,
-
-  relatedId,
-
-}){
-
-
-  return createNotification({
-
-    userId:null,
-
-    role:"admin",
-
-    title,
-
-    message,
-
-    type,
-
-    action,
-
-    relatedId,
-
-  });
-
-
-}
-
-
-
-
-
-
-
-
-
-// ==============================
-// SEND TO MULTIPLE USERS
-// ==============================
-
-export async function sendNotificationToUsers(
-  users,
-  data
-){
-
-
-  const batch =
-    writeBatch(db);
-
-
-
-  users.forEach((user)=>{
-
-
-    const ref =
-      doc(
-        collection(
-          db,
-          "notifications"
-        )
-      );
-
-
-
-    batch.set(
-
-      ref,
-
-      {
-
-        userId:user.uid,
-
-
-        role:"user",
-
-
-        title:data.title,
-
-
-        message:data.message,
-
-
-        type:data.type || "system",
-
-
-        action:data.action || null,
-
-
-        relatedId:data.relatedId || null,
-
-
-        isRead:false,
-
-
-        createdAt:
-          serverTimestamp(),
-
-      }
-
-    );
-
-
-  });
-
-
-
-  await batch.commit();
-
 
 }
 
@@ -282,21 +86,29 @@ export async function sendNotificationToUsers(
 // GET USER NOTIFICATIONS
 // ==============================
 
+
 export function getUserNotifications(userId){
+
+
+  const ref =
+    collection(
+      db,
+      "notifications"
+    );
+
 
 
   return query(
 
-    collection(
-      db,
-      "notifications"
-    ),
-
+    ref,
 
     where(
       "userId",
-      "==",
-      userId
+      "in",
+      [
+        userId,
+        "all"
+      ]
     ),
 
 
@@ -304,7 +116,6 @@ export function getUserNotifications(userId){
       "createdAt",
       "desc"
     )
-
 
   );
 
@@ -320,8 +131,9 @@ export function getUserNotifications(userId){
 
 
 // ==============================
-// MARK AS READ
+// MARK SINGLE READ
 // ==============================
+
 
 export async function markNotificationAsRead(id){
 
@@ -334,16 +146,14 @@ export async function markNotificationAsRead(id){
     );
 
 
+
   await updateDoc(
-
     ref,
-
     {
 
       isRead:true
 
     }
-
   );
 
 
@@ -361,9 +171,8 @@ export async function markNotificationAsRead(id){
 // MARK ALL READ
 // ==============================
 
-export async function markAllNotificationsAsRead(
-  userId
-){
+
+export async function markAllNotificationsAsRead(userId){
 
 
   const q =
@@ -374,11 +183,13 @@ export async function markAllNotificationsAsRead(
         "notifications"
       ),
 
-
       where(
         "userId",
-        "==",
-        userId
+        "in",
+        [
+          userId,
+          "all"
+        ]
       )
 
     );
@@ -400,7 +211,11 @@ export async function markAllNotificationsAsRead(
 
     batch.update(
 
-      item.ref,
+      doc(
+        db,
+        "notifications",
+        item.id
+      ),
 
       {
 
@@ -429,8 +244,9 @@ export async function markAllNotificationsAsRead(
 
 
 // ==============================
-// DELETE SINGLE
+// DELETE ONE
 // ==============================
+
 
 export async function deleteNotification(id){
 
@@ -460,9 +276,8 @@ export async function deleteNotification(id){
 // DELETE ALL
 // ==============================
 
-export async function deleteAllNotifications(
-  userId
-){
+
+export async function deleteAllNotifications(userId){
 
 
   const q =
@@ -473,11 +288,13 @@ export async function deleteAllNotifications(
         "notifications"
       ),
 
-
       where(
         "userId",
-        "==",
-        userId
+        "in",
+        [
+          userId,
+          "all"
+        ]
       )
 
     );
@@ -498,7 +315,13 @@ export async function deleteAllNotifications(
 
 
     batch.delete(
-      item.ref
+
+      doc(
+        db,
+        "notifications",
+        item.id
+      )
+
     );
 
 
