@@ -1222,7 +1222,7 @@ bg-green-100
 text-green-700
 ">
 
-Paid
+Cash On Delivery
 
 </span>
 
