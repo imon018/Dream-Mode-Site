@@ -376,86 +376,96 @@ export default function ProductCard({
   className="
     flex
     items-center
-    gap-2
+    gap-3
     mt-4
     w-full
   "
 >
 
-  {/* ADD CART */}
 
-  <Button
-    onClick={handleAdd}
+{/* ADD CART */}
 
-    className="
-      flex-1
-      h-8
-      rounded-lg
-      bg-black
-      border
-      border-amber-500
-      text-white
-      text-[10px]
-      font-semibold
-      px-2
-      flex
-      items-center
-      justify-center
-    "
-  >
+<Button
+  onClick={handleAdd}
+  className="
+    flex-1
+    h-8
+    rounded-lg
+    bg-black
+    border
+    border-amber-500
+    text-white
+    text-[10px]
+    font-semibold
+    px-2
+    flex
+    items-center
+    justify-center
+  "
+>
 
-    <span
-      className="
-        flex
-        items-center
-        justify-center
-        gap-1
-        whitespace-nowrap
-      "
-    >
+<span
+ className="
+ flex
+ items-center
+ justify-center
+ gap-1
+ whitespace-nowrap
+ "
+>
 
-      <FiShoppingCart size={12}/>
+<FiShoppingCart size={12}/>
 
-      Add To Cart
+Add To Cart
 
-    </span>
+</span>
 
-  </Button>
-
-
+</Button>
 
 
 
-  {/* VIEW ICON */}
 
-  <button
 
-    onClick={() =>
-      navigate(
-        `/product/${product.id}`
-      )
-    }
+{/* VIEW DETAIL */}
 
-    className="
-      w-10
-      h-8
-      rounded-lg
-      bg-white
-      border
-      border-amber-500
-      text-amber-500
-      flex
-      items-center
-      justify-center
-      hover:bg-amber-50
-      transition
-    "
+<button
 
-  >
+onClick={() =>
+ navigate(
+ `/product/${product.id}`
+ )
+}
 
-    <FiEye size={16}/>
+className="
+w-[42px]
+sm:w-[46px]
+h-8
 
-  </button>
+rounded-lg
+
+bg-white
+
+border
+border-amber-500
+
+text-amber-500
+
+flex
+items-center
+justify-center
+
+shrink-0
+
+hover:bg-amber-50
+
+transition
+"
+
+>
+
+<FiEye size={14}/>
+
+</button>
 
 
 </div>
