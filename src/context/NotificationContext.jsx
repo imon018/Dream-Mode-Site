@@ -11,9 +11,7 @@ import {
 } from "firebase/firestore";
 
 
-import {
-  useAuth,
-} from "./AuthContext";
+import useAuth from "../hooks/useAuth";
 
 
 import {
@@ -26,18 +24,15 @@ import {
 
 
 
-
-const NotificationContext = createContext();
-
-
-
+const NotificationContext =
+createContext();
 
 
 
 
 
 export function NotificationProvider({
-  children,
+  children
 }) {
 
 
@@ -52,16 +47,19 @@ export function NotificationProvider({
 
   const [
     notifications,
-    setNotifications,
+    setNotifications
   ] = useState([]);
+
 
 
 
 
   const [
     loading,
-    setLoading,
+    setLoading
   ] = useState(true);
+
+
 
 
 
@@ -89,60 +87,10 @@ export function NotificationProvider({
 
 
 
-    const q = getUserNotifications(
-      user.uid
-    );
-
-
-
-
-
-
-    const unsubscribe = onSnapshot(
-
-      q,
-
-      (snapshot)=>{
-
-
-        const data = snapshot.docs.map(
-
-          (doc)=>({
-
-            id:doc.id,
-
-            ...doc.data(),
-
-          })
-
-        );
-
-
-
-
-        setNotifications(data);
-
-
-        setLoading(false);
-
-
-
-      },
-
-      (error)=>{
-
-
-        console.log(
-          error
-        );
-
-
-        setLoading(false);
-
-
-      }
-
-
+    const q =
+    getUserNotifications(
+      user.uid,
+      user.role
     );
 
 
@@ -151,7 +99,64 @@ export function NotificationProvider({
 
 
 
-    return ()=>unsubscribe();
+    const unsubscribe =
+
+      onSnapshot(
+
+        q,
+
+
+        (snapshot)=>{
+
+
+          const data =
+
+          snapshot.docs.map(
+            (doc)=>({
+
+              id:doc.id,
+
+              ...doc.data(),
+
+            })
+          );
+
+
+
+          setNotifications(
+            data
+          );
+
+
+          setLoading(false);
+
+
+
+        },
+
+
+
+        (error)=>{
+
+
+          console.log(error);
+
+
+          setLoading(false);
+
+
+        }
+
+
+      );
+
+
+
+
+
+
+
+      return ()=>unsubscribe();
 
 
 
@@ -166,11 +171,13 @@ export function NotificationProvider({
 
 
 
+  const unreadCount =
 
-  const unreadCount = notifications.filter(
+  notifications.filter(
 
-    (item)=>
-      !item.isRead
+    item=>
+
+    !item.isRead
 
   ).length;
 
@@ -180,10 +187,15 @@ export function NotificationProvider({
 
 
 
-  const markAsRead = async(id)=>{
 
 
-    await markNotificationAsRead(id);
+  const markAsRead =
+  async(id)=>{
+
+
+    await markNotificationAsRead(
+      id
+    );
 
 
   };
@@ -194,15 +206,23 @@ export function NotificationProvider({
 
 
 
-  const markAllAsRead = async()=>{
+
+
+  const markAllAsRead =
+  async()=>{
 
 
     if(!user)
       return;
+
 
 
     await markAllNotificationsAsRead(
-      user.uid
+
+      user.uid,
+
+      user.role
+
     );
 
 
@@ -214,10 +234,15 @@ export function NotificationProvider({
 
 
 
-  const removeNotification = async(id)=>{
 
 
-    await deleteNotification(id);
+  const removeNotification =
+  async(id)=>{
+
+
+    await deleteNotification(
+      id
+    );
 
 
   };
@@ -228,19 +253,28 @@ export function NotificationProvider({
 
 
 
-  const removeAllNotifications = async()=>{
+
+
+  const removeAllNotifications =
+  async()=>{
 
 
     if(!user)
       return;
 
 
+
     await deleteAllNotifications(
-      user.uid
+
+      user.uid,
+
+      user.role
+
     );
 
 
   };
+
 
 
 
@@ -251,12 +285,9 @@ export function NotificationProvider({
 
   return (
 
-
     <NotificationContext.Provider
 
-
       value={{
-
 
         notifications,
 
@@ -264,50 +295,34 @@ export function NotificationProvider({
 
         loading,
 
-
         markAsRead,
 
         markAllAsRead,
-
 
         removeNotification,
 
         removeAllNotifications,
 
-
       }}
-
-
 
     >
 
-
       {children}
-
-
 
     </NotificationContext.Provider>
 
-
-  );
-
-
-
-}
-
-
-
-
-
-
-
-
-export function useNotifications(){
-
-
-  return useContext(
-    NotificationContext
   );
 
 
 }
+
+
+
+
+
+
+
+
+
+export const useNotifications =
+()=>useContext(NotificationContext);
