@@ -376,7 +376,7 @@ export default function ProductCard({
   className="
     flex
     items-center
-    gap-1
+    gap-0.5
     mt-4
     w-full
   "
@@ -388,7 +388,7 @@ export default function ProductCard({
 <Button
   onClick={handleAdd}
   className="
-    flex-1
+    flex-[0.85]
     h-8
     rounded-lg
     bg-black
