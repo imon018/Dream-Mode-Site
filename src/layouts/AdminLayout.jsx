@@ -56,161 +56,159 @@ import {
 export default function AdminLayout(){
 
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
 
 
-  const {
-    user,
-  } = useAuth();
+const {
+ user,
+}=useAuth();
 
 
 
-  const {
-    settings,
-  } = useSettings();
+const {
+ settings,
+}=useSettings();
 
-  const {
-  unreadCount,
-} = useNotifications();
 
 
+const {
+ unreadCount,
+}=useNotifications();
 
 
 
-  const [
-    sidebarOpen,
-    setSidebarOpen,
-  ] = useState(false);
 
 
+const [
+ sidebarOpen,
+ setSidebarOpen
+]=useState(false);
 
-  const [
-    collapsed,
-    setCollapsed,
-  ] = useState(false);
 
 
+const [
+ collapsed,
+ setCollapsed
+]=useState(false);
 
-  const [
-    uploadsOpen,
-    setUploadsOpen,
-  ] = useState(true);
 
 
+const [
+ uploadsOpen,
+ setUploadsOpen
+]=useState(true);
 
-  const [
-    bannerOpen,
-    setBannerOpen,
-  ] = useState(true);
 
 
+const [
+ bannerOpen,
+ setBannerOpen
+]=useState(true);
 
-  const [
-    showLogoutWarning,
-    setShowLogoutWarning,
-  ] = useState(false);
 
 
+const [
+ showLogoutWarning,
+ setShowLogoutWarning
+]=useState(false);
 
 
 
 
 
-  const handleLogoutClick = ()=>{
 
+const handleLogoutClick=()=>{
 
-    if(settings?.maintenanceMode){
 
-      setShowLogoutWarning(true);
+ if(settings?.maintenanceMode){
 
-      return;
+   setShowLogoutWarning(true);
 
-    }
+   return;
 
+ }
 
-    logout();
 
-  };
+ logout();
 
+};
 
 
 
 
-  const confirmLogout = ()=>{
 
-    logout();
+const confirmLogout=()=>{
 
-  };
+ logout();
 
+};
 
 
 
 
 
+const menu=[
 
-  const menu = [
 
-    {
-      name:"Dashboard",
-      icon:<FiGrid size={20}/>,
-      path:"/admin",
-    },
+{
+ name:"Dashboard",
+ icon:<FiGrid size={20}/>,
+ path:"/admin",
+},
 
 
-    {
-      name:"Home",
-      icon:<FiHome size={20}/>,
-      path:"/",
-    },
+{
+ name:"Home",
+ icon:<FiHome size={20}/>,
+ path:"/",
+},
 
 
-    {
-      name:"Admin Profile",
-      icon:<FiUser size={20}/>,
-      path:"/admin/profile",
-    },
+{
+ name:"Admin Profile",
+ icon:<FiUser size={20}/>,
+ path:"/admin/profile",
+},
 
 
-    {
-      name:"Users Panel",
-      icon:<FiUsers size={20}/>,
-      path:"/admin/users",
-    },
+{
+ name:"Users Panel",
+ icon:<FiUsers size={20}/>,
+ path:"/admin/users",
+},
 
 
-    {
-      name:"Products",
-      icon:<FiBox size={20}/>,
-      path:"/admin/products",
-    },
+{
+ name:"Products",
+ icon:<FiBox size={20}/>,
+ path:"/admin/products",
+},
 
 
-    {
-      name:"Orders",
-      icon:<FiShoppingCart size={20}/>,
-      path:"/admin/orders",
-    },
+{
+ name:"Orders",
+ icon:<FiShoppingCart size={20}/>,
+ path:"/admin/orders",
+},
 
 
-    {
-      name:"Notifications",
-      icon:<FiBell size={20}/>,
-      path:"/admin/notifications",
-    },
+{
+ name:"Notifications",
+ icon:<FiBell size={20}/>,
+ path:"/admin/notifications",
+},
 
 
-    {
-      name:"Send Notification",
-      icon:<FiSend size={20}/>,
-      path:"/admin/send-notification",
-    },
+{
+ name:"Send Notification",
+ icon:<FiSend size={20}/>,
+ path:"/admin/send-notification",
+},
 
 
-  ];
 
-
-
+];
 
 
 
@@ -228,10 +226,13 @@ bg-[#F8F5EF]
 
 
 
+
+
 {/* MOBILE OVERLAY */}
 
+
 {
-sidebarOpen && (
+sidebarOpen &&
 
 <div
 
@@ -243,13 +244,10 @@ z-40
 lg:hidden
 "
 
-onClick={()=>
-setSidebarOpen(false)
-}
+onClick={()=>setSidebarOpen(false)}
 
-/>
+></div>
 
-)
 }
 
 
@@ -257,14 +255,12 @@ setSidebarOpen(false)
 
 
 
+{/* MOBILE BUTTON */}
 
-{/* MOBILE MENU BUTTON */}
 
 <button
 
-onClick={()=>
-setSidebarOpen(true)
-}
+onClick={()=>setSidebarOpen(true)}
 
 className="
 lg:hidden
@@ -283,10 +279,7 @@ shadow-lg
 
 <FiMenu size={24}/>
 
-
 </button>
-
-
 
 
 
@@ -297,31 +290,22 @@ shadow-lg
 
 <aside
 
-
 className={`
 fixed
 top-0
 left-0
-
 h-dvh
-
 flex
 flex-col
-
 bg-white
-
 border-r
 border-amber-100
-
 shadow-xl
-
 transition-all
 duration-300
-
 z-50
 
-
-${collapsed ? "lg:w-24" : "lg:w-72"}
+${collapsed?"lg:w-24":"lg:w-72"}
 
 w-72
 
@@ -336,11 +320,7 @@ sidebarOpen
 
 `}
 
-
 >
-
-
-
 
 
 {/* MOBILE CLOSE */}
@@ -359,17 +339,13 @@ pt-4
 
 <button
 
-onClick={()=>
-setSidebarOpen(false)
-}
+onClick={()=>setSidebarOpen(false)}
 
 >
 
 <FiX size={28}/>
 
-
 </button>
-
 
 </div>
 
@@ -388,7 +364,7 @@ className="
 relative
 shrink-0
 px-6
-py-4
+py-5
 border-b
 border-amber-100
 "
@@ -396,33 +372,23 @@ border-amber-100
 >
 
 
-
-{/* NOTIFICATION BUTTON */}
+{/* BELL ICON FIXED POSITION */}
 
 <button
 
-onClick={()=>
-navigate("/admin/notifications")
-}
+onClick={()=>navigate("/admin/notifications")}
 
 className="
 absolute
 top-5
 right-5
-
-relative
-
 w-11
 h-11
-
 rounded-xl
-
 flex
 items-center
 justify-center
-
 hover:bg-amber-50
-
 transition
 "
 
@@ -431,16 +397,18 @@ transition
 
 <FiBell
 
-size={24}
+size={25}
 
-className="text-slate-700"
+className="
+text-slate-700
+"
 
 />
 
 
 
 {
-unreadCount > 0 && (
+unreadCount > 0 &&
 
 <span
 
@@ -448,25 +416,16 @@ className="
 absolute
 -top-1
 -right-1
-
+bg-red-500
+text-white
+text-xs
+font-bold
 min-w-[20px]
 h-5
-
-px-1
-
 rounded-full
-
-bg-red-500
-
-text-white
-
-text-xs
-
 flex
 items-center
 justify-center
-
-font-bold
 "
 
 >
@@ -479,10 +438,7 @@ unreadCount > 99
 unreadCount
 }
 
-
 </span>
-
-)
 
 }
 
@@ -505,7 +461,6 @@ text-amber-600
 
 {settings?.storeName || "Dream Mode"}
 
-
 </h1>
 
 
@@ -521,8 +476,9 @@ text-gray-500
 
 Admin Panel
 
-
 </p>
+
+
 
 
 
@@ -562,7 +518,10 @@ border-amber-200
 
 
 
+
+
 <div>
+
 
 <h3
 
@@ -573,10 +532,9 @@ text-slate-800
 
 >
 
-{user?.name || "Administrator"}
+Administrator
 
 </h3>
-
 
 
 <p
@@ -585,13 +543,12 @@ className="
 text-sm
 text-gray-500
 truncate
-max-w-[150px]
+max-w-[160px]
 "
 
 >
 
 {user?.email}
-
 
 </p>
 
@@ -599,13 +556,22 @@ max-w-[150px]
 </div>
 
 
-</div>
-
 
 </div>
 
 
-  {/* MENU */}
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* MENU */}
 
 <nav
 
@@ -621,58 +587,38 @@ pb-10
 >
 
 
-
 {
 menu.map((item)=>(
 
 
 <NavLink
 
-
 key={item.path}
-
 
 to={item.path}
 
-
-onClick={()=>
-setSidebarOpen(false)
-}
+onClick={()=>setSidebarOpen(false)}
 
 
-className={({isActive})=>
-
-`
+className={({isActive})=>`
 
 flex
 items-center
 gap-3
-
 px-4
 py-3
-
 rounded-xl
-
 transition-all
-
 
 ${
 isActive
-
 ?
-
 "bg-amber-500 text-white shadow"
-
 :
-
 "text-slate-700 hover:bg-amber-50"
-
 }
 
-`
-
-}
-
+`}
 
 >
 
@@ -681,7 +627,7 @@ isActive
 
 
 {
-!collapsed && (
+!collapsed &&
 
 <span className="font-medium">
 
@@ -689,7 +635,6 @@ isActive
 
 </span>
 
-)
 }
 
 
@@ -697,7 +642,9 @@ isActive
 
 
 ))
+
 }
+
 
 
 
@@ -708,16 +655,13 @@ isActive
 
 {/* UPLOADS */}
 
-<div className="pt-3">
+
+<div>
 
 
 <button
 
-
-onClick={()=>
-setUploadsOpen(!uploadsOpen)
-}
-
+onClick={()=>setUploadsOpen(!uploadsOpen)}
 
 className="
 w-full
@@ -730,7 +674,6 @@ rounded-xl
 hover:bg-amber-50
 "
 
-
 >
 
 
@@ -741,25 +684,18 @@ gap-3
 text-slate-700
 ">
 
-
 <FiUpload size={20}/>
 
 
 {
-!collapsed && (
-
+!collapsed &&
 <span className="font-medium">
-
 Uploads
-
 </span>
-
-)
 }
 
 
 </div>
-
 
 
 
@@ -775,7 +711,6 @@ uploadsOpen
 }
 
 
-
 </button>
 
 
@@ -783,13 +718,18 @@ uploadsOpen
 
 
 {
-uploadsOpen && !collapsed && (
+uploadsOpen && !collapsed &&
 
-<div className="
+
+<div
+
+className="
 ml-8
 mt-2
 space-y-2
-">
+"
+
+>
 
 
 <NavLink
@@ -809,7 +749,6 @@ hover:bg-amber-50
 Add Product
 
 </NavLink>
-
 
 
 
@@ -835,15 +774,11 @@ Add Order
 
 </div>
 
-)
 
 }
 
 
 </div>
-
-
-
 
 
 
@@ -858,9 +793,7 @@ Add Order
 
 <button
 
-onClick={()=>
-setBannerOpen(!bannerOpen)
-}
+onClick={()=>setBannerOpen(!bannerOpen)}
 
 className="
 w-full
@@ -888,22 +821,14 @@ text-slate-700
 
 
 {
-!collapsed && (
-
+!collapsed &&
 <span className="font-medium">
-
 Banners
-
 </span>
-
-)
-
 }
 
 
 </div>
-
-
 
 
 
@@ -919,71 +844,7 @@ bannerOpen
 }
 
 
-
 </button>
-
-
-
-
-
-
-{
-bannerOpen && !collapsed && (
-
-<div className="
-ml-8
-mt-2
-space-y-2
-">
-
-
-<NavLink
-
-to="/admin/banners"
-
-className="
-block
-px-4
-py-2
-rounded-lg
-hover:bg-amber-50
-"
-
->
-
-Home Banner
-
-</NavLink>
-
-
-
-
-
-<NavLink
-
-to="/admin/shop-hero"
-
-className="
-block
-px-4
-py-2
-rounded-lg
-hover:bg-amber-50
-"
-
->
-
-Shop Banner
-
-</NavLink>
-
-
-</div>
-
-)
-
-}
-
 
 </div>
 
@@ -997,40 +858,30 @@ Shop Banner
 
 {/* SUBSCRIBERS */}
 
+
 <NavLink
 
 to="/admin/subscribers"
 
-className={({isActive})=>
-
-`
+className={({isActive})=>`
 
 flex
 items-center
 gap-3
-
 px-4
 py-3
-
 rounded-xl
 
 
 ${
 isActive
-
 ?
-
 "bg-amber-500 text-white"
-
 :
-
 "text-slate-700 hover:bg-amber-50"
-
 }
 
-`
-
-}
+`}
 
 >
 
@@ -1039,7 +890,7 @@ isActive
 
 
 {
-!collapsed && (
+!collapsed &&
 
 <span>
 
@@ -1047,13 +898,10 @@ Subscribers
 
 </span>
 
-)
-
 }
 
 
 </NavLink>
-
 
 
 
@@ -1069,36 +917,25 @@ Subscribers
 
 to="/admin/newsletter"
 
-className={({isActive})=>
-
-`
+className={({isActive})=>`
 
 flex
 items-center
 gap-3
-
 px-4
 py-3
-
 rounded-xl
 
 
 ${
 isActive
-
 ?
-
 "bg-amber-500 text-white"
-
 :
-
 "text-slate-700 hover:bg-amber-50"
-
 }
 
-`
-
-}
+`}
 
 >
 
@@ -1107,15 +944,13 @@ isActive
 
 
 {
-!collapsed && (
+!collapsed &&
 
 <span>
 
 Newsletter
 
 </span>
-
-)
 
 }
 
@@ -1137,36 +972,25 @@ Newsletter
 
 to="/admin/settings"
 
-className={({isActive})=>
-
-`
+className={({isActive})=>`
 
 flex
 items-center
 gap-3
-
 px-4
 py-3
-
 rounded-xl
 
 
 ${
 isActive
-
 ?
-
 "bg-amber-500 text-white"
-
 :
-
 "text-slate-700 hover:bg-amber-50"
-
 }
 
-`
-
-}
+`}
 
 >
 
@@ -1175,15 +999,13 @@ isActive
 
 
 {
-!collapsed && (
+!collapsed &&
 
 <span>
 
 Settings
 
 </span>
-
-)
 
 }
 
@@ -1203,29 +1025,20 @@ Settings
 
 <button
 
-
 onClick={handleLogoutClick}
-
 
 className="
 w-full
-
 flex
 items-center
 gap-3
-
 px-4
 py-3
-
 rounded-xl
-
 bg-red-500
-
 hover:bg-red-600
-
 text-white
 "
-
 
 >
 
@@ -1234,15 +1047,13 @@ text-white
 
 
 {
-!collapsed && (
+!collapsed &&
 
 <span>
 
 Logout
 
 </span>
-
-)
 
 }
 
@@ -1263,6 +1074,7 @@ Logout
 
 
 
+
 {/* MAIN CONTENT */}
 
 
@@ -1271,26 +1083,17 @@ Logout
 className={`
 
 flex-1
-
 min-h-screen
-
 bg-[#F8F5EF]
-
-
 transition-all
 
 
 ${
 collapsed
-
 ?
-
 "lg:ml-24"
-
 :
-
 "lg:ml-72"
-
 }
 
 
@@ -1299,13 +1102,17 @@ collapsed
 >
 
 
-<div className="
+<div
+
+className="
 p-4
 lg:p-8
-">
+"
+
+>
 
 
-<Outlet />
+<Outlet/>
 
 
 </div>
@@ -1321,11 +1128,12 @@ lg:p-8
 
 
 
-{/* LOGOUT WARNING */}
+{/* LOGOUT WARNING MODAL */}
 
 
 {
-showLogoutWarning && (
+showLogoutWarning &&
+
 
 <div
 
@@ -1333,13 +1141,10 @@ className="
 fixed
 inset-0
 z-[999]
-
 bg-black/50
-
 flex
 items-center
 justify-center
-
 px-5
 "
 
@@ -1360,14 +1165,20 @@ shadow-2xl
 >
 
 
-<div className="
+<div
+
+className="
 flex
 justify-center
 mb-4
-">
+"
+
+>
 
 
-<div className="
+<div
+
+className="
 w-14
 h-14
 rounded-full
@@ -1375,7 +1186,9 @@ bg-red-100
 flex
 items-center
 justify-center
-">
+"
+
+>
 
 
 <FiAlertTriangle
@@ -1397,12 +1210,16 @@ text-3xl
 
 
 
-<h2 className="
+<h2
+
+className="
 text-xl
 font-black
 text-center
 text-red-600
-">
+"
+
+>
 
 ⚠ Maintenance mode is ON
 
@@ -1411,11 +1228,16 @@ text-red-600
 
 
 
-<p className="
+
+<p
+
+className="
 mt-3
 text-gray-600
 text-center
-">
+"
+
+>
 
 If you logout, visitors will continue seeing maintenance page.
 
@@ -1425,18 +1247,21 @@ If you logout, visitors will continue seeing maintenance page.
 
 
 
-<div className="
+
+<div
+
+className="
 flex
 gap-3
 mt-6
-">
+"
+
+>
 
 
 <button
 
-onClick={()=>
-setShowLogoutWarning(false)
-}
+onClick={()=>setShowLogoutWarning(false)}
 
 className="
 flex-1
@@ -1479,15 +1304,14 @@ Logout Anyway
 </div>
 
 
-</div>
-
 
 </div>
 
-)
+
+</div>
+
 
 }
-
 
 
 </div>
