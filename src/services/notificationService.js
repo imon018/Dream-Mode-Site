@@ -4,206 +4,77 @@ import {
   getDocs,
   query,
   where,
-  doc,
+  orderBy,
   updateDoc,
   deleteDoc,
-  writeBatch,
+  doc,
   serverTimestamp,
 } from "firebase/firestore";
 
 
-import { db } from "../firebase/firestore";
+import {
+  db,
+} from "../firebase/firestore";
 
 
 
 
-// Collection
 
 const notificationRef =
-  collection(
-    db,
-    "notifications"
-  );
+collection(
+  db,
+  "notifications"
+);
+
 
 
 
 
 
 // =================================
-// Send Notification (Single User)
+// Send Notification
 // =================================
 
-export const sendNotification = async (
-  data
-) => {
+
+export const sendNotification = async({
+
+  receiverId,
+
+  title,
+
+  message,
+
+  type="system",
+
+})=>{
 
 
   await addDoc(
+
     notificationRef,
+
     {
 
-      receiverId:
-        data.receiverId,
+      receiverId,
 
-      title:
-        data.title,
+      title,
 
-      message:
-        data.message,
+      message,
 
-      type:
-        data.type || "system",
+      type,
 
-      isRead:
-        false,
-
-      senderId:
-        data.senderId || "",
+      isRead:false,
 
       createdAt:
-        serverTimestamp(),
+      serverTimestamp(),
 
     }
+
   );
 
 
 };
 
-
-
-
-
-
-
-// =================================
-// Send Notification To User
-// =================================
-
-export const sendNotificationToUser =
-async (
-  userId,
-  notification
-)=>{
-
-
-  await addDoc(
-    notificationRef,
-    {
-
-      receiverId:
-        userId,
-
-
-      title:
-        notification.title,
-
-
-      message:
-        notification.message,
-
-
-      type:
-        notification.type || "system",
-
-
-      isRead:
-        false,
-
-
-      senderId:
-        notification.senderId || "",
-
-
-      createdAt:
-        serverTimestamp(),
-
-    }
-  );
-
-
-};
-
-
-
-
-
-
-
-
-
-// =================================
-// Send Notification To All Users
-// =================================
-
-export const sendNotificationToAllUsers =
-async (
-  users,
-  notification
-)=>{
-
-
-  const batch =
-    writeBatch(db);
-
-
-
-  users.forEach(
-    (user)=>{
-
-
-      const notificationDoc =
-        doc(
-          notificationRef
-        );
-
-
-
-      batch.set(
-        notificationDoc,
-        {
-
-          receiverId:
-            user.id,
-
-
-          title:
-            notification.title,
-
-
-          message:
-            notification.message,
-
-
-          type:
-            notification.type || "system",
-
-
-          isRead:
-            false,
-
-
-          senderId:
-            notification.senderId || "",
-
-
-          createdAt:
-            serverTimestamp(),
-
-
-        }
-      );
-
-
-
-    }
-  );
-
-
-
-  await batch.commit();
-
-
-};
 
 
 
@@ -216,8 +87,8 @@ async (
 // Get User Notifications
 // =================================
 
-export const getUserNotifications =
-(
+
+export const getUserNotifications = (
   userId
 )=>{
 
@@ -230,6 +101,11 @@ export const getUserNotifications =
       "receiverId",
       "==",
       userId
+    ),
+
+    orderBy(
+      "createdAt",
+      "desc"
     )
 
   );
@@ -244,36 +120,76 @@ export const getUserNotifications =
 
 
 
+
+// =================================
+// Get Admin Notifications
+// =================================
+
+
+export const getAdminNotifications = ()=>{
+
+
+  return query(
+
+    notificationRef,
+
+    where(
+      "receiverId",
+      "==",
+      "ADMIN"
+    ),
+
+    orderBy(
+      "createdAt",
+      "desc"
+    )
+
+  );
+
+
+};
+
+
+
+
+
+
+
+
+
 // =================================
 // Mark Notification Read
 // =================================
 
+
 export const markNotificationAsRead =
-async(
-  id
-)=>{
+async(id)=>{
 
 
-  const ref =
-    doc(
-      db,
-      "notifications",
-      id
-    );
+  const notificationDoc =
+  doc(
+    db,
+    "notifications",
+    id
+  );
 
 
 
   await updateDoc(
-    ref,
+
+    notificationDoc,
+
     {
 
       isRead:true
 
     }
+
   );
 
 
 };
+
 
 
 
@@ -286,65 +202,63 @@ async(
 // Mark All Read
 // =================================
 
+
 export const markAllNotificationsAsRead =
-async(
-  userId
-)=>{
+async(userId)=>{
 
 
   const q =
-    query(
+  query(
 
-      notificationRef,
+    notificationRef,
 
-      where(
-        "receiverId",
-        "==",
-        userId
-      )
+    where(
+      "receiverId",
+      "==",
+      userId
+    )
 
-    );
-
-
-
-  const snapshot =
-    await getDocs(q);
-
-
-
-  const batch =
-    writeBatch(db);
-
-
-
-  snapshot.docs.forEach(
-    (item)=>{
-
-
-      batch.update(
-
-        doc(
-          db,
-          "notifications",
-          item.id
-        ),
-
-        {
-          isRead:true
-        }
-
-      );
-
-
-    }
   );
 
 
 
-  await batch.commit();
+  const snapshot =
+  await getDocs(q);
+
+
+
+  const updates =
+  snapshot.docs.map(
+
+    (item)=>
+
+    updateDoc(
+
+      doc(
+        db,
+        "notifications",
+        item.id
+      ),
+
+      {
+
+        isRead:true
+
+      }
+
+    )
+
+  );
+
+
+
+  await Promise.all(
+    updates
+  );
 
 
 };
+
 
 
 
@@ -357,10 +271,9 @@ async(
 // Delete Notification
 // =================================
 
+
 export const deleteNotification =
-async(
-  id
-)=>{
+async(id)=>{
 
 
   await deleteDoc(
@@ -383,62 +296,58 @@ async(
 
 
 
+
 // =================================
 // Delete All Notifications
 // =================================
 
+
 export const deleteAllNotifications =
-async(
-  userId
-)=>{
+async(userId)=>{
 
 
   const q =
-    query(
+  query(
 
-      notificationRef,
+    notificationRef,
 
-      where(
-        "receiverId",
-        "==",
-        userId
-      )
+    where(
+      "receiverId",
+      "==",
+      userId
+    )
 
-    );
-
-
-
-  const snapshot =
-    await getDocs(q);
-
-
-
-  const batch =
-    writeBatch(db);
-
-
-
-  snapshot.docs.forEach(
-    (item)=>{
-
-
-      batch.delete(
-
-        doc(
-          db,
-          "notifications",
-          item.id
-        )
-
-      );
-
-
-    }
   );
 
 
 
-  await batch.commit();
+  const snapshot =
+  await getDocs(q);
+
+
+
+  const deletes =
+  snapshot.docs.map(
+
+    (item)=>
+
+    deleteDoc(
+
+      doc(
+        db,
+        "notifications",
+        item.id
+      )
+
+    )
+
+  );
+
+
+
+  await Promise.all(
+    deletes
+  );
 
 
 };
