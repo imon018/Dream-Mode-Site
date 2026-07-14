@@ -16,11 +16,13 @@ import useAuth from "../hooks/useAuth";
 
 import {
   getUserNotifications,
+  getAdminNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
   deleteAllNotifications,
 } from "../services/notificationService";
+
 
 
 
@@ -36,287 +38,321 @@ export function NotificationProvider({
 }) {
 
 
+const {
+  user,
+}=useAuth();
 
-  const {
-    user,
-  } = useAuth();
 
 
 
+const [
+ notifications,
+ setNotifications
+]=useState([]);
 
 
-  const [
-    notifications,
-    setNotifications
-  ] = useState([]);
 
 
+const [
+ loading,
+ setLoading
+]=useState(true);
 
 
 
-  const [
-    loading,
-    setLoading
-  ] = useState(true);
 
 
 
 
 
+useEffect(()=>{
 
 
+if(!user){
 
 
-  useEffect(()=>{
+setNotifications([]);
 
+setLoading(false);
 
-    if(!user){
-
-
-      setNotifications([]);
-
-      setLoading(false);
-
-      return;
-
-
-    }
-
-
-
-
-
-
-    const q =
-    getUserNotifications(
-      user.uid,
-      user.role
-    );
-
-
-
-
-
-
-
-    const unsubscribe =
-
-      onSnapshot(
-
-        q,
-
-
-        (snapshot)=>{
-
-
-          const data =
-
-          snapshot.docs.map(
-            (doc)=>({
-
-              id:doc.id,
-
-              ...doc.data(),
-
-            })
-          );
-
-
-
-          setNotifications(
-            data
-          );
-
-
-          setLoading(false);
-
-
-
-        },
-
-
-
-        (error)=>{
-
-
-          console.log(error);
-
-
-          setLoading(false);
-
-
-        }
-
-
-      );
-
-
-
-
-
-
-
-      return ()=>unsubscribe();
-
-
-
-
-  },[user]);
-
-
-
-
-
-
-
-
-
-  const unreadCount =
-
-  notifications.filter(
-
-    item=>
-
-    !item.isRead
-
-  ).length;
-
-
-
-
-
-
-
-
-
-  const markAsRead =
-  async(id)=>{
-
-
-    await markNotificationAsRead(
-      id
-    );
-
-
-  };
-
-
-
-
-
-
-
-
-
-  const markAllAsRead =
-  async()=>{
-
-
-    if(!user)
-      return;
-
-
-
-    await markAllNotificationsAsRead(
-
-      user.uid,
-
-      user.role
-
-    );
-
-
-  };
-
-
-
-
-
-
-
-
-
-  const removeNotification =
-  async(id)=>{
-
-
-    await deleteNotification(
-      id
-    );
-
-
-  };
-
-
-
-
-
-
-
-
-
-  const removeAllNotifications =
-  async()=>{
-
-
-    if(!user)
-      return;
-
-
-
-    await deleteAllNotifications(
-
-      user.uid,
-
-      user.role
-
-    );
-
-
-  };
-
-
-
-
-
-
-
-
-
-  return (
-
-    <NotificationContext.Provider
-
-      value={{
-
-        notifications,
-
-        unreadCount,
-
-        loading,
-
-        markAsRead,
-
-        markAllAsRead,
-
-        removeNotification,
-
-        removeAllNotifications,
-
-      }}
-
-    >
-
-      {children}
-
-    </NotificationContext.Provider>
-
-  );
+return;
 
 
 }
 
 
+
+
+
+let q;
+
+
+
+
+// ================================
+// ADMIN NOTIFICATION
+// ================================
+
+if(user.role === "admin"){
+
+
+q =
+getAdminNotifications();
+
+
+}
+
+
+// ================================
+// USER NOTIFICATION
+// ================================
+
+else{
+
+
+q =
+getUserNotifications(
+user.uid
+);
+
+
+}
+
+
+
+
+
+
+
+
+const unsubscribe =
+
+onSnapshot(
+
+q,
+
+
+(snapshot)=>{
+
+
+const data =
+
+snapshot.docs.map(
+
+(doc)=>({
+
+id:doc.id,
+
+...doc.data(),
+
+})
+
+);
+
+
+
+setNotifications(
+data
+);
+
+
+
+setLoading(false);
+
+
+
+},
+
+
+(error)=>{
+
+
+console.log(
+"Notification Error:",
+error
+);
+
+
+setLoading(false);
+
+
+}
+
+
+
+);
+
+
+
+
+
+return ()=>unsubscribe();
+
+
+
+
+},[user]);
+
+
+
+
+
+
+
+
+
+const unreadCount =
+
+notifications.filter(
+
+(item)=>
+
+!item.isRead
+
+).length;
+
+
+
+
+
+
+
+
+
+const markAsRead =
+async(id)=>{
+
+
+await markNotificationAsRead(
+id
+);
+
+
+};
+
+
+
+
+
+
+
+
+
+const markAllAsRead =
+async()=>{
+
+
+if(!user)
+return;
+
+
+
+await markAllNotificationsAsRead(
+
+user.role === "admin"
+?
+"ADMIN"
+:
+user.uid
+
+);
+
+
+
+};
+
+
+
+
+
+
+
+
+
+const removeNotification =
+async(id)=>{
+
+
+await deleteNotification(
+id
+);
+
+
+};
+
+
+
+
+
+
+
+
+
+const removeAllNotifications =
+async()=>{
+
+
+if(!user)
+return;
+
+
+
+await deleteAllNotifications(
+
+user.role === "admin"
+?
+"ADMIN"
+:
+user.uid
+
+);
+
+
+
+};
+
+
+
+
+
+
+
+
+
+return (
+
+<NotificationContext.Provider
+
+value={{
+
+notifications,
+
+unreadCount,
+
+loading,
+
+markAsRead,
+
+markAllAsRead,
+
+removeNotification,
+
+removeAllNotifications,
+
+}}
+
+>
+
+{children}
+
+
+</NotificationContext.Provider>
+
+
+);
+
+
+}
 
 
 
