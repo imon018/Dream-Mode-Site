@@ -11,9 +11,7 @@ import {
 } from "firebase/firestore";
 
 
-import {
-  db
-} from "../firebase/firestore";
+import { db } from "../firebase/firestore";
 
 
 import {
@@ -22,13 +20,13 @@ import {
 
 
 
+
+
 const orderRef =
-collection(
-  db,
-  "orders"
-);
-
-
+  collection(
+    db,
+    "orders"
+  );
 
 
 
@@ -41,46 +39,61 @@ collection(
 // =========================
 
 export const createOrder =
-async(order)=>{
+async (
+  order
+) => {
 
 
   const docRef =
+    await addDoc(
+      orderRef,
+      {
 
-  await addDoc(
+        ...order,
 
-    orderRef,
+        createdAt:
+          new Date(),
 
-    order
+        status:
+          order.status || "Pending",
 
-  );
+      }
+    );
 
 
 
 
 
   // =========================
-  // ADMIN NOTIFICATION
+  // Customer Notification
   // =========================
 
 
-  await sendNotification({
-
-    title:
-      "New Order Received",
+  if(order.userId){
 
 
-    message:
-      `New order received from ${order.email || "customer"}.`,
+    await sendNotification({
+
+      receiverId:
+        order.userId,
 
 
-    userId:
-      "admin",
+      title:
+        "Order Placed Successfully 🎉",
 
 
-    type:
-      "new_order",
+      message:
+        `Your order #${docRef.id} has been placed successfully.`,
 
-  });
+
+      type:
+        "order",
+
+
+    });
+
+
+  }
 
 
 
@@ -105,51 +118,46 @@ async(order)=>{
 // =========================
 
 export const getUserOrders =
-async(email)=>{
+async (
+  email
+) => {
 
 
   const q =
+    query(
 
-  query(
+      orderRef,
 
-    orderRef,
+      where(
+        "email",
+        "==",
+        email
+      )
 
-
-    where(
-
-      "email",
-
-      "==",
-
-      email
-
-    )
-
-  );
-
-
-
+    );
 
 
 
   const snapshot =
-
-  await getDocs(q);
-
-
+    await getDocs(q);
 
 
 
 
   return snapshot.docs.map(
 
-    (doc)=>({
+    (doc)=>(
 
-      id:doc.id,
+      {
 
-      ...doc.data(),
+        id:
+          doc.id,
 
-    })
+        ...doc.data(),
+
+      }
+
+    )
 
   );
 
@@ -165,7 +173,7 @@ async(email)=>{
 
 
 // =========================
-// Get All Orders
+// Get All Orders (Admin)
 // =========================
 
 export const getAllOrders =
@@ -173,12 +181,9 @@ async()=>{
 
 
   const snapshot =
-
-  await getDocs(
-    orderRef
-  );
-
-
+    await getDocs(
+      orderRef
+    );
 
 
 
@@ -188,7 +193,8 @@ async()=>{
 
       {
 
-        id:doc.id,
+        id:
+          doc.id,
 
         ...doc.data(),
 
@@ -221,49 +227,11 @@ async(
 
 
   const orderDoc =
-
-  doc(
-
-    db,
-
-    "orders",
-
-    id
-
-  );
-
-
-
-
-
-
-  // get old order info
-
-  const orderSnap =
-
-  await getDoc(
-    orderDoc
-  );
-
-
-
-
-
-  const order =
-
-  orderSnap.exists()
-
-  ?
-
-  orderSnap.data()
-
-  :
-
-  null;
-
-
-
-
+    doc(
+      db,
+      "orders",
+      id
+    );
 
 
 
@@ -287,40 +255,125 @@ async(
 
 
 
+  // Get order info
+
+  const orderSnap =
+    await getDoc(
+      orderDoc
+    );
 
 
-  // =========================
-  // USER NOTIFICATION
-  // =========================
-
-
-  if(order?.userId){
 
 
 
-    await sendNotification({
-
-      title:
-        "Order Status Updated",
-
-
-      message:
-        `Your order status changed to ${status}.`,
+  if(
+    orderSnap.exists()
+  ){
 
 
-      userId:
-        order.userId,
+    const order =
+      orderSnap.data();
 
 
-      type:
-        "order_status",
 
 
-    });
+
+    if(
+      order.userId
+    ){
+
+
+
+      let message =
+      "Your order status has been updated.";
+
+
+
+
+
+      if(
+        status === "Processing"
+      ){
+
+        message =
+        "Your order is now being processed.";
+
+      }
+
+
+
+
+
+
+      if(
+        status === "Shipped"
+      ){
+
+        message =
+        "Your order has been shipped 🚚";
+
+      }
+
+
+
+
+
+
+      if(
+        status === "Delivered"
+      ){
+
+        message =
+        "Your order has been delivered successfully 🎉";
+
+      }
+
+
+
+
+
+
+      if(
+        status === "Cancelled"
+      ){
+
+        message =
+        "Your order has been cancelled.";
+
+      }
+
+
+
+
+
+
+
+      await sendNotification({
+
+        receiverId:
+          order.userId,
+
+
+        title:
+          `Order ${status}`,
+
+
+        message,
+
+
+        type:
+          "order",
+
+
+      });
+
+
+
+    }
+
 
 
   }
-
 
 
 
@@ -340,45 +393,29 @@ async(
 // =========================
 
 export const addOrderByAdmin =
-async(order)=>{
+async(
+  order
+)=>{
 
 
   const docRef =
+    await addDoc(
 
-  await addDoc(
+      orderRef,
 
-    orderRef,
+      {
 
-    order
+        ...order,
 
-  );
+        createdAt:
+          new Date(),
 
+        status:
+          order.status || "Pending",
 
+      }
 
-
-
-  await sendNotification({
-
-    title:
-      "New Order Added",
-
-
-    message:
-      "Admin created a new order.",
-
-
-    userId:
-      "admin",
-
-
-    type:
-      "admin_order",
-
-
-  });
-
-
-
+    );
 
 
 
@@ -400,21 +437,22 @@ async(order)=>{
 // =========================
 
 export const deleteOrder =
-async(id)=>{
+async(
+  id
+)=>{
+
+
+  const orderDoc =
+    doc(
+      db,
+      "orders",
+      id
+    );
+
 
 
   await deleteDoc(
-
-    doc(
-
-      db,
-
-      "orders",
-
-      id
-
-    )
-
+    orderDoc
   );
 
 
@@ -429,26 +467,21 @@ async(id)=>{
 
 
 // =========================
-// Cancel Request
+// Customer Cancel Request
 // =========================
 
 export const requestCancelOrder =
-async(id)=>{
+async(
+  id
+)=>{
 
 
   const orderDoc =
-
-  doc(
-
-    db,
-
-    "orders",
-
-    id
-
-  );
-
-
+    doc(
+      db,
+      "orders",
+      id
+    );
 
 
 
@@ -458,36 +491,12 @@ async(id)=>{
 
     {
 
-      cancelRequested:true,
+      cancelRequested:
+        true,
 
     }
 
   );
-
-
-
-
-
-  await sendNotification({
-
-    title:
-      "Cancel Request",
-
-
-    message:
-      "Customer requested order cancellation.",
-
-
-    userId:
-      "admin",
-
-
-    type:
-      "cancel_request",
-
-
-  });
-
 
 
 };
@@ -501,26 +510,21 @@ async(id)=>{
 
 
 // =========================
-// Return Request
+// Customer Return Request
 // =========================
 
 export const requestReturnOrder =
-async(id)=>{
+async(
+  id
+)=>{
 
 
   const orderDoc =
-
-  doc(
-
-    db,
-
-    "orders",
-
-    id
-
-  );
-
-
+    doc(
+      db,
+      "orders",
+      id
+    );
 
 
 
@@ -530,36 +534,12 @@ async(id)=>{
 
     {
 
-      returnRequested:true,
+      returnRequested:
+        true,
 
     }
 
   );
-
-
-
-
-
-  await sendNotification({
-
-    title:
-      "Return Request",
-
-
-    message:
-      "Customer requested order return.",
-
-
-    userId:
-      "admin",
-
-
-    type:
-      "return_request",
-
-
-  });
-
 
 
 };
