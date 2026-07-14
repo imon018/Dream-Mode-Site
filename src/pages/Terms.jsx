@@ -12,6 +12,7 @@ export default function Terms(){
 
 
 const faq=[
+const faq=[
 
 {
 question:"Can product prices change?",
@@ -24,8 +25,8 @@ answer:"Orders may be cancelled in certain situations such as incorrect informat
 },
 
 {
-question:`Who owns {settings.storeName || "DREAM MODE"} website content?",
-answer:"All website content, logo, images and design belong to {settings.storeName || "DREAM MODE"}.`
+question:`Who owns ${settings.storeName || "DREAM MODE"} website content?`,
+answer:`All website content, logo, images and design belong to ${settings.storeName || "DREAM MODE"}.`
 }
 
 ];
@@ -38,7 +39,7 @@ return (
 
 title="Terms & Conditions"
 
-description=`Please read our terms before using {settings.storeName || "DREAM MODE"} website and services.`
+description={`Please read our terms before using {settings.storeName || "DREAM MODE"} website and services.`}
 
 >
 
