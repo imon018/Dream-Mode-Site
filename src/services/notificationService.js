@@ -21,58 +21,82 @@ import {
 
 
 
+const notificationRef =
+collection(
+  db,
+  "notifications"
+);
+
+
+
+
+
+
+
+
+
 // ==============================
 // SEND NOTIFICATION
 // ==============================
 
-export async function sendNotification(data){
+export const sendNotification =
+async(data)=>{
+
 
   try{
 
 
-    const notificationRef =
-      collection(
-        db,
-        "notifications"
-      );
-
-
-
     await addDoc(
+
       notificationRef,
+
       {
 
-        title:data.title,
+        title:
+          data.title || "Notification",
 
-        message:data.message,
 
-        userId:data.userId || "all",
+        message:
+          data.message || "",
 
-        type:data.type || "general",
+
+        userId:
+          data.userId || "all",
+
+
+        type:
+          data.type || "general",
+
 
         isRead:false,
+
 
         createdAt:
           serverTimestamp(),
 
-      }
-    );
 
+      }
+
+    );
 
 
   }
   catch(error){
 
+
     console.log(
-      "Send notification error:",
+      "Notification send error:",
       error
     );
 
+
     throw error;
+
 
   }
 
-}
+
+};
 
 
 
@@ -86,29 +110,46 @@ export async function sendNotification(data){
 // GET USER NOTIFICATIONS
 // ==============================
 
+export const getUserNotifications =
+(
+  userId,
+  role
+)=>{
 
-export function getUserNotifications(userId){
+
+  const ids =
 
 
-  const ref =
-    collection(
-      db,
-      "notifications"
-    );
+  role === "admin"
+
+  ?
+
+  [
+    userId,
+    "admin",
+    "all"
+  ]
+
+  :
+
+  [
+    userId,
+    "all"
+  ];
+
+
 
 
 
   return query(
 
-    ref,
+    notificationRef,
+
 
     where(
       "userId",
       "in",
-      [
-        userId,
-        "all"
-      ]
+      ids
     ),
 
 
@@ -120,7 +161,7 @@ export function getUserNotifications(userId){
   );
 
 
-}
+};
 
 
 
@@ -131,33 +172,35 @@ export function getUserNotifications(userId){
 
 
 // ==============================
-// MARK SINGLE READ
+// MARK ONE READ
 // ==============================
 
-
-export async function markNotificationAsRead(id){
-
-
-  const ref =
-    doc(
-      db,
-      "notifications",
-      id
-    );
-
+export const markNotificationAsRead =
+async(id)=>{
 
 
   await updateDoc(
-    ref,
+
+    doc(
+
+      db,
+
+      "notifications",
+
+      id
+
+    ),
+
     {
 
       isRead:true
 
     }
+
   );
 
 
-}
+};
 
 
 
@@ -171,38 +214,78 @@ export async function markNotificationAsRead(id){
 // MARK ALL READ
 // ==============================
 
+export const markAllNotificationsAsRead =
+async(
+  userId,
+  role
+)=>{
 
-export async function markAllNotificationsAsRead(userId){
+
+  const ids =
+
+
+  role === "admin"
+
+  ?
+
+  [
+    userId,
+    "admin",
+    "all"
+  ]
+
+  :
+
+  [
+    userId,
+    "all"
+  ];
+
+
+
+
 
 
   const q =
-    query(
 
-      collection(
-        db,
-        "notifications"
-      ),
+  query(
 
-      where(
-        "userId",
-        "in",
-        [
-          userId,
-          "all"
-        ]
-      )
+    notificationRef,
 
-    );
+
+    where(
+
+      "userId",
+
+      "in",
+
+      ids
+
+    )
+
+  );
+
+
+
 
 
 
   const snapshot =
-    await getDocs(q);
+
+  await getDocs(q);
+
+
+
 
 
 
   const batch =
-    writeBatch(db);
+
+  writeBatch(db);
+
+
+
+
 
 
 
@@ -212,9 +295,13 @@ export async function markAllNotificationsAsRead(userId){
     batch.update(
 
       doc(
+
         db,
+
         "notifications",
+
         item.id
+
       ),
 
       {
@@ -230,10 +317,13 @@ export async function markAllNotificationsAsRead(userId){
 
 
 
+
+
+
   await batch.commit();
 
 
-}
+};
 
 
 
@@ -247,22 +337,26 @@ export async function markAllNotificationsAsRead(userId){
 // DELETE ONE
 // ==============================
 
-
-export async function deleteNotification(id){
+export const deleteNotification =
+async(id)=>{
 
 
   await deleteDoc(
 
     doc(
+
       db,
+
       "notifications",
+
       id
+
     )
 
   );
 
 
-}
+};
 
 
 
@@ -276,38 +370,78 @@ export async function deleteNotification(id){
 // DELETE ALL
 // ==============================
 
+export const deleteAllNotifications =
+async(
+  userId,
+  role
+)=>{
 
-export async function deleteAllNotifications(userId){
+
+  const ids =
+
+
+  role === "admin"
+
+  ?
+
+  [
+    userId,
+    "admin",
+    "all"
+  ]
+
+  :
+
+  [
+    userId,
+    "all"
+  ];
+
+
+
+
 
 
   const q =
-    query(
 
-      collection(
-        db,
-        "notifications"
-      ),
+  query(
 
-      where(
-        "userId",
-        "in",
-        [
-          userId,
-          "all"
-        ]
-      )
+    notificationRef,
 
-    );
+
+    where(
+
+      "userId",
+
+      "in",
+
+      ids
+
+    )
+
+  );
+
+
+
 
 
 
   const snapshot =
-    await getDocs(q);
+
+  await getDocs(q);
+
+
+
 
 
 
   const batch =
-    writeBatch(db);
+
+  writeBatch(db);
+
+
+
+
 
 
 
@@ -317,9 +451,13 @@ export async function deleteAllNotifications(userId){
     batch.delete(
 
       doc(
+
         db,
+
         "notifications",
+
         item.id
+
       )
 
     );
@@ -329,7 +467,10 @@ export async function deleteAllNotifications(userId){
 
 
 
+
+
+
   await batch.commit();
 
 
-}
+};
