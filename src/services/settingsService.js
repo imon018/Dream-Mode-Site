@@ -51,7 +51,6 @@ export const saveSettings = async(data)=>{
 
 
 
-
 // GET SETTINGS
 
 export const getSettings = async()=>{
@@ -74,13 +73,23 @@ export const getSettings = async()=>{
 
     if(snap.exists()){
 
-      return snap.data();
+      return {
+
+        storeName:"Dream Mode",
+
+        ...snap.data(),
+
+      };
 
     }
 
 
 
-    return null;
+    return {
+
+      storeName:"Dream Mode",
+
+    };
 
 
   }
@@ -92,7 +101,11 @@ export const getSettings = async()=>{
     );
 
 
-    throw error;
+    return {
+
+      storeName:"Dream Mode",
+
+    };
 
   }
 
