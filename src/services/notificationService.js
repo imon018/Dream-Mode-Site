@@ -28,7 +28,35 @@ collection(
 
 
 
+// =================================
+// Send Notification To All Users
+// =================================
 
+export const sendNotificationToAllUsers = async ({
+  users,
+  title,
+  message,
+  type = "system",
+}) => {
+
+  const promises = users.map((user) =>
+    sendNotification({
+
+      receiverId: user.id,
+
+      title,
+
+      message,
+
+      type,
+
+    })
+  );
+
+
+  await Promise.all(promises);
+
+};
 
 
 // =================================
