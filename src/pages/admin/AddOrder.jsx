@@ -28,6 +28,9 @@ import {
 } from "../../components/ui/Toast";
 
 
+import useAuth from "../../hooks/useAuth";
+
+
 
 
 
@@ -47,6 +50,8 @@ const [productName,setProductName]=useState("");
 const [price,setPrice]=useState("");
 
 const [quantity,setQuantity]=useState(1);
+
+  const { user } = useAuth();
 
 
 
@@ -87,6 +92,8 @@ Number(quantity);
 
 await addOrderByAdmin({
 
+userId: user?.uid || "",
+
 customerName,
 
 email,
@@ -100,17 +107,13 @@ items:[
 
 {
 
-id:
-crypto.randomUUID(),
+id: crypto.randomUUID(),
 
-name:
-productName,
+name: productName,
 
-price:
-Number(price),
+price: Number(price),
 
-quantity:
-Number(quantity)
+quantity: Number(quantity)
 
 }
 
@@ -120,13 +123,10 @@ Number(quantity)
 total,
 
 
-status:
-"Pending",
+status:"Pending",
 
 
-createdAt:
-new Date()
-.toISOString()
+createdAt:new Date().toISOString()
 
 });
 
