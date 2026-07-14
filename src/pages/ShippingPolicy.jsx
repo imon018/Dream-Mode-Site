@@ -1,8 +1,15 @@
 import PolicyLayout from "../components/PolicyLayout";
 import PolicyFAQ from "../components/PolicyFAQ";
+import {
+  useSettings
+} from "../context/SettingsContext";
 
 
 export default function ShippingPolicy(){
+
+  const {
+  settings
+}=useSettings();
 
 
 const faq=[
@@ -14,7 +21,7 @@ answer:"Inside Dhaka usually takes 1-3 working days and outside Dhaka usually ta
 
 {
 question:"Do you deliver all over Bangladesh?",
-answer:"Yes, Dream Mode delivers products across Bangladesh."
+answer:"Yes, {settings.storeName || "DREAM MODE"} delivers products across Bangladesh."
 },
 
 {
@@ -41,7 +48,7 @@ description="Everything you need to know about Dream Mode delivery process."
 
 
 <p>
-Dream Mode provides secure and reliable delivery service
+{settings.storeName || "DREAM MODE"} provides secure and reliable delivery service
 to make sure your premium fashion products reach you safely.
 </p>
 
