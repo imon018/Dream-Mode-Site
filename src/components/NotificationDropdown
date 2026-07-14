@@ -1,0 +1,79 @@
+import { Link } from "react-router-dom";
+import { useNotifications } from "../context/NotificationContext";
+
+export default function NotificationDropdown({ close }) {
+  const {
+    notifications,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications();
+
+  return (
+    <div className="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-xl border z-50">
+
+      <div className="flex items-center justify-between p-4 border-b">
+        <h2 className="font-semibold">
+          Notifications
+        </h2>
+
+        <button
+          onClick={markAllAsRead}
+          className="text-sm text-amber-600"
+        >
+          Mark all
+        </button>
+      </div>
+
+      <div className="max-h-[420px] overflow-y-auto">
+
+        {notifications.length === 0 && (
+          <div className="p-8 text-center text-gray-500">
+            No Notifications
+          </div>
+        )}
+
+        {notifications.slice(0,10).map((item) => (
+
+          <Link
+            key={item.id}
+            to={item.link || "#"}
+            onClick={()=>{
+              markAsRead(item.id);
+              close();
+            }}
+            className={`block p-4 border-b hover:bg-gray-50 ${
+              !item.isRead
+                ? "bg-amber-50"
+                : ""
+            }`}
+          >
+
+            <h3 className="font-semibold">
+              {item.title}
+            </h3>
+
+            <p className="text-sm text-gray-500 mt-1">
+              {item.message}
+            </p>
+
+          </Link>
+
+        ))}
+
+      </div>
+
+      <div className="p-3 border-t">
+
+        <Link
+          to="/notifications"
+          onClick={close}
+          className="block text-center text-amber-600 font-medium"
+        >
+          View All
+        </Link>
+
+      </div>
+
+    </div>
+  );
+}
