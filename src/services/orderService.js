@@ -55,10 +55,6 @@ async(order)=>{
 
 
 
-
-
-  // User Notification
-
   if(order.userId){
 
 
@@ -88,10 +84,6 @@ async(order)=>{
 
 
 
-
-  // Admin Notification
-
-
   await createAdminNotification({
 
     title:
@@ -106,7 +98,6 @@ async(order)=>{
     "order",
 
   });
-
 
 
 
@@ -156,7 +147,7 @@ async(email)=>{
 
   return snapshot.docs.map(
 
-    (item)=>({
+    item=>({
 
       id:item.id,
 
@@ -195,17 +186,13 @@ async()=>{
 
   return snapshot.docs.map(
 
-    (item)=>(
+    item=>({
 
-      {
+      id:item.id,
 
-        id:item.id,
+      ...item.data(),
 
-        ...item.data(),
-
-      }
-
-    )
+    })
 
   );
 
@@ -221,196 +208,160 @@ async()=>{
 
 
 // =================================
-// UPDATE ORDER STATUS
+// UPDATE ORDER STATUS (ADMIN)
 // =================================
 
 
 export const updateOrderStatus =
 async(
-  id,
-  status
+id,
+status
 )=>{
 
 
-  const orderDoc =
-  doc(
-    db,
-    "orders",
-    id
-  );
+const orderDoc =
+doc(
+db,
+"orders",
+id
+);
 
 
 
+const orderSnapshot =
+await getDoc(
+orderDoc
+);
 
 
-  // Get Order Data
 
-  const orderSnapshot =
-  await getDoc(
-    orderDoc
-  );
+if(!orderSnapshot.exists()){
 
+throw new Error(
+"Order not found"
+);
 
+}
 
-  if(
-    !orderSnapshot.exists()
-  ){
 
-    throw new Error(
-      "Order not found"
-    );
 
-  }
+const order =
+orderSnapshot.data();
 
 
 
 
-  const order =
-  orderSnapshot.data();
 
+await updateDoc(
 
+orderDoc,
 
+{
 
+status,
 
+}
 
-  await updateDoc(
+);
 
-    orderDoc,
 
-    {
 
-      status,
 
-    }
 
-  );
+let title =
+"";
 
+let message =
+"";
 
 
 
+switch(status){
 
 
+case "Confirmed":
 
+title =
+"✅ Order Confirmed";
 
-  let title =
-  "";
+message =
+"Your order has been confirmed.";
 
-  let message =
-  "";
+break;
 
 
 
+case "Shipped":
 
+title =
+"🚚 Order Shipped";
 
-  switch(status){
+message =
+"Your order is on the way.";
 
+break;
 
-    case "Confirmed":
 
-      title =
-      "✅ Order Confirmed";
 
+case "Delivered":
 
-      message =
-      "Your order has been confirmed.";
+title =
+"🎉 Order Delivered";
 
-      break;
+message =
+"Your order has been delivered successfully.";
 
+break;
 
 
 
+case "Cancelled":
 
-    case "Shipped":
+title =
+"❌ Order Cancelled";
 
-      title =
-      "🚚 Order Shipped";
+message =
+"Your order has been cancelled.";
 
+break;
 
-      message =
-      "Your order is on the way.";
 
-      break;
 
+default:
 
+title =
+"📦 Order Updated";
 
+message =
+`Your order status changed to ${status}.`;
 
+}
 
-    case "Delivered":
 
-      title =
-      "🎉 Order Delivered";
 
 
-      message =
-      "Your order has been delivered successfully.";
+if(order.userId){
 
-      break;
 
+await createUserNotification({
 
+userId:
+order.userId,
 
 
+title,
 
-    case "Cancelled":
 
-      title =
-      "❌ Order Cancelled";
+message,
 
 
-      message =
-      "Your order has been cancelled.";
+type:
+"order",
 
-      break;
+});
 
 
-
-
-
-    default:
-
-      title =
-      "📦 Order Updated";
-
-
-      message =
-      `Your order status changed to ${status}.`;
-
-
-
-  }
-
-
-
-
-
-
-
-  // Customer Notification
-
-
-  if(order.userId){
-
-
-    await createUserNotification({
-
-      userId:
-      order.userId,
-
-
-      title,
-
-
-      message,
-
-
-      type:
-      "order",
-
-    });
-
-
-  }
-
-
+}
 
 
 
@@ -433,52 +384,45 @@ export const addOrderByAdmin =
 async(order)=>{
 
 
-  const docRef =
-  await addDoc(
+const docRef =
+await addDoc(
 
-    orderRef,
+orderRef,
 
-    order
+order
 
-  );
-
-
-
-
-  // Customer notification
-
-
-  if(order.userId){
-
-
-    await createUserNotification({
-
-      userId:
-      order.userId,
-
-
-      title:
-      "🛒 Order Created",
-
-
-      message:
-      "An order has been created for you.",
-
-
-      type:
-      "order",
-
-    });
-
-
-  }
+);
 
 
 
+if(order.userId){
+
+
+await createUserNotification({
+
+userId:
+order.userId,
+
+
+title:
+"🛒 Order Created",
+
+
+message:
+"An order has been created for you.",
+
+
+type:
+"order",
+
+});
+
+
+}
 
 
 
-  return docRef.id;
+return docRef.id;
 
 
 };
@@ -500,15 +444,15 @@ export const deleteOrder =
 async(id)=>{
 
 
-  await deleteDoc(
+await deleteDoc(
 
-    doc(
-      db,
-      "orders",
-      id
-    )
+doc(
+db,
+"orders",
+id
+)
 
-  );
+);
 
 
 };
@@ -522,7 +466,7 @@ async(id)=>{
 
 
 // =================================
-// CANCEL REQUEST
+// USER CANCEL REQUEST
 // =================================
 
 
@@ -530,21 +474,74 @@ export const requestCancelOrder =
 async(id)=>{
 
 
-  await updateDoc(
+const orderDoc =
+doc(
+db,
+"orders",
+id
+);
 
-    doc(
-      db,
-      "orders",
-      id
-    ),
 
-    {
 
-      cancelRequested:true,
+const snapshot =
+await getDoc(
+orderDoc
+);
 
-    }
 
-  );
+
+if(!snapshot.exists()){
+
+throw new Error(
+"Order not found"
+);
+
+}
+
+
+
+const order =
+snapshot.data();
+
+
+
+
+
+await updateDoc(
+
+orderDoc,
+
+{
+
+cancelRequested:true,
+
+}
+
+);
+
+
+
+
+
+
+// ADMIN NOTIFICATION
+
+
+await createAdminNotification({
+
+title:
+"⚠️ Cancel Request",
+
+
+message:
+`${order.customerName || "Customer"} requested to cancel order #${id.slice(0,8)}.`,
+
+
+type:
+"order",
+
+});
+
 
 
 };
@@ -558,7 +555,7 @@ async(id)=>{
 
 
 // =================================
-// RETURN REQUEST
+// USER RETURN REQUEST
 // =================================
 
 
@@ -566,21 +563,74 @@ export const requestReturnOrder =
 async(id)=>{
 
 
-  await updateDoc(
+const orderDoc =
+doc(
+db,
+"orders",
+id
+);
 
-    doc(
-      db,
-      "orders",
-      id
-    ),
 
-    {
 
-      returnRequested:true,
+const snapshot =
+await getDoc(
+orderDoc
+);
 
-    }
 
-  );
+
+if(!snapshot.exists()){
+
+throw new Error(
+"Order not found"
+);
+
+}
+
+
+
+const order =
+snapshot.data();
+
+
+
+
+
+await updateDoc(
+
+orderDoc,
+
+{
+
+returnRequested:true,
+
+}
+
+);
+
+
+
+
+
+
+// ADMIN NOTIFICATION
+
+
+await createAdminNotification({
+
+title:
+"🔄 Return Request",
+
+
+message:
+`${order.customerName || "Customer"} requested return for order #${id.slice(0,8)}.`,
+
+
+type:
+"order",
+
+});
+
 
 
 };
