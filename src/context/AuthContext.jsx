@@ -1,5 +1,6 @@
 import {
   createContext,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -27,12 +28,7 @@ import {
 
 
 
-
-export const AuthContext =
-  createContext();
-
-
-
+export const AuthContext = createContext();
 
 
 
@@ -41,146 +37,119 @@ export default function AuthProvider({
 }) {
 
 
+  const [user, setUser] = useState(null);
 
-  const [user,setUser] =
-    useState(null);
 
+  const [loading, setLoading] = useState(true);
 
 
-  const [loading,setLoading] =
-    useState(true);
 
 
+  useEffect(() => {
 
 
+    const unsubscribe = onAuthStateChanged(
 
+      auth,
 
+      async (firebaseUser) => {
 
 
-  useEffect(()=>{
+        try {
 
 
-    const unsubscribe =
+          if (!firebaseUser) {
 
-      onAuthStateChanged(
 
-        auth,
-
-        async(firebaseUser)=>{
-
-
-          try{
-
-
-            if(!firebaseUser){
-
-
-              setUser(null);
-
-              setLoading(false);
-
-              return;
-
-
-            }
-
-
-
-
-
-
-            const userRef =
-              doc(
-
-                db,
-
-                "users",
-
-                firebaseUser.uid
-
-              );
-
-
-
-
-
-
-            const userSnap =
-              await getDoc(
-                userRef
-              );
-
-
-
-
-
-
-
-            if(userSnap.exists()){
-
-
-              setUser({
-
-                ...firebaseUser,
-
-                ...userSnap.data(),
-
-              });
-
-
-
-            }else{
-
-
-              setUser(
-                firebaseUser
-              );
-
-
-            }
-
-
-
-
-
-
-          }catch(error){
-
-
-            console.log(error);
-
-
-            setUser(
-              firebaseUser
-            );
-
-
-
-          }finally{
-
+            setUser(null);
 
             setLoading(false);
+
+            return;
+
+          }
+
+
+
+
+
+          const userRef = doc(
+
+            db,
+
+            "users",
+
+            firebaseUser.uid
+
+          );
+
+
+
+
+
+          const userSnap = await getDoc(userRef);
+
+
+
+
+
+
+          if (userSnap.exists()) {
+
+
+            setUser({
+
+              ...firebaseUser,
+
+              ...userSnap.data(),
+
+            });
+
+
+          } else {
+
+
+            setUser(firebaseUser);
 
 
           }
 
 
+
+
+
+        } catch (error) {
+
+
+          console.log(error);
+
+
+          setUser(firebaseUser);
+
+
+
+        } finally {
+
+
+          setLoading(false);
+
+
         }
 
-      );
+
+      }
+
+    );
 
 
 
 
 
-
-
-      return ()=>unsubscribe();
+    return () => unsubscribe();
 
 
 
-  },[]);
-
+  }, []);
 
 
 
@@ -193,7 +162,6 @@ export default function AuthProvider({
 
     <AuthContext.Provider
 
-
       value={{
 
         user,
@@ -202,14 +170,10 @@ export default function AuthProvider({
 
       }}
 
-
-
     >
 
 
-
       {children}
-
 
 
     </AuthContext.Provider>
@@ -217,4 +181,17 @@ export default function AuthProvider({
 
   );
 
+
 }
+
+
+
+
+
+
+
+export const useAuth = () => {
+
+  return useContext(AuthContext);
+
+};
