@@ -15,10 +15,11 @@ import {
 } from "../firebase/firestore";
 
 
+
 import {
-  createAdminNotification,
-  createUserNotification,
-} from "../utils/notificationHelper";
+  sendNotification,
+  sendAdminNotification,
+} from "./notificationService";
 
 
 
@@ -34,16 +35,12 @@ collection(
 
 
 
-
-
 // =========================
 // Create Order (Customer)
 // =========================
 
-
-export const createOrder = async(
-  order
-)=>{
+export const createOrder =
+async(order)=>{
 
 
   const docRef =
@@ -54,26 +51,53 @@ export const createOrder = async(
 
 
 
+  // USER NOTIFICATION
 
+  await sendNotification({
 
-  // Admin Notification
+    receiverId:
+    order.userId,
 
-
-  await createAdminNotification({
 
     title:
-    "🛒 New Order Received",
+    "Order Placed Successfully 🛒",
 
 
     message:
-    `New order from ${order.name || order.email}. Amount: ৳${order.total || 0}`,
+    "Your order has been received successfully.",
 
 
     type:
     "order",
 
+
   });
 
+
+
+
+
+  // ADMIN NOTIFICATION
+
+  await sendAdminNotification({
+
+    title:
+    "New Order Received 🔔",
+
+
+    message:
+    `New order from ${order.customerName}`,
+
+
+    type:
+    "order",
+
+
+    orderId:
+    docRef.id,
+
+
+  });
 
 
 
@@ -95,10 +119,8 @@ export const createOrder = async(
 // Get User Orders
 // =========================
 
-
-export const getUserOrders = async(
-  email
-)=>{
+export const getUserOrders =
+async(email)=>{
 
 
   const q =
@@ -122,13 +144,17 @@ export const getUserOrders = async(
 
 
   return snapshot.docs.map(
+
     (doc)=>({
 
-      id:doc.id,
+      id:
+      doc.id,
+
 
       ...doc.data(),
 
     })
+
   );
 
 
@@ -143,11 +169,11 @@ export const getUserOrders = async(
 
 
 // =========================
-// Get All Orders Admin
+// Get All Orders (Admin)
 // =========================
 
-
-export const getAllOrders = async()=>{
+export const getAllOrders =
+async()=>{
 
 
   const snapshot =
@@ -158,13 +184,23 @@ export const getAllOrders = async()=>{
 
 
   return snapshot.docs.map(
-    (doc)=>({
 
-      id:doc.id,
+    (doc)=>(
 
-      ...doc.data(),
 
-    })
+      {
+
+        id:
+        doc.id,
+
+
+        ...doc.data(),
+
+      }
+
+
+    )
+
   );
 
 
@@ -182,7 +218,6 @@ export const getAllOrders = async()=>{
 // Update Order Status
 // =========================
 
-
 export const updateOrderStatus =
 async(
   id,
@@ -190,169 +225,26 @@ async(
 )=>{
 
 
-  const orderDoc =
-  doc(
-    db,
-    "orders",
-    id
-  );
+ const orderDoc =
+ doc(
+  db,
+  "orders",
+  id
+ );
 
 
 
-  await updateDoc(
+ await updateDoc(
 
-    orderDoc,
+  orderDoc,
 
-    {
-      status,
-    }
+  {
 
-  );
-
-
-
-
-
-  // Get order information
-
-
-  const snapshot =
-  await getDocs(
-
-    query(
-
-      orderRef,
-
-      where(
-        "__name__",
-        "==",
-        id
-      )
-
-    )
-
-  );
-
-
-
-  if(snapshot.empty){
-
-    return;
+    status,
 
   }
 
-
-
-
-  const order =
-  snapshot.docs[0].data();
-
-
-
-
-
-
-  let title =
-  "";
-
-
-  let message =
-  "";
-
-
-
-
-
-  if(status==="Processing"){
-
-
-    title =
-    "📦 Order Processing";
-
-
-    message =
-    "Your order is being prepared.";
-
-  }
-
-
-
-
-
-  if(status==="Shipped"){
-
-
-    title =
-    "🚚 Order Shipped";
-
-
-    message =
-    "Your order is on the way.";
-
-  }
-
-
-
-
-
-  if(status==="Delivered"){
-
-
-    title =
-    "✅ Order Delivered";
-
-
-    message =
-    "Your order has been delivered.";
-
-  }
-
-
-
-
-
-  if(status==="Cancelled"){
-
-
-    title =
-    "❌ Order Cancelled";
-
-
-    message =
-    "Your order has been cancelled.";
-
-  }
-
-
-
-
-
-  if(
-    title &&
-    order.userId
-  ){
-
-
-    await createUserNotification({
-
-      userId:
-      order.userId,
-
-
-      title,
-
-
-      message,
-
-
-      type:
-      "order",
-
-    });
-
-
-  }
-
+ );
 
 
 };
@@ -369,24 +261,48 @@ async(
 // Admin Add Order
 // =========================
 
-
 export const addOrderByAdmin =
-async(
+async(order)=>{
+
+
+ const docRef =
+ await addDoc(
+
+  orderRef,
+
   order
-)=>{
+
+ );
 
 
-  const docRef =
-  await addDoc(
-
-    orderRef,
-
-    order
-
-  );
 
 
-  return docRef.id;
+ // ADMIN NOTIFICATION
+
+ await sendAdminNotification({
+
+   title:
+   "New Order Added 🔔",
+
+
+   message:
+   `Admin created order for ${order.customerName}`,
+
+
+   type:
+   "order",
+
+
+   orderId:
+   docRef.id,
+
+
+ });
+
+
+
+
+ return docRef.id;
 
 
 };
@@ -403,22 +319,21 @@ async(
 // Delete Order
 // =========================
 
-
 export const deleteOrder =
-async(
+async(id)=>{
+
+
+ const orderDoc =
+ doc(
+  db,
+  "orders",
   id
-)=>{
+ );
 
 
-  await deleteDoc(
-
-    doc(
-      db,
-      "orders",
-      id
-    )
-
-  );
+ await deleteDoc(
+  orderDoc
+ );
 
 
 };
@@ -435,28 +350,29 @@ async(
 // Customer Cancel Request
 // =========================
 
-
 export const requestCancelOrder =
-async(
+async(id)=>{
+
+
+ const orderDoc =
+ doc(
+  db,
+  "orders",
   id
-)=>{
+ );
 
 
-  await updateDoc(
+ await updateDoc(
 
-    doc(
-      db,
-      "orders",
-      id
-    ),
+  orderDoc,
 
-    {
+  {
 
-      cancelRequested:true,
+    cancelRequested:true,
 
-    }
+  }
 
-  );
+ );
 
 
 };
@@ -473,28 +389,29 @@ async(
 // Customer Return Request
 // =========================
 
-
 export const requestReturnOrder =
-async(
+async(id)=>{
+
+
+ const orderDoc =
+ doc(
+  db,
+  "orders",
   id
-)=>{
+ );
 
 
-  await updateDoc(
+ await updateDoc(
 
-    doc(
-      db,
-      "orders",
-      id
-    ),
+  orderDoc,
 
-    {
+  {
 
-      returnRequested:true,
+    returnRequested:true,
 
-    }
+  }
 
-  );
+ );
 
 
 };
