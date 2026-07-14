@@ -430,32 +430,34 @@ Add To Cart
 
 <button
 
-onClick={() =>
- navigate(
- `/product/${product.id}`
- )
-}
+  onClick={() =>
+    navigate(
+      `/product/${product.id}`
+    )
+  }
 
-className="
-  flex-[0.55]
-  h-8
-  rounded-lg
-  bg-white
-  border
-  border-amber-500/70
-  text-amber-500
-  text-[10px]
-  font-semibold
-  flex
-  items-center
-  justify-center
-  px-2
-"
+  className="
+    flex-[0.65]
+    h-8
+    rounded-lg
+    bg-white
+    border
+    border-amber-500/50
+    text-amber-500
+    text-[10px]
+    font-semibold
+    flex
+    items-center
+    justify-center
+    px-2.5
+    ml-1
+  "
 
-<FiEye size={14}/>
+>
+
+  <FiEye size={14}/>
 
 </button>
-
 
 </div>
 
