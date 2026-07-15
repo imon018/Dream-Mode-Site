@@ -172,30 +172,64 @@ async(email)=>{
 // GET ALL ORDERS ADMIN
 // =================================
 
+export const getAllOrders = async () => {
 
-export const getAllOrders =
-async()=>{
+  const snapshot = await getDocs(orderRef);
 
+  const orders = await Promise.all(
 
-  const snapshot =
-  await getDocs(
-    orderRef
-  );
+    snapshot.docs.map(async (item) => {
 
+      const order = {
+        id: item.id,
+        ...item.data(),
+      };
 
+      let customerPhoto = "";
 
-  return snapshot.docs.map(
+      if (order.userId) {
 
-    item=>({
+        try {
 
-      id:item.id,
+          const userRef = doc(
+            db,
+            "users",
+            order.userId
+          );
 
-      ...item.data(),
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+
+            customerPhoto =
+              userSnap.data().photoURL || "";
+
+          }
+
+        } catch (error) {
+
+          console.log(
+            "Failed to load customer photo:",
+            error
+          );
+
+        }
+
+      }
+
+      return {
+
+        ...order,
+
+        customerPhoto,
+
+      };
 
     })
 
   );
 
+  return orders;
 
 };
 
