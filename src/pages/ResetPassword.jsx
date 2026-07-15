@@ -96,25 +96,25 @@ code
 
 
 await confirmPasswordReset(
-
-auth,
-
-code,
-
-password
-
+  auth,
+  code,
+  password
 );
 
+
+localStorage.setItem(
+  "passwordResetDone",
+  "true"
+);
 
 
 successToast(
-"Password updated."
+  "Password updated."
 );
 
 
-
 navigate(
-"/login"
+  "/login"
 );
 
 
