@@ -14,52 +14,35 @@ import {
   where,
   orderBy,
   onSnapshot,
+  getDocs
 } from "firebase/firestore";
 
 
 
 
-// =========================
 // CREATE NOTIFICATION
-// =========================
 
 export async function createNotification(data){
 
-  try{
+  await addDoc(
 
-    await addDoc(
+    collection(
+      db,
+      "notifications"
+    ),
 
-      collection(
-        db,
-        "notifications"
-      ),
+    {
 
-      {
+      ...data,
 
-        ...data,
+      isRead:false,
 
-        read:false,
+      createdAt:
+      serverTimestamp()
 
-        createdAt:
-        serverTimestamp()
+    }
 
-      }
-
-    );
-
-
-  }
-
-  catch(error){
-
-    console.log(
-      "Notification Error:",
-      error
-    );
-
-    throw error;
-
-  }
+  );
 
 }
 
@@ -67,12 +50,7 @@ export async function createNotification(data){
 
 
 
-
-// =========================
-// REALTIME USER LISTENER
-// USER + ALL USERS
-// =========================
-
+// USER REALTIME NOTIFICATION
 
 export function listenUserNotifications(
   userId,
@@ -80,101 +58,28 @@ export function listenUserNotifications(
 ){
 
 
-const q = query(
-
-  collection(
-    db,
-    "notifications"
-  ),
-
-
-  where(
-    "receiverId",
-    "in",
-    [
-      userId,
-      "ALL_USERS"
-    ]
-  ),
-
-
-  orderBy(
-    "createdAt",
-    "desc"
-  )
-
-);
-
-
-
-return onSnapshot(
-
-  q,
-
-  (snapshot)=>{
-
-
-    const data =
-    snapshot.docs.map(
-
-      doc=>({
-
-        id:doc.id,
-
-        ...doc.data()
-
-      })
-
-    );
-
-
-    callback(data);
-
-
-  }
-
-
-);
-
-
-}
-
-
-
-
-
-
-
-
-// =========================
-// REALTIME ADMIN LISTENER
-// =========================
-
-
-export function listenAdminNotifications(
-callback
-){
-
-
 const q=query(
 
-  collection(
-    db,
-    "notifications"
-  ),
+collection(
+db,
+"notifications"
+),
 
 
-  where(
-    "receiverId",
-    "==",
-    "ADMIN"
-  ),
+where(
+"receiverId",
+"in",
+[
+userId,
+"ALL_USERS"
+]
+),
 
 
-  orderBy(
-    "createdAt",
-    "desc"
-  )
+orderBy(
+"createdAt",
+"desc"
+)
 
 );
 
@@ -201,12 +106,78 @@ id:doc.id,
 );
 
 
-
 callback(data);
 
 
 }
 
+);
+
+
+}
+
+
+
+
+
+
+
+// ADMIN REALTIME
+
+export function listenAdminNotifications(
+callback
+){
+
+
+const q=query(
+
+collection(
+db,
+"notifications"
+),
+
+
+where(
+"receiverId",
+"==",
+"ADMIN"
+),
+
+
+orderBy(
+"createdAt",
+"desc"
+)
+
+);
+
+
+
+return onSnapshot(
+
+q,
+
+(snapshot)=>{
+
+
+callback(
+
+snapshot.docs.map(
+
+doc=>({
+
+id:doc.id,
+
+...doc.data()
+
+})
+
+)
+
+);
+
+
+}
 
 );
 
@@ -220,18 +191,51 @@ callback(data);
 
 
 
-
-// =========================
-// GET USER NOTIFICATIONS
-// =========================
-
+// GET USER
 
 export async function getUserNotifications(
 userId
 ){
 
 
-return [];
+const q=query(
+
+collection(
+db,
+"notifications"
+),
+
+where(
+"receiverId",
+"==",
+userId
+),
+
+orderBy(
+"createdAt",
+"desc"
+)
+
+);
+
+
+
+const snap =
+await getDocs(q);
+
+
+
+return snap.docs.map(
+doc=>({
+
+id:doc.id,
+
+...doc.data()
+
+})
+
+);
+
 
 }
 
@@ -241,17 +245,49 @@ return [];
 
 
 
-
-
-// =========================
-// GET ADMIN NOTIFICATIONS
-// =========================
-
+// GET ADMIN
 
 export async function getAdminNotifications(){
 
 
-return [];
+const q=query(
+
+collection(
+db,
+"notifications"
+),
+
+where(
+"receiverId",
+"==",
+"ADMIN"
+),
+
+orderBy(
+"createdAt",
+"desc"
+)
+
+);
+
+
+
+const snap =
+await getDocs(q);
+
+
+
+return snap.docs.map(
+doc=>({
+
+id:doc.id,
+
+...doc.data()
+
+})
+
+);
+
 
 }
 
@@ -261,12 +297,7 @@ return [];
 
 
 
-
-
-// =========================
-// MARK AS READ
-// =========================
-
+// MARK ONE READ
 
 export async function markNotificationRead(
 id
@@ -283,7 +314,7 @@ id
 
 {
 
-read:true
+isRead:true
 
 }
 
@@ -299,11 +330,7 @@ read:true
 
 
 
-
-// =========================
 // MARK ALL READ
-// =========================
-
 
 export async function markAllNotificationsRead(
 notifications
@@ -311,7 +338,6 @@ notifications
 
 
 const updates =
-
 notifications.map(
 
 (item)=>
@@ -326,7 +352,7 @@ item.id
 
 {
 
-read:true
+isRead:true
 
 }
 
@@ -350,11 +376,7 @@ updates
 
 
 
-
-// =========================
-// DELETE NOTIFICATION
-// =========================
-
+// DELETE ONE
 
 export async function deleteNotification(
 id
@@ -381,11 +403,7 @@ id
 
 
 
-
-// =========================
 // DELETE ALL
-// =========================
-
 
 export async function deleteAllNotifications(
 notifications
@@ -393,7 +411,6 @@ notifications
 
 
 const deletes =
-
 notifications.map(
 
 (item)=>
@@ -404,7 +421,6 @@ doc(
 db,
 "notifications",
 item.id
-
 )
 
 )
@@ -427,40 +443,20 @@ deletes
 
 
 
-
-// =========================
-// SEND ADMIN NOTIFICATION
-// =========================
-
+// ADMIN SEND
 
 export async function sendAdminNotification(
 data
 ){
 
 
-await addDoc(
-
-collection(
-db,
-"notifications"
-),
-
-
-{
+return createNotification({
 
 ...data,
 
-receiverId:"ADMIN",
+receiverId:"ADMIN"
 
-read:false,
-
-createdAt:
-serverTimestamp()
-
-}
-
-
-);
+});
 
 
 }
@@ -472,40 +468,20 @@ serverTimestamp()
 
 
 
-
-// =========================
-// SEND TO ALL USERS
-// =========================
-
+// SEND ALL USERS
 
 export async function sendNotificationToAllUsers(
 data
 ){
 
 
-await addDoc(
-
-collection(
-db,
-"notifications"
-),
-
-
-{
+return createNotification({
 
 ...data,
 
-receiverId:"ALL_USERS",
+receiverId:"ALL_USERS"
 
-read:false,
-
-createdAt:
-serverTimestamp()
-
-}
-
-
-);
+});
 
 
 }
@@ -517,16 +493,14 @@ serverTimestamp()
 
 
 
-
-// =========================
-// SEND SINGLE
-// =========================
-
+// SEND SINGLE USER
 
 export async function sendNotification(
 data
 ){
 
+
 return createNotification(data);
+
 
 }
