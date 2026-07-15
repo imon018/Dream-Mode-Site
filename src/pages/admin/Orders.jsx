@@ -1397,20 +1397,25 @@ gap-3
 
 
 <img
-
-src={
-order.customerPhoto ||
-
-`https://ui-avatars.com/api/?name=${order.customerName}`
-}
-
-className="
-w-8
-h-8
-rounded-full
-object-cover
-"
-
+  src={
+    order.customerPhoto ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      order.customerName || "User"
+    )}`
+  }
+  alt={order.customerName || "Customer"}
+  className="
+    w-8
+    h-8
+    rounded-full
+    object-cover
+  "
+  onError={(e) => {
+    e.currentTarget.src =
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        order.customerName || "User"
+      )}`;
+  }}
 />
 
 
