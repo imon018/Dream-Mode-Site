@@ -6,30 +6,21 @@ import {
 } from "react";
 
 
-import {
-  onSnapshot,
-} from "firebase/firestore";
-
-
 import useAuth from "../hooks/useAuth";
 
 
 import {
-  getUserNotifications,
-  getAdminNotifications,
-  markNotificationAsRead,
-  markAllNotificationsAsRead,
+  listenUserNotifications,
+  listenAdminNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
   deleteNotification,
   deleteAllNotifications,
 } from "../services/notificationService";
 
 
 
-
-const NotificationContext =
-createContext();
-
-
+const NotificationContext = createContext();
 
 
 
@@ -38,160 +29,162 @@ export function NotificationProvider({
 }) {
 
 
-const {
-  user,
-}=useAuth();
+  const {
+    user
+  } = useAuth();
 
 
 
+  const [
+    notifications,
+    setNotifications
+  ] = useState([]);
 
-const [
- notifications,
- setNotifications
-]=useState([]);
 
 
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
 
 
-const [
- loading,
- setLoading
-]=useState(true);
 
 
 
+  useEffect(()=>{
 
 
+    if(!user){
 
+      setNotifications([]);
 
+      setLoading(false);
 
-useEffect(()=>{
+      return;
 
+    }
 
-if(!user){
 
 
-setNotifications([]);
+    let unsubscribe;
 
-setLoading(false);
 
-return;
 
+    // ================================
+    // ADMIN NOTIFICATION
+    // ================================
 
-}
 
+    if(user.role === "admin"){
 
 
+      unsubscribe =
+      listenAdminNotifications(
+        (data)=>{
 
+          setNotifications(data);
 
-let q;
+          setLoading(false);
 
+        }
+      );
 
 
+    }
 
-// ================================
-// ADMIN NOTIFICATION
-// ================================
 
-if(user.role === "admin"){
 
+    // ================================
+    // USER NOTIFICATION
+    // ================================
 
-q =
-getAdminNotifications();
 
+    else{
 
-}
 
+      unsubscribe =
+      listenUserNotifications(
 
-// ================================
-// USER NOTIFICATION
-// ================================
+        user.uid,
 
-else{
+        (data)=>{
 
+          setNotifications(data);
 
-q =
-getUserNotifications(
-user.uid
-);
+          setLoading(false);
 
+        }
 
-}
+      );
 
 
+    }
 
 
 
 
 
+    return ()=>{
 
-const unsubscribe =
 
-onSnapshot(
+      if(unsubscribe){
 
-q,
+        unsubscribe();
 
+      }
 
-(snapshot)=>{
 
+    };
 
-const data =
 
-snapshot.docs.map(
 
-(doc)=>({
+  },[user]);
 
-id:doc.id,
 
-...doc.data(),
 
-})
 
-);
 
 
 
-setNotifications(
-data
-);
+  const unreadCount =
 
+  notifications.filter(
 
+    (item)=>
 
-setLoading(false);
+      !item.read
 
+  ).length;
 
 
-},
 
 
-(error)=>{
 
 
-console.log(
-"Notification Error:",
-error
-);
 
+  const markAsRead = async(id)=>{
 
-setLoading(false);
 
+    await markNotificationRead(id);
 
-}
 
+  };
 
 
-);
 
 
 
 
 
-return ()=>unsubscribe();
+  const markAllAsRead = async()=>{
 
 
+    await markAllNotificationsRead(
+      notifications
+    );
 
 
-},[user]);
+  };
 
 
 
@@ -199,157 +192,69 @@ return ()=>unsubscribe();
 
 
 
+  const removeNotification = async(id)=>{
 
 
-const unreadCount =
+    await deleteNotification(id);
 
-notifications.filter(
 
-(item)=>
+  };
 
-!item.isRead
 
-).length;
 
 
 
 
 
+  const removeAllNotifications = async()=>{
 
 
+    await deleteAllNotifications(
+      notifications
+    );
 
 
-const markAsRead =
-async(id)=>{
+  };
 
 
-await markNotificationAsRead(
-id
-);
 
 
-};
 
 
 
+  return (
 
 
+    <NotificationContext.Provider
 
+      value={{
 
+        notifications,
 
+        unreadCount,
 
-const markAllAsRead =
-async()=>{
+        loading,
 
+        markAsRead,
 
-if(!user)
-return;
+        markAllAsRead,
 
+        removeNotification,
 
+        removeAllNotifications,
 
-await markAllNotificationsAsRead(
+      }}
 
-user.role === "admin"
-?
-"ADMIN"
-:
-user.uid
+    >
 
-);
 
+      {children}
 
 
-};
+    </NotificationContext.Provider>
 
 
-
-
-
-
-
-
-
-const removeNotification =
-async(id)=>{
-
-
-await deleteNotification(
-id
-);
-
-
-};
-
-
-
-
-
-
-
-
-
-const removeAllNotifications =
-async()=>{
-
-
-if(!user)
-return;
-
-
-
-await deleteAllNotifications(
-
-user.role === "admin"
-?
-"ADMIN"
-:
-user.uid
-
-);
-
-
-
-};
-
-
-
-
-
-
-
-
-
-return (
-
-<NotificationContext.Provider
-
-value={{
-
-notifications,
-
-unreadCount,
-
-loading,
-
-markAsRead,
-
-markAllAsRead,
-
-removeNotification,
-
-removeAllNotifications,
-
-}}
-
->
-
-{children}
-
-
-</NotificationContext.Provider>
-
-
-);
+  );
 
 
 }
@@ -359,6 +264,5 @@ removeAllNotifications,
 
 
 
-
-export const useNotifications =
-()=>useContext(NotificationContext);
+export const useNotifications = () =>
+useContext(NotificationContext);
