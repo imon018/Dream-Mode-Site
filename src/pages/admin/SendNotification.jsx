@@ -93,24 +93,21 @@ export default function SendNotification() {
     try{
 
 
-      if(sendToAll){
+if(sendToAll){
 
 
-  await sendNotificationToAllUsers(
+  await sendNotificationToAllUsers({
 
-    users,
+    title: form.title,
 
-    {
+    message: form.message,
 
-      title:form.title,
+    type: form.type,
 
-      message:form.message,
+  });
 
-      type:form.type,
 
-    }
-
-  );
+}
 
 
 }else{
