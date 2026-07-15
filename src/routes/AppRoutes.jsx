@@ -60,6 +60,7 @@ import MyOrders from "../pages/MyOrders";
 import VerifyEmail from "../pages/VerifyEmail";
 import Notifications from "../pages/common/Notifications";
 import PasswordChangeVerify from "../pages/PasswordChangeVerify";
+import ResetPassword from "../pages/ResetPassword";
 
 
 /* =========================
@@ -139,6 +140,11 @@ export default function AppRoutes() {
          <Route
   path="/password-change-verify"
   element={<PasswordChangeVerify />}
+/>
+
+         <Route
+ path="/reset-password"
+ element={<ResetPassword />}
 />
 
 
