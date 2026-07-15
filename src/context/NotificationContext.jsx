@@ -147,14 +147,9 @@ export function NotificationProvider({
 
 
   const unreadCount =
-
-  notifications.filter(
-
-    (item)=>
-
-      !item.read
-
-  ).length;
+notifications.filter(
+(item)=>!item.isRead
+).length;
 
 
 
