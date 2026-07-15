@@ -1,6 +1,5 @@
 import {
   NavLink,
-  useNavigate,
 } from "react-router-dom";
 
 
@@ -20,67 +19,45 @@ import {
   FiUpload,
   FiImage,
   FiSettings,
-  FiChevronDown,
-  FiChevronUp,
   FiLogOut,
-  FiLock,
+  FiChevronUp,
+  FiChevronDown,
+  FiPlusCircle,
+  FiKey,
 } from "react-icons/fi";
-
-
-import {
-  logout,
-} from "../../services/authService";
 
 
 
 
 
 export default function AdminDrawerMenu({
-  closeDrawer,
+
+ closeDrawer,
+
+ onLogout,
+
 }) {
 
 
-  const navigate = useNavigate();
+
+const [
+ uploadsOpen,
+ setUploadsOpen
+]=useState(false);
 
 
 
-  const [
-    openMenu,
-    setOpenMenu
-  ] = useState(null);
+const [
+ bannerOpen,
+ setBannerOpen
+]=useState(false);
 
 
 
-
-
-  const toggleMenu = (menu)=>{
-
-    setOpenMenu(
-
-      openMenu === menu
-      ?
-      null
-      :
-      menu
-
-    );
-
-  };
-
-
-
-
-
-
-  const handleLogout = async()=>{
-
-    await logout();
-
-    closeDrawer();
-
-    navigate("/login");
-
-  };
+const [
+ settingsOpen,
+ setSettingsOpen
+]=useState(false);
 
 
 
@@ -88,27 +65,18 @@ export default function AdminDrawerMenu({
 
 
 
+const menuItem = `
 
-  const menuClass = ({isActive}) => `
+flex
+items-center
+gap-3
+px-5
+py-3
+rounded-xl
+transition
+font-medium
 
-  flex
-  items-center
-  gap-3
-  px-5
-  py-3
-  rounded-xl
-  transition
-
-  ${
-    isActive
-    ?
-    "bg-[#071F57] text-white"
-    :
-    "text-slate-700 hover:bg-slate-100"
-  }
-
-  `;
-
+`;
 
 
 
@@ -118,19 +86,26 @@ export default function AdminDrawerMenu({
 
 return (
 
-<div
+
+<nav
 
 className="
-p-4
-space-y-2
-overflow-y-auto
 flex-1
+overflow-y-auto
+bg-[#FAF7F2]
+px-4
+py-5
+space-y-2
 "
 
 >
 
 
 
+
+
+
+{/* DASHBOARD */}
 
 
 <NavLink
@@ -141,21 +116,39 @@ end
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={({isActive})=>
+
+menuItem +
+
+(isActive
+
+?
+
+" bg-[#071F57] text-white shadow"
+
+:
+
+" text-slate-700 hover:bg-[#FFF7E8]"
+
+)
+
+}
 
 >
 
-<FiGrid/>
+<FiGrid size={20}/>
 
-<span>
 Dashboard
-</span>
 
 </NavLink>
 
 
 
 
+
+
+
+{/* HOME */}
 
 
 <NavLink
@@ -164,15 +157,13 @@ to="/"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
 
 >
 
-<FiHome/>
+<FiHome size={20}/>
 
-<span>
 Home
-</span>
 
 </NavLink>
 
@@ -180,6 +171,10 @@ Home
 
 
 
+
+
+
+{/* ADMIN PROFILE */}
 
 
 <NavLink
@@ -188,15 +183,29 @@ to="/admin/profile"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={({isActive})=>
+
+menuItem +
+
+(isActive
+
+?
+
+" bg-[#071F57] text-white"
+
+:
+
+" text-slate-700 hover:bg-[#FFF7E8]"
+
+)
+
+}
 
 >
 
-<FiUser/>
+<FiUser size={20}/>
 
-<span>
 Admin Profile
-</span>
 
 </NavLink>
 
@@ -204,6 +213,10 @@ Admin Profile
 
 
 
+
+
+
+{/* USERS */}
 
 
 <NavLink
@@ -212,15 +225,13 @@ to="/admin/users"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
 
 >
 
-<FiUsers/>
+<FiUsers size={20}/>
 
-<span>
 Users Panel
-</span>
 
 </NavLink>
 
@@ -228,6 +239,9 @@ Users Panel
 
 
 
+
+
+{/* PRODUCTS */}
 
 
 <NavLink
@@ -236,15 +250,13 @@ to="/admin/products"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
 
 >
 
-<FiBox/>
+<FiBox size={20}/>
 
-<span>
 Products
-</span>
 
 </NavLink>
 
@@ -252,6 +264,10 @@ Products
 
 
 
+
+
+
+{/* ORDERS */}
 
 
 <NavLink
@@ -260,15 +276,13 @@ to="/admin/orders"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
 
 >
 
-<FiShoppingCart/>
+<FiShoppingCart size={20}/>
 
-<span>
 Orders
-</span>
 
 </NavLink>
 
@@ -278,21 +292,23 @@ Orders
 
 
 
+
+{/* SEND NOTIFICATION */}
+
+
 <NavLink
 
 to="/admin/send-notification"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
 
 >
 
-<FiSend/>
+<FiSend size={20}/>
 
-<span>
 Send Notification
-</span>
 
 </NavLink>
 
@@ -312,7 +328,7 @@ Send Notification
 
 <button
 
-onClick={()=>toggleMenu("uploads")}
+onClick={()=>setUploadsOpen(!uploadsOpen)}
 
 className="
 w-full
@@ -322,41 +338,36 @@ justify-between
 px-5
 py-3
 rounded-xl
+hover:bg-[#FFF7E8]
 text-slate-700
-hover:bg-slate-100
+font-medium
 "
 
 >
 
 
-<div
+<span className="flex items-center gap-3">
 
-className="
-flex
-items-center
-gap-3
-"
+<FiUpload size={20}/>
 
->
-
-<FiUpload/>
-
-<span>
 Uploads
-</span>
 
-</div>
+</span>
 
 
 
 {
-openMenu==="uploads"
-?
-<FiChevronUp/>
-:
-<FiChevronDown/>
-}
+uploadsOpen
 
+?
+
+<FiChevronUp/>
+
+:
+
+<FiChevronDown/>
+
+}
 
 
 </button>
@@ -365,14 +376,16 @@ openMenu==="uploads"
 
 
 
+
+
 {
-openMenu==="uploads" &&
+uploadsOpen &&
 
 
 <div
 
 className="
-ml-10
+ml-8
 mt-2
 space-y-2
 "
@@ -386,9 +399,11 @@ to="/admin/add-product"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className="block px-4 py-2 rounded-lg hover:bg-white"
 
 >
+
+<FiPlusCircle className="inline mr-2"/>
 
 Add Product
 
@@ -402,9 +417,11 @@ to="/admin/add-order"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className="block px-4 py-2 rounded-lg hover:bg-white"
 
 >
+
+<FiPlusCircle className="inline mr-2"/>
 
 Add Order
 
@@ -435,7 +452,7 @@ Add Order
 
 <button
 
-onClick={()=>toggleMenu("banners")}
+onClick={()=>setBannerOpen(!bannerOpen)}
 
 className="
 w-full
@@ -445,39 +462,35 @@ justify-between
 px-5
 py-3
 rounded-xl
+hover:bg-[#FFF7E8]
 text-slate-700
-hover:bg-slate-100
+font-medium
 "
 
 >
 
 
-<div
+<span className="flex items-center gap-3">
 
-className="
-flex
-items-center
-gap-3
-"
+<FiImage size={20}/>
 
->
-
-<FiImage/>
-
-<span>
 Banners
-</span>
 
-</div>
+</span>
 
 
 
 {
-openMenu==="banners"
+bannerOpen
+
 ?
+
 <FiChevronUp/>
+
 :
+
 <FiChevronDown/>
+
 }
 
 
@@ -488,13 +501,13 @@ openMenu==="banners"
 
 
 {
-openMenu==="banners" &&
+bannerOpen &&
 
 
 <div
 
 className="
-ml-10
+ml-8
 mt-2
 space-y-2
 "
@@ -508,7 +521,7 @@ to="/admin/banners"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className="block px-4 py-2 rounded-lg hover:bg-white"
 
 >
 
@@ -518,13 +531,14 @@ Hero Banners
 
 
 
+
 <NavLink
 
 to="/admin/shop-hero"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className="block px-4 py-2 rounded-lg hover:bg-white"
 
 >
 
@@ -551,21 +565,22 @@ Shop Hero
 
 
 
+{/* SUBSCRIBERS */}
+
+
 <NavLink
 
 to="/admin/subscribers"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
 
 >
 
-<FiUsers/>
+<FiUsers size={20}/>
 
-<span>
 Subscribers
-</span>
 
 </NavLink>
 
@@ -580,12 +595,13 @@ Subscribers
 {/* SETTINGS */}
 
 
+
 <div>
 
 
 <button
 
-onClick={()=>toggleMenu("settings")}
+onClick={()=>setSettingsOpen(!settingsOpen)}
 
 className="
 w-full
@@ -595,40 +611,36 @@ justify-between
 px-5
 py-3
 rounded-xl
+hover:bg-[#FFF7E8]
 text-slate-700
-hover:bg-slate-100
+font-medium
 "
 
 >
 
 
-<div
+<span className="flex items-center gap-3">
 
-className="
-flex
-items-center
-gap-3
-"
+<FiSettings size={20}/>
 
->
-
-<FiSettings/>
-
-<span>
 Settings
+
 </span>
 
-</div>
 
 
 {
-openMenu==="settings"
-?
-<FiChevronUp/>
-:
-<FiChevronDown/>
-}
+settingsOpen
 
+?
+
+<FiChevronUp/>
+
+:
+
+<FiChevronDown/>
+
+}
 
 
 </button>
@@ -637,14 +649,16 @@ openMenu==="settings"
 
 
 
+
+
 {
-openMenu==="settings" &&
+settingsOpen &&
 
 
 <div
 
 className="
-ml-10
+ml-8
 mt-2
 space-y-2
 "
@@ -658,15 +672,15 @@ to="/admin/settings"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className="block px-4 py-2 rounded-lg hover:bg-white"
 
 >
+
+<FiSettings className="inline mr-2"/>
 
 Website Settings
 
 </NavLink>
-
-
 
 
 
@@ -676,16 +690,15 @@ to="/admin/change-password"
 
 onClick={closeDrawer}
 
-className={menuClass}
+className="block px-4 py-2 rounded-lg hover:bg-white"
 
 >
 
-<FiLock/>
+<FiKey className="inline mr-2"/>
 
 Change Password
 
 </NavLink>
-
 
 
 </div>
@@ -704,9 +717,12 @@ Change Password
 
 
 
+{/* LOGOUT */}
+
+
 <button
 
-onClick={handleLogout}
+onClick={onLogout}
 
 className="
 w-full
@@ -719,11 +735,13 @@ rounded-xl
 bg-red-500
 text-white
 hover:bg-red-600
+font-medium
+mt-4
 "
 
 >
 
-<FiLogOut/>
+<FiLogOut size={20}/>
 
 Logout
 
@@ -733,10 +751,9 @@ Logout
 
 
 
+</nav>
 
-</div>
 
 );
-
 
 }
