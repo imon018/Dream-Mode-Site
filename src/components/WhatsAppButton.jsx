@@ -19,8 +19,9 @@ export default function WhatsAppButton() {
   const buttonRef = useRef(null);
 
   const {
-  settings
-} = useSettings();
+    settings
+  } = useSettings();
+
 
   const [position,setPosition] = useState({
 
@@ -49,40 +50,39 @@ export default function WhatsAppButton() {
 
   useEffect(()=>{
 
-  const saved =
-    localStorage.getItem(
-      "whatsapp-position"
-    );
+    const saved =
+      localStorage.getItem(
+        "whatsapp-position"
+      );
 
 
-  if(saved){
+    if(saved){
 
-    const oldPosition =
-      JSON.parse(saved);
-
-
-    const safePosition = {
-
-      x: Math.min(
-        oldPosition.x,
-        window.innerWidth - 70
-      ),
-
-      y: Math.min(
-        oldPosition.y,
-        window.innerHeight - 70
-      ),
-
-    };
+      const oldPosition =
+        JSON.parse(saved);
 
 
-    setPosition(safePosition);
+      const safePosition = {
+
+        x: Math.min(
+          oldPosition.x,
+          window.innerWidth - 70
+        ),
+
+        y: Math.min(
+          oldPosition.y,
+          window.innerHeight - 70
+        ),
+
+      };
 
 
-  }
+      setPosition(safePosition);
+
+    }
 
 
-},[]);
+  },[]);
 
 
 
@@ -191,9 +191,6 @@ export default function WhatsAppButton() {
 
 
 
-
-
-
   return (
 
 
@@ -201,7 +198,13 @@ export default function WhatsAppButton() {
 
       ref={buttonRef}
 
-      href={settings.whatsapp || "#"}
+
+      href={
+        settings.whatsapp
+          ? `https://wa.me/${settings.whatsapp}`
+          : "#"
+      }
+
 
       target="_blank"
 
