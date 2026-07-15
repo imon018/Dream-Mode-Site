@@ -6,21 +6,15 @@ import {
   sendPasswordResetEmail,
   updatePassword,
   deleteUser,
-  EmailAuthProvider,
-  reauthenticateWithCredential,
 } from "firebase/auth";
-
 
 
 import {
   doc,
   setDoc,
   updateDoc,
-  getDoc,
-  deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
-
 
 
 import {
@@ -35,7 +29,6 @@ import {
 
 
 
-
 // =========================
 // LOGIN
 // =========================
@@ -45,42 +38,37 @@ export async function login(
   password
 ){
 
-
-const result =
-await signInWithEmailAndPassword(
-  auth,
-  email,
-  password
-);
-
-
-
-await updateDoc(
-
-doc(
-db,
-"users",
-result.user.uid
-),
-
-{
-
-lastLogin:
-serverTimestamp()
-
-}
-
-);
+  const result =
+  await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
 
 
 
-return result.user;
+  await updateDoc(
 
+    doc(
+      db,
+      "users",
+      result.user.uid
+    ),
+
+    {
+
+      lastLogin:
+      serverTimestamp()
+
+    }
+
+  );
+
+
+
+  return result.user;
 
 }
-
-
-
 
 
 
@@ -97,63 +85,55 @@ export async function register(
   name
 ){
 
-
-const result =
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
-
+  const result =
+  await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
 
 
 
-await setDoc(
+  await setDoc(
 
-doc(
-db,
-"users",
-result.user.uid
-),
+    doc(
+      db,
+      "users",
+      result.user.uid
+    ),
 
-{
+    {
 
-name,
+      name,
 
-email,
+      email,
 
-phone:"",
+      phone:"",
 
-address:"",
+      address:"",
 
-photoURL:"",
+      photoURL:"",
 
-role:"user",
+      role:"user",
 
-createdAt:
-serverTimestamp(),
+      createdAt:
+      serverTimestamp(),
 
-}
+    }
 
-);
-
-
+  );
 
 
 
-await sendEmailVerification(
-result.user
-);
+  await sendEmailVerification(
+    result.user
+  );
 
 
 
-return result.user;
-
+  return result.user;
 
 }
-
-
-
 
 
 
@@ -161,28 +141,25 @@ return result.user;
 
 
 // =========================
-// SEND VERIFICATION EMAIL
+// EMAIL VERIFICATION
 // =========================
 
 export async function sendVerificationEmail(
 user
 ){
 
+  if(!user){
 
-if(!user){
+    throw new Error(
+      "User not found"
+    );
 
-throw new Error(
-"User not found"
-);
-
-}
-
+  }
 
 
-await sendEmailVerification(
-user
-);
-
+  await sendEmailVerification(
+    user
+  );
 
 }
 
@@ -190,37 +167,25 @@ user
 
 
 
-
-
-
-
-// =========================
-// RESEND VERIFICATION EMAIL
-// =========================
 
 export async function resendVerificationEmail(
 user
 ){
 
+  if(!user){
 
-if(!user){
+    throw new Error(
+      "User not found"
+    );
 
-throw new Error(
-"User not found"
-);
-
-}
-
+  }
 
 
-await sendEmailVerification(
-user
-);
-
+  await sendEmailVerification(
+    user
+  );
 
 }
-
-
 
 
 
@@ -229,249 +194,39 @@ user
 
 
 // =========================
-// REQUEST PASSWORD CHANGE
+// CHANGE PASSWORD EMAIL
 // =========================
 
 export async function requestPasswordChange(
-
-user,
-
-currentPassword,
-
-newPassword
-
+email
 ){
 
+  const actionCodeSettings = {
 
 
-if(!user){
-
-throw new Error(
-"User not found"
-);
-
-}
+    url:
+    `${window.location.origin}/reset-password`,
 
 
+    handleCodeInApp:true,
 
 
-
-// Verify current password
-
-
-const credential =
-
-EmailAuthProvider.credential(
-
-user.email,
-
-currentPassword
-
-);
+  };
 
 
 
+  await sendPasswordResetEmail(
 
+    auth,
 
-await reauthenticateWithCredential(
+    email,
 
-user,
+    actionCodeSettings
 
-credential
-
-);
-
-
-
-
-
-
-
-// Save password change request
-
-
-await setDoc(
-
-doc(
-
-db,
-
-"passwordChangeRequests",
-
-user.uid
-
-),
-
-{
-
-
-uid:user.uid,
-
-
-email:user.email,
-
-
-newPassword,
-
-
-verified:false,
-
-
-createdAt:
-serverTimestamp()
+  );
 
 
 }
-
-);
-
-
-
-
-
-
-
-// Send verification email
-
-
-await sendEmailVerification(
-
-user
-
-);
-
-
-
-
-
-return true;
-
-
-}
-
-
-
-
-
-
-
-
-
-// =========================
-// APPLY PASSWORD CHANGE
-// =========================
-
-export async function applyPasswordChange(
-
-user
-
-){
-
-
-
-if(!user){
-
-throw new Error(
-"User not found"
-);
-
-}
-
-
-
-
-
-
-const requestRef =
-
-doc(
-
-db,
-
-"passwordChangeRequests",
-
-user.uid
-
-);
-
-
-
-
-
-
-const requestSnap =
-
-await getDoc(
-
-requestRef
-
-);
-
-
-
-
-
-
-
-if(!requestSnap.exists()){
-
-
-throw new Error(
-
-"No password change request found."
-
-);
-
-
-}
-
-
-
-
-
-
-const data =
-
-requestSnap.data();
-
-
-
-
-
-
-
-
-await updatePassword(
-
-user,
-
-data.newPassword
-
-);
-
-
-
-
-
-
-
-
-await deleteDoc(
-
-requestRef
-
-);
-
-
-
-
-
-
-return true;
-
-
-}
-
 
 
 
@@ -485,23 +240,35 @@ return true;
 // =========================
 
 export async function forgotPassword(
-
 email
-
 ){
 
+  const actionCodeSettings = {
 
-await sendPasswordResetEmail(
 
-auth,
+    url:
+    `${window.location.origin}/reset-password`,
 
-email
 
-);
+    handleCodeInApp:true,
+
+
+  };
+
+
+
+  await sendPasswordResetEmail(
+
+    auth,
+
+    email,
+
+    actionCodeSettings
+
+  );
 
 
 }
-
 
 
 
@@ -515,31 +282,25 @@ email
 // =========================
 
 export async function deleteUserAccount(
-
 user
-
 ){
 
+  if(!user){
 
-if(!user){
+    throw new Error(
+      "User not found"
+    );
 
-throw new Error(
-"User not found"
-);
-
-}
-
+  }
 
 
-await deleteUser(
 
-user
-
-);
+  await deleteUser(
+    user
+  );
 
 
 }
-
 
 
 
@@ -554,12 +315,8 @@ user
 
 export async function logout(){
 
-
-await signOut(
-
-auth
-
-);
-
+  await signOut(
+    auth
+  );
 
 }
