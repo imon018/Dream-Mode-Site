@@ -183,18 +183,21 @@ object-contain
 
 <h2
 className="
-text-2xl
+text-[26px]
 font-bold
 whitespace-nowrap
+overflow-hidden
+text-ellipsis
+max-w-[170px]
 leading-none
 "
 style={{
-  fontFamily:"'Playfair Display', serif"
+fontFamily:"'Playfair Display', serif"
 }}
 >
 {
  settings.storeName ||
- "Dream Mode"
+ "DM"
 }
 </h2>
 
