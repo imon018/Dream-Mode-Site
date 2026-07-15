@@ -21,14 +21,19 @@ export default function SendNotification() {
 
   const [users,setUsers] = useState([]);
 
+
   const [form,setForm] = useState({
 
     receiverId:"",
+
     title:"",
+
     message:"",
+
     type:"system",
 
   });
+
 
 
   const [sendToAll,setSendToAll] = useState(false);
@@ -38,14 +43,33 @@ export default function SendNotification() {
 
 
 
+
+
   useEffect(()=>{
 
 
     async function loadUsers(){
 
-      const data = await getUsers();
 
-      setUsers(data);
+      try{
+
+        const data =
+        await getUsers();
+
+
+        setUsers(data);
+
+
+      }
+      catch(error){
+
+        console.log(
+          "Load Users Error:",
+          error
+        );
+
+      }
+
 
     }
 
@@ -60,6 +84,8 @@ export default function SendNotification() {
 
 
 
+
+
   const handleChange=(e)=>{
 
 
@@ -67,12 +93,15 @@ export default function SendNotification() {
 
       ...form,
 
-      [e.target.name]:e.target.value
+      [e.target.name]:
+      e.target.value
 
     });
 
 
   };
+
+
 
 
 
@@ -93,41 +122,53 @@ export default function SendNotification() {
     try{
 
 
-if(sendToAll){
+      if(sendToAll){
 
 
-  await sendNotificationToAllUsers({
-
-    title: form.title,
-
-    message: form.message,
-
-    type: form.type,
-
-  });
+        await sendNotificationToAllUsers({
 
 
-}
+          title:
+          form.title,
 
 
-}else{
+          message:
+          form.message,
 
 
-  await sendNotification({
+          type:
+          form.type,
 
-    receiverId:
-      form.receiverId,
 
-    title:
-      form.title,
+        });
 
-    message:
-      form.message,
 
-    type:
-      form.type,
 
-  });
+      }
+
+      else{
+
+
+        await sendNotification({
+
+
+          receiverId:
+          form.receiverId,
+
+
+          title:
+          form.title,
+
+
+          message:
+          form.message,
+
+
+          type:
+          form.type,
+
+
+        });
 
 
       }
@@ -135,30 +176,61 @@ if(sendToAll){
 
 
 
-      alert("Notification Sent Successfully");
+
+
+      alert(
+        "Notification Sent Successfully"
+      );
+
+
+
 
 
 
       setForm({
 
+
         receiverId:"",
+
+
         title:"",
+
+
         message:"",
+
+
         type:"system",
+
 
       });
 
 
 
-    }catch(error){
+      setSendToAll(false);
 
 
-      console.log(error);
 
-      alert(error.message);
+    }
 
 
-    }finally{
+    catch(error){
+
+
+      console.log(
+        "Notification Send Error:",
+        error
+      );
+
+
+      alert(
+        error.message
+      );
+
+
+    }
+
+
+    finally{
 
 
       setLoading(false);
@@ -176,10 +248,13 @@ if(sendToAll){
 
 
 
+
+
   return (
 
 
     <div className="max-w-3xl mx-auto p-6">
+
 
 
       <h1 className="text-2xl font-bold mb-6">
@@ -191,23 +266,27 @@ if(sendToAll){
 
 
 
+
+
       <form
 
         onSubmit={handleSubmit}
 
         className="
-          bg-white
-          p-6
-          rounded-2xl
-          shadow
-          space-y-4
+        bg-white
+        p-6
+        rounded-2xl
+        shadow
+        space-y-4
         "
 
       >
 
 
 
-        <label className="flex gap-2">
+
+
+        <label className="flex gap-2 items-center">
 
 
           <input
@@ -216,7 +295,9 @@ if(sendToAll){
 
             checked={sendToAll}
 
-            onChange={(e)=>setSendToAll(e.target.checked)}
+            onChange={(e)=>
+              setSendToAll(e.target.checked)
+            }
 
           />
 
@@ -231,29 +312,49 @@ if(sendToAll){
 
 
 
+
+
+
         {!sendToAll && (
 
 
           <select
 
+
             name="receiverId"
+
 
             value={form.receiverId}
 
+
             onChange={handleChange}
 
-            className="w-full border p-3 rounded-lg"
 
             required
+
+
+            className="
+            w-full
+            border
+            p-3
+            rounded-lg
+            "
+
 
           >
 
 
+
             <option value="">
+
 
               Select User
 
+
             </option>
+
+
+
 
 
 
@@ -276,7 +377,11 @@ if(sendToAll){
 
 
               ))
+
             }
+
+
+
 
 
           </select>
@@ -290,21 +395,39 @@ if(sendToAll){
 
 
 
+
+
         <input
+
 
           name="title"
 
+
           value={form.title}
+
 
           onChange={handleChange}
 
+
           placeholder="Notification Title"
 
-          className="w-full border p-3 rounded-lg"
 
           required
 
+
+          className="
+          w-full
+          border
+          p-3
+          rounded-lg
+          "
+
+
         />
+
+
+
+
 
 
 
@@ -312,21 +435,37 @@ if(sendToAll){
 
         <textarea
 
+
           name="message"
+
 
           value={form.message}
 
+
           onChange={handleChange}
+
 
           placeholder="Notification Message"
 
-          className="w-full border p-3 rounded-lg"
-
-          rows="5"
 
           required
 
+
+          rows="5"
+
+
+          className="
+          w-full
+          border
+          p-3
+          rounded-lg
+          "
+
+
         />
+
+
+
 
 
 
@@ -335,31 +474,54 @@ if(sendToAll){
 
         <select
 
+
           name="type"
+
 
           value={form.type}
 
+
           onChange={handleChange}
 
-          className="w-full border p-3 rounded-lg"
+
+          className="
+          w-full
+          border
+          p-3
+          rounded-lg
+          "
+
 
         >
 
+
           <option value="system">
+
             System
+
           </option>
+
 
           <option value="order">
+
             Order
+
           </option>
+
 
           <option value="product">
+
             Product
+
           </option>
 
+
           <option value="offer">
+
             Offer
+
           </option>
+
 
 
         </select>
@@ -370,37 +532,61 @@ if(sendToAll){
 
 
 
+
+
         <button
+
 
           disabled={loading}
 
+
           className="
-            w-full
-            bg-amber-500
-            text-white
-            py-3
-            rounded-xl
+          w-full
+          bg-amber-500
+          text-white
+          py-3
+          rounded-xl
+          disabled:opacity-50
           "
+
 
         >
 
+
+
           {
+
             loading
-            ? "Sending..."
-            : "Send Notification"
+
+            ?
+
+            "Sending..."
+
+            :
+
+            "Send Notification"
+
+
           }
+
 
 
         </button>
 
 
 
+
+
+
       </form>
+
+
 
 
     </div>
 
 
   );
+
 
 }
