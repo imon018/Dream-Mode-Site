@@ -2,94 +2,101 @@ import {
   useState
 } from "react";
 
+
 import {
   FiEye,
   FiEyeOff,
-  FiLock,
-  FiShield,
-  FiCheckCircle,
+  FiLock
 } from "react-icons/fi";
+
 
 import useAuth from "../../hooks/useAuth";
 
+
 import {
-  changePassword,
+  changePassword
 } from "../../services/authService";
+
 
 import Button from "../../components/ui/Button";
 
+
 import {
   successToast,
-  errorToast,
+  errorToast
 } from "../../components/ui/Toast";
+
+
 
 
 
 export default function ChangePassword(){
 
 
-const { user } = useAuth();
-
-const [currentPassword,setCurrentPassword]=
-useState("");
-
-const [newPassword,setNewPassword]=
-useState("");
-
-const [confirmPassword,setConfirmPassword]=
-useState("");
-
-const [loading,setLoading]=
-useState(false);
-
-const [showCurrent,setShowCurrent]=
-useState(false);
-
-const [showNew,setShowNew]=
-useState(false);
-
-const [showConfirm,setShowConfirm]=
-useState(false);
+const {user}=useAuth();
 
 
 
+const [
+currentPassword,
+setCurrentPassword
+]=useState("");
 
 
-const passwordStrength=()=>{
 
-if(newPassword.length<6)
-return{
-text:"Weak",
-color:"text-red-500"
-};
+const [
+newPassword,
+setNewPassword
+]=useState("");
 
-if(
-/^(?=.*[A-Za-z])(?=.*\d).{6,}$/
-.test(newPassword)
-){
-return{
-text:"Strong",
-color:"text-green-600"
-};
-}
 
-return{
-text:"Medium",
-color:"text-amber-500"
-};
 
-};
+const [
+confirmPassword,
+setConfirmPassword
+]=useState("");
 
+
+
+const [
+loading,
+setLoading
+]=useState(false);
+
+
+
+const [
+showCurrent,
+setShowCurrent
+]=useState(false);
+
+
+
+const [
+showNew,
+setShowNew
+]=useState(false);
+
+
+
+const [
+showConfirm,
+setShowConfirm
+]=useState(false);
 
 
 
 
-const handleChangePassword=
+
+
+
+const handleChangePassword =
 async()=>{
 
+
 if(
-!currentPassword||
-!newPassword||
+!currentPassword ||
+!newPassword ||
 !confirmPassword
 ){
 
@@ -103,7 +110,9 @@ return;
 
 
 
-if(newPassword.length<6){
+
+
+if(newPassword.length < 6){
 
 errorToast(
 "Password must be at least 6 characters."
@@ -115,7 +124,8 @@ return;
 
 
 
-if(newPassword!==confirmPassword){
+
+if(newPassword !== confirmPassword){
 
 errorToast(
 "Passwords do not match."
@@ -127,9 +137,14 @@ return;
 
 
 
+
+
 try{
 
+
 setLoading(true);
+
+
 
 await changePassword(
 
@@ -140,6 +155,7 @@ currentPassword,
 newPassword
 
 );
+
 
 
 
@@ -155,13 +171,18 @@ successToast(
 "Password changed successfully. Verification email sent."
 );
 
+
+
 }
 catch(error){
 
+
 console.log(error);
 
+
+
 if(
-error.code==="auth/wrong-password"||
+error.code==="auth/wrong-password" ||
 error.code==="auth/invalid-credential"
 ){
 
@@ -170,15 +191,7 @@ errorToast(
 );
 
 }
-else if(
-error.code==="auth/requires-recent-login"
-){
 
-errorToast(
-"Please login again and try."
-);
-
-}
 else{
 
 errorToast(
@@ -187,383 +200,416 @@ error.message
 
 }
 
+
 }
 finally{
 
+
 setLoading(false);
+
 
 }
 
+
 };
 
-const strength = passwordStrength();
+
+
+
+
+
+
+
 
 return (
 
-<div className="space-y-6">
-
-  <div>
-
-    <h1 className="
-      text-3xl
-      font-bold
-      text-gray-900
-    ">
-      Change Password
-    </h1>
-
-    <p className="
-      mt-2
-      text-sm
-      text-gray-500
-    ">
-      Update your password to keep your account secure.
-    </p>
+<div className="
+min-h-screen
+bg-[#FAF7F2]
+p-4
+text-gray-900
+space-y-3
+">
 
-  </div>
 
+{/* HEADER */}
 
+<div className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+">
 
 
-  <div className="
-    bg-card
-    border
-    border-border
-    rounded-3xl
-    shadow-luxury
-    p-6
-  ">
+<h1 className="
+text-xl
+font-bold
+">
 
-    <div className="space-y-5">
+Change Password
 
+</h1>
 
-      {/* Current Password */}
 
-      <div className="relative">
+<p className="
+text-xs
+text-gray-500
+mt-1
+">
 
-        <FiLock
-          className="
-          absolute
-          left-4
-          top-1/2
-          -translate-y-1/2
-          text-gray-400
-          "
-        />
+Update your password to keep your account secure.
 
-        <input
+</p>
 
-          type={
-            showCurrent
-            ?
-            "text"
-            :
-            "password"
-          }
 
-          placeholder="Current Password"
+</div>
 
-          value={currentPassword}
 
-          onChange={(e)=>
-            setCurrentPassword(
-              e.target.value
-            )
-          }
-
-          className="
-          w-full
-          h-14
-          rounded-2xl
-          border
-          border-border
-          pl-12
-          pr-12
-          outline-none
-          focus:ring-2
-          focus:ring-amber-500/20
-          "
 
-        />
-
-        <button
-
-          type="button"
-
-          onClick={()=>
-            setShowCurrent(
-              !showCurrent
-            )
-          }
-
-          className="
-          absolute
-          right-4
-          top-1/2
-          -translate-y-1/2
-          text-gray-500
-          "
 
-        >
 
-          {
-            showCurrent
-            ?
-            <FiEyeOff/>
-            :
-            <FiEye/>
-          }
 
-        </button>
 
-      </div>
+{/* FORM CARD */}
 
+<div className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+">
 
 
+<div className="
+space-y-3
+">
 
 
-      {/* New Password */}
 
-      <div className="relative">
 
-        <FiShield
-          className="
-          absolute
-          left-4
-          top-1/2
-          -translate-y-1/2
-          text-gray-400
-          "
-        />
 
-        <input
+{/* CURRENT PASSWORD */}
 
-          type={
-            showNew
-            ?
-            "text"
-            :
-            "password"
-          }
+<div className="relative">
 
-          placeholder="New Password"
 
-          value={newPassword}
+<FiLock
 
-          onChange={(e)=>
-            setNewPassword(
-              e.target.value
-            )
-          }
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
 
-          className="
-          w-full
-          h-14
-          rounded-2xl
-          border
-          border-border
-          pl-12
-          pr-12
-          outline-none
-          focus:ring-2
-          focus:ring-amber-500/20
-          "
+/>
 
-        />
 
-        <button
 
-          type="button"
+<input
 
-          onClick={()=>
-            setShowNew(
-              !showNew
-            )
-          }
+type={
+showCurrent
+?
+"text"
+:
+"password"
+}
 
-          className="
-          absolute
-          right-4
-          top-1/2
-          -translate-y-1/2
-          text-gray-500
-          "
+placeholder="Current Password"
 
-        >
+value={currentPassword}
 
-          {
-            showNew
-            ?
-            <FiEyeOff/>
-            :
-            <FiEye/>
-          }
+onChange={(e)=>
+setCurrentPassword(
+e.target.value
+)
+}
 
-        </button>
+className="
+w-full
+h-12
+bg-[#FAF7F2]
+rounded-lg
+border
+border-gray-100
+pl-10
+pr-10
+text-sm
+outline-none
+focus:border-amber-500
+"
 
-      </div>
+/>
 
 
 
+<button
 
+type="button"
 
-      {/* Confirm Password */}
+onClick={()=>
+setShowCurrent(
+!showCurrent
+)
+}
 
-      <div className="relative">
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
 
-        <FiCheckCircle
-          className="
-          absolute
-          left-4
-          top-1/2
-          -translate-y-1/2
-          text-gray-400
-          "
-        />
+>
 
-        <input
+{
+showCurrent
+?
+<FiEyeOff/>
+:
+<FiEye/>
+}
 
-          type={
-            showConfirm
-            ?
-            "text"
-            :
-            "password"
-          }
+</button>
 
-          placeholder="Confirm Password"
 
-          value={confirmPassword}
+</div>
 
-          onChange={(e)=>
-            setConfirmPassword(
-              e.target.value
-            )
-          }
 
-          className="
-          w-full
-          h-14
-          rounded-2xl
-          border
-          border-border
-          pl-12
-          pr-12
-          outline-none
-          focus:ring-2
-          focus:ring-amber-500/20
-          "
 
-        />
 
-        <button
 
-          type="button"
 
-          onClick={()=>
-            setShowConfirm(
-              !showConfirm
-            )
-          }
 
-          className="
-          absolute
-          right-4
-          top-1/2
-          -translate-y-1/2
-          text-gray-500
-          "
+{/* NEW PASSWORD */}
 
-        >
+<div className="relative">
 
-          {
-            showConfirm
-            ?
-            <FiEyeOff/>
-            :
-            <FiEye/>
-          }
 
-        </button>
+<input
 
-      </div>
+type={
+showNew
+?
+"text"
+:
+"password"
+}
 
+placeholder="New Password"
 
+value={newPassword}
 
+onChange={(e)=>
+setNewPassword(
+e.target.value
+)
+}
 
+className="
+w-full
+h-12
+bg-[#FAF7F2]
+rounded-lg
+border
+border-gray-100
+px-4
+pr-10
+text-sm
+outline-none
+focus:border-amber-500
+"
 
-      {/* Password Strength */}
+/>
 
-      <div className="
-        rounded-2xl
-        border
-        border-border
-        p-4
-        bg-gray-50
-      ">
 
-        <div className="
-          flex
-          items-center
-          justify-between
-          mb-2
-        ">
+<button
 
-          <span className="text-sm text-gray-600">
-            Password Strength
-          </span>
+type="button"
 
-          <span className={strength.color}>
-            {strength.text}
-          </span>
+onClick={()=>
+setShowNew(
+!showNew
+)
+}
 
-        </div>
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
 
-        <p className="
-          text-sm
-          text-gray-500
-        ">
-          ✓ At least 6 characters
-        </p>
+>
 
-      </div>
+{
+showNew
+?
+<FiEyeOff/>
+:
+<FiEye/>
+}
 
+</button>
 
 
+</div>
 
 
-      <Button
 
-        onClick={handleChangePassword}
 
-        disabled={loading}
 
-        className="
-          w-full
-          h-14
-          rounded-2xl
-          text-base
-          font-semibold
-        "
 
-      >
 
-        {
-          loading
-          ?
-          "Updating..."
-          :
-          "Change Password"
-        }
 
-      </Button>
+{/* CONFIRM PASSWORD */}
 
-    </div>
+<div className="relative">
 
-  </div>
+
+<input
+
+type={
+showConfirm
+?
+"text"
+:
+"password"
+}
+
+placeholder="Confirm Password"
+
+value={confirmPassword}
+
+onChange={(e)=>
+setConfirmPassword(
+e.target.value
+)
+}
+
+className="
+w-full
+h-12
+bg-[#FAF7F2]
+rounded-lg
+border
+border-gray-100
+px-4
+pr-10
+text-sm
+outline-none
+focus:border-amber-500
+"
+
+/>
+
+
+
+<button
+
+type="button"
+
+onClick={()=>
+setShowConfirm(
+!showConfirm
+)
+}
+
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+
+>
+
+{
+showConfirm
+?
+<FiEyeOff/>
+:
+<FiEye/>
+}
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+<p className="
+text-xs
+text-gray-500
+">
+
+✓ Password must be at least 6 characters.
+
+</p>
+
+
+
+
+
+
+
+<Button
+
+onClick={handleChangePassword}
+
+disabled={loading}
+
+className="
+w-full
+h-12
+rounded-lg
+mt-3
+text-sm
+font-semibold
+"
+
+>
+
+{
+loading
+?
+"Updating..."
+:
+"Change Password"
+}
+
+
+</Button>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
 
 </div>
 
 );
+
 
 }
