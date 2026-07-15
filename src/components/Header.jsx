@@ -1020,29 +1020,20 @@ Shop Now
 
 {/* OVERLAY */}
 
-
-
 {
-
-mobileOpen &&
-
-
-<div
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-fixed
-inset-0
-bg-black/40
-backdrop-blur-sm
-z-[60]
-"
-
-></div>
-
-
-)}
+  mobileOpen && (
+    <div
+      onClick={()=>setMobileOpen(false)}
+      className="
+      fixed
+      inset-0
+      bg-black/40
+      backdrop-blur-sm
+      z-[60]
+      "
+    ></div>
+  )
+}
 
     </>
 
