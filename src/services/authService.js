@@ -248,6 +248,36 @@ export async function changePassword(
 
 
 
+  // Get latest firebase user status
+
+  await user.reload();
+
+
+
+
+  // Email verification check
+
+  if(!user.emailVerified){
+
+
+    await sendEmailVerification(
+      user
+    );
+
+
+    throw new Error(
+      "Please verify your email before changing password."
+    );
+
+
+  }
+
+
+
+
+
+
+  // Check current password
 
   const credential =
 
@@ -261,9 +291,6 @@ export async function changePassword(
 
 
 
-
-
-  // Verify current password
 
   await reauthenticateWithCredential(
 
@@ -279,27 +306,13 @@ export async function changePassword(
 
 
 
-  // Update new password
+  // Update password
 
   await updatePassword(
 
     user,
 
     newPassword
-
-  );
-
-
-
-
-
-
-
-  // Send verification email
-
-  await sendEmailVerification(
-
-    user
 
   );
 
