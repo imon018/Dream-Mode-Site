@@ -186,7 +186,7 @@ font-bold
 whitespace-nowrap
 overflow-hidden
 text-ellipsis
-max-w-[120px]
+max-w-[160px]
 leading-none
 "
 
