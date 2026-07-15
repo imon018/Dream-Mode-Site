@@ -1,6 +1,6 @@
 import {
   db
-} from "../firebase";
+} from "../firebase/firestore";
 
 
 import {
@@ -441,7 +441,35 @@ id
 
 
 
+// =========================
+// SEND ADMIN NOTIFICATION
+// =========================
 
+export async function sendAdminNotification(data){
+
+  await addDoc(
+
+    collection(
+      db,
+      "notifications"
+    ),
+
+    {
+
+      ...data,
+
+      receiverId:"ADMIN",
+
+      read:false,
+
+      createdAt:
+      serverTimestamp()
+
+    }
+
+  );
+
+}
 
 
 
