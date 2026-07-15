@@ -2,6 +2,8 @@ import {
   Outlet,
 } from "react-router-dom";
 
+import AdminBackButton from "../components/admin/AdminBackButton";
+
 
 export default function AdminLayout(){
 
@@ -21,7 +23,16 @@ export default function AdminLayout(){
         "
       >
 
-        <Outlet />
+        <div className="
+relative
+">
+
+<AdminBackButton />
+
+
+<Outlet />
+
+</div>
 
       </main>
 
