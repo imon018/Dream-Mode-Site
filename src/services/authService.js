@@ -13,6 +13,8 @@ import {
   doc,
   setDoc,
   updateDoc,
+  getDoc,
+  deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -273,7 +275,68 @@ email
 
 
 
+// =========================
+// APPLY PASSWORD CHANGE
+// =========================
 
+export async function applyPasswordChange(
+  user
+){
+
+  if(!user){
+
+    throw new Error(
+      "User not found"
+    );
+
+  }
+
+
+  const requestRef =
+  doc(
+    db,
+    "passwordChangeRequests",
+    user.uid
+  );
+
+
+  const requestSnap =
+  await getDoc(
+    requestRef
+  );
+
+
+
+  if(!requestSnap.exists()){
+
+    throw new Error(
+      "No password change request found."
+    );
+
+  }
+
+
+
+  const data =
+  requestSnap.data();
+
+
+
+  await updatePassword(
+    user,
+    data.newPassword
+  );
+
+
+
+  await deleteDoc(
+    requestRef
+  );
+
+
+  return true;
+
+}
 
 
 
