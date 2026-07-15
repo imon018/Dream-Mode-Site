@@ -1,25 +1,27 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useState } from "react";
 
 import useAuth from "../hooks/useAuth";
 
 import {
-  getUserProfile,
-  updateUserProfile,
-} from "../services/userService";
+  FiEdit,
+} from "react-icons/fi";
 
 import {
-  uploadSingleImage,
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  uploadImages,
 } from "../services/uploadService";
 
-import Button from "../components/ui/Button";
+import {
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 
 import {
-  successToast,
-  errorToast,
-} from "../components/ui/Toast";
+  db,
+} from "../firebase/firestore";
 
 export default function Profile(){
 
@@ -27,606 +29,297 @@ export default function Profile(){
     user,
   } = useAuth();
 
-  const [loading,setLoading] =
-    useState(true);
+  const navigate =
+    useNavigate();
 
-  const [saving,setSaving] =
-    useState(false);
+  const [
+    uploading,
+    setUploading,
+  ] = useState(false);
 
-  const [name,setName] =
-    useState("");
+  const createdAt =
+    user?.metadata?.creationTime
+      ? new Date(
+          user.metadata.creationTime
+        ).toLocaleString()
+      : "N/A";
 
-  const [phone,setPhone] =
-    useState("");
+  const lastLogin =
+    user?.metadata?.lastSignInTime
+      ? new Date(
+          user.metadata.lastSignInTime
+        ).toLocaleString()
+      : "N/A";
 
-  const [address,setAddress] =
-    useState("");
-
-  const [photoURL,setPhotoURL] =
-    useState("");
-
-  const [photoFile,setPhotoFile] =
-    useState(null);
-
-  const [memberSince,setMemberSince] =
-    useState("");
-
-  const [lastUpdated,setLastUpdated] =
-    useState("");
-
-  const [lastLogin,setLastLogin] =
-    useState("");
-
-  useEffect(()=>{
-
-    const loadProfile =
-    async()=>{
-
-      if(!user){
-
-        setLoading(false);
-
-        return;
-
-      }
+  const handlePhotoUpload =
+    async(e)=>{
 
       try{
 
-        const profile =
-          await getUserProfile(
+        setUploading(true);
+
+        const file =
+          e.target.files[0];
+
+        if(!file)
+          return;
+
+        const uploaded =
+          await uploadImages([
+            file,
+          ]);
+
+        const photoURL =
+          uploaded[0].imageUrl;
+
+        await updateDoc(
+
+          doc(
+            db,
+            "users",
             user.uid
-          );
+          ),
 
-        if(profile){
+          {
+            photoURL,
+          }
 
-          setName(
-            profile.name || ""
-          );
+        );
 
-          setPhone(
-            profile.phone || ""
-          );
+        alert(
+          "Profile photo updated"
+        );
 
-          setAddress(
-            profile.address || ""
-          );
+        window.location.reload();
 
-          setPhotoURL(
-            profile.photoURL || ""
-          );
+      }catch(err){
 
-          setMemberSince(
+        console.log(err);
 
-            profile.createdAt?.toDate
-            ?
-
-            profile.createdAt
-            .toDate()
-            .toLocaleString()
-
-            :
-
-            user.metadata?.creationTime || ""
-
-          );
-
-          setLastUpdated(
-
-            profile.updatedAt?.toDate
-            ?
-
-            profile.updatedAt
-            .toDate()
-            .toLocaleString()
-
-            :
-
-            "Never"
-
-          );
-
-          setLastLogin(
-
-            user.metadata?.lastSignInTime
-            || "Unknown"
-
-          );
-
-        }
-
-      }catch(error){
-
-        console.log(error);
-
-        errorToast(
-          "Failed to load profile."
+        alert(
+          "Upload failed"
         );
 
       }finally{
 
-        setLoading(false);
+        setUploading(false);
 
       }
 
     };
 
-    loadProfile();
-
-  },[user]);
-
-  const profileCompletion =
-
-  (
-    [
-
-      name,
-
-      phone,
-
-      address,
-
-      photoURL,
-
-    ].filter(Boolean).length / 4
-
-  ) * 100;
-
-  const handleSave =
-  async()=>{
-
-    if(!user)
-      return;
-
-    if(phone){
-
-      const phoneRegex =
-      /^01[3-9]\d{8}$/;
-
-      if(!phoneRegex.test(phone)){
-
-        errorToast(
-          "Enter valid Bangladesh phone number."
-        );
-
-        return;
-
-      }
-
-    }
-
-    try{
-
-      setSaving(true);
-
-      let imageUrl =
-        photoURL;
-
-      if(photoFile){
-
-        const uploaded =
-          await uploadSingleImage(
-            photoFile
-          );
-
-        imageUrl =
-          uploaded.imageUrl;
-
-      }
-
-      await updateUserProfile(
-
-        user.uid,
-
-        {
-
-          name,
-
-          phone,
-
-          address,
-
-          photoURL:imageUrl,
-
-        }
-
-      );
-
-      setPhotoURL(
-        imageUrl
-      );
-
-      setPhotoFile(null);
-
-      setLastUpdated(
-        new Date()
-        .toLocaleString()
-      );
-
-      successToast(
-        "Profile updated successfully."
-      );
-
-    }catch(error){
-
-      console.log(error);
-
-      errorToast(
-        error.message
-      );
-
-    }finally{
-
-      setSaving(false);
-
-    }
-
-  };
-
-
-
-  const handleRemovePhoto =
-  async()=>{
-
-    try{
-
-      setPhotoURL("");
-
-      setPhotoFile(null);
-
-      await updateUserProfile(
-
-        user.uid,
-
-        {
-
-          photoURL:"",
-
-        }
-
-      );
-
-      setLastUpdated(
-        new Date()
-        .toLocaleString()
-      );
-
-      successToast(
-        "Profile photo removed."
-      );
-
-    }catch(error){
-
-      errorToast(
-        error.message
-      );
-
-    }
-
-  };
-
-
-
-  if(!user){
-
-    return(
-
-      <div className="max-w-6xl mx-auto py-20 text-center">
-
-        Please login first.
-
-      </div>
-
-    );
-
-  }
-
-
-
-  if(loading){
-
-    return(
-
-      <div className="max-w-6xl mx-auto py-20 text-center">
-
-        Loading Profile...
-
-      </div>
-
-    );
-
-  }
-
-
-
   return(
 
-    <div className="max-w-6xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto">
 
-      <h1 className="text-4xl font-bold mb-8">
+  <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
 
-        My Profile
+    {/* HEADER */}
 
-      </h1>
+    <div className="bg-slate-900 text-white p-8">
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="flex flex-col md:flex-row items-center gap-6">
 
-        {/* Profile Card */}
+        {/* IMAGE */}
 
-        <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
-
-          <img
-
-            src={
-              photoURL ||
-              "https://via.placeholder.com/200"
-            }
-
-            alt="Profile"
-
-            className="
-            w-40
-            h-40
-            rounded-full
-            object-cover
-            mx-auto
-            border-4
-            shadow-lg
-            "
-
-          />
-
-                    <input
-
-            type="file"
-
-            accept="image/*"
-
-            disabled={saving}
-
-            className="mt-5 w-full"
-
-            onChange={(e)=>
-
-              setPhotoFile(
-                e.target.files[0]
-              )
-
-            }
-
-          />
+        <div className="relative">
 
           {
-
-            photoURL && (
-
-              <button
-
-                onClick={handleRemovePhoto}
-
-                disabled={saving}
-
-                className="mt-3 text-red-600"
-
-              >
-
-                Remove Photo
-
-              </button>
-
-            )
-
-          }
-
-          <h2 className="text-2xl font-bold mt-6">
-
-            {name || "Dream Mode User"}
-
-          </h2>
-
-          <p className="text-gray-500 mt-2">
-
-            {user.email}
-
-          </p>
-
-          <div className="mt-6 text-left">
-
-            <div className="flex justify-between mb-2">
-
-              <span>
-
-                Profile Completion
-
-              </span>
-
-              <span className="font-bold">
-
-                {Math.round(profileCompletion)}%
-
-              </span>
-
-            </div>
-
-            <div className="w-full bg-gray-200 rounded-full h-3">
-
-              <div
-
-                className="bg-primary h-3 rounded-full"
-
-                style={{
-
-                  width:
-                  `${profileCompletion}%`
-
-                }}
-
-              />
-
-            </div>
-
-          </div>
-
-          <div className="mt-8 border-t pt-6 text-left space-y-3">
-
-            <div>
-
-              <span className="font-semibold">
-
-                Member Since:
-
-              </span>
-
-              <p className="text-gray-600">
-
-                {memberSince}
-
-              </p>
-
-            </div>
-
-            <div>
-
-              <span className="font-semibold">
-
-                Last Profile Update:
-
-              </span>
-
-              <p className="text-gray-600">
-
-                {lastUpdated}
-
-              </p>
-
-            </div>
-
-            <div>
-
-              <span className="font-semibold">
-
-                Last Login:
-
-              </span>
-
-              <p className="text-gray-600">
-
-                {lastLogin}
-
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Edit Profile */}
-
-        <div className="lg:col-span-2">
-
-          <div className="bg-white rounded-3xl shadow-xl p-8">
-
-            <h2 className="text-2xl font-bold mb-6">
-
-              Edit Profile
-
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-5">
-
-                            <input
-
-                className="border rounded-xl p-3"
-
-                placeholder="Name"
-
-                value={name}
-
-                onChange={(e)=>
-
-                  setName(
-                    e.target.value
-                  )
-
-                }
-
-              />
-
-              <input
-
-                className="border rounded-xl p-3 bg-gray-100"
-
-                value={user.email}
-
-                readOnly
-
-              />
-
-              <input
-
-                className="border rounded-xl p-3"
-
-                placeholder="Phone"
-
-                value={phone}
-
-                onChange={(e)=>
-
-                  setPhone(
-                    e.target.value
-                  )
-
-                }
-
-              />
-
-              <input
-
-                className="border rounded-xl p-3"
-
-                placeholder="Address"
-
-                value={address}
-
-                onChange={(e)=>
-
-                  setAddress(
-                    e.target.value
-                  )
-
-                }
-
-              />
-
-            </div>
-
-            <Button
-
-              onClick={handleSave}
-
-              disabled={saving}
-
-              className="w-full mt-6"
-
+            user?.photoURL
+
+            ?
+
+            <img
+
+              src={user.photoURL}
+
+              alt="User"
+
+              className="
+              w-24
+              h-24
+              rounded-full
+              object-cover
+              border-4
+              border-blue-600
+              "
+
+            />
+
+            :
+
+            <div
+              className="
+              w-24
+              h-24
+              rounded-full
+              bg-blue-600
+              flex
+              items-center
+              justify-center
+              text-4xl
+              font-bold
+              "
             >
 
               {
-
-                saving
-
-                ?
-
-                "Saving..."
-
-                :
-
-                "Save Changes"
-
+                user?.email
+                ?.charAt(0)
+                ?.toUpperCase()
               }
 
-            </Button>
+            </div>
+
+          }
+
+          <label
+            className="
+            absolute
+            -bottom-2
+            left-1/2
+            -translate-x-1/2
+            bg-blue-600
+            text-white
+            px-3
+            py-1
+            rounded-full
+            text-xs
+            cursor-pointer
+            whitespace-nowrap
+            "
+          >
+
+            {
+              uploading
+              ?
+              "Uploading..."
+              :
+              "Change"
+            }
+
+            <input
+
+              type="file"
+
+              accept="image/*"
+
+              className="hidden"
+
+              onChange={
+                handlePhotoUpload
+              }
+
+            />
+
+          </label>
+
+        </div>
+
+        {/* INFO */}
+
+        <div>
+
+          <div className="flex items-center gap-3">
+
+            <h1 className="text-3xl font-bold">
+
+              {
+                user?.name ||
+                "User Profile"
+              }
+
+            </h1>
+
+            <button
+
+              onClick={()=>
+                navigate("/profile/edit")
+              }
+
+              className="
+              bg-white
+              text-slate-900
+              w-9
+              h-9
+              rounded-full
+              flex
+              items-center
+              justify-center
+              shadow-md
+              "
+
+            >
+
+              <FiEdit size={18}/>
+
+            </button>
 
           </div>
+
+          <p className="text-gray-300 mt-2">
+
+            {user?.email}
+
+          </p>
+
+          <div className="mt-3">
+
+            {
+              user?.emailVerified
+
+              ?
+
+              <span
+                className="
+                bg-green-600
+                text-white
+                px-3
+                py-1
+                rounded-full
+                text-sm
+                "
+              >
+
+                ✅ Email Verified
+
+              </span>
+
+              :
+
+              <span
+                className="
+                bg-red-600
+                text-white
+                px-3
+                py-1
+                rounded-full
+                text-sm
+                "
+              >
+
+                ❌ Email Not Verified
+
+              </span>
+
+            }
+
+          </div>
+
+          <span
+            className="
+            inline-block
+            mt-3
+            bg-blue-600
+            px-4
+            py-2
+            rounded-full
+            text-sm
+            "
+          >
+
+            User
+
+          </span>
 
         </div>
 
@@ -634,6 +327,244 @@ export default function Profile(){
 
     </div>
 
-  );
+    {/* DETAILS */}
+
+    <div className="p-8">
+
+  <div className="grid md:grid-cols-2 gap-6">
+
+    {/* PHONE */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        Phone Number
+
+      </p>
+
+      <h2 className="font-semibold">
+
+        {
+          user?.phone ||
+          "Not Added"
+        }
+
+      </h2>
+
+    </div>
+
+
+
+    {/* ADDRESS */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        Address
+
+      </p>
+
+      <h2 className="font-semibold leading-7">
+
+        {
+          user?.address ||
+          "Not Added"
+        }
+
+        <br/>
+
+        {
+          user?.postOffice
+        }
+
+        <br/>
+
+        {
+          user?.thana
+        }
+
+        <br/>
+
+        {
+          user?.district
+        }
+
+      </h2>
+
+    </div>
+
+
+
+    {/* EMAIL */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        Email Address
+
+      </p>
+
+      <h2 className="font-semibold break-all">
+
+        {
+          user?.email
+        }
+
+      </h2>
+
+    </div>
+
+
+
+    {/* USER ID */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        User ID
+
+      </p>
+
+      <h2 className="break-all text-sm">
+
+        {
+          user?.uid
+        }
+
+      </h2>
+
+    </div>
+
+
+
+    {/* CREATED */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        Account Created
+
+      </p>
+
+      <h2>
+
+        {
+          createdAt
+        }
+
+      </h2>
+
+    </div>
+
+
+
+    {/* LAST LOGIN */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        Last Login
+
+      </p>
+
+      <h2>
+
+        {
+          lastLogin
+        }
+
+      </h2>
+
+    </div>
+
+
+
+    {/* EMAIL VERIFIED */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        Email Verification
+
+      </p>
+
+      {
+        user?.emailVerified
+
+        ?
+
+        <span className="
+        bg-green-100
+        text-green-700
+        px-4
+        py-2
+        rounded-full
+        font-medium
+        ">
+
+          ✅ Verified
+
+        </span>
+
+        :
+
+        <span className="
+        bg-red-100
+        text-red-700
+        px-4
+        py-2
+        rounded-full
+        font-medium
+        ">
+
+          ❌ Not Verified
+
+        </span>
+      }
+
+    </div>
+
+
+
+    {/* ROLE */}
+
+    <div className="border rounded-xl p-5">
+
+      <p className="text-gray-500 mb-2">
+
+        Role
+
+      </p>
+
+      <span className="
+      bg-blue-600
+      text-white
+      px-4
+      py-2
+      rounded-full
+      ">
+
+        User
+
+      </span>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+</div>
+
+);
 
 }
