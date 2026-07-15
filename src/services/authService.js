@@ -40,38 +40,39 @@ export async function login(
   password
 ){
 
-const result =
-await signInWithEmailAndPassword(
-  auth,
-  email,
-  password
-);
+  const result =
+  await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
 
 
 
-await updateDoc(
+  await updateDoc(
 
-doc(
-db,
-"users",
-result.user.uid
-),
+    doc(
+      db,
+      "users",
+      result.user.uid
+    ),
 
-{
+    {
 
-lastLogin:
-serverTimestamp()
+      lastLogin:
+      serverTimestamp()
+
+    }
+
+  );
+
+
+
+  return result.user;
 
 }
 
-);
 
-
-
-return result.user;
-
-
-}
 
 
 
@@ -84,64 +85,66 @@ return result.user;
 // =========================
 
 export async function register(
-email,
-password,
-name
+  email,
+  password,
+  name
 ){
 
-const result =
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
+  const result =
+  await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
 
 
 
-await setDoc(
+  await setDoc(
 
-doc(
-db,
-"users",
-result.user.uid
-),
+    doc(
+      db,
+      "users",
+      result.user.uid
+    ),
 
-{
+    {
 
-name,
+      name,
 
-email,
+      email,
 
-phone:"",
+      phone:"",
 
-address:"",
+      address:"",
 
-photoURL:"",
+      photoURL:"",
 
-role:"user",
+      role:"user",
 
-createdAt:
-serverTimestamp(),
+      createdAt:
+      serverTimestamp(),
+
+    }
+
+  );
+
+
+
+
+  // Send verification email
+
+  await sendEmailVerification(
+    result.user
+  );
+
+
+
+  return result.user;
+
 
 }
 
-);
 
-
-
-
-// Email Verification
-
-await sendEmailVerification(
-result.user
-);
-
-
-
-return result.user;
-
-
-}
 
 
 
@@ -154,24 +157,60 @@ return result.user;
 // =========================
 
 export async function sendVerificationEmail(
-user
+  user
 ){
 
-if(!user){
+  if(!user){
 
-throw new Error(
-"User not found"
-);
+    throw new Error(
+      "User not found"
+    );
+
+  }
+
+
+
+  await sendEmailVerification(
+    user
+  );
+
 
 }
 
 
-await sendEmailVerification(
-user
-);
+
+
+
+
+
+
+
+// =========================
+// RESEND VERIFICATION EMAIL
+// =========================
+
+export async function resendVerificationEmail(
+  user
+){
+
+  if(!user){
+
+    throw new Error(
+      "User not found"
+    );
+
+  }
+
+
+
+  await sendEmailVerification(
+    user
+  );
 
 
 }
+
+
 
 
 
@@ -184,83 +223,93 @@ user
 // =========================
 
 export async function changePassword(
-
-user,
-
-currentPassword,
-
-newPassword
-
+  user,
+  currentPassword,
+  newPassword
 ){
 
+  if(!user){
 
-if(!user){
+    throw new Error(
+      "User not found"
+    );
 
-throw new Error(
-"User not found"
-);
+  }
+
+
+
+  if(!currentPassword){
+
+    throw new Error(
+      "Current password required"
+    );
+
+  }
+
+
+
+
+  const credential =
+
+  EmailAuthProvider.credential(
+
+    user.email,
+
+    currentPassword
+
+  );
+
+
+
+
+
+  // Verify current password
+
+  await reauthenticateWithCredential(
+
+    user,
+
+    credential
+
+  );
+
+
+
+
+
+
+
+  // Update new password
+
+  await updatePassword(
+
+    user,
+
+    newPassword
+
+  );
+
+
+
+
+
+
+
+  // Send verification email
+
+  await sendEmailVerification(
+
+    user
+
+  );
+
+
+
+  return true;
+
 
 }
 
-
-
-
-// Current password verify
-
-const credential =
-
-EmailAuthProvider.credential(
-
-user.email,
-
-currentPassword
-
-);
-
-
-
-
-await reauthenticateWithCredential(
-
-user,
-
-credential
-
-);
-
-
-
-
-
-// Update password
-
-await updatePassword(
-
-user,
-
-newPassword
-
-);
-
-
-
-
-
-
-// Send verification email again
-
-await sendEmailVerification(
-
-user
-
-);
-
-
-
-return true;
-
-
-}
 
 
 
@@ -274,19 +323,21 @@ return true;
 // =========================
 
 export async function forgotPassword(
-email
+  email
 ){
 
-await sendPasswordResetEmail(
+  await sendPasswordResetEmail(
 
-auth,
+    auth,
 
-email
+    email
 
-);
+  );
 
 
 }
+
+
 
 
 
@@ -299,24 +350,27 @@ email
 // =========================
 
 export async function deleteUserAccount(
-user
+  user
 ){
 
-if(!user){
+  if(!user){
 
-throw new Error(
-"User not found"
-);
+    throw new Error(
+      "User not found"
+    );
+
+  }
+
+
+
+  await deleteUser(
+    user
+  );
+
 
 }
 
 
-await deleteUser(
-user
-);
-
-
-}
 
 
 
@@ -330,9 +384,8 @@ user
 
 export async function logout(){
 
-await signOut(
-auth
-);
-
+  await signOut(
+    auth
+  );
 
 }
