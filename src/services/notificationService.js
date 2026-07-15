@@ -509,3 +509,45 @@ await Promise.all(deletes);
 
 
 }
+
+
+// =========================
+// SEND NOTIFICATION TO ALL USERS
+// =========================
+
+export async function sendNotificationToAllUsers(data){
+
+  await addDoc(
+
+    collection(
+      db,
+      "notifications"
+    ),
+
+    {
+
+      ...data,
+
+      receiverId:"ALL_USERS",
+
+      read:false,
+
+      createdAt:
+      serverTimestamp()
+
+    }
+
+  );
+
+}
+
+
+// =========================
+// SEND SINGLE NOTIFICATION
+// =========================
+
+export async function sendNotification(data){
+
+  return createNotification(data);
+
+}
