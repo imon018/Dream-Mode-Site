@@ -4,6 +4,11 @@ import {
 
 
 import {
+  useNavigate
+} from "react-router-dom";
+
+
+import {
   FiEye,
   FiEyeOff,
   FiLock
@@ -30,7 +35,12 @@ import {
 
 
 
+
+
 export default function ChangePassword(){
+
+
+const navigate = useNavigate();
 
 
 const user = auth.currentUser;
@@ -90,6 +100,82 @@ setShowConfirm
 
 
 
+const getStrength = ()=>{
+
+
+if(!newPassword){
+
+return {
+text:"",
+width:"0%",
+color:"bg-gray-200"
+};
+
+}
+
+
+
+if(newPassword.length < 6){
+
+return {
+
+text:"Weak",
+
+width:"33%",
+
+color:"bg-red-500"
+
+};
+
+}
+
+
+
+if(
+newPassword.length >= 6 &&
+!/[A-Z]/.test(newPassword)
+){
+
+return {
+
+text:"Medium",
+
+width:"66%",
+
+color:"bg-yellow-500"
+
+};
+
+}
+
+
+
+return {
+
+text:"Strong",
+
+width:"100%",
+
+color:"bg-green-500"
+
+};
+
+
+};
+
+
+
+
+const strength = getStrength();
+
+
+
+
+
+
+
+
+
 const handleChangePassword =
 async()=>{
 
@@ -107,7 +193,6 @@ errorToast(
 return;
 
 }
-
 
 
 
@@ -167,8 +252,21 @@ setConfirmPassword("");
 
 
 
+
 successToast(
-"Password changed successfully. Verification email sent."
+"Please verify your email for password change."
+);
+
+
+
+
+navigate(
+"/verify-email",
+{
+state:{
+email:user.email
+}
+}
 );
 
 
@@ -182,8 +280,8 @@ console.log(error);
 
 
 if(
-error.code==="auth/wrong-password" ||
-error.code==="auth/invalid-credential"
+error.code==="auth/invalid-credential" ||
+error.code==="auth/wrong-password"
 ){
 
 errorToast(
@@ -191,7 +289,6 @@ errorToast(
 );
 
 }
-
 else{
 
 errorToast(
@@ -201,12 +298,11 @@ error.message
 }
 
 
+
 }
 finally{
 
-
 setLoading(false);
-
 
 }
 
@@ -232,7 +328,8 @@ space-y-3
 ">
 
 
-{/* HEADER */}
+
+
 
 <div className="
 bg-white
@@ -254,15 +351,17 @@ Change Password
 </h1>
 
 
+
 <p className="
 text-xs
 text-gray-500
 mt-1
 ">
 
-Update your password to keep your account secure.
+Please update your password securely.
 
 </p>
+
 
 
 </div>
@@ -272,8 +371,6 @@ Update your password to keep your account secure.
 
 
 
-
-{/* FORM CARD */}
 
 <div className="
 bg-white
@@ -288,6 +385,7 @@ shadow-sm
 <div className="
 space-y-3
 ">
+
 
 
 
@@ -389,7 +487,12 @@ showCurrent
 
 
 
+
+
 {/* NEW PASSWORD */}
+
+<div>
+
 
 <div className="relative">
 
@@ -431,6 +534,7 @@ focus:border-amber-500
 />
 
 
+
 <button
 
 type="button"
@@ -462,6 +566,59 @@ showNew
 </button>
 
 
+
+</div>
+
+
+
+
+
+<div className="
+mt-2
+">
+
+
+<div className="
+h-2
+bg-gray-200
+rounded-full
+overflow-hidden
+">
+
+
+<div
+
+className={`
+h-full
+transition-all
+${strength.width}
+${strength.color}
+`}
+
+/>
+
+
+</div>
+
+
+<p className="
+text-xs
+text-gray-500
+mt-1
+">
+
+{
+strength.text &&
+`Password strength: ${strength.text}`
+}
+
+
+</p>
+
+
+</div>
+
+
 </div>
 
 
@@ -471,7 +628,9 @@ showNew
 
 
 
+
 {/* CONFIRM PASSWORD */}
+
 
 <div className="relative">
 
@@ -552,6 +711,8 @@ showConfirm
 
 
 
+
+
 <p className="
 text-xs
 text-gray-500
@@ -560,7 +721,6 @@ text-gray-500
 ✓ Password must be at least 6 characters.
 
 </p>
-
 
 
 
@@ -598,10 +758,12 @@ loading
 
 
 
+
 </div>
 
 
 </div>
+
 
 
 
