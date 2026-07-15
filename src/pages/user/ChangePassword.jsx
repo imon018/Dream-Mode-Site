@@ -29,7 +29,9 @@ import {
 } from "../../firebase/auth";
 
 
-
+import {
+  useNavigate
+} from "react-router-dom";
 
 
 export default function ChangePassword(){
@@ -37,6 +39,9 @@ export default function ChangePassword(){
 
 const user =
 auth.currentUser;
+
+
+  const navigate = useNavigate();
 
 
 
@@ -261,7 +266,18 @@ setConfirmPassword("");
 
 
 successToast(
-"Please check your email for changing password."
+  "Please check your email for changing password."
+);
+
+
+navigate(
+  "/verify-email",
+  {
+    state:{
+      email:user.email,
+      type:"password-change"
+    }
+  }
 );
 
 
@@ -365,7 +381,7 @@ text-gray-500
 mt-1
 ">
 
-A verification email will be sent before changing your password.
+Please Check Your Email To Verify For Changing Password.
 
 </p>
 
