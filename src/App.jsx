@@ -31,6 +31,11 @@ import {
 import useAuth from "./hooks/useAuth";
 
 
+import {
+  useSettings,
+} from "./context/SettingsContext";
+
+
 import ScrollToTop from "./components/ScrollToTop";
 
 
@@ -49,7 +54,9 @@ function AppContent(){
 
 
 
-
+const {
+  settings,
+} = useSettings();
 
 
 
@@ -95,7 +102,7 @@ function AppContent(){
 
           >
 
-            Loading Dream Mode...
+            Loading {settings?.storeName || "Dream Mode"}...
 
           </h2>
 
