@@ -27,6 +27,16 @@ import {
 } from "../components/ui/Toast";
 
 
+import {
+  doc,
+  getDoc,
+} from "firebase/firestore";
+
+
+import {
+  db
+} from "../firebase/firestore";
+
 
 
 
@@ -45,11 +55,6 @@ useNavigate();
 
 const email =
 location.state?.email || "";
-
-
-
-const type =
-location.state?.type || "register";
 
 
 
@@ -145,47 +150,60 @@ return;
 // =========================
 
 
-if(
-type === "password-change"
-){
-
-
-await applyPasswordChange(
-user
+const requestSnap =
+await getDoc(
+  doc(
+    db,
+    "passwordChangeRequests",
+    user.uid
+  )
 );
 
 
 
+if(requestSnap.exists()){
 
-successToast(
-"Password changed successfully."
-);
-
-
+  const requestData =
+  requestSnap.data();
 
 
-setMessage(
-"Password changed successfully. Redirecting to login..."
-);
+  if(requestData.uid !== user.uid){
+
+    throw new Error(
+      "Invalid password change request."
+    );
+
+  }
 
 
+  await applyPasswordChange(
+    user
+  );
 
 
-setTimeout(()=>{
-
-
-navigate(
-"/login"
-);
-
-
-},3000);
-
+  successToast(
+    "Password changed successfully."
+  );
 
 
 
-return;
+  setMessage(
+    "Password changed successfully. Redirecting to login..."
+  );
 
+
+
+  setTimeout(()=>{
+
+    navigate(
+      "/login"
+    );
+
+  },3000);
+
+
+
+  return;
 
 }
 
