@@ -6,125 +6,72 @@ import {
   sendPasswordResetEmail,
   updatePassword,
   deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from "firebase/auth";
 
 
 import {
   doc,
   setDoc,
+  updateDoc,
   serverTimestamp,
 } from "firebase/firestore";
 
 
 import {
-  auth,
+  auth
 } from "../firebase/auth";
 
 
 import {
-  db,
+  db
 } from "../firebase/firestore";
 
 
-import {
-  createAdminNotification,
-  createUserNotification,
-} from "../utils/notificationHelper";
 
 
-
-
-import {
-  getSettings,
-} from "./settingsService";
-
-
-
-
-
-
-// =================================
+// =========================
 // LOGIN
-// =================================
+// =========================
 
-
-export const login = async(
+export async function login(
   email,
   password
-)=>{
+){
 
-
-  const result =
-  await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-
-
-
-  const userRef =
-  doc(
-    db,
-    "users",
-    result.user.uid
-  );
+const result =
+await signInWithEmailAndPassword(
+  auth,
+  email,
+  password
+);
 
 
 
-  await setDoc(
+await updateDoc(
 
-    userRef,
+doc(
+db,
+"users",
+result.user.uid
+),
 
-    {
+{
 
-      lastLogin:
-      serverTimestamp(),
+lastLogin:
+serverTimestamp()
 
-    },
+}
 
-    {
-      merge:true,
-    }
-
-  );
-
-
+);
 
 
 
-  const settings =
-  await getSettings();
+return result.user;
 
 
-
-
-  await createUserNotification({
-
-    userId:
-    result.user.uid,
-
-
-    title:
-    `🔐 New Login - ${settings.storeName}`,
-
-
-    message:
-    `Your ${settings.storeName} account was logged in successfully.`,
-
-
-    type:
-    "system",
-
-  });
-
-
-
-
-  return result;
-
-
-};
+}
 
 
 
@@ -132,65 +79,32 @@ export const login = async(
 
 
 
-
-
-// =================================
+// =========================
 // REGISTER
-// =================================
+// =========================
 
-
-export const register = async(
-  name,
-  email,
-  password
-)=>{
-
-
-try{
-
+export async function register(
+email,
+password,
+name
+){
 
 const result =
 await createUserWithEmailAndPassword(
-
-  auth,
-
-  email,
-
-  password
-
+auth,
+email,
+password
 );
-
-
-
-
-
-await sendEmailVerification(
-  result.user
-);
-
-
-
-
-
-
-const userRef =
-doc(
-
-db,
-
-"users",
-
-result.user.uid
-
-);
-
-
 
 
 
 await setDoc(
 
-userRef,
+doc(
+db,
+"users",
+result.user.uid
+),
 
 {
 
@@ -209,12 +123,6 @@ role:"user",
 createdAt:
 serverTimestamp(),
 
-},
-
-{
-
-merge:true
-
 }
 
 );
@@ -222,107 +130,40 @@ merge:true
 
 
 
+// Email Verification
 
-
-const settings =
-await getSettings();
-
-
-
-
-
-
-// USER WELCOME NOTIFICATION
-
-
-await createUserNotification({
-
-userId:
-result.user.uid,
-
-
-title:
-`🎉 Welcome to ${settings.storeName}`,
-
-
-message:
-`Your ${settings.storeName} account has been created successfully.`,
-
-
-type:
-"system",
-
-});
-
-
-
-
-
-
-
-
-// ADMIN NEW USER NOTIFICATION
-
-
-await createAdminNotification({
-
-title:
-"👤 New User Registered",
-
-
-message:
-`${name} created a new account in ${settings.storeName}.`,
-
-
-type:
-"system",
-
-});
-
-
-
-
-
-
-
-return result;
-
-
-
-}
-
-catch(error){
-
-
-console.log(
-"Register error:",
-error
+await sendEmailVerification(
+result.user
 );
 
 
-throw error;
+
+return result.user;
 
 
 }
 
 
-};
 
 
 
 
 
+// =========================
+// SEND VERIFICATION EMAIL
+// =========================
 
+export async function sendVerificationEmail(
+user
+){
 
+if(!user){
 
+throw new Error(
+"User not found"
+);
 
-// =================================
-// RESEND EMAIL VERIFICATION
-// =================================
-
-
-export const resendVerificationEmail =
-async(user)=>{
+}
 
 
 await sendEmailVerification(
@@ -330,7 +171,7 @@ user
 );
 
 
-};
+}
 
 
 
@@ -338,47 +179,60 @@ user
 
 
 
+// =========================
+// CHANGE PASSWORD
+// =========================
+
+export async function changePassword(
+
+user,
+
+currentPassword,
+
+newPassword
+
+){
 
 
-// =================================
-// FORGOT PASSWORD
-// =================================
+if(!user){
+
+throw new Error(
+"User not found"
+);
+
+}
 
 
-export const forgotPassword =
-async(email)=>{
 
 
-await sendPasswordResetEmail(
+// Current password verify
 
-auth,
+const credential =
 
-email
+EmailAuthProvider.credential(
+
+user.email,
+
+currentPassword
 
 );
 
 
-};
 
 
+await reauthenticateWithCredential(
 
-
-
-
-
-
-
-// =================================
-// CHANGE PASSWORD
-// =================================
-
-
-export const changePassword =
-async(
 user,
-newPassword
-)=>{
 
+credential
+
+);
+
+
+
+
+
+// Update password
 
 await updatePassword(
 
@@ -389,31 +243,24 @@ newPassword
 );
 
 
-};
 
 
 
 
-
-
-
-
-
-// =================================
-// SEND VERIFICATION EMAIL
-// =================================
-
-
-export const sendVerificationEmail =
-async(user)=>{
-
+// Send verification email again
 
 await sendEmailVerification(
+
 user
+
 );
 
 
-};
+
+return true;
+
+
+}
 
 
 
@@ -422,14 +269,46 @@ user
 
 
 
+// =========================
+// FORGOT PASSWORD
+// =========================
 
-// =================================
+export async function forgotPassword(
+email
+){
+
+await sendPasswordResetEmail(
+
+auth,
+
+email
+
+);
+
+
+}
+
+
+
+
+
+
+
+// =========================
 // DELETE ACCOUNT
-// =================================
+// =========================
 
+export async function deleteUserAccount(
+user
+){
 
-export const deleteUserAccount =
-async(user)=>{
+if(!user){
+
+throw new Error(
+"User not found"
+);
+
+}
 
 
 await deleteUser(
@@ -437,7 +316,7 @@ user
 );
 
 
-};
+}
 
 
 
@@ -445,19 +324,15 @@ user
 
 
 
-
-
-// =================================
+// =========================
 // LOGOUT
-// =================================
+// =========================
 
+export async function logout(){
 
-export const logout = ()=>{
-
-
-return signOut(
+await signOut(
 auth
 );
 
 
-};
+}
