@@ -372,6 +372,11 @@ export default function AppRoutes() {
           element={<Notifications />}
         />
 
+         <Route
+ path="change-password"
+ element={<ChangePassword />}
+/>
+
 
       </Route>
 
