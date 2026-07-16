@@ -36,6 +36,7 @@ import {
 export default function ReturnOrder(){
 
 
+
 const {
   id
 }=useParams();
@@ -44,7 +45,6 @@ const {
 
 const navigate =
 useNavigate();
-
 
 
 
@@ -69,25 +69,31 @@ useState(true);
 
 
 
-// return reason
+// =========================
+// RETURN ITEMS
+// =========================
+
+
+const [returnItems,setReturnItems] =
+useState([]);
+
+
+
+
+
+// =========================
+// RETURN FORM
+// =========================
+
 
 const [reason,setReason] =
 useState("");
 
 
-
-
-
-// description
-
 const [description,setDescription] =
 useState("");
 
 
-
-
-
-// images
 
 const [images,setImages] =
 useState([]);
@@ -95,17 +101,10 @@ useState([]);
 
 
 
-
-// return type
-
 const [returnType,setReturnType] =
 useState("");
 
 
-
-
-
-// refund
 
 const [refundMethod,setRefundMethod] =
 useState("");
@@ -119,7 +118,42 @@ useState("");
 
 
 
-// policy checkbox
+// =========================
+// PICKUP ADDRESS
+// =========================
+
+
+const [sameAsDelivery,setSameAsDelivery] =
+useState(false);
+
+
+
+const [pickupAddress,setPickupAddress] =
+useState({
+
+name:"",
+
+phone:"",
+
+address:"",
+
+postOffice:"",
+
+thana:"",
+
+district:"",
+
+});
+
+
+
+
+
+
+// =========================
+// POLICY
+// =========================
+
 
 const [policy,setPolicy] =
 useState({
@@ -131,6 +165,8 @@ refund:false,
 terms:false
 
 });
+
+
 
 
 
@@ -166,7 +202,9 @@ const reasons=[
 
 useEffect(()=>{
 
+
 loadOrder();
+
 
 },[user]);
 
@@ -184,7 +222,9 @@ async function loadOrder(){
 try{
 
 
-if(!user) return;
+if(!user)
+return;
+
 
 
 
@@ -195,6 +235,7 @@ user.email
 
 
 
+
 const found =
 orders.find(
 item=>item.id===id
@@ -202,7 +243,33 @@ item=>item.id===id
 
 
 
+
+
 setOrder(found);
+
+
+
+
+
+
+if(found?.items){
+
+
+setReturnItems(
+
+found.items.map(item=>({
+
+...item,
+
+returnQuantity:
+item.quantity || 1
+
+}))
+
+);
+
+
+}
 
 
 
@@ -240,6 +307,152 @@ setLoading(false);
 
 
 
+
+// =========================
+// QUANTITY CONTROL
+// =========================
+
+
+function increaseQty(index){
+
+
+setReturnItems(prev=>
+
+
+prev.map((item,i)=>{
+
+
+if(i===index){
+
+
+return {
+
+
+...item,
+
+
+returnQuantity:
+
+Math.min(
+
+item.returnQuantity + 1,
+
+item.quantity || 1
+
+)
+
+
+};
+
+
+}
+
+
+
+return item;
+
+
+})
+
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+function decreaseQty(index){
+
+
+setReturnItems(prev=>
+
+
+prev.map((item,i)=>{
+
+
+if(i===index){
+
+
+return {
+
+
+...item,
+
+
+returnQuantity:
+
+Math.max(
+
+1,
+
+item.returnQuantity - 1
+
+)
+
+
+};
+
+
+}
+
+
+
+return item;
+
+
+})
+
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+function removeReturnItem(index){
+
+
+setReturnItems(prev=>
+
+prev.filter(
+
+(_,i)=>
+i!==index
+
+)
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+// =========================
+// IMAGE SELECT
+// =========================
+
+
 function handleImage(e){
 
 
@@ -263,6 +476,140 @@ setImages(files);
 
 
 
+// =========================
+// SAME DELIVERY ADDRESS
+// =========================
+
+
+function handleSameAddress(e){
+
+
+const checked =
+e.target.checked;
+
+
+
+setSameAsDelivery(
+checked
+);
+
+
+
+
+
+if(checked){
+
+
+setPickupAddress({
+
+name:
+
+order.customerName ||
+user?.name ||
+"",
+
+
+
+phone:
+
+order.phone ||
+user?.phone ||
+"",
+
+
+
+address:
+
+order.address ||
+user?.address ||
+"",
+
+
+
+postOffice:
+
+order.postOffice ||
+user?.postOffice ||
+"",
+
+
+
+thana:
+
+order.thana ||
+user?.thana ||
+"",
+
+
+
+district:
+
+order.district ||
+user?.district ||
+"",
+
+
+});
+
+
+}
+
+else{
+
+
+setPickupAddress({
+
+name:"",
+
+phone:"",
+
+address:"",
+
+postOffice:"",
+
+thana:"",
+
+district:"",
+
+});
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+function updatePickup(field,value){
+
+
+setPickupAddress(prev=>({
+
+...prev,
+
+[field]:value
+
+
+}));
+
+
+}
+
+
+
+
+
+
+
+
+
 function handlePolicy(name){
 
 
@@ -270,7 +617,9 @@ setPolicy(prev=>({
 
 ...prev,
 
-[name]:!prev[name]
+[name]:
+
+!prev[name]
 
 
 }));
@@ -287,8 +636,11 @@ setPolicy(prev=>({
 
 
 const allPolicyAccepted =
+
 policy.return &&
+
 policy.refund &&
+
 policy.terms;
 
 
@@ -296,10 +648,8 @@ policy.terms;
 
 
 
-
-
-
 if(loading)
+
 
 return (
 
@@ -328,8 +678,8 @@ Loading...
 
 
 
-
 if(!order)
+
 
 return (
 
@@ -356,9 +706,6 @@ Order Not Found
 
 
 
-
-
-
 if(order.status !== "Delivered"){
 
 
@@ -374,14 +721,6 @@ return null;
 
 
 }
-
-
-
-
-
-
-
-
 
 return (
 
@@ -409,14 +748,7 @@ space-y-4
 
 
 
-
-
-
-
-
-
 {/* HEADER */}
-
 
 <div
 
@@ -466,10 +798,7 @@ Request product return
 
 
 
-
-
 {/* ORDER CARD */}
-
 
 
 <div
@@ -509,7 +838,6 @@ text-amber-500
 
 
 
-
 <div>
 
 
@@ -524,7 +852,6 @@ font-bold
 Order #{order.id.slice(0,8)}
 
 </h2>
-
 
 
 
@@ -545,23 +872,20 @@ Delivered Order
 </div>
 
 
+</div>
+
 
 </div>
 
 
 
-</div>
 
 
 
 
 
 
-
-
-
-{/* PRODUCT CARD */}
-
+{/* PRODUCTS */}
 
 
 <div
@@ -587,7 +911,7 @@ mb-4
 
 >
 
-Product
+Products
 
 </h3>
 
@@ -598,9 +922,74 @@ Product
 <div
 
 className="
+space-y-4
+"
+
+>
+
+
+{
+
+returnItems.map(
+
+(item,index)=>(
+
+
+<div
+
+key={item.id || index}
+
+className="
+relative
+border
+border-gray-100
+rounded-lg
+p-4
 flex
+justify-between
 items-center
+"
+
+>
+
+
+
+{/* REMOVE BUTTON */}
+
+<button
+
+onClick={()=>removeReturnItem(index)}
+
+className="
+absolute
+right-2
+top-2
+w-6
+h-6
+rounded-full
+bg-red-100
+text-red-600
+font-bold
+"
+
+>
+
+×
+
+</button>
+
+
+
+
+
+
+
+<div
+
+className="
+flex
 gap-3
+items-center
 "
 
 >
@@ -610,7 +999,7 @@ gap-3
 
 src={
 
-order.items?.[0]?.image ||
+item.image ||
 
 "https://via.placeholder.com/80"
 
@@ -622,7 +1011,6 @@ w-20
 h-20
 rounded-lg
 object-cover
-bg-gray-50
 "
 
 />
@@ -643,12 +1031,9 @@ text-sm
 
 >
 
-{
-order.items?.[0]?.name
-}
+{item.name}
 
 </h4>
-
 
 
 
@@ -662,13 +1047,94 @@ mt-1
 
 >
 
-Qty :
-
-{
-order.items?.[0]?.quantity || 1
-}
+৳ {item.price}
 
 </p>
+
+
+
+
+<div
+
+className="
+flex
+items-center
+gap-3
+mt-3
+"
+
+>
+
+
+<button
+
+onClick={()=>decreaseQty(index)}
+
+className="
+w-7
+h-7
+rounded-md
+bg-gray-100
+font-bold
+"
+
+>
+
+-
+
+</button>
+
+
+
+
+<span
+
+className="
+font-bold
+text-sm
+"
+
+>
+
+{item.returnQuantity}
+
+</span>
+
+
+
+
+
+<button
+
+onClick={()=>increaseQty(index)}
+
+className="
+w-7
+h-7
+rounded-md
+bg-gray-100
+font-bold
+"
+
+>
+
++
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
 
 
 
@@ -679,7 +1145,6 @@ order.items?.[0]?.quantity || 1
 className="
 font-black
 text-sm
-mt-2
 "
 
 >
@@ -688,11 +1153,9 @@ mt-2
 
 {
 
-(order.items?.[0]?.price || 0)
+item.price *
 
-*
-
-(order.items?.[0]?.quantity || 1)
+item.returnQuantity
 
 }
 
@@ -700,8 +1163,16 @@ mt-2
 
 
 
+
 </div>
 
+
+)
+
+)
+
+
+}
 
 
 </div>
@@ -719,7 +1190,6 @@ mt-2
 
 
 {/* RETURN REASON */}
-
 
 
 <div
@@ -748,7 +1218,6 @@ mb-4
 Why are you returning?
 
 </h3>
-
 
 
 
@@ -801,7 +1270,13 @@ reason===item
 
 
 onChange={
-e=>setReason(e.target.value)
+
+e=>
+
+setReason(
+e.target.value
+)
+
 }
 
 
@@ -810,8 +1285,6 @@ accent-amber-500
 "
 
 />
-
-
 
 
 
@@ -835,24 +1308,28 @@ font-semibold
 
 )
 
-)
 
+)
 
 
 }
 
 
+</div>
+
 
 </div>
 
 
 
-</div>
 
 
-  {/*=========================
-// DESCRIPTION
-// =========================*/}
+
+
+
+
+{/* DESCRIPTION */}
+
 
 
 <div
@@ -893,8 +1370,15 @@ value={description}
 
 
 onChange={
-e=>setDescription(e.target.value)
+
+e=>
+
+setDescription(
+e.target.value
+)
+
 }
+
 
 
 placeholder="
@@ -913,8 +1397,9 @@ rounded-lg
 p-3
 text-sm
 outline-none
-focus:border-amber-500
 "
+
+
 
 
 />
@@ -931,10 +1416,337 @@ focus:border-amber-500
 
 
 
-  { /* =========================
-// IMAGE UPLOAD
-// ========================= */}
+{/* PICKUP ADDRESS */}
 
+
+
+{
+
+!sameAsDelivery &&
+
+
+<div
+
+className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-5
+shadow-sm
+"
+
+>
+
+
+<h3
+
+className="
+font-bold
+mb-4
+"
+
+>
+
+Pickup Address
+
+</h3>
+
+
+
+
+
+
+<input
+
+className="
+w-full
+border
+rounded-lg
+p-3
+mb-3
+text-sm
+"
+
+placeholder="Name"
+
+value={
+pickupAddress.name
+}
+
+
+onChange={
+
+e=>
+
+updatePickup(
+"name",
+e.target.value
+)
+
+}
+
+
+/>
+
+
+
+
+<input
+
+className="
+w-full
+border
+rounded-lg
+p-3
+mb-3
+text-sm
+"
+
+placeholder="Phone Number"
+
+value={
+pickupAddress.phone
+}
+
+
+onChange={
+
+e=>
+
+updatePickup(
+"phone",
+e.target.value
+)
+
+}
+
+
+/>
+
+
+
+
+
+<textarea
+
+className="
+w-full
+border
+rounded-lg
+p-3
+mb-3
+text-sm
+"
+
+placeholder="Address"
+
+value={
+pickupAddress.address
+}
+
+
+onChange={
+
+e=>
+
+updatePickup(
+"address",
+e.target.value
+)
+
+}
+
+
+/>
+
+
+
+
+
+<input
+
+className="
+w-full
+border
+rounded-lg
+p-3
+mb-3
+text-sm
+"
+
+placeholder="Post Office"
+
+value={
+pickupAddress.postOffice
+}
+
+
+onChange={
+
+e=>
+
+updatePickup(
+"postOffice",
+e.target.value
+)
+
+}
+
+
+/>
+
+
+
+
+
+
+<input
+
+className="
+w-full
+border
+rounded-lg
+p-3
+mb-3
+text-sm
+"
+
+placeholder="Thana"
+
+value={
+pickupAddress.thana
+}
+
+
+onChange={
+
+e=>
+
+updatePickup(
+"thana",
+e.target.value
+)
+
+}
+
+
+/>
+
+
+
+
+
+
+<input
+
+className="
+w-full
+border
+rounded-lg
+p-3
+text-sm
+"
+
+placeholder="District"
+
+value={
+pickupAddress.district
+}
+
+
+onChange={
+
+e=>
+
+updatePickup(
+"district",
+e.target.value
+)
+
+}
+
+
+/>
+
+
+
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
+{/* SAME ADDRESS */}
+
+
+
+<div
+
+className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-5
+shadow-sm
+"
+
+>
+
+
+<label
+
+className="
+flex
+items-center
+gap-3
+text-sm
+font-semibold
+cursor-pointer
+"
+
+>
+
+
+<input
+
+type="checkbox"
+
+checked={sameAsDelivery}
+
+onChange={handleSameAddress}
+
+/>
+
+
+
+<span>
+
+Same as Delivery Address
+
+</span>
+
+
+
+</label>
+
+
+
+</div>
+
+
+  // =========================
+// PRODUCT PHOTOS
+// =========================
 
 
 <div
@@ -1012,7 +1824,6 @@ text-amber-500
 
 
 
-
 <p
 
 className="
@@ -1026,7 +1837,6 @@ mt-2
 Add product image
 
 </p>
-
 
 
 
@@ -1054,12 +1864,9 @@ hidden
 
 
 
-
 {
 
 images.length > 0 &&
-
-(
 
 <p
 
@@ -1075,9 +1882,6 @@ mt-3
 
 </p>
 
-
-)
-
 }
 
 
@@ -1092,10 +1896,9 @@ mt-3
 
 
 
-  {/* =========================
+// =========================
 // RETURN TYPE
-// ========================= */}
-
+// =========================
 
 
 <div
@@ -1129,7 +1932,6 @@ Return Type
 
 
 
-
 <div
 
 className="
@@ -1141,22 +1943,26 @@ gap-3
 >
 
 
-
-
-
 <label
 
 className={`
+
 border
+
 rounded-lg
+
 p-4
-cursor-pointer
+
 text-center
+
+cursor-pointer
+
 
 ${
 returnType==="Refund"
 
 ?
+
 "border-amber-500 bg-amber-50"
 
 :
@@ -1168,7 +1974,6 @@ returnType==="Refund"
 `}
 
 >
-
 
 
 <input
@@ -1184,7 +1989,13 @@ returnType==="Refund"
 }
 
 onChange={
-e=>setReturnType(e.target.value)
+
+e=>
+
+setReturnType(
+e.target.value
+)
+
 }
 
 className="
@@ -1194,34 +2005,23 @@ hidden
 />
 
 
-
-<p
-
-className="
+<p className="
 font-bold
-"
-
->
+">
 
 Refund
 
 </p>
 
 
-
-<span
-
-className="
+<p className="
 text-xs
 text-gray-500
-"
-
->
+">
 
 Get money back
 
-</span>
-
+</p>
 
 
 </label>
@@ -1232,14 +2032,21 @@ Get money back
 
 
 
+
 <label
 
 className={`
+
 border
+
 rounded-lg
+
 p-4
-cursor-pointer
+
 text-center
+
+cursor-pointer
+
 
 ${
 returnType==="Exchange"
@@ -1259,7 +2066,6 @@ returnType==="Exchange"
 >
 
 
-
 <input
 
 type="radio"
@@ -1272,9 +2078,14 @@ checked={
 returnType==="Exchange"
 }
 
-
 onChange={
-e=>setReturnType(e.target.value)
+
+e=>
+
+setReturnType(
+e.target.value
+)
+
 }
 
 className="
@@ -1284,44 +2095,29 @@ hidden
 />
 
 
-
-<p
-
-className="
+<p className="
 font-bold
-"
-
->
+">
 
 Exchange
 
 </p>
 
 
-
-
-<span
-
-className="
+<p className="
 text-xs
 text-gray-500
-"
-
->
+">
 
 Get another product
 
-</span>
-
+</p>
 
 
 </label>
 
 
 
-
-
-
 </div>
 
 
@@ -1336,20 +2132,16 @@ Get another product
 
 
 
-  {/* =========================
+
+// =========================
 // REFUND METHOD
-// ========================= */}
+// =========================
 
 
 
 {
 
-returnType==="Refund"
-
-&&
-
-
-(
+returnType==="Refund" &&
 
 
 <div
@@ -1383,27 +2175,27 @@ Refund Method
 
 
 
-
 <select
-
 
 value={refundMethod}
 
-
 onChange={
-e=>setRefundMethod(e.target.value)
-}
 
+e=>
+
+setRefundMethod(
+e.target.value
+)
+
+}
 
 className="
 w-full
 h-12
 border
-border-gray-200
 rounded-lg
 px-3
 text-sm
-outline-none
 "
 
 >
@@ -1444,75 +2236,39 @@ Nagad
 
 refundMethod &&
 
-(
-
-
-<div
-
-className="
-mt-4
-"
-
->
-
-
-<label
-
-className="
-text-sm
-font-semibold
-"
-
->
-
-{refundMethod} Number
-
-</label>
-
-
-
-
 
 <input
 
-
 type="tel"
-
 
 value={refundNumber}
 
-
 onChange={
-e=>setRefundNumber(e.target.value)
+
+e=>
+
+setRefundNumber(
+e.target.value
+)
+
 }
 
-
-placeholder="01XXXXXXXXX"
-
+placeholder={`${refundMethod} Number`}
 
 className="
-mt-2
+mt-3
 w-full
 h-12
 border
-border-gray-200
 rounded-lg
 px-3
 text-sm
-outline-none
-focus:border-amber-500
 "
-
 
 />
 
 
 
-</div>
-
-
-)
-
 }
 
 
@@ -1520,7 +2276,6 @@ focus:border-amber-500
 </div>
 
 
-)
 
 }
 
@@ -1532,10 +2287,9 @@ focus:border-amber-500
 
 
 
-  {/* =========================
-// POLICY CHECKBOX
-// ========================= */}
-
+// =========================
+// POLICY
+// =========================
 
 
 <div
@@ -1547,11 +2301,10 @@ border-gray-100
 rounded-lg
 p-5
 shadow-sm
-space-y-3
+space-y-4
 "
 
 >
-
 
 
 <label
@@ -1561,7 +2314,6 @@ flex
 gap-3
 items-center
 text-sm
-cursor-pointer
 "
 
 >
@@ -1573,26 +2325,32 @@ type="checkbox"
 
 checked={policy.return}
 
-onChange={
-()=>handlePolicy("return")
-}
-
+onChange={()=>handlePolicy("return")}
 
 />
 
 
 <span>
 
-I agree to 
+I agree to
 
-<span className="text-amber-600 font-bold">
+<a
+
+href="/page/returnpolicy"
+
+className="
+text-amber-600
+font-bold
+ml-1
+"
+
+>
 
 Return Policy
 
-</span>
+</a>
 
 </span>
-
 
 
 </label>
@@ -1610,7 +2368,6 @@ flex
 gap-3
 items-center
 text-sm
-cursor-pointer
 "
 
 >
@@ -1622,26 +2379,32 @@ type="checkbox"
 
 checked={policy.refund}
 
-onChange={
-()=>handlePolicy("refund")
-}
-
+onChange={()=>handlePolicy("refund")}
 
 />
 
 
 <span>
 
-I agree to 
+I agree to
 
-<span className="text-amber-600 font-bold">
+<a
+
+href="/page/refundpolicy"
+
+className="
+text-amber-600
+font-bold
+ml-1
+"
+
+>
 
 Refund Policy
 
-</span>
+</a>
 
 </span>
-
 
 
 </label>
@@ -1659,7 +2422,6 @@ flex
 gap-3
 items-center
 text-sm
-cursor-pointer
 "
 
 >
@@ -1671,30 +2433,35 @@ type="checkbox"
 
 checked={policy.terms}
 
-onChange={
-()=>handlePolicy("terms")
-}
-
+onChange={()=>handlePolicy("terms")}
 
 />
 
 
 <span>
 
-I agree to 
+I agree to
 
-<span className="text-amber-600 font-bold">
+<a
+
+href="/page/terms"
+
+className="
+text-amber-600
+font-bold
+ml-1
+"
+
+>
 
 Terms & Conditions
 
-</span>
+</a>
 
 </span>
-
 
 
 </label>
-
 
 
 
@@ -1708,9 +2475,9 @@ Terms & Conditions
 
 
 
-  {/* =========================
+// =========================
 // SUBMIT
-// ========================= */}
+// =========================
 
 
 
@@ -1718,6 +2485,22 @@ Terms & Conditions
 
 
 onClick={async()=>{
+
+
+
+
+
+if(returnItems.length===0){
+
+errorToast(
+"Select at least one product"
+);
+
+return;
+
+}
+
+
 
 
 
@@ -1752,7 +2535,7 @@ return;
 if(!returnType){
 
 errorToast(
-"Please select return type"
+"Select return type"
 );
 
 return;
@@ -1764,13 +2547,18 @@ return;
 
 
 if(
-returnType==="Refund"
+!sameAsDelivery
 &&
-!refundMethod
+(
+!pickupAddress.name ||
+!pickupAddress.phone ||
+!pickupAddress.address
+)
+
 ){
 
 errorToast(
-"Please select refund method"
+"Please complete pickup address"
 );
 
 return;
@@ -1784,11 +2572,15 @@ return;
 if(
 returnType==="Refund"
 &&
+(
+!refundMethod ||
 !refundNumber
+)
+
 ){
 
 errorToast(
-"Please enter refund number"
+"Complete refund information"
 );
 
 return;
@@ -1802,7 +2594,7 @@ return;
 if(!allPolicyAccepted){
 
 errorToast(
-"Please accept all policies"
+"Accept all policies"
 );
 
 return;
@@ -1817,25 +2609,86 @@ try{
 
 
 
-console.log({
+const data={
 
-orderId:order.id,
+
+items:returnItems.map(item=>({
+
+
+id:item.id,
+
+name:item.name,
+
+image:item.image,
+
+price:item.price,
+
+quantity:item.returnQuantity
+
+
+})),
+
 
 reason,
 
+
 description,
+
 
 images,
 
+
 returnType,
+
 
 refundMethod,
 
+
 refundNumber,
 
-policy
 
-});
+
+pickupAddress:
+
+
+
+sameAsDelivery
+
+?
+
+{
+
+name:
+order.customerName,
+
+phone:
+order.phone,
+
+address:
+order.address,
+
+postOffice:
+order.postOffice,
+
+thana:
+order.thana,
+
+district:
+order.district,
+
+}
+
+:
+
+pickupAddress,
+
+
+
+};
+
+
+
+console.log(data);
 
 
 
@@ -1847,7 +2700,9 @@ successToast(
 
 
 
-navigate("/orders");
+navigate(
+"/profile/orders"
+);
 
 
 
@@ -1871,7 +2726,6 @@ errorToast(
 }}
 
 
-
 className="
 h-12
 w-full
@@ -1882,7 +2736,6 @@ font-bold
 "
 
 >
-
 
 Submit Return Request
 
@@ -1900,7 +2753,7 @@ Submit Return Request
 
 </div>
 
-);
 
+);
 
 }
