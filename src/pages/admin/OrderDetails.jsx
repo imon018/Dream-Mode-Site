@@ -25,6 +25,7 @@ import {
 import {
   getAllOrders,
   updateOrderStatus,
+  updatePaymentStatus,
   deleteOrder,
 } from "../../services/orderService";
 
@@ -148,7 +149,46 @@ errorToast(
 
 
 
+async function changePaymentStatus(status){
 
+try{
+
+
+await updatePaymentStatus(
+id,
+status
+);
+
+
+
+setOrder(prev=>({
+
+...prev,
+
+paymentStatus:
+status
+
+}));
+
+
+successToast(
+"Payment status updated"
+);
+
+
+}
+
+catch(error){
+
+console.log(error);
+
+errorToast(
+"Payment update failed"
+);
+
+}
+
+}
 
 
 
@@ -1174,19 +1214,55 @@ Payment Status
 
 </div>
 
-<span
-className="
+<select
+
+value={
+order.paymentStatus || "Pending"
+}
+
+onChange={(e)=>
+changePaymentStatus(
+e.target.value
+)
+}
+
+className={`
 px-3
 py-1.5
 rounded-lg
-bg-green-100
-text-green-700
 text-xs
 font-bold
-"
+outline-none
+
+${
+order.paymentStatus === "Paid"
+
+?
+
+"bg-green-100 text-green-700"
+
+:
+
+"bg-yellow-100 text-yellow-700"
+
+}
+
+`}
+
 >
-{order.paymentStatus || "Pending"}
-</span>
+
+
+<option>
+Pending
+</option>
+
+
+<option>
+Paid
+</option>
+
+
+</select>
 
 </div>
 
