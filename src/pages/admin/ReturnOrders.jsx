@@ -17,6 +17,7 @@ FiShoppingBag,
 FiSend,
 FiCheckCircle,
 FiMoreVertical,
+FiTrash2,
 FiDollarSign
 } from "react-icons/fi";
 
@@ -27,6 +28,7 @@ updateReturnStatus,
 deleteOrder
 } from "../../services/orderService";
 
+
 import {
 successToast,
 errorToast
@@ -36,14 +38,11 @@ errorToast
 
 
 
-
 export default function ReturnOrders(){
-
 
 
 const navigate =
 useNavigate();
-
 
 
 
@@ -66,8 +65,10 @@ const [menuOpen,setMenuOpen] =
 useState(null);
 
 
+
 const [deleteId,setDeleteId] =
 useState(null);
+
 
 
 const [statusFilter,setStatusFilter] =
@@ -85,25 +86,16 @@ useState("");
 const statuses=[
 
 "All Status",
-
 "Submitted",
-
 "Accepted",
-
 "Rejected",
-
 "Picked Up",
-
 "Reviewing",
-
 "Shipped",
-
 "Exchanged",
-
 "Refunded"
 
 ];
-
 
 
 
@@ -114,8 +106,6 @@ useEffect(()=>{
 loadReturns();
 
 },[]);
-
-
 
 
 
@@ -138,7 +128,6 @@ data || []
 );
 
 
-
 }
 
 catch(error){
@@ -158,11 +147,7 @@ setLoading(false);
 
 }
 
-
 };
-
-
-
 
 
 
@@ -193,9 +178,7 @@ if(order.id===id){
 
 return {
 
-
 ...order,
-
 
 returnRequest:{
 
@@ -204,7 +187,6 @@ returnRequest:{
 status
 
 }
-
 
 };
 
@@ -231,7 +213,9 @@ successToast(
 
 catch(error){
 
+
 console.log(error);
+
 
 errorToast(
 "Status update failed"
@@ -247,13 +231,17 @@ errorToast(
 
 
 
-const handleDelete = async()=>{
+
+const handleDelete =
+async()=>{
 
 
 try{
 
 
-await deleteOrder(deleteId);
+await deleteOrder(
+deleteId
+);
 
 
 
@@ -293,9 +281,7 @@ errorToast(
 }
 
 
-
 };
-
 
 
 const filteredOrders =
@@ -310,20 +296,15 @@ search.toLowerCase();
 
 const searchMatch =
 
-
 order.customerName
 ?.toLowerCase()
 .includes(text)
-
-
 
 ||
 
 order.email
 ?.toLowerCase()
 .includes(text)
-
-
 
 ||
 
@@ -333,14 +314,8 @@ order.id
 
 
 
-
-
 const status =
-
-order.returnRequest
-?.status ||
-"Submitted";
-
+order.returnRequest?.status || "Submitted";
 
 
 
@@ -355,9 +330,6 @@ true
 :
 
 status===statusFilter;
-
-
-
 
 
 
@@ -382,18 +354,13 @@ new Date(order.returnRequest.createdAt)
 
 
 return(
-
 searchMatch &&
 statusMatch &&
 dateMatch
-
 );
 
 
 });
-
-
-
 
 
 
@@ -405,17 +372,13 @@ if(loading){
 
 return(
 
-<div
-
-className="
+<div className="
 min-h-screen
 flex
 items-center
 justify-center
 font-bold
-"
-
->
+">
 
 Loading Return Orders...
 
@@ -423,9 +386,7 @@ Loading Return Orders...
 
 );
 
-
 }
-
 
 
 
@@ -435,53 +396,34 @@ Loading Return Orders...
 return(
 
 
-<div
-
-className="
+<div className="
 space-y-4
 bg-[#faf9f6]
 min-h-screen
 p-3
 lg:p-6
-"
-
->
+">
 
 
 
-
-
-{/* HEADER */}
 
 
 <div>
 
-
-<h1
-
-className="
+<h1 className="
 text-2xl
 font-black
-text-slate-900
-"
-
->
+">
 
 Return Orders
 
 </h1>
 
 
-
-<p
-
-className="
+<p className="
 text-xs
 text-gray-500
-mt-1
-"
-
->
+">
 
 Dashboard › Return Orders
 
@@ -498,89 +440,60 @@ Dashboard › Return Orders
 
 
 
-{/* STATS */}
-
-
-<div
-
-className="
+<div className="
 grid
 grid-cols-2
 lg:grid-cols-4
 gap-2
-"
-
->
+">
 
 
 <StatCard
-
 icon={<FiShoppingBag size={18}/>}
-
 title="Total Return"
-
 value={orders.length}
-
 color="orange"
-
 />
 
 
 
 <StatCard
-
 icon={<FiSend size={18}/>}
-
 title="Submitted"
-
 value={
 orders.filter(
-o=>
-o.returnRequest?.status==="Submitted"
+o=>o.returnRequest?.status==="Submitted"
 ).length
 }
-
 color="yellow"
-
 />
 
 
 
 <StatCard
-
 icon={<FiCheckCircle size={18}/>}
-
 title="Accepted"
-
 value={
 orders.filter(
-o=>
-o.returnRequest?.status==="Accepted"
+o=>o.returnRequest?.status==="Accepted"
 ).length
 }
-
 color="blue"
-
 />
 
 
 
 <StatCard
-
 icon={<FiDollarSign size={18}/>}
-
 title="Refunded"
-
 value={
 orders.filter(
-o=>
-o.returnRequest?.status==="Refunded"
+o=>o.returnRequest?.status==="Refunded"
 ).length
 }
-
 color="green"
-
 />
+
 
 </div>
 
@@ -591,21 +504,12 @@ color="green"
 
 
 
-
-{/* SEARCH */}
-
-
-<div
-
-className="
+<div className="
 relative
-"
-
->
+">
 
 
 <FiSearch
-
 className="
 absolute
 left-4
@@ -613,17 +517,15 @@ top-1/2
 -translate-y-1/2
 text-gray-400
 "
-
 />
-
 
 
 <input
 
 value={search}
 
-onChange={e=>
-setSearch(e.target.value)
+onChange={
+e=>setSearch(e.target.value)
 }
 
 placeholder="Search return order..."
@@ -633,10 +535,8 @@ w-full
 h-12
 bg-white
 border
-border-gray-200
 rounded-xl
 pl-11
-pr-4
 outline-none
 text-sm
 "
@@ -652,30 +552,19 @@ text-sm
 
 
 
-
-
-{/* FILTER */}
-
-
-<div
-
-className="
+<div className="
 grid
 grid-cols-2
 gap-2
-"
-
->
+">
 
 
 <select
 
 value={statusFilter}
 
-onChange={e=>
-setStatusFilter(
-e.target.value
-)
+onChange={
+e=>setStatusFilter(e.target.value)
 }
 
 className="
@@ -690,31 +579,26 @@ font-semibold
 
 >
 
+
 {
 
 statuses.map(status=>(
 
-<option
-key={status}
->
-
+<option key={status}>
 {status}
-
 </option>
 
 ))
 
 }
 
+
 </select>
 
 
 
 
-
-<div
-
-className="
+<div className="
 h-11
 bg-white
 border
@@ -723,9 +607,8 @@ flex
 items-center
 px-3
 gap-2
-"
+">
 
->
 
 <FiCalendar size={14}/>
 
@@ -736,12 +619,8 @@ type="date"
 
 value={dateFilter}
 
-onChange={e=>
-
-setDateFilter(
-e.target.value
-)
-
+onChange={
+e=>setDateFilter(e.target.value)
 }
 
 className="
@@ -754,7 +633,6 @@ w-full
 
 
 </div>
-
 
 
 </div>
@@ -770,14 +648,10 @@ w-full
 {/* MOBILE */}
 
 
-<div
-
-className="
+<div className="
 lg:hidden
 space-y-3
-"
-
->
+">
 
 
 {
@@ -792,46 +666,32 @@ key={order.id}
 className="
 bg-white
 border
-border-gray-100
 rounded-lg
 p-3
 shadow-sm
-"
-
->
+">
 
 
-<div
-
-className="
+<div className="
 flex
 justify-between
-"
+">
 
->
 
-<p
-
-className="
+<p className="
 font-bold
 text-sm
-"
-
->
+">
 
 #{order.id.slice(0,8)}
 
 </p>
 
 
-<p
-
-className="
+<p className="
 text-xs
 text-gray-500
-"
-
->
+">
 
 {
 new Date(
@@ -849,18 +709,12 @@ order.returnRequest.createdAt
 
 
 
-
-
-<div
-
-className="
+<div className="
 mt-3
 flex
 items-center
 gap-3
-"
-
->
+">
 
 
 <img
@@ -891,7 +745,6 @@ text-sm
 
 </p>
 
-
 <p className="
 text-xs
 text-gray-500
@@ -901,7 +754,6 @@ text-gray-500
 
 </p>
 
-
 </div>
 
 
@@ -913,45 +765,34 @@ text-gray-500
 
 
 
-
-<div
-
-className="
+<div className="
 mt-3
 flex
 justify-between
 items-center
-"
-
->
+">
 
 
 <select
 
 value={
-order.returnRequest?.status ||
-"Submitted"
+order.returnRequest?.status || "Submitted"
 }
 
-onChange={e=>
-changeStatus(
+onChange={
+e=>changeStatus(
 order.id,
 e.target.value
 )
 }
 
-className={`
+className="
 text-xs
 font-bold
 px-3
 py-2
 rounded-full
-
-${statusColor(
-order.returnRequest?.status
-)}
-
-`}
+"
 
 >
 
@@ -960,12 +801,8 @@ order.returnRequest?.status
 
 statuses.slice(1).map(status=>(
 
-<option
-key={status}
->
-
-  {status}
-
+<option key={status}>
+{status}
 </option>
 
 ))
@@ -983,16 +820,17 @@ key={status}
 
 <div className="
 flex
-items-center
 gap-2
 ">
 
 
 <button
 
-onClick={()=>navigate(
+onClick={()=>
+navigate(
 `/admin/return-orders/${order.id}`
-)}
+)
+}
 
 className="
 w-8
@@ -1003,14 +841,11 @@ text-blue-600
 flex
 items-center
 justify-center
-"
-
->
+">
 
 <FiEye size={15}/>
 
 </button>
-
 
 
 
@@ -1022,31 +857,29 @@ relative
 
 <button
 
-onClick={()=>setMenuOpen(
+onClick={()=>
+setMenuOpen(
 menuOpen===order.id
 ?
 null
 :
 order.id
-)}
+)
+}
 
 className="
 w-8
 h-8
 rounded-md
 bg-gray-100
-text-gray-600
 flex
 items-center
 justify-center
-"
-
->
+">
 
 <FiMoreVertical size={16}/>
 
 </button>
-
 
 
 
@@ -1056,9 +889,7 @@ justify-center
 menuOpen===order.id &&
 
 
-<div
-
-className="
+<div className="
 absolute
 right-0
 top-10
@@ -1068,14 +899,15 @@ rounded-lg
 shadow-lg
 w-32
 z-50
-"
-
->
+">
 
 
 <button
 
-onClick={()=>setDeleteId(order.id)}
+onClick={()=>{
+setDeleteId(order.id);
+setMenuOpen(null);
+}}
 
 className="
 w-full
@@ -1086,9 +918,7 @@ text-red-600
 flex
 items-center
 gap-2
-"
-
->
+">
 
 <FiTrash2 size={14}/>
 
@@ -1103,15 +933,11 @@ Delete
 }
 
 
-</div>
-
 
 </div>
 
 
 </div>
-
-
 
 
 </div>
@@ -1119,70 +945,62 @@ Delete
 
 ))
 
+
 }
 
 
 </div>
 
 
+                   {/* DESKTOP */}
 
-
-
-
-
-
-
-{/* DESKTOP */}
-
-
-<div
-
-className="
+<div className="
 hidden
 lg:block
 bg-white
 rounded-xl
 border
 overflow-hidden
-"
-
->
+">
 
 
 <table className="
 w-full
-"
-
->
+">
 
 
 <thead className="
 bg-gray-50
-"
+">
 
->
 
 <tr>
+
 
 <th className="px-5 py-3 text-left text-xs">
 ID
 </th>
 
+
 <th className="px-5 py-3 text-left text-xs">
 Customer
 </th>
+
 
 <th className="px-5 py-3 text-left text-xs">
 Date
 </th>
 
+
 <th className="px-5 py-3 text-left text-xs">
 Return Type
 </th>
 
+
 <th className="px-5 py-3 text-left text-xs">
 Status
 </th>
+
 
 <th className="px-5 py-3 text-left text-xs">
 Action
@@ -1191,14 +1009,15 @@ Action
 
 </tr>
 
+
 </thead>
 
 
 
 
 
-
 <tbody>
+
 
 {
 
@@ -1211,9 +1030,7 @@ key={order.id}
 
 className="
 border-t
-"
-
->
+">
 
 
 <td className="
@@ -1230,14 +1047,17 @@ text-sm
 
 
 
+
 <td className="
 px-5
 py-4
+text-sm
 ">
 
 {order.customerName}
 
 </td>
+
 
 
 
@@ -1260,6 +1080,7 @@ order.returnRequest.createdAt
 
 
 
+
 <td className="
 px-5
 py-4
@@ -1275,10 +1096,12 @@ order.returnRequest.returnType
 
 
 
+
 <td className="
 px-5
 py-4
 ">
+
 
 <select
 
@@ -1286,25 +1109,21 @@ value={
 order.returnRequest.status
 }
 
-onChange={e=>
+onChange={
+e=>
 changeStatus(
 order.id,
 e.target.value
 )
 }
 
-className={`
+className="
 text-xs
 font-bold
 px-3
 py-2
 rounded-lg
-${statusColor(
-order.returnRequest.status
-)}
-`}
-
->
+">
 
 
 {
@@ -1344,9 +1163,11 @@ items-center
 
 <button
 
-onClick={()=>navigate(
+onClick={()=>
+navigate(
 `/admin/return-orders/${order.id}`
-)}
+)
+}
 
 className="
 w-8
@@ -1357,9 +1178,7 @@ rounded-lg
 flex
 items-center
 justify-center
-"
-
->
+">
 
 <FiEye size={15}/>
 
@@ -1368,18 +1187,25 @@ justify-center
 
 
 
-<div className="relative">
+
+
+
+<div className="
+relative
+">
 
 
 <button
 
-onClick={()=>setMenuOpen(
+onClick={()=>
+setMenuOpen(
 menuOpen===order.id
 ?
 null
 :
 order.id
-)}
+)
+}
 
 className="
 w-8
@@ -1389,13 +1215,14 @@ rounded-lg
 flex
 items-center
 justify-center
-"
-
->
+">
 
 <FiMoreVertical size={15}/>
 
 </button>
+
+
+
 
 
 
@@ -1420,7 +1247,13 @@ z-50
 
 <button
 
-onClick={()=>setDeleteId(order.id)}
+onClick={()=>{
+
+setDeleteId(order.id);
+
+setMenuOpen(null);
+
+}}
 
 className="
 px-3
@@ -1429,13 +1262,14 @@ text-red-600
 text-sm
 flex
 gap-2
-"
+items-center
+">
 
->
 
 <FiTrash2 size={14}/>
 
 Delete
+
 
 </button>
 
@@ -1478,13 +1312,136 @@ Delete
 
 
 
+
 </div>
+
+
+
+
+
+
+
+
+
+{/* DELETE CONFIRM MODAL */}
+
+
+
+{
+
+deleteId &&
+
+
+<div className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[100]
+">
+
+
+<div className="
+bg-white
+rounded-xl
+p-5
+w-80
+text-center
+">
+
+
+<h3 className="
+font-black
+text-lg
+">
+
+Are you sure?
+
+</h3>
+
+
+
+
+<p className="
+text-sm
+text-gray-500
+mt-2
+">
+
+Delete this return order permanently?
+
+</p>
+
+
+
+
+
+<div className="
+flex
+gap-3
+mt-5
+">
+
+
+<button
+
+onClick={()=>
+setDeleteId(null)
+}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-gray-100
+font-bold
+">
+
+No
+
+</button>
+
+
+
+
+
+<button
+
+onClick={handleDelete}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-red-500
+text-white
+font-bold
+">
+
+Yes
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+}
+
 
 
 );
 
-
 }
+
 
 
 
@@ -1501,34 +1458,49 @@ switch(status){
 
 
 case "Accepted":
+
 return "bg-green-100 text-green-700";
 
 
+
 case "Rejected":
+
 return "bg-red-100 text-red-700";
 
 
+
 case "Picked Up":
+
 return "bg-blue-100 text-blue-700";
 
 
+
 case "Reviewing":
+
 return "bg-purple-100 text-purple-700";
 
 
+
 case "Shipped":
+
 return "bg-indigo-100 text-indigo-700";
 
 
+
 case "Exchanged":
+
 return "bg-orange-100 text-orange-700";
 
 
+
 case "Refunded":
+
 return "bg-emerald-100 text-emerald-700";
 
 
+
 default:
+
 return "bg-yellow-100 text-yellow-700";
 
 
@@ -1536,6 +1508,9 @@ return "bg-yellow-100 text-yellow-700";
 
 
 }
+
+
+
 
 
 
@@ -1551,23 +1526,30 @@ color
 
 const colors={
 
+
 orange:
 "bg-orange-50 text-orange-500",
+
 
 yellow:
 "bg-yellow-50 text-yellow-500",
 
+
 blue:
 "bg-blue-50 text-blue-500",
 
+
 green:
 "bg-green-50 text-green-500"
+
 
 };
 
 
 
+
 return(
+
 
 <div className="
 bg-white
@@ -1598,7 +1580,10 @@ ${colors[color]}
 
 
 
+
+
 <div>
+
 
 <p className="
 text-[11px]
@@ -1610,10 +1595,10 @@ text-gray-500
 </p>
 
 
+
 <h2 className="
 text-lg
 font-black
-text-slate-900
 ">
 
 {value}
@@ -1621,111 +1606,6 @@ text-slate-900
 </h2>
 
 
-</div>
-
-{
-
-deleteId &&
-
-
-<div
-
-className="
-fixed
-inset-0
-bg-black/40
-flex
-items-center
-justify-center
-z-[100]
-"
-
->
-
-
-<div
-
-className="
-bg-white
-rounded-xl
-p-5
-w-80
-text-center
-"
-
->
-
-
-<h3 className="
-font-black
-text-lg
-">
-
-Are you sure?
-
-</h3>
-
-
-<p className="
-text-sm
-text-gray-500
-mt-2
-">
-
-Delete this return order permanently?
-
-</p>
-
-
-
-
-<div className="
-flex
-gap-3
-mt-5
-">
-
-
-<button
-
-onClick={()=>setDeleteId(null)}
-
-className="
-flex-1
-h-10
-rounded-lg
-bg-gray-100
-font-bold
-"
-
->
-
-No
-
-</button>
-
-
-
-<button
-
-onClick={handleDelete}
-
-className="
-flex-1
-h-10
-rounded-lg
-bg-red-500
-text-white
-font-bold
-"
-
->
-
-Yes
-
-</button>
-
-
 
 </div>
 
@@ -1733,14 +1613,7 @@ Yes
 </div>
 
 
-</div>
+);
 
-
-}
-
-  
-</div>
-
-)
 
 }
