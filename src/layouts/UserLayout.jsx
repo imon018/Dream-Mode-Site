@@ -615,7 +615,14 @@ Logout
 
 className="
 flex-1
-p-8
+
+p-0
+
+lg:p-8
+
+pb-24
+
+overflow-x-hidden
 "
 
 >
