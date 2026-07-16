@@ -713,23 +713,23 @@ export default function MyOrders() {
 
                 <button
 
-                  onClick={() =>
-                    navigate(
-                      "#"
-                    )
-                  }
+  onClick={() =>
+    navigate(
+      `/profile/orders/${order.id}`
+    )
+  }
 
-                  className="
-                  w-full
-                  flex
-                  items-center
-                  justify-between
-                  text-sm
-                  font-bold
-                  text-amber-600
-                  "
+  className="
+  w-full
+  flex
+  items-center
+  justify-between
+  text-sm
+  font-bold
+  text-amber-600
+  "
 
-                >
+>
 
                   <span>
 
