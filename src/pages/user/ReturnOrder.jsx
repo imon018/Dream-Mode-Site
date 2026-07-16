@@ -11,7 +11,6 @@ import {
 
 
 import {
-  FiArrowLeft,
   FiPackage,
   FiUploadCloud,
 } from "react-icons/fi";
@@ -48,6 +47,8 @@ useNavigate();
 
 
 
+
+
 const {
  user
 }=useAuth();
@@ -68,18 +69,37 @@ useState(true);
 
 
 
+// return reason
+
 const [reason,setReason] =
 useState("");
 
 
+
+
+
+// description
 
 const [description,setDescription] =
 useState("");
 
 
 
+
+
+// images
+
 const [images,setImages] =
 useState([]);
+
+
+
+
+
+// return type
+
+const [returnType,setReturnType] =
+useState("");
 
 
 
@@ -94,6 +114,25 @@ useState("");
 
 const [refundNumber,setRefundNumber] =
 useState("");
+
+
+
+
+
+// policy checkbox
+
+const [policy,setPolicy] =
+useState({
+
+return:false,
+
+refund:false,
+
+terms:false
+
+});
+
+
 
 
 
@@ -123,11 +162,15 @@ const reasons=[
 
 
 
+
+
 useEffect(()=>{
 
 loadOrder();
 
 },[user]);
+
+
 
 
 
@@ -167,18 +210,22 @@ setOrder(found);
 
 catch(error){
 
+
 console.log(error);
+
 
 errorToast(
 "Failed to load order"
 );
 
-}
 
+}
 
 finally{
 
+
 setLoading(false);
+
 
 }
 
@@ -215,11 +262,49 @@ setImages(files);
 
 
 
+
+function handlePolicy(name){
+
+
+setPolicy(prev=>({
+
+...prev,
+
+[name]:!prev[name]
+
+
+}));
+
+
+}
+
+
+
+
+
+
+
+
+
+const allPolicyAccepted =
+policy.return &&
+policy.refund &&
+policy.terms;
+
+
+
+
+
+
+
+
+
 if(loading)
 
 return (
 
 <div
+
 className="
 min-h-screen
 flex
@@ -227,6 +312,7 @@ items-center
 justify-center
 font-bold
 "
+
 >
 
 Loading...
@@ -242,19 +328,21 @@ Loading...
 
 
 
+
 if(!order)
 
 return (
 
 <div
+
 className="
 min-h-screen
 flex
 items-center
 justify-center
 font-bold
-text-xl
 "
+
 >
 
 Order Not Found
@@ -262,6 +350,7 @@ Order Not Found
 </div>
 
 );
+
 
 
 
@@ -285,6 +374,9 @@ return null;
 
 
 }
+
+
+
 
 
 
@@ -315,50 +407,34 @@ space-y-4
 
 >
 
-  {/* HEADER */}
+
+
+
+
+
+
+
+
+{/* HEADER */}
 
 
 <div
-className="
-flex
-items-center
-gap-3
-"
->
-
-
-<button
-
-onClick={()=>navigate(-1)}
 
 className="
-w-10
-h-10
-rounded-lg
-bg-white
-border
-border-gray-100
-flex
-items-center
-justify-center
+text-center
+py-2
 "
 
 >
 
-<FiArrowLeft/>
-
-</button>
-
-
-
-
-<div>
 
 <h1
+
 className="
 font-black
-text-lg
+text-xl
 "
+
 >
 
 Return Order
@@ -368,10 +444,13 @@ Return Order
 
 
 <p
+
 className="
 text-xs
 text-gray-500
+mt-1
 "
+
 >
 
 Request product return
@@ -381,8 +460,6 @@ Request product return
 
 </div>
 
-
-</div>
 
 
 
@@ -432,13 +509,16 @@ text-amber-500
 
 
 
+
 <div>
 
 
 <h2
+
 className="
 font-bold
 "
+
 >
 
 Order #{order.id.slice(0,8)}
@@ -447,11 +527,14 @@ Order #{order.id.slice(0,8)}
 
 
 
+
 <p
+
 className="
 text-xs
 text-gray-500
 "
+
 >
 
 Delivered Order
@@ -468,6 +551,7 @@ Delivered Order
 
 
 </div>
+
 
 
 
@@ -495,15 +579,18 @@ shadow-sm
 
 
 <h3
+
 className="
 font-bold
 mb-4
 "
+
 >
 
 Product
 
 </h3>
+
 
 
 
@@ -522,9 +609,13 @@ gap-3
 <img
 
 src={
+
 order.items?.[0]?.image ||
+
 "https://via.placeholder.com/80"
+
 }
+
 
 className="
 w-20
@@ -572,6 +663,7 @@ mt-1
 >
 
 Qty :
+
 {
 order.items?.[0]?.quantity || 1
 }
@@ -592,10 +684,16 @@ mt-2
 
 >
 
-৳ {
+৳
+
+{
+
 (order.items?.[0]?.price || 0)
+
 *
+
 (order.items?.[0]?.quantity || 1)
+
 }
 
 </p>
@@ -701,15 +799,19 @@ checked={
 reason===item
 }
 
+
 onChange={
 e=>setReason(e.target.value)
 }
+
 
 className="
 accent-amber-500
 "
 
 />
+
+
 
 
 
@@ -735,6 +837,8 @@ font-semibold
 
 )
 
+
+
 }
 
 
@@ -742,17 +846,13 @@ font-semibold
 </div>
 
 
+
 </div>
 
 
-
-
-
-
-
-
-{/* DESCRIPTION */}
-
+  // =========================
+// DESCRIPTION
+// =========================
 
 
 <div
@@ -788,17 +888,22 @@ Explain your problem
 
 <textarea
 
+
 value={description}
+
 
 onChange={
 e=>setDescription(e.target.value)
 }
 
+
 placeholder="
 Write your return reason...
 "
 
+
 rows="5"
+
 
 className="
 w-full
@@ -810,6 +915,7 @@ text-sm
 outline-none
 focus:border-amber-500
 "
+
 
 />
 
@@ -825,7 +931,9 @@ focus:border-amber-500
 
 
 
-{/* IMAGE UPLOAD */}
+// =========================
+// IMAGE UPLOAD
+// =========================
 
 
 
@@ -864,7 +972,7 @@ font-normal
 
 >
 
- (Optional)
+(Optional)
 
 </span>
 
@@ -887,7 +995,6 @@ flex-col
 items-center
 justify-center
 cursor-pointer
-hover:border-amber-400
 "
 
 >
@@ -906,7 +1013,6 @@ text-amber-500
 
 
 
-
 <p
 
 className="
@@ -920,7 +1026,6 @@ mt-2
 Add product image
 
 </p>
-
 
 
 
@@ -949,10 +1054,12 @@ hidden
 
 
 
+
 {
 
-images.length > 0 && (
+images.length > 0 &&
 
+(
 
 <p
 
@@ -978,7 +1085,271 @@ mt-3
 </div>
 
 
-  {/* REFUND METHOD */}
+
+
+
+
+
+
+
+// =========================
+// RETURN TYPE
+// =========================
+
+
+
+<div
+
+className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-5
+shadow-sm
+"
+
+>
+
+
+<h3
+
+className="
+font-bold
+mb-4
+"
+
+>
+
+Return Type
+
+</h3>
+
+
+
+
+
+
+<div
+
+className="
+grid
+grid-cols-2
+gap-3
+"
+
+>
+
+
+
+
+
+<label
+
+className={`
+border
+rounded-lg
+p-4
+cursor-pointer
+text-center
+
+${
+returnType==="Refund"
+
+?
+"border-amber-500 bg-amber-50"
+
+:
+
+"border-gray-100"
+
+}
+
+`}
+
+>
+
+
+
+<input
+
+type="radio"
+
+name="returnType"
+
+value="Refund"
+
+checked={
+returnType==="Refund"
+}
+
+onChange={
+e=>setReturnType(e.target.value)
+}
+
+className="
+hidden
+"
+
+/>
+
+
+
+<p
+
+className="
+font-bold
+"
+
+>
+
+Refund
+
+</p>
+
+
+
+<span
+
+className="
+text-xs
+text-gray-500
+"
+
+>
+
+Get money back
+
+</span>
+
+
+
+</label>
+
+
+
+
+
+
+
+<label
+
+className={`
+border
+rounded-lg
+p-4
+cursor-pointer
+text-center
+
+${
+returnType==="Exchange"
+
+?
+
+"border-amber-500 bg-amber-50"
+
+:
+
+"border-gray-100"
+
+}
+
+`}
+
+>
+
+
+
+<input
+
+type="radio"
+
+name="returnType"
+
+value="Exchange"
+
+checked={
+returnType==="Exchange"
+}
+
+
+onChange={
+e=>setReturnType(e.target.value)
+}
+
+className="
+hidden
+"
+
+/>
+
+
+
+<p
+
+className="
+font-bold
+"
+
+>
+
+Exchange
+
+</p>
+
+
+
+
+<span
+
+className="
+text-xs
+text-gray-500
+"
+
+>
+
+Get another product
+
+</span>
+
+
+
+</label>
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+// =========================
+// REFUND METHOD
+// =========================
+
+
+
+{
+
+returnType==="Refund"
+
+&&
+
+
+(
 
 
 <div
@@ -1012,135 +1383,64 @@ Refund Method
 
 
 
-<div
 
-className="
-space-y-3
-"
-
->
+<select
 
 
+value={refundMethod}
 
-
-
-<label
-
-className="
-flex
-items-center
-gap-3
-border
-border-gray-100
-rounded-lg
-p-3
-cursor-pointer
-"
-
->
-
-
-<input
-
-type="radio"
-
-name="refundMethod"
-
-value="bKash"
-
-checked={
-refundMethod==="bKash"
-}
 
 onChange={
 e=>setRefundMethod(e.target.value)
 }
 
-/>
-
-
-
-<span
 
 className="
+w-full
+h-12
+border
+border-gray-200
+rounded-lg
+px-3
 text-sm
-font-semibold
+outline-none
 "
 
 >
+
+
+<option value="">
+
+Select Refund Method
+
+</option>
+
+
+<option value="bKash">
 
 bKash
 
-</span>
+</option>
 
 
 
-</label>
-
-
-
-
-
-
-
-<label
-
-className="
-flex
-items-center
-gap-3
-border
-border-gray-100
-rounded-lg
-p-3
-cursor-pointer
-"
-
->
-
-
-<input
-
-type="radio"
-
-name="refundMethod"
-
-value="Nagad"
-
-checked={
-refundMethod==="Nagad"
-}
-
-onChange={
-e=>setRefundMethod(e.target.value)
-}
-
-/>
-
-
-
-<span
-
-className="
-text-sm
-font-semibold
-"
-
->
+<option value="Nagad">
 
 Nagad
 
-</span>
+</option>
 
 
 
-</label>
+<option value="Bank Transfer">
+
+Bank Transfer
+
+</option>
 
 
 
-
-
-</div>
+</select>
 
 
 
@@ -1150,7 +1450,9 @@ Nagad
 
 {
 
-refundMethod && (
+refundMethod &&
+
+(
 
 
 <div
@@ -1178,17 +1480,23 @@ font-semibold
 
 
 
+
 <input
+
 
 type="tel"
 
+
 value={refundNumber}
+
 
 onChange={
 e=>setRefundNumber(e.target.value)
 }
 
+
 placeholder="01XXXXXXXXX"
+
 
 className="
 mt-2
@@ -1202,6 +1510,7 @@ text-sm
 outline-none
 focus:border-amber-500
 "
+
 
 />
 
@@ -1219,6 +1528,9 @@ focus:border-amber-500
 </div>
 
 
+)
+
+}
 
 
 
@@ -1226,54 +1538,171 @@ focus:border-amber-500
 
 
 
-{/* RETURN POLICY */}
+
+
+// =========================
+// POLICY CHECKBOX
+// =========================
 
 
 
 <div
 
 className="
-bg-amber-50
+bg-white
 border
-border-amber-100
+border-gray-100
 rounded-lg
-p-4
+p-5
+shadow-sm
+space-y-3
 "
 
 >
 
 
-<h3
+
+<label
 
 className="
-font-bold
-text-amber-700
+flex
+gap-3
+items-center
 text-sm
-mb-2
+cursor-pointer
 "
 
 >
 
-⚠ Return Policy
 
-</h3>
+<input
+
+type="checkbox"
+
+checked={policy.return}
+
+onChange={
+()=>handlePolicy("return")
+}
+
+
+/>
+
+
+<span>
+
+I agree to 
+
+<span className="text-amber-600 font-bold">
+
+Return Policy
+
+</span>
+
+</span>
+
+
+
+</label>
 
 
 
 
-<p
+
+
+
+<label
 
 className="
-text-xs
-text-amber-700
-leading-5
+flex
+gap-3
+items-center
+text-sm
+cursor-pointer
 "
 
 >
 
-Product must be unused and returned within the allowed return period.
 
-</p>
+<input
+
+type="checkbox"
+
+checked={policy.refund}
+
+onChange={
+()=>handlePolicy("refund")
+}
+
+
+/>
+
+
+<span>
+
+I agree to 
+
+<span className="text-amber-600 font-bold">
+
+Refund Policy
+
+</span>
+
+</span>
+
+
+
+</label>
+
+
+
+
+
+
+
+<label
+
+className="
+flex
+gap-3
+items-center
+text-sm
+cursor-pointer
+"
+
+>
+
+
+<input
+
+type="checkbox"
+
+checked={policy.terms}
+
+onChange={
+()=>handlePolicy("terms")
+}
+
+
+/>
+
+
+<span>
+
+I agree to 
+
+<span className="text-amber-600 font-bold">
+
+Terms & Conditions
+
+</span>
+
+</span>
+
+
+
+</label>
+
 
 
 
@@ -1287,7 +1716,9 @@ Product must be unused and returned within the allowed return period.
 
 
 
-{/* SUBMIT BUTTON */}
+// =========================
+// SUBMIT
+// =========================
 
 
 
@@ -1300,14 +1731,11 @@ onClick={async()=>{
 
 if(!reason){
 
-
 errorToast(
 "Please select return reason"
 );
 
-
 return;
-
 
 }
 
@@ -1317,14 +1745,11 @@ return;
 
 if(!description){
 
-
 errorToast(
 "Please explain your problem"
 );
 
-
 return;
-
 
 }
 
@@ -1332,16 +1757,31 @@ return;
 
 
 
-if(!refundMethod){
+if(!returnType){
 
+errorToast(
+"Please select return type"
+);
+
+return;
+
+}
+
+
+
+
+
+if(
+returnType==="Refund"
+&&
+!refundMethod
+){
 
 errorToast(
 "Please select refund method"
 );
 
-
 return;
-
 
 }
 
@@ -1349,16 +1789,31 @@ return;
 
 
 
-if(!refundNumber){
-
+if(
+returnType==="Refund"
+&&
+!refundNumber
+){
 
 errorToast(
 "Please enter refund number"
 );
 
-
 return;
 
+}
+
+
+
+
+
+if(!allPolicyAccepted){
+
+errorToast(
+"Please accept all policies"
+);
+
+return;
 
 }
 
@@ -1367,6 +1822,7 @@ return;
 
 
 try{
+
 
 
 console.log({
@@ -1379,10 +1835,13 @@ description,
 
 images,
 
+returnType,
+
 refundMethod,
 
 refundNumber,
 
+policy
 
 });
 
@@ -1402,18 +1861,15 @@ navigate("/orders");
 
 }
 
-
 catch(error){
 
 
 console.log(error);
 
 
-
 errorToast(
 "Request failed"
 );
-
 
 
 }
@@ -1431,16 +1887,16 @@ rounded-lg
 bg-black
 text-white
 font-bold
-flex
-items-center
-justify-center
 "
 
 >
 
+
 Submit Return Request
 
+
 </button>
+
 
 
 
@@ -1453,5 +1909,6 @@ Submit Return Request
 </div>
 
 );
+
 
 }
