@@ -8,6 +8,7 @@ import {
 } from "react";
 
 
+
 import {
   FiGrid,
   FiHome,
@@ -24,6 +25,7 @@ import {
   FiChevronDown,
   FiPlusCircle,
   FiKey,
+  FiRotateCcw,
 } from "react-icons/fi";
 
 
@@ -289,7 +291,24 @@ Orders
 
 
 
+{/* RETURN ORDERS */}
 
+
+<NavLink
+
+to="/admin/return-orders"
+
+onClick={closeDrawer}
+
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
+
+>
+
+<FiRotateCcw size={20}/>
+
+Return Orders
+
+</NavLink>
 
 
 
