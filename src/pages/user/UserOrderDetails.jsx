@@ -12,17 +12,28 @@ import {
 
 import {
   FiArrowLeft,
-  FiMapPin,
   FiPackage,
+  FiMapPin,
+  FiPhone,
+  FiCreditCard,
+  FiShoppingBag,
 } from "react-icons/fi";
+
+
+import {
+  getUserOrders,
+  requestCancelOrder,
+  requestReturnOrder,
+} from "../../services/orderService";
 
 
 import useAuth from "../../hooks/useAuth";
 
 
 import {
-  getUserOrders,
-} from "../../services/orderService";
+  successToast,
+  errorToast,
+} from "../../components/ui/Toast";
 
 
 
@@ -31,39 +42,45 @@ import {
 export default function UserOrderDetails(){
 
 
-const {
-  id
-}=useParams();
+  const {
+    id
+  } = useParams();
 
 
-const navigate =
-useNavigate();
+  const navigate =
+  useNavigate();
 
 
-const {
- user
-}=useAuth();
+  const {
+    user
+  } = useAuth();
 
 
 
-const [order,setOrder]=useState(null);
 
-const [loading,setLoading]=useState(true);
+  const [
+    order,
+    setOrder
+  ] = useState(null);
 
 
 
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
 
 
 
 
-useEffect(()=>{
 
+  useEffect(()=>{
 
-loadOrder();
 
+    loadOrder();
 
-},[user,id]);
 
+  },[user]);
 
 
 
@@ -71,47 +88,50 @@ loadOrder();
 
 
 
-async function loadOrder(){
+  async function loadOrder(){
 
 
-try{
+    try{
 
 
-const data =
-await getUserOrders(
-user.email
-);
+      if(!user)
+      return;
 
 
 
-const found =
-data.find(
-item=>item.id===id
-);
+      const orders =
+      await getUserOrders(
+        user.email
+      );
 
 
 
-setOrder(found);
+      const found =
+      orders.find(
+        item =>
+        item.id === id
+      );
 
 
 
-}
+      setOrder(found);
 
-catch(error){
 
-console.log(error);
 
-}
+    }
+    catch(error){
 
-finally{
+      console.log(error);
 
-setLoading(false);
+    }
+    finally{
 
-}
+      setLoading(false);
 
+    }
 
-}
 
+  }
 
 
 
@@ -119,99 +139,253 @@ setLoading(false);
 
 
 
-if(loading){
 
-return(
 
-<div className="
-min-h-screen
-flex
-items-center
-justify-center
-font-bold
-">
+  const trackingSteps = [
 
-Loading Order...
+    "Order Placed",
 
-</div>
+    "Processing",
 
-);
+    "Shipped",
 
-}
+    "Delivered",
 
+  ];
 
 
 
 
 
 
-if(!order){
 
 
-return(
+  const statusIndex = ()=>{
 
-<div className="
-min-h-screen
-flex
-flex-col
-items-center
-justify-center
-gap-4
-">
 
+    if(!order)
+    return 0;
 
-<h2 className="
-font-bold
-text-xl
-">
 
-Order Not Found
+    switch(order.status){
 
-</h2>
 
+      case "Processing":
+        return 1;
 
-<button
 
-onClick={()=>navigate(-1)}
+      case "Shipped":
+        return 2;
 
+
+      case "Delivered":
+        return 3;
+
+
+      default:
+        return 0;
+
+    }
+
+
+  };
+
+
+
+
+
+
+
+
+  async function cancelOrder(){
+
+
+    try{
+
+
+      await requestCancelOrder(
+        order.id
+      );
+
+
+      successToast(
+        "Cancel request sent"
+      );
+
+
+      loadOrder();
+
+
+    }
+    catch(error){
+
+      errorToast(
+        "Request failed"
+      );
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+  async function returnOrder(){
+
+
+    try{
+
+
+      await requestReturnOrder(
+        order.id
+      );
+
+
+      successToast(
+        "Return request sent"
+      );
+
+
+      loadOrder();
+
+
+    }
+    catch(error){
+
+      errorToast(
+        "Request failed"
+      );
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+  if(loading){
+
+
+    return (
+
+      <div
+        className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        font-bold
+        "
+      >
+
+        Loading Order...
+
+      </div>
+
+    );
+
+
+  }
+
+
+
+
+
+
+
+  if(!order){
+
+
+    return (
+
+      <div
+        className="
+        min-h-screen
+        flex
+        flex-col
+        gap-4
+        items-center
+        justify-center
+        "
+      >
+
+        <h2
+          className="
+          font-bold
+          text-xl
+          "
+        >
+          Order Not Found
+        </h2>
+
+
+        <button
+
+          onClick={()=>
+            navigate(-1)
+          }
+
+          className="
+          bg-black
+          text-white
+          px-5
+          py-2
+          rounded-xl
+          "
+        >
+
+          Back
+
+        </button>
+
+
+      </div>
+
+    );
+
+
+  }
+
+
+
+
+
+
+
+
+return (
+
+
+<div
 className="
-px-4
-py-2
-bg-black
-text-white
-rounded-lg
-"
+min-h-screen
+bg-[#FCFAF5]
 
+px-4
+pb-28
+py-5
+"
 >
 
-Back
-
-</button>
 
 
-</div>
-
-);
-
-
-}
-
-
-
-
-
-
-
-
-return(
-
-
-<div className="
-bg-[#faf9f6]
-min-h-screen
-p-4
-space-y-3
-">
+<div
+className="
+max-w-xl
+mx-auto
+space-y-4
+"
+>
 
 
 
@@ -220,28 +394,36 @@ space-y-3
 {/* HEADER */}
 
 
-<div className="
+<div
+className="
 relative
 flex
 items-center
 justify-center
-mb-2
-">
+"
+>
 
 
 <button
 
-onClick={()=>navigate(-1)}
+onClick={()=>
+navigate(-1)
+}
 
 className="
 absolute
 left-0
-w-9
-h-9
-rounded-lg
+
+w-10
+h-10
+
+rounded-xl
+
 bg-white
+
 border
 border-gray-100
+
 flex
 items-center
 justify-center
@@ -255,466 +437,22 @@ justify-center
 
 
 
-<h1 className="
+
+
+<h1
+className="
 font-bold
 text-lg
-">
+"
+>
 
 Order Details
 
 </h1>
 
 
-
 </div>
 
-
-
-
-
-
-
-{/* ORDER CARD */}
-
-
-<div className="
-bg-white
-border
-border-gray-100
-rounded-lg
-p-4
-shadow-sm
-">
-
-
-<div className="
-flex
-justify-between
-items-start
-">
-
-
-<div>
-
-
-<h2 className="
-text-2xl
-font-black
-text-slate-900
-">
-
-#{order.id?.slice(0,10)}
-
-</h2>
-
-
-<p className="
-text-xs
-text-gray-500
-mt-1
-">
-
-{
-new Date(order.createdAt)
-.toLocaleString()
-}
-
-</p>
-
-
-</div>
-
-
-
-
-<span className={`
-
-text-xs
-font-bold
-px-3
-py-1.5
-rounded-full
-
-
-${
-order.status==="Delivered"
-
-?
-"bg-green-100 text-green-700"
-
-:
-
-order.status==="Processing"
-
-?
-"bg-blue-100 text-blue-700"
-
-:
-
-order.status==="Cancelled"
-
-?
-"bg-red-100 text-red-700"
-
-:
-
-"bg-yellow-100 text-yellow-700"
-
-}
-
-`}>
-
-{order.status}
-
-</span>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* SHIPPING ADDRESS */}
-
-
-<div className="
-bg-white
-border
-border-gray-100
-rounded-lg
-p-4
-shadow-sm
-">
-
-
-<h3 className="
-font-bold
-text-sm
-mb-3
-">
-
-Shipping Address
-
-</h3>
-
-
-
-
-<div className="
-flex
-gap-3
-text-sm
-text-gray-700
-">
-
-
-<FiMapPin
-className="
-mt-1
-text-gray-500
-"
-/>
-
-
-
-<p>
-
-{
-order.address ||
-"No address available"
-}
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* PAYMENT METHOD */}
-
-
-
-<div className="
-bg-white
-border
-border-gray-100
-rounded-lg
-p-4
-shadow-sm
-">
-
-
-<h3 className="
-font-bold
-text-sm
-mb-3
-">
-
-Payment Method
-
-</h3>
-
-
-
-
-<div className="
-flex
-items-center
-justify-between
-">
-
-
-<div className="
-flex
-items-center
-gap-3
-">
-
-
-<div className="
-w-9
-h-9
-rounded-lg
-bg-green-50
-flex
-items-center
-justify-center
-text-green-600
-">
-
-💳
-
-</div>
-
-
-
-<p className="
-text-sm
-font-semibold
-">
-
-{
-order.paymentMethod ||
-""
-}
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-<span className="
-text-xs
-font-bold
-px-3
-py-1.5
-rounded-full
-bg-green-100
-text-green-700
-">
-
-Cash On Delivery 💰
-
-</span>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* PRODUCTS */}
-
-
-<div className="
-bg-white
-border
-border-gray-100
-rounded-lg
-p-4
-shadow-sm
-">
-
-
-
-<div className="
-flex
-items-center
-gap-2
-mb-4
-">
-
-
-<FiPackage
-className="
-text-blue-600
-"/>
-
-
-<h3 className="
-font-bold
-text-sm
-">
-
-Products
-
-</h3>
-
-
-</div>
-
-
-
-
-
-
-<div className="
-space-y-3
-">
-
-
-{
-
-order.items?.map(
-
-(item,index)=>(
-
-
-<div
-
-key={item.id || index}
-
-className="
-flex
-items-center
-justify-between
-border-b
-border-gray-100
-pb-3
-"
-
->
-
-
-<div className="
-flex
-items-center
-gap-3
-">
-
-
-<img
-
-src={
-item.image ||
-"https://via.placeholder.com/60"
-}
-
-className="
-w-14
-h-14
-rounded-lg
-object-cover
-bg-gray-50
-"
-
-/>
-
-
-
-<div>
-
-
-<h4 className="
-text-sm
-font-bold
-">
-
-{item.name}
-
-</h4>
-
-
-<p className="
-text-xs
-text-gray-500
-">
-
-Qty: {item.quantity}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-<p className="
-font-bold
-text-sm
-">
-
-৳ {item.price * item.quantity}
-
-</p>
-
-
-
-</div>
-
-
-)
-
-)
-
-}
-
-
-</div>
-
-
-
-</div>
 
 
 
@@ -727,55 +465,509 @@ text-sm
 {/* ORDER SUMMARY */}
 
 
-<div className="
+<div
+className="
 bg-white
+rounded-2xl
+
 border
 border-gray-100
-rounded-lg
-p-4
+
+p-5
+
 shadow-sm
-">
+"
+>
 
 
-<h3 className="
+<div
+className="
+flex
+justify-between
+items-start
+"
+>
+
+
+<div>
+
+
+<div
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<FiPackage
+className="
+text-amber-500
+"
+/>
+
+
+<h2
+className="
+font-black
+text-xl
+"
+>
+
+#
+{order.id.slice(0,8)}
+
+</h2>
+
+
+</div>
+
+
+
+<p
+className="
+text-xs
+text-gray-500
+mt-2
+"
+>
+
+{
+new Date(
+order.createdAt
+)
+.toLocaleString()
+}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+<span
+className="
+px-3
+py-1
+
+rounded-full
+
+text-xs
+
 font-bold
-text-sm
-mb-4
-">
 
-Order Summary
+bg-blue-100
+
+text-blue-700
+"
+>
+
+{order.status}
+
+</span>
+
+
+</div>
+
+
+
+
+
+<div
+className="
+mt-5
+
+flex
+
+justify-between
+
+items-center
+
+bg-[#FCFAF5]
+
+rounded-xl
+
+p-4
+"
+>
+
+
+<div>
+
+<p
+className="
+text-xs
+text-gray-500
+"
+>
+Total Amount
+</p>
+
+
+<h2
+className="
+text-2xl
+font-black
+"
+>
+
+৳ {order.total}
+
+</h2>
+
+</div>
+
+
+<FiShoppingBag
+size={30}
+className="
+text-amber-500
+"
+/>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* ORDER TRACKING */}
+
+
+<div
+className="
+bg-white
+rounded-2xl
+border
+border-gray-100
+p-5
+shadow-sm
+"
+>
+
+
+<h3
+className="
+font-bold
+mb-6
+"
+>
+
+Order Tracking
 
 </h3>
 
 
 
-<div className="
+<div
+className="
+flex
+justify-between
+relative
+"
+>
+
+
+{
+
+trackingSteps.map(
+(step,index)=>(
+
+
+<div
+key={step}
+
+className="
+flex
+flex-col
+items-center
+flex-1
+"
+>
+
+
+<div
+className={`
+
+w-8
+h-8
+
+rounded-full
+
+flex
+items-center
+justify-center
+
+text-xs
+
+font-bold
+
+
+${
+index <= statusIndex()
+
+?
+"bg-amber-500 text-white"
+
+:
+
+"bg-gray-200 text-gray-500"
+
+}
+
+`}
+>
+
+✓
+
+</div>
+
+
+<p
+className="
+text-[10px]
+mt-2
+text-center
+font-semibold
+"
+>
+
+{step}
+
+</p>
+
+
+</div>
+
+
+)
+
+)
+
+}
+
+
+</div>
+
+
+</div>
+
+  {/* ORDER ITEMS */}
+
+
+<div
+className="
+bg-white
+rounded-2xl
+
+border
+border-gray-100
+
+p-5
+
+shadow-sm
+"
+>
+
+
+<h3
+className="
+font-bold
+mb-4
+"
+>
+
+Order Items
+
+</h3>
+
+
+
+
+
+<div
+className="
+space-y-4
+"
+>
+
+
+{
+order.items?.map(
+(item,index)=>(
+
+
+<div
+key={
+item.id || index
+}
+
+className="
+flex
+items-center
+justify-between
+
+border-b
+border-gray-100
+
+pb-4
+"
+>
+
+
+<div
+className="
+flex
+items-center
+gap-3
+"
+>
+
+
+<img
+
+src={
+item.image ||
+"https://via.placeholder.com/70"
+}
+
+className="
+w-16
+h-16
+
+rounded-xl
+
+object-cover
+
+bg-gray-50
+"
+
+/>
+
+
+
+<div>
+
+<h4
+className="
+font-bold
+text-sm
+"
+>
+
+{item.name}
+
+</h4>
+
+
+<p
+className="
+text-xs
+text-gray-500
+mt-1
+"
+>
+
+Qty: {item.quantity || 1}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<p
+className="
+font-black
+"
+>
+
+৳ {
+
+(item.price || 0)
+
+*
+
+(item.quantity || 1)
+
+}
+
+</p>
+
+
+
+</div>
+
+
+)
+
+)
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+{/* PRICE DETAILS */}
+
+
+
+<div
+className="
+mt-6
 space-y-3
 text-sm
-">
+"
+>
 
 
-
-<div className="
+<div
+className="
 flex
 justify-between
-">
+"
+>
 
-<span className="
+<span
+className="
 text-gray-500
-">
-
+"
+>
 Subtotal
-
 </span>
 
 
-<span className="
+<span
+className="
 font-semibold
-">
-
-৳ {order.subtotal || order.total}
-
+"
+>
+৳ {order.subtotal || 0}
 </span>
 
 
@@ -785,25 +977,61 @@ font-semibold
 
 
 
-<div className="
+<div
+className="
 flex
 justify-between
-">
+"
+>
 
-<span className="
+<span
+className="
 text-gray-500
-">
-
-Shipping
-
+"
+>
+Shipping Charge
 </span>
 
 
-<span className="
+<span
+className="
 font-semibold
-">
-
+"
+>
 ৳ {order.deliveryCharge || 0}
+</span>
+
+
+</div>
+
+
+
+
+
+<div
+className="
+flex
+justify-between
+"
+>
+
+<span
+className="
+text-gray-500
+"
+>
+Discount
+</span>
+
+
+<span
+className="
+font-semibold
+text-red-500
+"
+>
+
+-৳ {order.discount || 0}
 
 </span>
 
@@ -814,26 +1042,35 @@ font-semibold
 
 
 
-<hr className="
+<hr
+className="
 border-gray-100
-"/>
+"
+/>
 
 
 
-<div className="
+
+
+<div
+className="
 flex
 justify-between
 font-black
-">
+text-lg
+"
+>
 
 <span>
-
 Total Amount
-
 </span>
 
 
-<span>
+<span
+className="
+text-amber-600
+"
+>
 
 ৳ {order.total}
 
@@ -858,36 +1095,412 @@ Total Amount
 
 
 
-{/* ACTION BUTTONS */}
+
+{/* SHIPPING ADDRESS */}
 
 
+<div
+className="
+bg-white
 
-<div className="
+rounded-2xl
+
+border
+border-gray-100
+
+p-5
+
+shadow-sm
+"
+>
+
+
+<div
+className="
 flex
+items-center
+gap-2
+
+mb-4
+"
+>
+
+
+<FiMapPin
+className="
+text-amber-500
+"
+/>
+
+
+<h3
+className="
+font-bold
+"
+>
+
+Shipping Address
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<div
+className="
+space-y-2
+text-sm
+"
+>
+
+
+<p
+className="
+font-bold
+"
+>
+
+{order.customerName}
+
+</p>
+
+
+
+<p>
+
+{order.address || "No Address"}
+
+</p>
+
+
+
+<p>
+
+{order.postOffice}
+
+</p>
+
+
+
+<p>
+
+{order.thana}
+
+</p>
+
+
+
+<p>
+
+{order.district}
+
+</p>
+
+
+
+<div
+className="
+flex
+items-center
+gap-2
+pt-2
+"
+>
+
+<FiPhone
+size={15}
+/>
+
+
+<span>
+
+{order.phone}
+
+</span>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+{/* PAYMENT METHOD */}
+
+
+
+<div
+className="
+bg-white
+
+rounded-2xl
+
+border
+border-gray-100
+
+p-5
+
+shadow-sm
+"
+>
+
+
+<div
+className="
+flex
+items-center
+gap-2
+mb-4
+"
+>
+
+
+<FiCreditCard
+className="
+text-green-600
+"
+/>
+
+
+<h3
+className="
+font-bold
+"
+>
+
+Payment Method
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<div
+className="
+flex
+justify-between
+items-center
+"
+>
+
+
+<div>
+
+
+<p
+className="
+font-semibold
+text-sm
+"
+>
+
+{
+order.paymentMethod ||
+"Cash On Delivery"
+}
+
+</p>
+
+
+<p
+className="
+text-xs
+text-gray-500
+mt-1
+"
+>
+
+Payment Status
+
+</p>
+
+
+</div>
+
+
+
+
+
+<span
+className="
+px-3
+py-1.5
+
+rounded-full
+
+bg-green-100
+
+text-green-700
+
+text-xs
+
+font-bold
+"
+>
+
+{
+order.paymentStatus ||
+"Pending"
+}
+
+</span>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* FIXED BOTTOM BUTTON */}
+
+
+
+<div
+className="
+fixed
+
+bottom-0
+
+left-0
+
+right-0
+
+bg-white
+
+border-t
+border-gray-100
+
+p-4
+
+z-50
+"
+>
+
+
+<div
+className="
+max-w-xl
+
+mx-auto
+
+grid
+
+grid-cols-2
+
 gap-3
-">
+"
+>
 
 
+
+
+
+{
+
+(
+order.status==="Pending" ||
+order.status==="Processing"
+)
+
+&&
 
 <button
 
+onClick={cancelOrder}
+
 className="
-w-1/2
-h-11
-rounded-lg
+h-12
+
+rounded-xl
+
 border
-border-red-200
+
+border-red-500
+
 text-red-600
+
 font-bold
+
 text-sm
-bg-white
 "
 
 >
 
-Cancel / Return
+Cancel
 
 </button>
+
+
+}
+
+
+
+
+
+{
+
+order.status==="Delivered"
+
+&&
+
+<button
+
+onClick={returnOrder}
+
+className="
+h-12
+
+rounded-xl
+
+border
+
+border-red-500
+
+text-red-600
+
+font-bold
+
+text-sm
+"
+
+>
+
+Return
+
+</button>
+
+
+}
 
 
 
@@ -896,21 +1509,23 @@ Cancel / Return
 
 <button
 
-onClick={()=>{
-
-navigate(
-`/product/${order.items?.[0]?.id}`
-)
-
-}}
+onClick={()=>navigate("/shop")}
 
 className="
-w-1/2
-h-11
-rounded-lg
-bg-amber-500
+h-12
+
+rounded-xl
+
+bg-black
+
+border
+
+border-amber-500
+
 text-white
+
 font-bold
+
 text-sm
 "
 
@@ -922,16 +1537,24 @@ Buy Again
 
 
 
+
+
+</div>
+
+
 </div>
 
 
 
 
+
+
+
+</div>
 
 </div>
 
 
 );
-
 
 }
