@@ -737,30 +737,48 @@ shadow-sm
 
 
 
-<div className="
+<div
+className="
 flex
 items-center
-gap-2
+justify-between
 mb-4
-">
-
-
-<FiPackage
-className="
-text-blue-600
 "
-/>
+>
 
+  <div
+  className="
+  flex
+  items-center
+  gap-2
+  "
+  >
 
-<h3 className="
-font-bold
-text-sm
-">
+    <FiPackage className="text-blue-600"/>
 
-Products
+    <h3
+    className="
+    font-bold
+    text-sm
+    "
+    >
+      Products
+    </h3>
 
-</h3>
+  </div>
 
+  <button
+    onClick={() =>
+      navigate(`/product/${order.items?.[0]?.id}`)
+    }
+    className="
+    text-xs
+    font-bold
+    text-amber-600
+    "
+  >
+    View &gt;
+  </button>
 
 </div>
 
@@ -882,44 +900,22 @@ Qty: {item.quantity}
 
 
 
-
-
-
-
 <div
 className="
-flex
-flex-col
-items-end
-gap-2
+text-right
 "
 >
 
-  <button
-    onClick={() =>
-      navigate(`/product/${item.id}`)
-    }
-    className="
-    text-xs
-    font-bold
-    text-amber-600
-    hover:text-amber-700
-    "
-  >
-    View &gt;
-  </button>
-
   <p
-    className="
-    font-bold
-    text-sm
-    "
+  className="
+  font-bold
+  text-sm
+  "
   >
     ৳ {item.price * item.quantity}
   </p>
 
 </div>
-
 
 
 
