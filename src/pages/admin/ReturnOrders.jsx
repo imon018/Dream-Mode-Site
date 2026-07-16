@@ -16,15 +16,16 @@ FiCalendar,
 FiShoppingBag,
 FiSend,
 FiCheckCircle,
+FiMoreVertical,
 FiDollarSign
 } from "react-icons/fi";
 
 
 import {
 getReturnOrders,
-updateReturnStatus
+updateReturnStatus,
+deleteOrder
 } from "../../services/orderService";
-
 
 import {
 successToast,
@@ -64,6 +65,9 @@ useState("");
 const [menuOpen,setMenuOpen] =
 useState(null);
 
+
+const [deleteId,setDeleteId] =
+useState(null);
 
 
 const [statusFilter,setStatusFilter] =
@@ -243,7 +247,54 @@ errorToast(
 
 
 
+const handleDelete = async()=>{
 
+
+try{
+
+
+await deleteOrder(deleteId);
+
+
+
+setOrders(prev=>
+
+prev.filter(
+order=>order.id !== deleteId
+)
+
+);
+
+
+
+successToast(
+"Return order deleted"
+);
+
+
+
+setDeleteId(null);
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+errorToast(
+"Delete failed"
+);
+
+
+}
+
+
+
+};
 
 
 
@@ -930,6 +981,13 @@ key={status}
 
 
 
+<div className="
+flex
+items-center
+gap-2
+">
+
+
 <button
 
 onClick={()=>navigate(
@@ -952,6 +1010,103 @@ justify-center
 <FiEye size={15}/>
 
 </button>
+
+
+
+
+
+<div className="
+relative
+">
+
+
+<button
+
+onClick={()=>setMenuOpen(
+menuOpen===order.id
+?
+null
+:
+order.id
+)}
+
+className="
+w-8
+h-8
+rounded-md
+bg-gray-100
+text-gray-600
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiMoreVertical size={16}/>
+
+</button>
+
+
+
+
+
+{
+
+menuOpen===order.id &&
+
+
+<div
+
+className="
+absolute
+right-0
+top-10
+bg-white
+border
+rounded-lg
+shadow-lg
+w-32
+z-50
+"
+
+>
+
+
+<button
+
+onClick={()=>setDeleteId(order.id)}
+
+className="
+w-full
+px-3
+py-2
+text-sm
+text-red-600
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiTrash2 size={14}/>
+
+Delete
+
+</button>
+
+
+</div>
+
+
+}
+
+
+</div>
+
+
+</div>
 
 
 </div>
@@ -1180,6 +1335,13 @@ py-4
 ">
 
 
+<div className="
+flex
+gap-2
+items-center
+">
+
+
 <button
 
 onClick={()=>navigate(
@@ -1202,6 +1364,93 @@ justify-center
 <FiEye size={15}/>
 
 </button>
+
+
+
+
+<div className="relative">
+
+
+<button
+
+onClick={()=>setMenuOpen(
+menuOpen===order.id
+?
+null
+:
+order.id
+)}
+
+className="
+w-8
+h-8
+bg-gray-100
+rounded-lg
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiMoreVertical size={15}/>
+
+</button>
+
+
+
+
+{
+
+menuOpen===order.id &&
+
+
+<div className="
+absolute
+right-0
+top-10
+bg-white
+border
+rounded-lg
+shadow-lg
+w-32
+z-50
+">
+
+
+<button
+
+onClick={()=>setDeleteId(order.id)}
+
+className="
+px-3
+py-2
+text-red-600
+text-sm
+flex
+gap-2
+"
+
+>
+
+<FiTrash2 size={14}/>
+
+Delete
+
+</button>
+
+
+</div>
+
+
+}
+
+
+
+</div>
+
+
+</div>
 
 
 </td>
@@ -1374,7 +1623,122 @@ text-slate-900
 
 </div>
 
+{
 
+deleteId &&
+
+
+<div
+
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[100]
+"
+
+>
+
+
+<div
+
+className="
+bg-white
+rounded-xl
+p-5
+w-80
+text-center
+"
+
+>
+
+
+<h3 className="
+font-black
+text-lg
+">
+
+Are you sure?
+
+</h3>
+
+
+<p className="
+text-sm
+text-gray-500
+mt-2
+">
+
+Delete this return order permanently?
+
+</p>
+
+
+
+
+<div className="
+flex
+gap-3
+mt-5
+">
+
+
+<button
+
+onClick={()=>setDeleteId(null)}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-gray-100
+font-bold
+"
+
+>
+
+No
+
+</button>
+
+
+
+<button
+
+onClick={handleDelete}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-red-500
+text-white
+font-bold
+"
+
+>
+
+Yes
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+}
+
+  
 </div>
 
 )
