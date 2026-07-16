@@ -15,6 +15,7 @@ import RecentActivities from "../pages/user/RecentActivities";
 import ChangePassword from "../pages/user/ChangePassword";
 import DeleteAccount from "../pages/user/DeleteAccount";
 import ProfileEditPage from "../pages/ProfileEditPage";
+import UserOrderDetails from "../pages/user/UserOrderDetails";
 
 
 /* =========================
@@ -200,6 +201,11 @@ export default function AppRoutes() {
         path="/profile/edit"
         element={<ProfileEditPage />}
       />
+
+           <Route
+ path="orders/:id"
+ element={<UserOrderDetails />}
+/>
 
 
         </Route>
