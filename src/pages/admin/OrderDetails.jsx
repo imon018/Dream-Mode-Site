@@ -18,6 +18,7 @@ import {
   FiMapPin,
   FiTrash2,
   FiPackage,
+  FiCreditCard,
 } from "react-icons/fi";
 
 
