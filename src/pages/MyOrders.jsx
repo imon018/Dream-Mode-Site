@@ -755,6 +755,8 @@ export default function MyOrders() {
 
     </div>
 
+    </div>
+
   );
 
 }
