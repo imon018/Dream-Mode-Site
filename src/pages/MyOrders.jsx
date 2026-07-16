@@ -1,89 +1,98 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+} from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 
 import {
+  FiPackage,
+  FiChevronRight,
+} from "react-icons/fi";
+
+import {
   getUserOrders,
-  requestCancelOrder,
-  requestReturnOrder,
 } from "../services/orderService";
 
 import {
-  successToast,
   errorToast,
 } from "../components/ui/Toast";
 
 export default function MyOrders() {
 
   const { user } = useAuth();
+
   const navigate = useNavigate();
 
-  const [orders, setOrders] =
-    useState([]);
+  const [orders, setOrders] = useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [processingId, setProcessingId] =
-    useState("");
+  const [filter, setFilter] =
+    useState("All");
 
 
 
   useEffect(() => {
 
-    const loadOrders =
-      async () => {
+    async function loadOrders() {
 
-        if (!user) {
+      if (!user) {
 
-          setLoading(false);
+        setLoading(false);
 
-          return;
+        return;
 
-        }
+      }
 
-        try {
+      try {
 
-          const data =
-            await getUserOrders(
-              user.email
-            );
-
-          const sorted =
-            data.sort(
-              (a, b) =>
-
-                new Date(
-                  b.createdAt
-                )
-
-                -
-
-                new Date(
-                  a.createdAt
-                )
-
-            );
-
-          setOrders(sorted);
-
-        } catch (error) {
-
-          console.log(error);
-
-          errorToast(
-            "Failed to load orders."
+        const data =
+          await getUserOrders(
+            user.email
           );
 
-        } finally {
+        const sorted =
+          data.sort(
 
-          setLoading(false);
+            (a, b) =>
 
-        }
+              new Date(
+                b.createdAt
+              ) -
 
-      };
+              new Date(
+                a.createdAt
+              )
+
+          );
+
+        setOrders(sorted);
+
+      }
+
+      catch (error) {
+
+        console.log(error);
+
+        errorToast(
+          "Failed to load orders."
+        );
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    }
 
     loadOrders();
 
@@ -91,118 +100,95 @@ export default function MyOrders() {
 
 
 
-  const statusStyle =
-    (status) => {
+  const tabs = [
 
-      if (status === "Delivered")
-        return "bg-green-100 text-green-700";
+    "All",
 
-      if (status === "Shipped")
-        return "bg-purple-100 text-purple-700";
+    "Pending",
 
-      if (status === "Processing")
-        return "bg-blue-100 text-blue-700";
+    "Processing",
 
-      if (status === "Cancelled")
-        return "bg-red-100 text-red-700";
+    "Shipped",
 
-      return "bg-yellow-100 text-yellow-700";
+    "Delivered",
 
-    };
+    "Cancelled",
+
+  ];
 
 
 
-  const handleCancelRequest =
-    async (id) => {
+  const filteredOrders =
+    useMemo(() => {
 
-      try {
+      if (filter === "All")
+        return orders;
 
-        setProcessingId(id);
+      return orders.filter(
 
-        await requestCancelOrder(id);
+        order =>
+          order.status === filter
 
-        setOrders((prev) =>
+      );
 
-          prev.map((order) =>
+    }, [
+      orders,
+      filter,
+    ]);
 
-            order.id === id
 
-              ? {
-                  ...order,
-                  cancelRequested: true,
-                }
 
-              : order
+  const totalOrders =
+    orders.length;
 
-          )
 
-        );
 
-        successToast(
-          "Cancel request sent."
-        );
+  const totalSpent =
+    orders.reduce(
 
-      } catch (error) {
+      (sum, order) =>
 
-        console.log(error);
+        sum +
 
-        errorToast(
-          "Failed to send request."
-        );
+        Number(
+          order.total || 0
+        ),
 
-      } finally {
+      0
 
-        setProcessingId("");
+    );
 
-      }
 
-    };
 
-  const handleReturnRequest =
-    async (id) => {
+  function statusStyle(status) {
 
-      try {
+    if (status === "Delivered") {
 
-        setProcessingId(id);
+      return "bg-green-100 text-green-700";
 
-        await requestReturnOrder(id);
+    }
 
-        setOrders((prev) =>
+    if (status === "Processing") {
 
-          prev.map((order) =>
+      return "bg-blue-100 text-blue-700";
 
-            order.id === id
+    }
 
-              ? {
-                  ...order,
-                  returnRequested: true,
-                }
+    if (status === "Shipped") {
 
-              : order
+      return "bg-purple-100 text-purple-700";
 
-          )
+    }
 
-        );
+    if (status === "Cancelled") {
 
-        successToast(
-          "Return request sent."
-        );
+      return "bg-red-100 text-red-700";
 
-      } catch (error) {
+    }
 
-        console.log(error);
+    return "bg-yellow-100 text-yellow-700";
 
-        errorToast(
-          "Failed to send request."
-        );
-
-      } finally {
-
-        setProcessingId("");
-
-      }
-
-    };
+  }
 
 
 
@@ -210,7 +196,14 @@ export default function MyOrders() {
 
     return (
 
-      <div className="text-center py-20">
+      <div
+        className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        "
+      >
 
         Please login first.
 
@@ -226,7 +219,15 @@ export default function MyOrders() {
 
     return (
 
-      <div className="text-center py-20">
+      <div
+        className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        font-bold
+        "
+      >
 
         Loading Orders...
 
@@ -240,350 +241,529 @@ export default function MyOrders() {
 
   return (
 
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <div
+      className="
+      bg-[#faf9f6]
+      min-h-screen
+      p-4
+      space-y-4
+      "
+    >
 
-      <h1 className="text-4xl font-bold mb-8">
+            {/* HEADER */}
 
+      <h1
+        className="
+        text-xl
+        font-bold
+        "
+      >
         My Orders
-
       </h1>
+
+
+
+      {/* FILTER */}
+
+      <div
+        className="
+        flex
+        gap-2
+        overflow-x-auto
+        pb-1
+        no-scrollbar
+        "
+      >
+
+        {
+
+          tabs.map((tab)=>(
+
+            <button
+
+              key={tab}
+
+              onClick={()=>
+                setFilter(tab)
+              }
+
+              className={`
+              whitespace-nowrap
+              px-4
+              h-9
+              rounded-full
+              text-xs
+              font-bold
+              border
+              transition
+
+              ${
+                filter===tab
+
+                ?
+
+                "bg-amber-500 text-white border-amber-500"
+
+                :
+
+                "bg-white border-gray-100 text-gray-600"
+
+              }
+
+              `}
+
+            >
+
+              {tab}
+
+            </button>
+
+          ))
+
+        }
+
+      </div>
+
+
+
+      {/* SUMMARY */}
+
+      <div
+        className="
+        bg-white
+        border
+        border-gray-100
+        rounded-lg
+        p-4
+        shadow-sm
+        flex
+        justify-between
+        items-center
+        "
+      >
+
+        <div
+          className="
+          flex
+          gap-8
+          "
+        >
+
+          <div>
+
+            <p
+              className="
+              text-xs
+              text-gray-500
+              "
+            >
+              Total Orders
+            </p>
+
+            <h2
+              className="
+              mt-1
+              text-2xl
+              font-black
+              "
+            >
+              {totalOrders}
+            </h2>
+
+          </div>
+
+
+
+          <div>
+
+            <p
+              className="
+              text-xs
+              text-gray-500
+              "
+            >
+              Total Spent
+            </p>
+
+            <h2
+              className="
+              mt-1
+              text-2xl
+              font-black
+              "
+            >
+              ৳ {totalSpent}
+            </h2>
+
+          </div>
+
+        </div>
+
+
+
+        <div
+          className="
+          w-12
+          h-12
+          rounded-full
+          bg-amber-50
+          flex
+          items-center
+          justify-center
+          text-amber-600
+          text-xl
+          "
+        >
+
+          📦
+
+        </div>
+
+      </div>
 
 
 
       {
 
-        orders.length === 0
+        filteredOrders.length===0
 
-          ?
+        ?
 
-          (
+        (
 
-            <div className="bg-white shadow rounded-3xl p-10 text-center">
+          <div
+            className="
+            bg-white
+            border
+            border-gray-100
+            rounded-lg
+            p-8
+            shadow-sm
+            text-center
+            "
+          >
 
-              <h2 className="text-2xl font-bold">
+            <h2
+              className="
+              text-lg
+              font-bold
+              "
+            >
+              No Orders Found
+            </h2>
 
-                No Orders Found
+            <p
+              className="
+              text-sm
+              text-gray-500
+              mt-2
+              "
+            >
+              No orders available in this status.
+            </p>
 
-              </h2>
+          </div>
 
-              <p className="text-gray-500 mt-3">
+        )
 
-                You have not placed any order yet.
+        :
 
-              </p>
+        (
 
-            </div>
+          <div
+            className="
+            space-y-4
+            "
+          >
 
-          )
+            {
 
-          :
+  filteredOrders.map((order)=>(
 
-          (
+    <div
 
-            <div className="space-y-8">
+      key={order.id}
+
+      className="
+      bg-white
+      border
+      border-gray-100
+      rounded-lg
+      p-4
+      shadow-sm
+      "
+
+    >
+
+
+
+      {/* TOP */}
+
+      <div
+        className="
+        flex
+        justify-between
+        items-start
+        "
+      >
+
+        <div>
+
+          <div
+            className="
+            flex
+            items-center
+            gap-2
+            "
+          >
+
+            <FiPackage
+              className="
+              text-amber-500
+              "
+            />
+
+            <h2
+              className="
+              font-bold
+              text-sm
+              "
+            >
+
+              Order #
+
+              {order.id?.slice(0,8)}
+
+            </h2>
+
+          </div>
+
+
+
+          <p
+            className="
+            text-xs
+            text-gray-500
+            mt-1
+            "
+          >
+
+            {
+
+              new Date(
+                order.createdAt
+              ).toLocaleString()
+
+            }
+
+          </p>
+
+        </div>
+
+
+
+        <span
+
+          className={`
+          text-xs
+          font-bold
+          px-3
+          py-1.5
+          rounded-full
+
+          ${
+            statusStyle(
+              order.status
+            )
+          }
+
+          `}
+
+        >
+
+          {order.status}
+
+        </span>
+
+      </div>
+
+
+
+      <hr
+        className="
+        my-4
+        border-gray-100
+        "
+      />
+
+
+
+      {/* PRODUCT */}
+
+      <div
+        className="
+        flex
+        justify-between
+        items-center
+        "
+      >
+
+        <div
+          className="
+          flex
+          items-center
+          gap-3
+          "
+        >
+
+          <img
+
+            src={
+              order.items?.[0]?.image ||
+
+              "https://via.placeholder.com/60"
+            }
+
+            className="
+            w-16
+            h-16
+            rounded-lg
+            object-cover
+            bg-gray-50
+            "
+
+          />
+
+
+
+          <div>
+
+            <h3
+              className="
+              font-bold
+              text-sm
+              "
+            >
 
               {
 
-                orders.map((order) => (
-
-                  <div
-
-                    key={order.id}
-
-                    className="bg-white rounded-3xl shadow-lg p-6"
-
-                  >
-
-                    <div className="flex justify-between items-start border-b pb-5">
-
-                      <div>
-
-                        <h2 className="font-bold text-lg">
-
-                          Order ID
-
-                        </h2>
-
-                        <p className="text-sm text-gray-500 break-all">
-
-                          {order.id}
-
-                        </p>
-
-                      </div>
-
-                      <span
-
-                        className={`px-4 py-2 rounded-full text-sm font-semibold ${statusStyle(order.status)}`}
-
-                      >
-
-                        {order.status}
-
-                      </span>
-
-                    </div>
-
-                                        <div className="mt-6">
-
-                      <h3 className="font-bold text-xl mb-4">
-
-                        Products
-
-                      </h3>
-
-                      <div className="space-y-4">
-
-                        {
-
-                          order.items?.map(
-
-                            (item, index) => (
-
-                              <div
-
-                                key={index}
-
-                                className="flex items-center justify-between border-b pb-4"
-
-                              >
-
-                                <div className="flex items-center gap-4">
-
-                                  <img
-
-                                    src={
-                                      item.image ||
-                                      "https://via.placeholder.com/80"
-                                    }
-
-                                    alt={item.name}
-
-                                    className="w-20 h-20 rounded-xl object-cover"
-
-                                  />
-
-                                  <div>
-
-                                    <h4 className="font-bold">
-
-                                      {item.name}
-
-                                    </h4>
-
-                                    <p className="text-gray-500">
-
-                                      Quantity: {item.quantity || 1}
-
-                                    </p>
-
-                                  </div>
-                                  
-                                  <button
-
-  onClick={() =>
-    navigate(
-      `/product/${item.id}`
-    )
-  }
-
-  className="mt-2 bg-blue-600 text-white px-4 py-1 rounded-lg text-sm"
-
->
-
-  View Product
-
-</button>
-
-                                </div>
-
-                                <p className="font-bold">
-
-                                  ৳
-
-                                  {
-
-                                    item.price *
-
-                                    (item.quantity || 1)
-
-                                  }
-
-                                </p>
-
-                              </div>
-
-                            )
-
-                          )
-
-                        }
-
-                      </div>
-
-                    </div>
-
-
-
-                    <div className="mt-6 space-y-3">
-
-                      <div className="flex justify-between">
-
-                        <span>Total</span>
-
-                        <span className="font-bold">
-
-                          ৳ {order.total}
-
-                        </span>
-
-                      </div>
-
-
-
-                      <div className="flex justify-between gap-5">
-
-                        <span>Address</span>
-
-                        <span className="text-gray-600 text-right">
-
-                          {order.address}
-
-                        </span>
-
-                      </div>
-
-
-
-                      <div className="flex justify-between">
-
-                        <span>Date</span>
-
-                        <span>
-
-                          {
-
-                            new Date(
-
-                              order.createdAt
-
-                            ).toLocaleString()
-
-                          }
-
-                        </span>
-
-                      </div>
-
-                    </div>
-
-
-
-                    <div className="mt-6 flex gap-4">
-
-                                            {
-
-                        (order.status === "Pending" ||
-
-                         order.status === "Processing") && (
-
-                          <button
-
-                            onClick={() =>
-
-                              handleCancelRequest(order.id)
-
-                            }
-
-                            disabled={
-
-                              processingId === order.id ||
-
-                              order.cancelRequested
-
-                            }
-
-                            className="bg-red-600 text-white px-5 py-2 rounded-xl disabled:opacity-50"
-
-                          >
-
-                            {
-
-                              order.cancelRequested
-
-                                ? "Cancel Requested"
-
-                                : processingId === order.id
-
-                                ? "Sending..."
-
-                                : "Cancel Order"
-
-                            }
-
-                          </button>
-
-                        )
-
-                      }
-
-
-
-                      {
-
-                        order.status === "Delivered" && (
-
-                          <button
-
-                            onClick={() =>
-
-                              handleReturnRequest(order.id)
-
-                            }
-
-                            disabled={
-
-                              processingId === order.id ||
-
-                              order.returnRequested
-
-                            }
-
-                            className="bg-blue-600 text-white px-5 py-2 rounded-xl disabled:opacity-50"
-
-                          >
-
-                            {
-
-                              order.returnRequested
-
-                                ? "Return Requested"
-
-                                : processingId === order.id
-
-                                ? "Sending..."
-
-                                : "Return Order"
-
-                            }
-
-                          </button>
-
-                        )
-
-                      }
-
-                    </div>
-
-                  </div>
-
-                ))
+                order.items?.[0]?.name
 
               }
 
-            </div>
+            </h3>
+
+
+
+            <p
+              className="
+              text-xs
+              text-gray-500
+              mt-1
+              "
+            >
+
+              Qty :
+
+              {
+
+                order.items?.[0]?.quantity || 1
+
+              }
+
+            </p>
+
+          </div>
+
+        </div>
+
+
+
+        <p
+          className="
+          font-bold
+          text-base
+          "
+        >
+
+          ৳
+
+          {
+
+            Number(
+              order.items?.[0]?.price || 0
+            )
+
+            *
+
+            Number(
+              order.items?.[0]?.quantity || 1
+            )
+
+          }
+
+        </p>
+
+      </div>
+
+
+
+      <hr
+        className="
+        my-4
+        border-gray-100
+        "
+      />
+
+
+
+      {/* VIEW DETAILS */}
+
+      <button
+
+        onClick={()=>
+
+          navigate(
+
+            `/profile/orders/${order.id}`
 
           )
+
+        }
+
+        className="
+        w-full
+        flex
+        justify-between
+        items-center
+        text-sm
+        font-bold
+        text-amber-600
+        "
+
+      >
+
+        <span>
+
+          View Details
+
+        </span>
+
+        <FiChevronRight
+          size={18}
+        />
+
+      </button>
+
+    </div>
+
+  ))
+
+}
+
+                      </div>
+
+        )
 
       }
 
@@ -592,4 +772,3 @@ export default function MyOrders() {
   );
 
 }
-
