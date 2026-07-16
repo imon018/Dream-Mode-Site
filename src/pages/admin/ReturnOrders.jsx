@@ -758,25 +758,16 @@ w-full
 
 {/* MOBILE RETURN LIST */}
 
-<div
-
-className="
+<div className="
 lg:hidden
 space-y-3
-"
-
->
-
+">
 
 {
-
 filteredOrders.map(order=>(
 
-
 <div
-
 key={order.id}
-
 className="
 bg-white
 border
@@ -785,240 +776,133 @@ rounded-xl
 p-3
 shadow-sm
 "
-
 >
 
-
-
-<div
-
-className="
+<div className="
 flex
 justify-between
 items-center
-"
+">
 
->
-
-
-<p
-
-className="
+<p className="
 font-bold
 text-sm
-"
-
->
-
+">
 #{order.id.slice(0,8)}
-
 </p>
 
 
-
-
-<p
-
-className="
+<p className="
 text-xs
 text-gray-500
-"
-
->
-
+">
 {
-
 new Date(
-order.returnRequest.createdAt
+order.returnRequest?.createdAt
 )
 .toLocaleDateString()
-
 }
-
 </p>
-
 
 </div>
 
 
-
-
-
-
-
-
-
-<div
-
-className="
+<div className="
 mt-3
 flex
 items-center
 gap-3
-"
-
->
-
+">
 
 <img
-
 src={
-
 order.customerPhoto ||
-
-`https://ui-avatars.com/api/?name=${encodeURIComponent(
-order.customerName || "User"
-)}`
-
+`https://ui-avatars.com/api/?name=${encodeURIComponent(order.customerName || "User")}`
 }
-
 className="
 w-10
 h-10
 rounded-full
 object-cover
 "
-
 />
-
-
-
 
 
 <div>
 
-
-<p
-
-className="
+<p className="
 font-semibold
 text-sm
-"
-
->
-
+">
 {order.customerName}
-
 </p>
 
 
-
-<p
-
-className="
+<p className="
 text-xs
 text-gray-500
-"
-
->
-
+">
 {order.email}
-
 </p>
 
 
 </div>
 
-
 </div>
 
 
-
-
-
-
-
-
-
-<div
-
-className="
+<div className="
 mt-3
 flex
 justify-between
 items-center
-"
-
->
+">
 
 
 <select
-
-value={
-order.returnRequest?.status || "Submitted"
-}
-
+value={order.returnRequest?.status || "Submitted"}
 onChange={
-e=>
-changeStatus(
+e=>changeStatus(
 order.id,
 e.target.value
 )
 }
-
 className={`
 text-xs
 font-bold
 px-3
 py-2
 rounded-full
-${statusColor(
-order.returnRequest?.status
-)}
+${statusColor(order.returnRequest?.status)}
 `}
-
 >
-
 
 {
-
 statuses.slice(1).map(status=>(
 
-
-<option
-
-key={status}
-
->
-
+<option key={status}>
 {status}
-
 </option>
 
-
 ))
-
-
 }
-
 
 </select>
 
 
 
-
-
-
-
-
-
-<div
-
-className="
+<div className="
 flex
-items-center
 gap-2
-"
-
->
+">
 
 
 <button
-
-onClick={()=>navigate(
+onClick={()=>
+navigate(
 `/admin/return-orders/${order.id}`
-)}
-
+)
+}
 className="
 w-8
 h-8
@@ -1029,7 +913,6 @@ flex
 items-center
 justify-center
 "
-
 >
 
 <FiEye size={15}/>
@@ -1038,27 +921,21 @@ justify-center
 
 
 
-
-
-
-<div
-
-className="
+<div className="
 relative
-"
-
->
-
+">
 
 <button
 
-onClick={()=>setMenuOpen(
+onClick={()=>
+setMenuOpen(
 menuOpen===order.id
 ?
 null
 :
 order.id
-)}
+)
+}
 
 className="
 w-8
@@ -1069,7 +946,6 @@ flex
 items-center
 justify-center
 "
-
 >
 
 <FiMoreVertical size={15}/>
@@ -1078,15 +954,10 @@ justify-center
 
 
 
-
 {
-
 menuOpen===order.id &&
 
-
-<div
-
-className="
+<div className="
 absolute
 right-0
 top-10
@@ -1096,10 +967,7 @@ rounded-lg
 shadow-lg
 w-32
 z-50
-"
-
->
-
+">
 
 <button
 
@@ -1121,7 +989,6 @@ flex
 items-center
 gap-2
 "
-
 >
 
 <FiTrash2 size={14}/>
@@ -1130,9 +997,7 @@ Delete
 
 </button>
 
-
 </div>
-
 
 }
 
@@ -1148,11 +1013,16 @@ Delete
 
 ))
 
-
 }
 
-
 </div>
+
+
+
+
+
+
+
 
 
                    {/* DESKTOP TABLE */}
