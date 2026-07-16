@@ -14,7 +14,14 @@ FiSearch,
 FiRefreshCcw,
 FiEye,
 FiMoreVertical,
-FiCalendar
+FiCalendar,
+FiShoppingBag,
+FiSend,
+FiCheckCircle,
+FiDollarSign,
+FiTruck,
+FiPackage,
+FiXCircle
 } from "react-icons/fi";
 
 
@@ -461,15 +468,23 @@ gap-2
 
 
 <Stat
+<StatCard
+
+icon={<FiShoppingBag size={18}/>}
 
 title="Total"
 
 value={orders.length}
 
+color="orange"
+
 />
 
 
-<Stat
+
+<StatCard
+
+icon={<FiSend size={18}/>}
 
 title="Submitted"
 
@@ -480,10 +495,15 @@ o.returnRequest?.status==="Submitted"
 ).length
 }
 
+color="yellow"
+
 />
 
 
-<Stat
+
+<StatCard
+
+icon={<FiCheckCircle size={18}/>}
 
 title="Accepted"
 
@@ -494,10 +514,15 @@ o.returnRequest?.status==="Accepted"
 ).length
 }
 
+color="blue"
+
 />
 
 
-<Stat
+
+<StatCard
+
+icon={<FiDollarSign size={18}/>}
 
 title="Refunded"
 
@@ -508,8 +533,9 @@ o.returnRequest?.status==="Refunded"
 ).length
 }
 
-/>
+color="green"
 
+/>
 
 </div>
 
@@ -1272,10 +1298,94 @@ return "bg-yellow-100 text-yellow-700";
 
 
 
-function Stat({
+function StatCard({
+icon,
 title,
-value
+value,
+color
 }){
+
+
+const colors={
+
+orange:
+"bg-orange-50 text-orange-500",
+
+yellow:
+"bg-yellow-50 text-yellow-500",
+
+blue:
+"bg-blue-50 text-blue-500",
+
+green:
+"bg-green-50 text-green-500"
+
+};
+
+
+
+return(
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-xl
+px-3
+py-3
+flex
+items-center
+gap-3
+">
+
+
+<div className={`
+w-9
+h-9
+rounded-lg
+flex
+items-center
+justify-center
+${colors[color]}
+`}>
+
+{icon}
+
+</div>
+
+
+
+<div>
+
+<p className="
+text-[11px]
+text-gray-500
+">
+
+{title}
+
+</p>
+
+
+<h2 className="
+text-lg
+font-black
+text-slate-900
+">
+
+{value}
+
+</h2>
+
+
+</div>
+
+
+</div>
+
+)
+
+}
 
 
 return(
