@@ -37,7 +37,6 @@ import {
 
 
 
-
 export default function ReturnOrders(){
 
 
@@ -47,26 +46,19 @@ const navigate = useNavigate();
 
 const [orders,setOrders] = useState([]);
 
-
 const [loading,setLoading] = useState(true);
-
 
 const [search,setSearch] = useState("");
 
-
 const [menuOpen,setMenuOpen] = useState(null);
 
-
 const [deleteId,setDeleteId] = useState(null);
-
 
 const [statusFilter,setStatusFilter] =
 useState("All Status");
 
-
 const [dateFilter,setDateFilter] =
 useState("");
-
 
 
 
@@ -89,9 +81,6 @@ const statuses = [
 
 
 
-
-
-
 useEffect(()=>{
 
 loadReturns();
@@ -102,59 +91,39 @@ loadReturns();
 
 
 
-
-
-
-
 async function loadReturns(){
-
 
 try{
 
-
-const data =
-await getReturnOrders();
-
+const data = await getReturnOrders();
 
 setOrders(data || []);
-
 
 }
 
 catch(error){
 
-
 console.log(error);
-
 
 errorToast(
 "Failed to load return orders"
 );
 
-
 }
 
 finally{
 
-
 setLoading(false);
 
-
 }
 
-
 }
-
-
-
-
 
 
 
 
 
 async function changeStatus(id,status){
-
 
 try{
 
@@ -166,35 +135,26 @@ status
 
 
 
-setOrders(prev=>
+setOrders(prev =>
 
 prev.map(order=>{
 
-
-if(order.id===id){
-
+if(order.id === id){
 
 return {
 
 ...order,
 
-
 returnRequest:{
-
 ...order.returnRequest,
-
 status
-
 }
 
 };
 
-
 }
 
-
 return order;
-
 
 })
 
@@ -207,28 +167,19 @@ successToast(
 );
 
 
-
 }
 
 catch(error){
 
-
 console.log(error);
-
 
 errorToast(
 "Status update failed"
 );
 
-
 }
 
-
 }
-
-
-
-
 
 
 
@@ -236,17 +187,14 @@ errorToast(
 
 async function handleDelete(){
 
-
 try{
 
 
-await deleteOrder(
-deleteId
-);
+await deleteOrder(deleteId);
 
 
 
-setOrders(prev=>
+setOrders(prev =>
 
 prev.filter(
 order=>order.id !== deleteId
@@ -269,31 +217,21 @@ setDeleteId(null);
 
 catch(error){
 
-
 console.log(error);
-
 
 errorToast(
 "Delete failed"
 );
 
+}
 
 }
 
 
-}
 
 
 
-
-
-
-
-
-
-const filteredOrders =
-
-orders.filter(order=>{
+const filteredOrders = orders.filter(order=>{
 
 
 const text =
@@ -322,7 +260,6 @@ order.id
 
 
 const status =
-
 order.returnRequest?.status ||
 "Submitted";
 
@@ -330,7 +267,7 @@ order.returnRequest?.status ||
 
 const statusMatch =
 
-statusFilter==="All Status"
+statusFilter === "All Status"
 
 ?
 
@@ -338,13 +275,13 @@ true
 
 :
 
-status===statusFilter;
+status === statusFilter;
 
 
 
 const dateMatch =
 
-dateFilter===""
+dateFilter === ""
 
 ?
 
@@ -353,11 +290,11 @@ true
 :
 
 new Date(
-order.returnRequest.createdAt
+order.returnRequest?.createdAt
 )
 .toISOString()
 .slice(0,10)
-===dateFilter;
+=== dateFilter;
 
 
 
@@ -376,12 +313,7 @@ dateMatch
 
 
 
-
-
-
-
 if(loading){
-
 
 return(
 
@@ -403,12 +335,13 @@ Loading Return Orders...
 
 );
 
-
 }
 
 
-return(
 
+
+
+return(
 
 <div
 
@@ -430,7 +363,6 @@ lg:p-6
 
 <div>
 
-
 <h1
 
 className="
@@ -444,7 +376,6 @@ text-slate-900
 Return Orders
 
 </h1>
-
 
 
 <p
@@ -463,9 +394,6 @@ Dashboard › Return Orders
 
 
 </div>
-
-
-
 
 
 
@@ -500,8 +428,6 @@ color="orange"
 
 
 
-
-
 <StatCard
 
 icon={<FiSend size={18}/>}
@@ -521,8 +447,6 @@ color="yellow"
 
 
 
-
-
 <StatCard
 
 icon={<FiCheckCircle size={18}/>}
@@ -539,8 +463,6 @@ item.returnRequest?.status==="Accepted"
 color="blue"
 
 />
-
-
 
 
 
@@ -569,18 +491,9 @@ color="green"
 
 
 
-
-
-
 {/* SEARCH */}
 
-<div
-
-className="
-relative
-"
-
->
+<div className="relative">
 
 
 <FiSearch
@@ -594,8 +507,6 @@ text-gray-400
 "
 
 />
-
-
 
 
 <input
@@ -632,8 +543,6 @@ text-sm
 
 
 
-
-
 {/* FILTER */}
 
 <div
@@ -645,7 +554,6 @@ gap-2
 "
 
 >
-
 
 
 <select
@@ -673,7 +581,6 @@ font-semibold
 
 statuses.map(status=>(
 
-
 <option
 
 key={status}
@@ -686,19 +593,12 @@ value={status}
 
 </option>
 
-
 ))
-
 
 }
 
 
 </select>
-
-
-
-
-
 
 
 
@@ -720,8 +620,6 @@ gap-2
 
 
 <FiCalendar size={14}/>
-
-
 
 
 <input
@@ -753,21 +651,27 @@ w-full
 
 
 
-
-
-
 {/* MOBILE RETURN LIST */}
 
-<div className="
+<div
+
+className="
 lg:hidden
 space-y-3
-">
+"
+
+>
+
 
 {
-filteredOrders.map(order=>(
+
+filteredOrders.map((order)=>(
+
 
 <div
+
 key={order.id}
+
 className="
 bg-white
 border
@@ -776,133 +680,184 @@ rounded-xl
 p-3
 shadow-sm
 "
+
 >
 
-<div className="
+
+<div
+
+className="
 flex
 justify-between
 items-center
-">
+"
 
-<p className="
-font-bold
-text-sm
-">
+>
+
+
+<p className="font-bold text-sm">
+
 #{order.id.slice(0,8)}
+
 </p>
 
 
-<p className="
-text-xs
-text-gray-500
-">
+
+<p className="text-xs text-gray-500">
+
 {
 new Date(
 order.returnRequest?.createdAt
 )
 .toLocaleDateString()
 }
+
 </p>
+
 
 </div>
 
 
-<div className="
+
+
+
+<div
+
+className="
 mt-3
 flex
 items-center
 gap-3
-">
+"
+
+>
+
 
 <img
+
 src={
 order.customerPhoto ||
 `https://ui-avatars.com/api/?name=${encodeURIComponent(order.customerName || "User")}`
 }
+
 className="
 w-10
 h-10
 rounded-full
 object-cover
 "
+
 />
 
 
 <div>
 
-<p className="
-font-semibold
-text-sm
-">
+<p className="font-semibold text-sm">
+
 {order.customerName}
+
 </p>
 
 
-<p className="
-text-xs
-text-gray-500
-">
+<p className="text-xs text-gray-500">
+
 {order.email}
+
 </p>
 
 
 </div>
 
+
 </div>
 
 
-<div className="
+  <div
+
+className="
 mt-3
 flex
 justify-between
 items-center
-">
+"
+
+>
 
 
 <select
-value={order.returnRequest?.status || "Submitted"}
+
+value={
+order.returnRequest?.status || "Submitted"
+}
+
 onChange={
-e=>changeStatus(
+e =>
+changeStatus(
 order.id,
 e.target.value
 )
 }
+
 className={`
+
 text-xs
 font-bold
 px-3
 py-2
 rounded-full
-${statusColor(order.returnRequest?.status)}
+
+${statusColor(
+order.returnRequest?.status
+)}
+
 `}
+
 >
 
+
 {
+
 statuses.slice(1).map(status=>(
 
-<option key={status}>
+<option
+
+key={status}
+
+value={status}
+
+>
+
 {status}
+
 </option>
 
 ))
+
 }
+
 
 </select>
 
 
 
-<div className="
+
+
+<div
+
+className="
 flex
 gap-2
-">
+"
+
+>
 
 
 <button
-onClick={()=>
-navigate(
+
+onClick={()=>navigate(
 `/admin/return-orders/${order.id}`
-)
-}
+)}
+
 className="
 w-8
 h-8
@@ -913,6 +868,7 @@ flex
 items-center
 justify-center
 "
+
 >
 
 <FiEye size={15}/>
@@ -921,21 +877,26 @@ justify-center
 
 
 
-<div className="
+
+
+<div
+
+className="
 relative
-">
+"
+
+>
+
 
 <button
 
-onClick={()=>
-setMenuOpen(
+onClick={()=>setMenuOpen(
 menuOpen===order.id
 ?
 null
 :
 order.id
-)
-}
+)}
 
 className="
 w-8
@@ -946,6 +907,7 @@ flex
 items-center
 justify-center
 "
+
 >
 
 <FiMoreVertical size={15}/>
@@ -954,10 +916,15 @@ justify-center
 
 
 
-{
-menuOpen===order.id &&
 
-<div className="
+
+{
+
+menuOpen===order.id && (
+
+<div
+
+className="
 absolute
 right-0
 top-10
@@ -967,7 +934,10 @@ rounded-lg
 shadow-lg
 w-32
 z-50
-">
+"
+
+>
+
 
 <button
 
@@ -989,7 +959,9 @@ flex
 items-center
 gap-2
 "
+
 >
+
 
 <FiTrash2 size={14}/>
 
@@ -997,7 +969,10 @@ Delete
 
 </button>
 
+
 </div>
+
+)
 
 }
 
@@ -1015,6 +990,7 @@ Delete
 
 }
 
+
 </div>
 
 
@@ -1023,9 +999,7 @@ Delete
 
 
 
-
-
-                   {/* DESKTOP TABLE */}
+{/* DESKTOP TABLE */}
 
 <div
 
@@ -1041,98 +1015,51 @@ overflow-hidden
 >
 
 
-<table
-
-className="
-w-full
-"
-
->
+<table className="w-full">
 
 
-<thead
-
-className="
-bg-gray-50
-"
-
->
+<thead className="bg-gray-50">
 
 
 <tr>
 
 
-<th className="
-px-5
-py-3
-text-left
-text-xs
-">
+<th className="px-5 py-3 text-left text-xs">
 
 ID
 
 </th>
 
 
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-">
+<th className="px-5 py-3 text-left text-xs">
 
 Customer
 
 </th>
 
 
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-">
+<th className="px-5 py-3 text-left text-xs">
 
 Date
 
 </th>
 
 
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-">
+<th className="px-5 py-3 text-left text-xs">
 
 Return Type
 
 </th>
 
 
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-">
+<th className="px-5 py-3 text-left text-xs">
 
 Status
 
 </th>
 
 
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-">
+<th className="px-5 py-3 text-left text-xs">
 
 Action
 
@@ -1143,8 +1070,6 @@ Action
 
 
 </thead>
-
-
 
 
 
@@ -1169,16 +1094,7 @@ border-t
 >
 
 
-<td
-
-className="
-px-5
-py-4
-font-bold
-text-sm
-"
-
->
+<td className="px-5 py-4 text-sm font-bold">
 
 #{order.id.slice(0,8)}
 
@@ -1188,17 +1104,7 @@ text-sm
 
 
 
-
-
-<td
-
-className="
-px-5
-py-4
-text-sm
-"
-
->
+<td className="px-5 py-4 text-sm">
 
 {order.customerName}
 
@@ -1208,25 +1114,13 @@ text-sm
 
 
 
-
-
-<td
-
-className="
-px-5
-py-4
-text-xs
-"
-
->
+<td className="px-5 py-4 text-xs">
 
 {
-
 new Date(
-order.returnRequest.createdAt
+order.returnRequest?.createdAt
 )
 .toLocaleDateString()
-
 }
 
 </td>
@@ -1235,22 +1129,10 @@ order.returnRequest.createdAt
 
 
 
-
-
-<td
-
-className="
-px-5
-py-4
-text-sm
-"
-
->
+<td className="px-5 py-4 text-sm">
 
 {
-
-order.returnRequest.returnType
-
+order.returnRequest?.returnType
 }
 
 </td>
@@ -1259,37 +1141,22 @@ order.returnRequest.returnType
 
 
 
-
-
-<td
-
-className="
-px-5
-py-4
-"
-
->
+<td className="px-5 py-4">
 
 
 <select
-
 
 value={
 order.returnRequest?.status || "Submitted"
 }
 
-
 onChange={
-
-e=>
-
+e =>
 changeStatus(
 order.id,
 e.target.value
 )
-
 }
-
 
 className={`
 
@@ -1312,10 +1179,11 @@ order.returnRequest?.status
 
 statuses.slice(1).map(status=>(
 
-
 <option
 
 key={status}
+
+value={status}
 
 >
 
@@ -1323,9 +1191,7 @@ key={status}
 
 </option>
 
-
 ))
-
 
 }
 
@@ -1341,16 +1207,7 @@ key={status}
 
 
 
-
-
-<td
-
-className="
-px-5
-py-4
-"
-
->
+<td className="px-5 py-4">
 
 
 <div
@@ -1391,16 +1248,7 @@ justify-center
 
 
 
-
-
-
-<div
-
-className="
-relative
-"
-
->
+<div className="relative">
 
 
 <button
@@ -1411,9 +1259,7 @@ menuOpen===order.id
 null
 :
 order.id
-)
-
-}
+)}
 
 className="
 w-8
@@ -1435,12 +1281,9 @@ justify-center
 
 
 
-
-
 {
 
-menuOpen===order.id &&
-
+menuOpen===order.id && (
 
 <div
 
@@ -1482,6 +1325,7 @@ gap-2
 
 >
 
+
 <FiTrash2 size={14}/>
 
 Delete
@@ -1491,9 +1335,9 @@ Delete
 
 </div>
 
+)
 
 }
-
 
 
 </div>
@@ -1505,12 +1349,10 @@ Delete
 </td>
 
 
-
 </tr>
 
 
 ))
-
 
 }
 
@@ -1530,15 +1372,11 @@ Delete
 
 
 
-
-{/* DELETE CONFIRM MODAL */}
-
-
+{/* DELETE MODAL */}
 
 {
 
-deleteId &&
-
+deleteId && (
 
 <div
 
@@ -1568,14 +1406,7 @@ text-center
 >
 
 
-<h3
-
-className="
-font-black
-text-lg
-"
-
->
+<h3 className="font-black text-lg">
 
 Are you sure?
 
@@ -1583,15 +1414,7 @@ Are you sure?
 
 
 
-<p
-
-className="
-text-sm
-text-gray-500
-mt-2
-"
-
->
+<p className="text-sm text-gray-500 mt-2">
 
 Delete this return order permanently?
 
@@ -1599,19 +1422,7 @@ Delete this return order permanently?
 
 
 
-
-
-
-
-<div
-
-className="
-flex
-gap-3
-mt-5
-"
-
->
+<div className="flex gap-3 mt-5">
 
 
 <button
@@ -1631,10 +1442,6 @@ font-bold
 No
 
 </button>
-
-
-
-
 
 
 
@@ -1666,19 +1473,18 @@ Yes
 
 </div>
 
+)
 
 }
 
 
-  </div>
+</div>
 
 
 );
 
+
 }
-
-
-
 
 
 
@@ -1696,11 +1502,9 @@ case "Accepted":
 return "bg-green-100 text-green-700";
 
 
-
 case "Rejected":
 
 return "bg-red-100 text-red-700";
-
 
 
 case "Picked Up":
@@ -1708,11 +1512,9 @@ case "Picked Up":
 return "bg-blue-100 text-blue-700";
 
 
-
 case "Reviewing":
 
 return "bg-purple-100 text-purple-700";
-
 
 
 case "Shipped":
@@ -1720,17 +1522,14 @@ case "Shipped":
 return "bg-indigo-100 text-indigo-700";
 
 
-
 case "Exchanged":
 
 return "bg-orange-100 text-orange-700";
 
 
-
 case "Refunded":
 
 return "bg-emerald-100 text-emerald-700";
-
 
 
 default:
@@ -1742,10 +1541,6 @@ return "bg-yellow-100 text-yellow-700";
 
 
 }
-
-
-
-
 
 
 
@@ -1764,29 +1559,23 @@ color
 }){
 
 
-
 const colors={
 
 
 orange:
 "bg-orange-50 text-orange-500",
 
-
 yellow:
 "bg-yellow-50 text-yellow-500",
 
-
 blue:
 "bg-blue-50 text-blue-500",
-
 
 green:
 "bg-green-50 text-green-500"
 
 
 };
-
-
 
 
 
@@ -1834,37 +1623,17 @@ ${colors[color]}
 
 
 
-
-
-
 <div>
 
 
-<p
-
-className="
-text-[11px]
-text-gray-500
-"
-
->
+<p className="text-[11px] text-gray-500">
 
 {title}
 
 </p>
 
 
-
-
-<h2
-
-className="
-text-lg
-font-black
-text-slate-900
-"
-
->
+<h2 className="text-lg font-black text-slate-900">
 
 {value}
 
