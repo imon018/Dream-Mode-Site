@@ -19,10 +19,23 @@ export default function MainLayout() {
 
 
 
-  const hideBottomArea =
+  const isUserPanel =
     location.pathname.startsWith(
-      "/profile/orders/"
+      "/profile"
     );
+
+
+
+  const isAdminPanel =
+    location.pathname.startsWith(
+      "/admin"
+    );
+
+
+
+  const hideFooter =
+    isUserPanel ||
+    isAdminPanel;
 
 
 
@@ -31,16 +44,25 @@ export default function MainLayout() {
     <>
 
 
-      <AnnouncementBar />
+      {
+        !isAdminPanel && (
+
+          <>
+            <AnnouncementBar />
+
+            <Header />
+          </>
+
+        )
+      }
 
 
-      <Header />
 
 
 
       <main
         className={
-          hideBottomArea
+          hideFooter
 
           ?
 
@@ -60,16 +82,12 @@ export default function MainLayout() {
 
 
 
-      <WhatsAppButton />
-
-
-
-
-
       {
-        !hideBottomArea && (
+        !hideFooter && (
 
           <>
+
+            <WhatsAppButton />
 
             <MobileBottomNav />
 
