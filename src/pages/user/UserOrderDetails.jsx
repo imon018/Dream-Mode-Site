@@ -43,6 +43,8 @@ export default function UserOrderDetails() {
 
   const [loading, setLoading] = useState(true);
 
+  const [showCancelModal,setShowCancelModal] = useState(false);
+
   useEffect(() => {
     loadOrder();
   }, [user]);
@@ -218,15 +220,136 @@ export default function UserOrderDetails() {
   "
 >
 
-  <div
-    className="
-    max-w-xl
-    mx-auto
-    space-y-4
-    "
-  >
+      return (
 
-    {/* HEADER */}
+<div
+className="
+min-h-screen
+bg-[#FCFAF5]
+px-4
+py-5
+"
+>
+
+
+{/* CANCEL CONFIRM MODAL */}
+
+{
+showCancelModal && (
+
+<div
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-50
+px-5
+"
+>
+
+<div
+className="
+bg-white
+rounded-xl
+p-6
+w-full
+max-w-sm
+shadow-xl
+"
+>
+
+
+<h3
+className="
+font-bold
+text-lg
+mb-3
+"
+>
+Are you sure to Cancel this order?
+</h3>
+
+
+<p
+className="
+text-sm
+text-gray-500
+mb-6
+"
+>
+This action cannot be undone.
+</p>
+
+
+<div
+className="
+grid
+grid-cols-2
+gap-3
+"
+>
+
+
+<button
+onClick={()=>{
+setShowCancelModal(false)
+}}
+className="
+h-11
+rounded-lg
+border
+font-bold
+"
+>
+No
+</button>
+
+
+
+<button
+onClick={async()=>{
+
+setShowCancelModal(false);
+
+await cancelOrder();
+
+}}
+className="
+h-11
+rounded-lg
+bg-red-600
+text-white
+font-bold
+"
+>
+Yes
+</button>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+)
+}
+
+
+{/* HEADER */}
+
+<div
+className="
+max-w-xl
+mx-auto
+space-y-4
+"
+>
+
 
     <div className="text-center">
 
@@ -301,18 +424,52 @@ export default function UserOrderDetails() {
         </div>
 
         <span
-          className="
-          px-3
-          py-1
-          rounded-lg
-          text-xs
-          font-bold
-          bg-blue-100
-          text-blue-700
-          "
-        >
-          {order.status}
-        </span>
+className={`
+px-3
+py-1
+rounded-lg
+text-xs
+font-bold
+
+${
+order.status === "Delivered"
+?
+"bg-green-100 text-green-700"
+
+:
+
+order.status === "Shipped"
+?
+"bg-blue-100 text-blue-700"
+
+:
+
+order.status === "Processing"
+?
+"bg-yellow-100 text-yellow-700"
+
+:
+
+order.status === "Pending"
+?
+"bg-orange-100 text-orange-700"
+
+:
+
+order.status === "Cancelled"
+?
+"bg-red-100 text-red-700"
+
+:
+
+"bg-gray-100 text-gray-700"
+
+}
+
+`}
+>
+{order.status}
+</span>
 
       </div>
 
@@ -881,7 +1038,9 @@ order.status === "Processing"
 ) && (
 
 <button
-onClick={cancelOrder}
+
+onClick={() => setShowCancelModal(true)}
+
 className="
 h-12
 rounded-lg
@@ -890,6 +1049,7 @@ border-red-500
 text-red-600
 font-bold
 "
+
 >
 Cancel Order
 </button>
