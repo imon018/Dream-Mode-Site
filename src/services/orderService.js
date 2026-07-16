@@ -38,6 +38,7 @@ collection(
 
 
 
+
 // =================================
 // CREATE ORDER (CUSTOMER)
 // =================================
@@ -60,17 +61,13 @@ async(order)=>{
 
     await createUserNotification({
 
-      userId:
-      order.userId,
-
+      userId: order.userId,
 
       title:
       "🛒 Order Placed",
 
-
       message:
       "Your order has been placed successfully.",
-
 
       type:
       "order",
@@ -89,10 +86,8 @@ async(order)=>{
     title:
     "📦 New Order Received",
 
-
     message:
     `${order.customerName || "Customer"} placed a new order.`,
-
 
     type:
     "order",
@@ -210,41 +205,7 @@ let customerPhoto =
 
 
 
-// =================================
-// UPDATE PAYMENT STATUS (ADMIN)
-// =================================
 
-export const updatePaymentStatus =
-async(
-id,
-paymentStatus
-)=>{
-
-
-const orderDoc =
-doc(
-db,
-"orders",
-id
-);
-
-
-
-await updateDoc(
-
-orderDoc,
-
-{
-
-paymentStatus,
-
-}
-
-);
-
-
-
-};
 
 if(order.userId){
 
@@ -322,6 +283,59 @@ return orders;
 
 
 };
+
+
+
+
+
+
+
+
+
+// =================================
+// UPDATE PAYMENT STATUS (ADMIN)
+// =================================
+
+
+export const updatePaymentStatus =
+async(
+id,
+paymentStatus
+)=>{
+
+
+const orderDoc =
+doc(
+db,
+"orders",
+id
+);
+
+
+
+await updateDoc(
+
+orderDoc,
+
+{
+
+paymentStatus,
+
+}
+
+);
+
+
+
+};
+
+
+
+
+
+
+
+
 
 // =================================
 // UPDATE ORDER STATUS (ADMIN)
@@ -463,12 +477,9 @@ await createUserNotification({
 userId:
 order.userId,
 
-
 title,
 
-
 message,
-
 
 type:
 "order",
@@ -518,14 +529,11 @@ await createUserNotification({
 userId:
 order.userId,
 
-
 title:
 "🛒 Order Created",
 
-
 message:
 "An order has been created for you.",
-
 
 type:
 "order",
@@ -571,6 +579,14 @@ id
 
 
 };
+
+
+
+
+
+
+
+
 
 // =================================
 // USER CANCEL ORDER DIRECT
@@ -636,10 +652,6 @@ false,
 
 
 
-
-// USER NOTIFICATION
-
-
 if(order.userId){
 
 
@@ -670,9 +682,6 @@ type:
 
 
 
-
-
-// ADMIN NOTIFICATION
 
 
 await createAdminNotification({
@@ -761,9 +770,6 @@ true,
 
 
 
-
-
-// ADMIN NOTIFICATION
 
 
 await createAdminNotification({
