@@ -18,6 +18,7 @@ import {
 
 import {
   getUserOrders,
+  requestReturnOrder,
 } from "../../services/orderService";
 
 
@@ -2688,10 +2689,10 @@ pickupAddress,
 
 
 
-console.log(data);
-
-
-
+await requestReturnOrder(
+  order.id,
+  data
+);
 
 
 successToast(
