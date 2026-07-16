@@ -39,6 +39,7 @@ import ShopHeroBanner from "../pages/admin/ShopHeroBanner";
 import OrderDetails from "../pages/admin/OrderDetails";
 import UserDetails from "../pages/admin/UserDetails";
 import SendNotification from "../pages/admin/SendNotification";
+import ReturnOrders from "../pages/admin/ReturnOrders";
 
 
 /* =========================
@@ -387,6 +388,11 @@ element={<ReturnOrder />}
          <Route
  path="change-password"
  element={<ChangePassword />}
+/>
+
+         <Route
+  path="return-orders"
+  element={<ReturnOrders />}
 />
 
 
