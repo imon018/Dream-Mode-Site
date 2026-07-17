@@ -10,13 +10,8 @@ import {
 
 
 import {
-  applyPasswordChange
+  verifyPasswordChangeLink
 } from "../services/authService";
-
-
-import {
-  auth
-} from "../firebase/auth";
 
 
 import {
@@ -78,76 +73,8 @@ async()=>{
 try{
 
 
-const user =
-auth.currentUser;
 
-
-
-
-
-
-if(!user){
-
-
-setMessage(
-"Please login again."
-);
-
-
-setLoading(false);
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-// refresh firebase user
-
-await user.reload();
-
-
-
-
-
-
-
-if(!user.emailVerified){
-
-
-setMessage(
-"Please verify your email first."
-);
-
-
-setLoading(false);
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-// apply password update
-
-
-await applyPasswordChange(
-
-user
-
-);
+await verifyPasswordChangeLink();
 
 
 
