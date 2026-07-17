@@ -186,6 +186,16 @@ const handleChangePassword =
 async()=>{
 
 
+  if(!user){
+
+ errorToast(
+ "User session expired. Please login again."
+ );
+
+ return;
+
+}
+
 if(
 !currentPassword ||
 !newPassword ||
