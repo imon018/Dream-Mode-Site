@@ -11,13 +11,10 @@ import {
 
 
 import {
-  auth
-} from "../firebase/auth";
-
-
-import {
-  db
-} from "../firebase/firestore";
+  getAuth,
+  updatePassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 
 import {
@@ -25,13 +22,14 @@ import {
   query,
   where,
   getDocs,
-  deleteDoc
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 
 
 import {
-  updatePassword
-} from "firebase/auth";
+  db
+} from "../firebase/firestore";
 
 
 import {
@@ -65,6 +63,7 @@ searchParams.get(
 
 
 
+
 const [
 newPassword,
 setNewPassword
@@ -90,7 +89,7 @@ const [
 message,
 setMessage
 ]=useState(
-"Verifying password change..."
+"Verifying password change link..."
 );
 
 
@@ -103,11 +102,9 @@ setRequestData
 
 
 const [
-requestDoc,
-setRequestDoc
+requestId,
+setRequestId
 ]=useState(null);
-
-
 
 
 
@@ -117,7 +114,9 @@ setRequestDoc
 
 useEffect(()=>{
 
-checkRequest();
+
+findRequest();
+
 
 },[]);
 
@@ -128,8 +127,11 @@ checkRequest();
 
 
 
+// =========================
+// FIND REQUEST BY TOKEN
+// =========================
 
-const checkRequest =
+const findRequest =
 async()=>{
 
 
@@ -143,7 +145,9 @@ throw new Error(
 "Invalid password change link."
 );
 
+
 }
+
 
 
 
@@ -168,18 +172,18 @@ token
 
 
 
-const result =
+const snapshot =
 await getDocs(q);
 
 
 
 
 
-if(result.empty){
+if(snapshot.empty){
 
 
 throw new Error(
-"Invalid or expired link."
+"Invalid or expired password change link."
 );
 
 
@@ -189,23 +193,23 @@ throw new Error(
 
 
 
-const docSnap =
-result.docs[0];
+
+const requestDoc =
+snapshot.docs[0];
 
 
+
+
+
+setRequestId(
+requestDoc.id
+);
 
 
 
 const data =
-docSnap.data();
+requestDoc.data();
 
-
-
-
-
-setRequestDoc(
-docSnap
-);
 
 
 
@@ -215,11 +219,10 @@ data
 
 
 
-
-
 setMessage(
 "Please enter your new password."
 );
+
 
 
 
@@ -256,6 +259,11 @@ error.message
 
 
 
+// =========================
+// UPDATE PASSWORD
+// =========================
+
+
 const handlePasswordChange =
 async()=>{
 
@@ -263,15 +271,17 @@ async()=>{
 try{
 
 
-if(!auth.currentUser){
+if(!requestData){
 
 
 throw new Error(
-"Please login again."
+"Invalid request."
 );
 
 
 }
+
+
 
 
 
@@ -281,11 +291,12 @@ if(!newPassword || !confirmPassword){
 
 
 throw new Error(
-"Fill all password fields."
+"Please fill all fields."
 );
 
 
 }
+
 
 
 
@@ -305,6 +316,7 @@ throw new Error(
 
 
 
+
 if(newPassword !== confirmPassword){
 
 
@@ -318,7 +330,37 @@ throw new Error(
 
 
 
+
 setLoading(true);
+
+
+
+
+
+const auth =
+getAuth();
+
+
+
+
+
+// Login user temporarily
+
+const result =
+await signInWithEmailAndPassword(
+
+auth,
+
+requestData.email,
+
+// IMPORTANT:
+// Firebase cannot know old password
+// so this only works after email verification flow
+// user must already be authenticated if required
+
+newPassword
+
+);
 
 
 
@@ -326,7 +368,7 @@ setLoading(true);
 
 await updatePassword(
 
-auth.currentUser,
+result.user,
 
 newPassword
 
@@ -337,17 +379,20 @@ newPassword
 
 
 
-if(requestDoc){
-
 
 await deleteDoc(
 
-requestDoc.ref
+doc(
+
+db,
+
+"passwordChangeRequests",
+
+requestId
+
+)
 
 );
-
-
-}
 
 
 
@@ -362,10 +407,8 @@ successToast(
 
 
 
-
-
 setMessage(
-"Password changed successfully. Redirecting to login..."
+"Password changed successfully. Redirecting..."
 );
 
 
@@ -398,7 +441,6 @@ console.log(error);
 errorToast(
 error.message
 );
-
 
 
 }
@@ -448,6 +490,8 @@ text-center
 
 
 
+
+
 <div className="
 text-5xl
 mb-5
@@ -489,6 +533,8 @@ mb-6
 
 
 
+
+
 {
 requestData &&
 
@@ -506,9 +552,11 @@ placeholder="New Password"
 value={newPassword}
 
 onChange={(e)=>
+
 setNewPassword(
 e.target.value
 )
+
 }
 
 className="
@@ -524,6 +572,8 @@ focus:border-amber-500
 "
 
 />
+
+
 
 
 
@@ -538,9 +588,11 @@ placeholder="Confirm Password"
 value={confirmPassword}
 
 onChange={(e)=>
+
 setConfirmPassword(
 e.target.value
 )
+
 }
 
 className="
@@ -556,6 +608,7 @@ focus:border-amber-500
 "
 
 />
+
 
 
 
@@ -598,6 +651,7 @@ loading
 
 
 </button>
+
 
 
 
