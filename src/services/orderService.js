@@ -1000,4 +1000,34 @@ status
 };
 
 
+// =================================
+// GET USER RETURN ORDERS
+// =================================
 
+export const getUserReturnOrders =
+async (email) => {
+
+  const q =
+    query(
+      orderRef,
+      where(
+        "email",
+        "==",
+        email
+      )
+    );
+
+  const snapshot =
+    await getDocs(q);
+
+  return snapshot.docs
+    .map(item => ({
+      id: item.id,
+      ...item.data(),
+    }))
+    .filter(
+      order =>
+        order.returnRequested === true
+    );
+
+};
