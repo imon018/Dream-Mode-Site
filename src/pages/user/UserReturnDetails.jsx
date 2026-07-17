@@ -1870,13 +1870,9 @@ setSaving(true);
 
 
 
-
 await updateReturnRequest(
-
 id,
-
 {
-
 
 reason,
 
@@ -1892,9 +1888,9 @@ pickupAddress,
 
 images,
 
+items: request.items || [],
 
 }
-
 );
 
 
