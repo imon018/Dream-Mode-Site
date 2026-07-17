@@ -42,8 +42,8 @@ import {
 // =========================
 
 export async function login(
-email,
-password
+  email,
+  password
 ){
 
   const result =
@@ -54,6 +54,7 @@ password
   );
 
 
+
   const userRef =
   doc(
     db,
@@ -62,13 +63,16 @@ password
   );
 
 
+
   const userSnap =
   await getDoc(
     userRef
   );
 
 
+
   let role = "user";
+
 
 
   if(userSnap.exists()){
@@ -79,6 +83,7 @@ password
   }
 
 
+
   await updateDoc(
     userRef,
     {
@@ -86,6 +91,7 @@ password
       serverTimestamp()
     }
   );
+
 
 
   return {
@@ -122,6 +128,7 @@ name
  );
 
 
+
  await setDoc(
 
  doc(
@@ -150,6 +157,7 @@ name
  }
 
  );
+
 
 
  await sendEmailVerification(
@@ -225,6 +233,7 @@ newPassword
  );
 
 
+
  await reauthenticateWithCredential(
   user,
   credential
@@ -261,23 +270,22 @@ newPassword
 
 
 
- const actionCodeSettings = {
 
+
+const actionCodeSettings = {
 
  url:
-
  `${window.location.origin}/password-change-verify`,
 
  handleCodeInApp:true
 
-
- };
-
+};
 
 
 
 
- await sendSignInLinkToEmail(
+
+await sendSignInLinkToEmail(
 
  auth,
 
@@ -285,19 +293,16 @@ newPassword
 
  actionCodeSettings
 
- );
+);
 
 
 
 
 
- window.localStorage.setItem(
-
+window.localStorage.setItem(
  "passwordChangeEmail",
-
  user.email
-
- );
+);
 
 
 }
@@ -330,12 +335,6 @@ user
 
 
 
-
- await user.reload();
-
-
-
-
  const requestRef =
  doc(
   db,
@@ -357,7 +356,7 @@ user
  if(!snap.exists()){
 
   throw new Error(
-   "Password request not found"
+   "Password change request not found."
   );
 
  }
@@ -371,20 +370,16 @@ user
 
 
 
-
  await updatePassword(
-
- user,
-
- data.newPassword
-
+  user,
+  data.newPassword
  );
 
 
 
 
  await deleteDoc(
- requestRef
+  requestRef
  );
 
 
@@ -406,72 +401,70 @@ user
 export async function verifyPasswordChangeLink(){
 
 
- const email =
- window.localStorage.getItem(
- "passwordChangeEmail"
+const email =
+window.localStorage.getItem(
+"passwordChangeEmail"
+);
+
+
+
+if(!email){
+
+ throw new Error(
+  "Password change session expired."
  );
 
-
-
- if(!email){
-
-  throw new Error(
-   "Password change session expired."
-  );
-
- }
-
-
-
- if(
- !isSignInWithEmailLink(
-  auth,
-  window.location.href
- )
- ){
-
-  throw new Error(
-   "Invalid verification link"
-  );
-
- }
+}
 
 
 
 
 
- const result =
- await signInWithEmailLink(
-
+if(
+!isSignInWithEmailLink(
  auth,
-
- email,
-
  window.location.href
+)
+){
 
+ throw new Error(
+  "Invalid password change link."
  );
 
-
-
-
-
- window.localStorage.removeItem(
- "passwordChangeEmail"
- );
+}
 
 
 
 
 
- await result.user.reload();
+
+const result =
+await signInWithEmailLink(
+
+auth,
+
+email,
+
+window.location.href
+
+);
 
 
 
 
 
- await applyPasswordChange(
+window.localStorage.removeItem(
+"passwordChangeEmail"
+);
+
+
+
+
+
+await applyPasswordChange(
  result.user
- );
+);
+
 
 
 }
