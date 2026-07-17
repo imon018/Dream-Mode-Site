@@ -21,12 +21,11 @@ import {
 
 
 import {
-collection,
-query,
-where,
-getDocs,
-deleteDoc,
-doc
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc
 } from "firebase/firestore";
 
 
@@ -39,6 +38,7 @@ import {
   successToast,
   errorToast
 } from "../components/ui/Toast";
+
 
 
 
@@ -90,7 +90,7 @@ const [
 message,
 setMessage
 ]=useState(
-""
+"Verifying password change..."
 );
 
 
@@ -102,17 +102,26 @@ setRequestData
 
 
 
+const [
+requestDoc,
+setRequestDoc
+]=useState(null);
+
+
+
+
+
 
 
 
 
 useEffect(()=>{
 
-
 checkRequest();
 
-
 },[]);
+
+
 
 
 
@@ -134,9 +143,7 @@ throw new Error(
 "Invalid password change link."
 );
 
-
 }
-
 
 
 
@@ -159,29 +166,46 @@ token
 
 
 
+
+
 const result =
 await getDocs(q);
 
 
 
+
+
 if(result.empty){
+
 
 throw new Error(
 "Invalid or expired link."
 );
 
+
 }
 
 
 
-const requestDoc =
+
+
+const docSnap =
 result.docs[0];
 
 
+
+
+
 const data =
-requestDoc.data();
+docSnap.data();
 
 
+
+
+
+setRequestDoc(
+docSnap
+);
 
 
 
@@ -192,11 +216,10 @@ data
 
 
 
+
 setMessage(
 "Please enter your new password."
 );
-
-
 
 
 
@@ -207,9 +230,11 @@ catch(error){
 console.log(error);
 
 
+
 errorToast(
 error.message
 );
+
 
 
 setMessage(
@@ -218,6 +243,7 @@ error.message
 
 
 }
+
 
 
 };
@@ -292,7 +318,6 @@ throw new Error(
 
 
 
-
 setLoading(true);
 
 
@@ -311,19 +336,20 @@ newPassword
 
 
 
+
+if(requestDoc){
+
+
 await deleteDoc(
 
-doc(
-
-db,
-
-"passwordChangeRequests",
-
-auth.currentUser.uid
-
-)
+requestDoc.ref
 
 );
+
+
+}
+
+
 
 
 
@@ -332,6 +358,16 @@ auth.currentUser.uid
 successToast(
 "Password changed successfully."
 );
+
+
+
+
+
+
+setMessage(
+"Password changed successfully. Redirecting to login..."
+);
+
 
 
 
@@ -358,9 +394,11 @@ catch(error){
 console.log(error);
 
 
+
 errorToast(
 error.message
 );
+
 
 
 }
@@ -371,6 +409,7 @@ setLoading(false);
 
 
 }
+
 
 
 };
