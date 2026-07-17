@@ -171,9 +171,57 @@ export default function WishlistProvider({
 
 
 
+    
+
+const removeFromWishlist = async(
+  id
+)=>{
+
+  try{
+
+    await removeWishlistItem(
+      id
+    );
+
+
+    setWishlist(
+
+      prev =>
+
+      prev.filter(
+
+        item =>
+
+        item.firestoreId !== id
+
+      )
+
+    );
+
+
+    successToast(
+      "Removed from wishlist"
+    );
+
+
+  }catch(error){
+
+    console.log(error);
+
+
+    errorToast(
+      error.message
+    );
+
+  }
+
+};
 
 
 
+
+
+    
     const exists =
       wishlist.find(
         item =>
@@ -296,6 +344,8 @@ export default function WishlistProvider({
         toggleWishlist,
 
         isWishlisted,
+
+        removeFromWishlist,
 
       }}
 
