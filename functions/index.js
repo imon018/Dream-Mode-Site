@@ -31,7 +31,7 @@ onDocumentCreated(
 
 {
  document:
- "passwordChangeRequests/{requestId}",
+ "passwordChangeRequests/{uid}",
 
  secrets:[
  gmailEmail,
@@ -49,17 +49,29 @@ event.data.data();
 
 
 
+if(!data){
+
+return null;
+
+}
+
+
+
+
+
 const transporter =
 nodemailer.createTransport({
 
 service:"gmail",
 
 auth:{
+
 user:
 gmailEmail.value(),
 
 pass:
 gmailPassword.value()
+
 }
 
 });
@@ -76,17 +88,21 @@ const link =
 
 
 
+
 await transporter.sendMail({
 
 from:
+
 `"Dream Mode" <${gmailEmail.value()}>`,
 
 
 to:
+
 data.email,
 
 
 subject:
+
 "Password Change Verification",
 
 
@@ -94,12 +110,21 @@ html:
 
 `
 
+<div style="font-family:Arial">
+
+
 <h2>
 Dream Mode Password Change
 </h2>
 
+
 <p>
-Click below to verify password change.
+We received a request to change your password.
+</p>
+
+
+<p>
+Click the button below to continue.
 </p>
 
 
@@ -111,6 +136,7 @@ color:white;
 padding:12px 20px;
 border-radius:8px;
 text-decoration:none;
+display:inline-block;
 ">
 
 Verify Password Change
@@ -121,6 +147,16 @@ Verify Password Change
 <p>
 This link will expire soon.
 </p>
+
+
+<br/>
+
+<p>
+Dream Mode Team
+</p>
+
+
+</div>
 
 `
 
