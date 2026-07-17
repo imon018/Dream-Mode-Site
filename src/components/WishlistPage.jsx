@@ -497,7 +497,7 @@ text-amber-600
   <hr
 
 className="
-my-4
+my-2
 border-gray-100
 "
 
@@ -515,6 +515,7 @@ border-gray-100
 className="
 flex
 gap-2
+mt-2
 "
 
 >
