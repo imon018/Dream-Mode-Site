@@ -34,6 +34,4 @@ jobs:
 
 
     - name: Deploy Functions
-  run: |
-    cd functions
-    firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }}
+  run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }}
