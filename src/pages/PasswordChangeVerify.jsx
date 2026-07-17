@@ -21,9 +21,12 @@ import {
 
 
 import {
-  doc,
-  getDoc,
-  deleteDoc
+collection,
+query,
+where,
+getDocs,
+deleteDoc,
+doc
 } from "firebase/firestore";
 
 
@@ -138,56 +141,45 @@ throw new Error(
 
 
 
-const requestsRef =
-doc(
+const q =
+query(
+
+collection(
 db,
-"passwordChangeRequests",
-auth.currentUser?.uid
+"passwordChangeRequests"
+),
+
+where(
+"token",
+"==",
+token
+)
+
 );
 
 
 
-
-
-const snap =
-await getDoc(
-requestsRef
-);
+const result =
+await getDocs(q);
 
 
 
-
-
-if(!snap.exists()){
-
+if(result.empty){
 
 throw new Error(
-"Password change request not found."
+"Invalid or expired link."
 );
-
 
 }
 
 
 
+const requestDoc =
+result.docs[0];
 
 
 const data =
-snap.data();
-
-
-
-
-
-if(data.token !== token){
-
-
-throw new Error(
-"Invalid verification token."
-);
-
-
-}
+requestDoc.data();
 
 
 
@@ -196,7 +188,6 @@ throw new Error(
 setRequestData(
 data
 );
-
 
 
 
