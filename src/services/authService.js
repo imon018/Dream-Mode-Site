@@ -39,8 +39,8 @@ import {
 // =========================
 
 export async function login(
-  email,
-  password
+email,
+password
 ){
 
 const result =
@@ -183,7 +183,7 @@ return result.user;
 
 
 // =========================
-// RESEND REGISTER VERIFY
+// RESEND EMAIL VERIFY
 // =========================
 
 export async function resendVerificationEmail(
@@ -203,7 +203,6 @@ throw new Error(
 await sendEmailVerification(
 user
 );
-
 
 }
 
@@ -237,7 +236,7 @@ throw new Error(
 
 
 
-// verify current password
+
 
 const credential =
 EmailAuthProvider.credential(
@@ -247,6 +246,8 @@ user.email,
 currentPassword
 
 );
+
+
 
 
 
@@ -261,7 +262,6 @@ credential
 
 
 
-// create token
 
 const token =
 crypto.randomUUID();
@@ -269,7 +269,7 @@ crypto.randomUUID();
 
 
 
-// save request
+
 
 await setDoc(
 
@@ -337,6 +337,8 @@ throw new Error(
 
 
 
+
+
 if(!newPassword){
 
 throw new Error(
@@ -344,6 +346,8 @@ throw new Error(
 );
 
 }
+
+
 
 
 
@@ -370,7 +374,6 @@ newPassword
 
 
 
-// remove request
 
 await deleteDoc(
 
@@ -385,6 +388,7 @@ user.uid
 )
 
 );
+
 
 
 
@@ -409,7 +413,6 @@ export async function verifyPasswordChangeLink(
 token
 ){
 
-
 if(!token){
 
 throw new Error(
@@ -417,7 +420,6 @@ throw new Error(
 );
 
 }
-
 
 
 return true;
