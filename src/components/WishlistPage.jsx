@@ -1,3 +1,8 @@
+import {
+  useNavigate,
+} from "react-router-dom";
+
+
 import useWishlist from "../hooks/useWishlist";
 
 import useCart from "../hooks/useCart";
@@ -13,6 +18,10 @@ import {
 
 
 export default function WishlistPage() {
+
+
+  const navigate = useNavigate();
+
 
 
   const {
@@ -45,26 +54,26 @@ export default function WishlistPage() {
 
 
   const totalValue =
-    wishlist.reduce(
+  wishlist.reduce(
 
-      (sum,item)=>
+    (sum,item)=>
 
-        sum +
+      sum +
 
-        Number(
-          item.product.price || 0
-        ),
+      Number(
+        item.product.price || 0
+      ),
 
-      0
+    0
 
-    );
-
-
+  );
 
 
 
 
-  return (
+
+
+return (
 
 
 <div
@@ -105,7 +114,6 @@ mb-4
 
 >
 
-
 <h1
 
 className="
@@ -129,7 +137,9 @@ My Wishlist
 
 
 
+
 {/* SUMMARY */}
+
 
 <div
 
@@ -183,14 +193,13 @@ font-black
 
 >
 
-{
-wishlist.length
-}
+{wishlist.length}
 
 </h2>
 
 
 </div>
+
 
 
 
@@ -228,9 +237,8 @@ font-black
 </div>
 
 
+
 </div>
-
-
 
 
 
@@ -254,7 +262,6 @@ text-xl
 </div>
 
 
-
 </div>
 
 
@@ -263,12 +270,11 @@ text-xl
 
 
 
-{/* EMPTY */}
-
 
 {
 
 wishlist.length === 0
+
 
 ?
 
@@ -316,7 +322,6 @@ Wishlist Empty
 </h2>
 
 
-
 <p
 
 className="
@@ -332,12 +337,11 @@ Add your favourite products here.
 </p>
 
 
-
 </div>
 
 
-
 :
+
 
 
 <div
@@ -350,6 +354,7 @@ space-y-4
 
 
 {
+
 wishlist.map(
 
 (item)=>(
@@ -361,7 +366,9 @@ key={
 item.firestoreId
 }
 
+
 className="
+relative
 bg-white
 border
 border-gray-100
@@ -373,7 +380,52 @@ p-4
 >
 
 
+
+{/* REMOVE X BUTTON */}
+
+
+<button
+
+onClick={()=>
+
+
+removeFromWishlist(
+item.product.id
+)
+
+}
+
+
+className="
+absolute
+top-3
+right-3
+w-8
+h-8
+rounded-full
+bg-red-50
+text-red-600
+font-bold
+flex
+items-center
+justify-center
+"
+
+>
+
+×
+
+</button>
+
+
+
+
+
+
+
+
 {/* PRODUCT */}
+
 
 
 <div
@@ -392,9 +444,11 @@ src={
 item.product.image
 }
 
+
 alt={
 item.product.name
 }
+
 
 className="
 w-24
@@ -408,10 +462,12 @@ bg-gray-50
 
 
 
+
 <div
 
 className="
 flex-1
+pr-8
 "
 
 >
@@ -427,9 +483,7 @@ line-clamp-2
 
 >
 
-{
-item.product.name
-}
+{item.product.name}
 
 </h2>
 
@@ -442,6 +496,7 @@ item.product.id
 }
 
 />
+
 
 
 <p
@@ -460,11 +515,16 @@ text-amber-600
 </p>
 
 
+
+</div>
+
+
+
 </div>
 
 
 
-</div>
+
 
 
 <hr
@@ -477,7 +537,12 @@ border-gray-100
 />
 
 
-  {/* ACTIONS */}
+
+
+
+
+{/* BUTTONS */}
+
 
 
 <div
@@ -490,15 +555,18 @@ gap-3
 >
 
 
+
 <Button
 
-onClick={()=>{
+onClick={()=>
+
 
 handleCart(
 item.product
 )
 
-}}
+
+}
 
 className="
 flex-1
@@ -519,28 +587,34 @@ text-sm
 
 
 
+
+
 <Button
 
-onClick={()=>{
+onClick={()=>
 
-removeFromWishlist(
-item.product.id
+
+navigate(
+`/product/${item.product.id}`
 )
 
-}}
+
+}
 
 className="
 flex-1
 rounded-lg
-bg-red-600
-text-white
+bg-white
+border
+border-gray-200
+text-gray-700
 font-bold
 text-sm
 "
 
 >
 
-Remove
+👁️ Product
 
 </Button>
 
@@ -550,63 +624,22 @@ Remove
 
 
 
-
-
-
-
-{/* VIEW PRODUCT */}
-
-
-<button
-
-className="
-w-full
-flex
-items-center
-justify-between
-text-sm
-font-bold
-text-amber-600
-pt-4
-"
-
->
-
-<span>
-
-View Product
-
-</span>
-
-
-<span>
-
-›
-
-</span>
-
-
-</button>
-
-
-
 </div>
 
 
-)
-
 
 )
+
+)
+
 
 }
-
 
 
 </div>
 
 
 }
-
 
 
 </div>
@@ -617,4 +650,7 @@ View Product
 
 );
 
+
 }
+
+
