@@ -2,24 +2,41 @@ const {
   onDocumentCreated
 } = require("firebase-functions/v2/firestore");
 
+
 const {
   defineSecret
 } = require("firebase-functions/params");
 
-const admin = require("firebase-admin");
-const nodemailer = require("nodemailer");
+
+const admin =
+require("firebase-admin");
+
+
+const nodemailer =
+require("nodemailer");
+
 
 
 admin.initializeApp();
 
 
 
+
+
 const gmailEmail =
-defineSecret("GMAIL_EMAIL");
+defineSecret(
+"GMAIL_EMAIL"
+);
+
 
 
 const gmailPassword =
-defineSecret("GMAIL_PASSWORD");
+defineSecret(
+"GMAIL_PASSWORD"
+);
+
+
+
 
 
 
@@ -30,13 +47,19 @@ exports.sendPasswordChangeEmail =
 onDocumentCreated(
 
 {
- document:
- "passwordChangeRequests/{uid}",
 
- secrets:[
- gmailEmail,
- gmailPassword
- ]
+document:
+
+"passwordChangeRequests/{uid}",
+
+
+secrets:[
+
+gmailEmail,
+
+gmailPassword
+
+]
 
 },
 
@@ -46,6 +69,8 @@ async(event)=>{
 
 const data =
 event.data.data();
+
+
 
 
 
@@ -59,20 +84,29 @@ return null;
 
 
 
+
 const transporter =
+
 nodemailer.createTransport({
 
 service:"gmail",
 
 auth:{
 
+
 user:
+
 gmailEmail.value(),
 
+
+
 pass:
+
 gmailPassword.value()
 
+
 }
+
 
 });
 
@@ -80,9 +114,16 @@ gmailPassword.value()
 
 
 
+
+
+
 const link =
 
+
 `https://dream-mode-site.vercel.app/password-change-verify?token=${data.token}`;
+
+
+
 
 
 
@@ -93,7 +134,9 @@ await transporter.sendMail({
 
 from:
 
+
 `"Dream Mode" <${gmailEmail.value()}>`,
+
 
 
 to:
@@ -101,16 +144,23 @@ to:
 data.email,
 
 
+
 subject:
 
 "Password Change Verification",
 
 
+
+
 html:
+
 
 `
 
-<div style="font-family:Arial">
+<div style="
+font-family:Arial;
+padding:20px;
+">
 
 
 <h2>
@@ -119,7 +169,7 @@ Dream Mode Password Change
 
 
 <p>
-We received a request to change your password.
+You requested to change your password.
 </p>
 
 
@@ -128,28 +178,47 @@ Click the button below to continue.
 </p>
 
 
+
 <a href="${link}"
 
 style="
-background:#F59E0B;
-color:white;
-padding:12px 20px;
-border-radius:8px;
-text-decoration:none;
+
 display:inline-block;
+
+background:#F59E0B;
+
+color:white;
+
+padding:12px 20px;
+
+border-radius:8px;
+
+text-decoration:none;
+
+font-weight:bold;
+
 ">
 
-Verify Password Change
+Change Password
 
 </a>
 
 
-<p>
-This link will expire soon.
+
+
+<p style="
+margin-top:20px;
+color:#666;
+">
+
+If you did not request this, ignore this email.
+
 </p>
 
 
+
 <br/>
+
 
 <p>
 Dream Mode Team
@@ -161,6 +230,9 @@ Dream Mode Team
 `
 
 });
+
+
+
 
 
 
