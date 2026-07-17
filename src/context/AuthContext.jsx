@@ -27,13 +27,13 @@ import {
 } from "../firebase/firestore";
 
 
+import {
+  signOut,
+} from "firebase/auth";
+
 
 
 export const AuthContext = createContext();
-
-
-
-
 
 
 export default function AuthProvider({
@@ -60,6 +60,15 @@ export default function AuthProvider({
 
 
   useEffect(()=>{
+
+
+    const logout = async()=>{
+
+  await signOut(auth);
+
+  setUser(null);
+
+};
 
 
     const unsubscribe = onAuthStateChanged(
@@ -185,6 +194,7 @@ export default function AuthProvider({
         user,
         setUser,
         loading,
+        logout,
 
       }}
 
