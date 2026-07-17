@@ -50,7 +50,7 @@ onDocumentCreated(
 
 document:
 
-"passwordChangeRequests/{uid}",
+"passwordChangeRequests/{requestId}",
 
 
 secrets:[
