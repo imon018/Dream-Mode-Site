@@ -1031,3 +1031,47 @@ async (email) => {
     );
 
 };
+
+
+// =================================
+// GET USER RETURN DETAILS
+// =================================
+
+export const getUserReturnDetails =
+async(id)=>{
+
+
+const orderDoc =
+doc(
+db,
+"orders",
+id
+);
+
+
+
+const snapshot =
+await getDoc(orderDoc);
+
+
+
+if(!snapshot.exists()){
+
+throw new Error(
+"Return not found"
+);
+
+}
+
+
+
+return {
+
+id:snapshot.id,
+
+...snapshot.data(),
+
+};
+
+
+};
