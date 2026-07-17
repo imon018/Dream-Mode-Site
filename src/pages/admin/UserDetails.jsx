@@ -6,12 +6,10 @@ import {
 
 import {
   useParams,
-  useNavigate
 } from "react-router-dom";
 
 
 import {
-  FiArrowLeft,
   FiMail,
   FiPhone,
 } from "react-icons/fi";
@@ -33,9 +31,6 @@ export default function UserDetails(){
 
 
 const { id } = useParams();
-
-
-const navigate = useNavigate();
 
 
 
@@ -222,35 +217,9 @@ mx-auto
 
 <div
 className="
-flex
-items-center
-gap-3
 mb-6
 "
 >
-
-
-<button
-
-onClick={()=>navigate(-1)}
-
-className="
-w-10
-h-10
-rounded-xl
-bg-white
-border
-border-gray-100
-flex
-items-center
-justify-center
-"
-
->
-
-<FiArrowLeft/>
-
-</button>
 
 
 
