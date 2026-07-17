@@ -1131,6 +1131,11 @@ throw new Error(
 
 
 
+const oldReturnRequest =
+order.returnRequest || {};
+
+
+
 
 
 await updateDoc(
@@ -1142,6 +1147,8 @@ orderDoc,
 returnRequest:
 
 {
+
+...oldReturnRequest,
 
 ...returnData,
 
