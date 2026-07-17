@@ -29,11 +29,7 @@ export default function WishlistPage() {
 
 
 
-
-
-
   const handleCart = (product)=>{
-
 
     addToCart(product);
 
@@ -42,9 +38,26 @@ export default function WishlistPage() {
       "Added to cart successfully"
     );
 
-
   };
 
+
+
+
+
+  const totalValue =
+    wishlist.reduce(
+
+      (sum,item)=>
+
+        sum +
+
+        Number(
+          item.product.price || 0
+        ),
+
+      0
+
+    );
 
 
 
@@ -54,464 +67,554 @@ export default function WishlistPage() {
   return (
 
 
-    <div
+<div
 
-      className="
-        min-h-screen
-        bg-gradient-to-br
-        from-gray-50
-        via-white
-        to-blue-50
-        px-4
-        md:px-8
-        py-12
-      "
+className="
+min-h-screen
+bg-[#FCFAF5]
+px-4
+md:px-8
+py-6
+"
 
-    >
+>
 
 
+<div
 
-      <div className="
-        max-w-7xl
-        mx-auto
-      ">
+className="
+max-w-5xl
+mx-auto
+space-y-4
+"
 
+>
 
 
 
+{/* HEADER */}
 
-        {/* HEADER */}
+<div
 
+className="
+flex
+items-center
+justify-center
+mb-4
+"
 
+>
 
-        <div className="
-          text-center
-          mb-12
-        ">
 
+<h1
 
-          <div className="
-            inline-flex
-            px-5
-            py-2
-            rounded-full
-            bg-yellow-100
-            text-yellow-800
-            font-bold
-          ">
+className="
+text-lg
+md:text-2xl
+font-bold
+"
 
-            ❤️ Saved Collection
+>
 
-          </div>
+My Wishlist
 
+</h1>
 
 
+</div>
 
-          <h1
 
-            className="
-              mt-5
-              text-4xl
-              md:text-6xl
-              font-black
-              bg-gradient-to-r
-              from-blue-900
-              to-yellow-500
-              bg-clip-text
-              text-transparent
-            "
 
-          >
 
-            My Wishlist
 
-          </h1>
 
 
+{/* SUMMARY */}
 
+<div
 
-          <p className="
-            mt-3
-            text-gray-500
-          ">
+className="
+bg-white
+border
+border-gray-100
+rounded-lg
+shadow-sm
+p-4
+flex
+justify-between
+items-center
+"
 
-            Your favourite premium products
+>
 
-          </p>
 
+<div
 
+className="
+flex
+gap-8
+"
 
-        </div>
+>
 
 
+<div>
 
+<p
 
+className="
+text-xs
+text-gray-500
+"
 
+>
 
+Saved Items
 
+</p>
 
 
-        {/* EMPTY STATE */}
+<h2
 
+className="
+text-2xl
+font-black
+"
 
+>
 
-        {
-          wishlist.length === 0
+{
+wishlist.length
+}
 
+</h2>
 
-          ?
 
+</div>
 
-          <div
 
-            className="
-              bg-white
-              rounded-[40px]
-              shadow-xl
-              border
-              border-yellow-100
-              p-10
-              md:p-16
-              text-center
-            "
 
-          >
 
+<div>
 
-            <div className="
-              text-7xl
-            ">
+<p
 
-              💔
+className="
+text-xs
+text-gray-500
+"
 
-            </div>
+>
 
+Estimated Value
 
+</p>
 
-            <h2 className="
-              mt-6
-              text-3xl
-              font-black
-              text-blue-900
-            ">
 
-              Wishlist is Empty
+<h2
 
-            </h2>
+className="
+text-2xl
+font-black
+"
 
+>
 
+৳ {totalValue}
 
+</h2>
 
-            <p className="
-              mt-3
-              text-gray-500
-            ">
 
-              Add your favourite products and save them here.
+</div>
 
-            </p>
 
+</div>
 
 
 
-          </div>
 
 
+<div
 
+className="
+w-12
+h-12
+rounded-full
+bg-amber-50
+flex
+items-center
+justify-center
+text-xl
+"
 
+>
 
-          :
+❤️
 
+</div>
 
 
 
+</div>
 
-          <div
 
-            className="
-              grid
-              sm:grid-cols-2
-              lg:grid-cols-3
-              gap-8
-            "
 
-          >
 
 
 
 
-            {
-              wishlist.map(
-                (item)=>(
+{/* EMPTY */}
 
 
-                <div
+{
 
-                  key={
-                    item.firestoreId
-                  }
+wishlist.length === 0
 
+?
 
-                  className="
-                    group
-                    bg-white
-                    rounded-[36px]
-                    overflow-hidden
-                    border
-                    border-yellow-100
-                    shadow-lg
-                    hover:shadow-2xl
-                    hover:-translate-y-2
-                    transition-all
-                    duration-500
-                  "
 
-                >
+<div
 
+className="
+bg-white
+border
+border-gray-100
+rounded-lg
+shadow-sm
+p-10
+text-center
+"
 
+>
 
 
+<div
 
-                  {/* IMAGE */}
+className="
+text-5xl
+"
 
+>
 
+💔
 
-                  <div className="
-                    relative
-                    overflow-hidden
-                  ">
+</div>
 
 
+<h2
 
-                    <img
+className="
+mt-4
+text-xl
+font-bold
+"
 
-                      src={
-                        item.product.image
-                      }
+>
 
+Wishlist Empty
 
-                      alt={
-                        item.product.name
-                      }
+</h2>
 
 
-                      className="
-                        w-full
-                        h-72
-                        object-cover
-                        group-hover:scale-110
-                        transition
-                        duration-700
-                      "
 
-                    />
+<p
 
+className="
+text-sm
+text-gray-500
+mt-2
+"
 
+>
 
+Add your favourite products here.
 
+</p>
 
-                    <div className="
-                      absolute
-                      top-4
-                      right-4
-                      bg-white
-                      rounded-full
-                      w-12
-                      h-12
-                      flex
-                      items-center
-                      justify-center
-                      shadow-xl
-                      text-xl
-                    ">
 
-                      ❤️
 
-                    </div>
+</div>
 
 
 
+:
 
-                  </div>
 
+<div
 
+className="
+space-y-4
+"
 
+>
 
 
+{
+wishlist.map(
 
+(item)=>(
 
 
+<div
 
-                  {/* CONTENT */}
+key={
+item.firestoreId
+}
 
+className="
+bg-white
+border
+border-gray-100
+rounded-lg
+shadow-sm
+p-4
+"
 
+>
 
-                  <div className="
-                    p-6
-                  ">
 
+{/* PRODUCT */}
 
 
+<div
 
-                    <h3 className="
-                      text-xl
-                      font-black
-                      text-blue-900
-                      line-clamp-1
-                    ">
+className="
+flex
+gap-4
+"
 
-                      {
-                        item.product.name
-                      }
+>
 
-                    </h3>
 
+<img
 
+src={
+item.product.image
+}
 
+alt={
+item.product.name
+}
 
+className="
+w-24
+h-24
+rounded-lg
+object-cover
+bg-gray-50
+"
 
-                    <ProductRating
+/>
 
-                      productId={
-                        item.product.id
-                      }
 
-                    />
 
+<div
 
+className="
+flex-1
+"
 
+>
 
 
+<h2
 
+className="
+text-base
+font-bold
+line-clamp-2
+"
 
-                    <p className="
-                      mt-4
-                      text-2xl
-                      font-black
-                      text-yellow-600
-                    ">
+>
 
-                      ৳ {
-                        item.product.price
-                      }
+{
+item.product.name
+}
 
-                    </p>
+</h2>
 
 
 
+<ProductRating
 
+productId={
+item.product.id
+}
 
+/>
 
 
+<p
 
+className="
+text-lg
+font-black
+mt-2
+text-amber-600
+"
 
-                    <div className="
-                      grid
-                      grid-cols-2
-                      gap-3
-                      mt-6
-                    ">
+>
 
+৳ {item.product.price}
 
+</p>
 
 
-                      <Button
+</div>
 
-                        onClick={()=>
-                          handleCart(
-                            item.product
-                          )
-                        }
 
 
-                        className="
-                          rounded-2xl
-                          bg-gradient-to-r
-                          from-blue-900
-                          to-yellow-500
-                          text-white
-                          font-bold
-                        "
+</div>
 
-                      >
 
-                        🛒 Cart
+<hr
 
-                      </Button>
+className="
+my-4
+border-gray-100
+"
 
+/>
 
 
+  {/* ACTIONS */}
 
 
+<div
 
+className="
+flex
+gap-3
+"
 
-                      <Button
+>
 
-                        onClick={()=>
 
-                          removeFromWishlist(
-                            item.product.id
-                          )
+<Button
 
-                        }
+onClick={()=>{
 
+handleCart(
+item.product
+)
 
-                        className="
-                          rounded-2xl
-                          bg-red-600
-                          text-white
-                          font-bold
-                        "
+}}
 
-                      >
+className="
+flex-1
+rounded-lg
+bg-[#071F57]
+text-white
+font-bold
+text-sm
+"
 
-                        Remove
+>
 
-                      </Button>
+🛒 Add Cart
 
+</Button>
 
 
 
 
-                    </div>
 
+<Button
 
+onClick={()=>{
 
+removeFromWishlist(
+item.product.id
+)
 
-                  </div>
+}}
 
+className="
+flex-1
+rounded-lg
+bg-red-600
+text-white
+font-bold
+text-sm
+"
 
+>
 
+Remove
 
+</Button>
 
-                </div>
 
 
+</div>
 
-              ))
-            }
 
 
 
 
-          </div>
 
 
+{/* VIEW PRODUCT */}
 
-        }
 
+<button
 
+className="
+w-full
+flex
+items-center
+justify-between
+text-sm
+font-bold
+text-amber-600
+pt-4
+"
 
+>
 
+<span>
 
-      </div>
+View Product
 
+</span>
 
 
-    </div>
+<span>
 
+›
 
-  );
+</span>
 
+
+</button>
+
+
+
+</div>
+
+
+)
+
+
+)
+
+}
+
+
+
+</div>
+
+
+}
+
+
+
+</div>
+
+
+</div>
+
+
+);
 
 }
