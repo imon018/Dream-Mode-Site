@@ -534,12 +534,13 @@ item.product
 
 className="
 flex-1
+!h-10
+!py-0
 rounded-lg
 bg-[#071F57]
 text-white
 font-bold
 text-sm
-py-2
 "
 
 >
@@ -568,6 +569,8 @@ navigate(
 
 className="
 flex-1
+!h-10
+!py-0
 rounded-lg
 bg-amber-50
 border
@@ -575,7 +578,6 @@ border-amber-200
 text-amber-700
 font-bold
 text-sm
-py-2
 "
 
 >
