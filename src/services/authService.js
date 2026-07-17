@@ -12,11 +12,13 @@ import {
 
 
 import {
-  doc,
-  setDoc,
-  updateDoc,
-  getDoc,
-  serverTimestamp,
+doc,
+setDoc,
+updateDoc,
+getDoc,
+addDoc,
+collection,
+serverTimestamp,
 } from "firebase/firestore";
 
 
@@ -207,102 +209,6 @@ user
 
 
 
-
-
-
-
-
-// =========================
-// PASSWORD CHANGE REQUEST
-// =========================
-
-export async function requestPasswordChange(
-
-user,
-
-currentPassword
-
-){
-
-if(!user){
-
-throw new Error(
-"User not found"
-);
-
-}
-
-
-
-
-// Check current password
-
-const credential =
-EmailAuthProvider.credential(
-
-user.email,
-
-currentPassword
-
-);
-
-
-
-await reauthenticateWithCredential(
-
-user,
-
-credential
-
-);
-
-
-
-
-
-// Create secure token
-
-const token =
-crypto.randomUUID();
-
-
-
-
-
-await setDoc(
-
-doc(
-
-db,
-
-"passwordChangeRequests",
-
-user.uid
-
-),
-
-{
-
-uid:user.uid,
-
-email:user.email,
-
-token,
-
-verified:false,
-
-createdAt:
-serverTimestamp()
-
-}
-
-);
-
-
-
-return true;
-
-}
 
 
 
