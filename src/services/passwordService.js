@@ -1,17 +1,36 @@
 import {
-db
+  db
 } from "../firebase/firestore";
 
 
 import {
-collection,
-addDoc,
-serverTimestamp
+  doc,
+  setDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 
 
-export async function createPasswordRequest(user){
+
+
+// =========================
+// CREATE PASSWORD CHANGE REQUEST
+// =========================
+
+export async function createPasswordRequest(
+user
+){
+
+
+if(!user){
+
+throw new Error(
+"User not found."
+);
+
+}
+
+
 
 
 const token =
@@ -19,11 +38,19 @@ crypto.randomUUID();
 
 
 
-await addDoc(
 
-collection(
+
+
+await setDoc(
+
+doc(
+
 db,
-"passwordChangeRequests"
+
+"passwordChangeRequests",
+
+user.uid
+
 ),
 
 {
@@ -34,14 +61,17 @@ email:user.email,
 
 token,
 
-createdAt:
-serverTimestamp(),
+verified:false,
 
-verified:false
+createdAt:
+serverTimestamp()
 
 }
 
 );
+
+
+
 
 
 return token;
