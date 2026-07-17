@@ -34,7 +34,7 @@ const closeDrawer = ()=>{
 };
 
 
-  const handleLogout = async()=>{
+const handleLogout = async()=>{
 
 await logout();
 
@@ -137,9 +137,9 @@ closeDrawer();
 
 <AdminDrawerMenu
 
-
 closeDrawer={closeDrawer}
 
+onLogout={handleLogout}
 
 />
 
