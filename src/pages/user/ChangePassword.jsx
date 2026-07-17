@@ -10,11 +10,6 @@ import {
 } from "react-icons/fi";
 
 
-import {
-  requestPasswordChange
-} from "../../services/authService";
-
-
 import Button from "../../components/ui/Button";
 
 
@@ -29,6 +24,13 @@ import {
 } from "../../firebase/auth";
 
 
+import {
+  createPasswordRequest
+} from "../../services/passwordService";
+
+
+
+
 
 
 
@@ -38,6 +40,8 @@ export default function ChangePassword(){
 
 const user =
 auth.currentUser;
+
+
 
 
 
@@ -66,17 +70,21 @@ setLoading
 
 
 
+
 const handleChangePassword =
 async()=>{
 
 
 if(!user){
 
+
 errorToast(
 "User session expired. Please login again."
 );
 
+
 return;
+
 
 }
 
@@ -86,11 +94,14 @@ return;
 
 if(!currentPassword){
 
+
 errorToast(
 "Enter your current password."
 );
 
+
 return;
+
 
 }
 
@@ -106,12 +117,10 @@ setLoading(true);
 
 
 
-await requestPasswordChange(
+// create password request
 
-user,
-
-currentPassword
-
+await createPasswordRequest(
+user
 );
 
 
@@ -140,27 +149,10 @@ console.log(error);
 
 
 
-if(
-error.code === "auth/invalid-credential" ||
-error.code === "auth/wrong-password"
-){
-
-
-errorToast(
-"Current password is incorrect."
-);
-
-
-}
-else{
-
-
 errorToast(
 error.message
 );
 
-
-}
 
 
 }
@@ -173,7 +165,9 @@ setLoading(false);
 }
 
 
+
 };
+
 
 
 
@@ -197,8 +191,6 @@ space-y-3
 
 
 
-
-{/* HEADER */}
 
 <div className="
 bg-white
@@ -241,8 +233,6 @@ Please check your email to verify password change.
 
 
 
-
-{/* FORM */}
 
 <div className="
 bg-white
