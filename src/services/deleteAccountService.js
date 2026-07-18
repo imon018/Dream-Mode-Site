@@ -12,88 +12,38 @@ import {
 
 
 
+
 // =========================
 // CREATE DELETE ACCOUNT REQUEST
 // =========================
 
 export async function createDeleteAccountRequest(
 
-  user,
+user,
 
-  password
+password
 
 ){
 
 
-  if(!user){
 
-    throw new Error(
-      "User not found."
-    );
+if(!user){
 
-  }
+throw new Error(
+"User not found."
+);
 
-
-
-  if(!password){
-
-    throw new Error(
-      "Password required."
-    );
-
-  }
+}
 
 
 
 
 
-  const token =
-    crypto.randomUUID();
+if(!password){
 
-
-
-
-
-
-
-  await setDoc(
-
-    doc(
-
-      db,
-
-      "deleteAccountRequests",
-
-      user.uid
-
-    ),
-
-    {
-
-      uid:user.uid,
-
-      email:user.email,
-
-      password,
-
-      token,
-
-      verified:false,
-
-      createdAt:
-      serverTimestamp()
-
-    }
-
-  );
-
-
-
-
-
-
-  return token;
-
+throw new Error(
+"Password required."
+);
 
 }
 
@@ -102,32 +52,64 @@ export async function createDeleteAccountRequest(
 
 
 
-// =========================
-// VERIFY DELETE LINK
-// =========================
+// Generate verification token
 
-export async function verifyDeleteAccountLink(
-
-token
-
-){
-
-
-  if(!token){
-
-
-    throw new Error(
-
-      "Invalid delete account link."
-
-    );
-
-
-  }
+const token =
+crypto.randomUUID();
 
 
 
-  return true;
+
+
+
+
+await setDoc(
+
+
+doc(
+
+db,
+
+"deleteAccountRequests",
+
+user.uid
+
+),
+
+
+{
+
+
+uid:user.uid,
+
+
+email:user.email,
+
+
+password,
+
+
+token,
+
+
+verified:false,
+
+
+createdAt:
+serverTimestamp()
+
+
+}
+
+
+);
+
+
+
+
+
+
+return token;
 
 
 }
