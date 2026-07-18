@@ -1,5 +1,15 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+// src/components/Header.jsx
+
+import {
+  useState,
+} from "react";
+
+
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
 
 import {
   FiMenu,
@@ -11,82 +21,91 @@ import {
 
 
 import useAuth from "../hooks/useAuth";
+
 import useCart from "../hooks/useCart";
 
-import AdminDrawerHeader from "./admin/AdminDrawerHeader";
-import AdminDrawerMenu from "./admin/AdminDrawerMenu";
 
+import AdminDrawer from "./admin/AdminDrawer";
 
-import { logout } from "../services/authService";
+import UserDrawer from "./user/UserDrawer";
+
 
 import {
-  useSettings
+  logout,
+} from "../services/authService";
+
+
+import {
+  useSettings,
 } from "../context/SettingsContext";
 
 
 
-export default function Header() {
 
 
-  const {
-    user
-  } = useAuth();
+export default function Header(){
 
 
 
-  const {
-    cartCount
-  } = useCart();
+const {
+  user
+}=useAuth();
 
 
 
-  const {
-    settings
-  } = useSettings();
+const {
+  cartCount
+}=useCart();
 
 
 
-  const navigate = useNavigate();
+const {
+ settings
+}=useSettings();
 
 
 
-  const isAdmin =
-    user?.role === "admin";
+const navigate = useNavigate();
 
 
 
-  const [
-    mobileOpen,
-    setMobileOpen
-  ] = useState(false);
+const isAdmin =
+user?.role === "admin";
 
 
 
-
-
-  const handleLogout = async()=>{
-
-
-    await logout();
-
-
-    navigate("/login");
-
-
-    setMobileOpen(false);
-
-
-  };
+const [
+ mobileOpen,
+ setMobileOpen
+]=useState(false);
 
 
 
 
 
+const handleLogout = async()=>{
 
-  return (
+
+ await logout();
 
 
-    <>
+ navigate("/login");
+
+
+ setMobileOpen(false);
+
+
+};
+
+
+
+
+
+
+
+return (
+
+<>
 
 
 
@@ -97,6 +116,7 @@ export default function Header() {
 
 
 <div
+
 className="
 h-8
 bg-[#071F57]
@@ -107,41 +127,53 @@ text-white
 text-[12px]
 font-medium
 "
+
 >
 
 
 <div
+
 className="
 marquee
 whitespace-nowrap
 "
+
 >
 
 
 🚚 Inside Dhaka Delivery ৳80
 
+
 &nbsp;&nbsp;&nbsp;
+
 
 🚚 Outside Dhaka Delivery ৳120
 
+
 &nbsp;&nbsp;&nbsp;
+
 
 ⭐ Premium Quality
 
+
 &nbsp;&nbsp;&nbsp;
+
 
 💳 Cash On Delivery
 
+
 &nbsp;&nbsp;&nbsp;
+
 
 🔥 Dream Mode Premium Collection
 
 
-
 </div>
 
 
 </div>
+
+
 
 
 
@@ -154,6 +186,7 @@ whitespace-nowrap
 
 
 <header
+
 className="
 sticky
 top-8
@@ -163,24 +196,28 @@ border-b
 border-slate-100
 shadow-md
 "
+
 >
 
 
-
 <div
+
 className="
 container-box
 "
+
 >
 
 
 <div
+
 className="
 h-[72px]
 flex
 items-center
 justify-between
 "
+
 >
 
 
@@ -188,18 +225,19 @@ justify-between
 
 
 
-{/* ================= LEFT ================= */}
+{/* LEFT */}
 
 
 
 <div
+
 className="
 flex
 items-center
 gap-3
 "
->
 
+>
 
 
 <button
@@ -211,6 +249,7 @@ lg:hidden
 onClick={()=>setMobileOpen(true)}
 
 >
+
 
 <FiMenu
 
@@ -224,6 +263,8 @@ text-[#071F57]
 
 
 </button>
+
+
 
 
 
@@ -251,10 +292,7 @@ settings.logoUrl ||
 "/logo.png"
 }
 
-alt={
-settings.storeName ||
-"Dream Mode"
-}
+alt="logo"
 
 className="
 w-10
@@ -270,15 +308,17 @@ object-contain
 
 
 
+
 <div
+
 className="
 ml-4
 flex
 flex-col
 leading-none
 "
->
 
+>
 
 
 <h2
@@ -293,11 +333,7 @@ whitespace-nowrap
 
 style={{
 
-fontFamily:
-"'Lobster', cursive",
-
-textShadow:
-"0 2px 10px rgba(0,0,0,.08)"
+fontFamily:"'Lobster', cursive"
 
 }}
 
@@ -308,7 +344,6 @@ textShadow:
 settings.storeName ||
 "DREAM MODE"
 }
-
 
 
 </h2>
@@ -327,16 +362,15 @@ text-[#D4AF37]
 font-medium
 tracking-[1.5px]
 uppercase
-whitespace-nowrap
 "
 
 >
+
 
 Dress Your Dream, Live Your Style
 
 
 </p>
-
 
 
 </div>
@@ -347,7 +381,6 @@ Dress Your Dream, Live Your Style
 
 
 
-
 </div>
 
 
@@ -356,8 +389,7 @@ Dress Your Dream, Live Your Style
 
 
 
-
-{/* ================= DESKTOP MENU ================= */}
+{/* DESKTOP MENU */}
 
 
 
@@ -390,6 +422,8 @@ Home
 
 
 
+
+
 <Link
 
 to="/shop"
@@ -415,7 +449,7 @@ Shop
 
 
 
-{/* ================= RIGHT ================= */}
+{/* RIGHT */}
 
 
 
@@ -430,9 +464,6 @@ gap-4
 >
 
 
-
-
-
 <button
 
 onClick={()=>navigate("/shop")}
@@ -440,7 +471,6 @@ onClick={()=>navigate("/shop")}
 className="
 hover:scale-110
 transition
-duration-300
 "
 
 >
@@ -457,9 +487,7 @@ text-[#071F57]
 />
 
 
-
 </button>
-
 
 
 
@@ -489,10 +517,8 @@ text-[#071F57]
 
 
 
-
-
 {
-cartCount > 0 && (
+cartCount>0 &&
 
 <span
 
@@ -513,29 +539,17 @@ justify-center
 
 >
 
-
 {cartCount}
 
-
 </span>
-
-)
 
 }
 
 
 
-
 </Link>
 
-
-
-
-
-
-
-
-{/* LOGIN / USER */}
+  {/* ================= LOGIN / USER ================= */}
 
 
 
@@ -581,6 +595,7 @@ Login
 
 
 
+
 <Link
 
 to="/register"
@@ -608,7 +623,11 @@ Join Now
 
 
 
-) : (
+)
+
+:
+
+(
 
 
 <div
@@ -626,7 +645,9 @@ gap-4
 
 
 {
-isAdmin && (
+
+isAdmin &&
+
 
 <Link
 
@@ -644,11 +665,7 @@ Dashboard
 </Link>
 
 
-)
-
 }
-
-
 
 
 
@@ -675,6 +692,7 @@ Profile
 
 
 </Link>
+
 
 
 
@@ -716,7 +734,6 @@ Logout
 
 
 
-
 </div>
 
 
@@ -732,684 +749,56 @@ Logout
 
 </header>
 
-      {/* ================= MOBILE DRAWER ================= */}
-
-
-
-<div
-
-className={`
-fixed
-top-0
-left-0
-h-screen
-w-[320px]
-z-[70]
-shadow-2xl
-transition-all
-duration-300
-flex
-flex-col
-
-${
-mobileOpen
-?
-"translate-x-0"
-:
-"-translate-x-full"
-}
-
-${
-isAdmin
-?
-"bg-[#FAF7F2]"
-:
-"bg-white"
-}
-
-`}
-
->
 
 
 
 
 
-{/* ================= DRAWER CONTENT ================= */}
 
 
 
-<div
-
-className="
-flex-1
-overflow-y-auto
-"
-
->
-
-
+{/* ================= MOBILE DRAWER ================= */}
 
 
 
 {
-isAdmin ? (
+
+isAdmin
+
+?
+
+
+<AdminDrawer
+
+open={mobileOpen}
+
+setOpen={setMobileOpen}
+
+/>
+
+
+:
+
+
+<UserDrawer
+
+open={mobileOpen}
+
+setOpen={setMobileOpen}
+
+/>
+
+
+}
 
 
 
-<>
-
-
-{/* ADMIN HEADER */}
 
 
 
-<AdminDrawerHeader
+</>
 
-
-closeDrawer={()=>setMobileOpen(false)}
-
-
-onNotificationClick={()=>{
-
-
-navigate(
-"/admin/notifications"
 );
 
-
-}}
-
-
-/>
-
-
-
-
-
-
-
-{/* ADMIN MENU */}
-
-
-
-<AdminDrawerMenu
-
-
-closeDrawer={()=>setMobileOpen(false)}
-
-
-onLogout={handleLogout}
-
-
-/>
-
-
-
-</>
-
-
-
-) : (
-
-
-
-<>
-
-
-
-{/* USER / GUEST HEADER */}
-
-
-
-<div
-
-className="
-bg-[#071F57]
-text-white
-p-6
-"
-
->
-
-
-<div
-
-className="
-flex
-items-center
-justify-between
-"
-
->
-
-
-<div
-
-className="
-flex
-items-center
-gap-3
-"
-
->
-
-
-
-<img
-
-src={
-settings.logoUrl ||
-"/logo.png"
-}
-
-className="
-w-10
-h-10
-object-contain
-"
-
-/>
-
-
-
-
-
-<div>
-
-
-<h2
-
-className="
-text-xl
-font-bold
-"
-
->
-
-
-{
-settings.storeName ||
-"DREAM MODE"
-}
-
-
-</h2>
-
-
-
-
-<p
-
-className="
-text-xs
-text-white/70
-"
-
->
-
-Premium Fashion
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<button
-
-onClick={()=>setMobileOpen(false)}
-
->
-
-✕
-
-</button>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-{/* USER MENU */}
-
-
-
-<div
-
-className="
-py-4
-"
-
->
-
-
-
-
-
-<Link
-
-to="/"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-block
-px-6
-py-4
-hover:bg-slate-50
-"
-
->
-
-Home
-
-</Link>
-
-
-
-
-
-
-<Link
-
-to="/shop"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-block
-px-6
-py-4
-hover:bg-slate-50
-"
-
->
-
-Shop
-
-</Link>
-
-
-
-
-
-
-
-<Link
-
-to="/cart"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-flex
-justify-between
-px-6
-py-4
-hover:bg-slate-50
-"
-
->
-
-Cart
-
-
-<span>
-
-{cartCount}
-
-</span>
-
-
-</Link>
-
-
-
-
-
-
-{
-!user ? (
-
-
-<>
-
-
-<Link
-
-to="/login"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-block
-px-6
-py-4
-"
-
->
-
-Login
-
-</Link>
-
-
-
-
-
-
-<Link
-
-to="/register"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-mx-6
-mt-3
-flex
-justify-center
-rounded-xl
-bg-[#071F57]
-text-white
-py-3
-"
-
->
-
-Join Now
-
-</Link>
-
-
-</>
-
-
-
-) : (
-
-
-
-<>
-
-
-
-<Link
-
-to="/profile"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-block
-px-6
-py-4
-"
-
->
-
-My Profile
-
-</Link>
-
-
-
-
-
-<button
-
-onClick={handleLogout}
-
-className="
-w-full
-text-left
-px-6
-py-4
-text-red-600
-"
-
->
-
-Logout
-
-</button>
-
-
-
-
-</>
-
-
-
-)
-
-}
-
-
-
-
-
-</div>
-
-
-
-</>
-
-
-
-)
-
-}
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* ================= SAME FOOTER ================= */}
-
-
-
-<div
-
-className="
-border-t
-border-slate-200
-p-6
-bg-white
-"
-
->
-
-
-<div
-
-className="
-rounded-2xl
-bg-[#071F57]
-text-white
-p-5
-text-center
-"
-
->
-
-
-
-<img
-
-src={
-settings.logoUrl ||
-"/logo.png"
-}
-
-className="
-w-14
-h-14
-mx-auto
-mb-3
-object-contain
-"
-
-/>
-
-
-
-
-
-<h3
-
-className="
-text-xl
-font-bold
-"
-
->
-
-
-{
-settings.storeName ||
-"Dream Mode"
-}
-
-
-
-</h3>
-
-
-
-
-
-
-<p
-
-className="
-text-xs
-text-white/70
-mt-2
-"
-
->
-
-
-Dress Your Dream,
-Live Your Style
-
-
-</p>
-
-
-
-
-
-
-<Link
-
-to="/shop"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-mt-5
-flex
-items-center
-justify-center
-py-3
-rounded-xl
-bg-white
-text-[#071F57]
-font-semibold
-"
-
->
-
-Shop Now
-
-</Link>
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* ================= OVERLAY ================= */}
-
-
-
-{
-
-mobileOpen && (
-
-
-
-<div
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-fixed
-inset-0
-bg-black/40
-backdrop-blur-sm
-z-[60]
-"
-
-></div>
-
-
-
-)
-
-}
-
-
-
-
-
-    </>
-
-  );
 
 }
