@@ -19,7 +19,6 @@ import {
   FiShield,
   FiUser,
   FiLoader,
-  FiArrowLeft,
 } from "react-icons/fi";
 
 import {
@@ -274,45 +273,10 @@ mx-auto
 
 <div
 className="
-relative
 mb-6
-flex
-items-center
-justify-center
+text-center
 "
 >
-
-
-<button
-
-onClick={()=>
-navigate(-1)
-}
-
-className="
-absolute
-left-0
-w-10
-h-10
-rounded-xl
-bg-white
-border
-border-gray-100
-shadow-sm
-flex
-items-center
-justify-center
-text-[#071F57]
-"
-
->
-
-<FiArrowLeft size={20}/>
-
-</button>
-
-
-
 
 <h1
 
@@ -328,7 +292,6 @@ text-[#172033]
 Users
 
 </h1>
-
 
 </div>
 
