@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
 
 
@@ -14,9 +13,6 @@ bg-[#F8F5EF]
 >
 
 
-<Header />
-
-
 <main
 className="
 p-4
@@ -25,7 +21,6 @@ lg:p-8
 >
 
 <Outlet />
-
 
 </main>
 
