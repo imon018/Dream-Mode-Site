@@ -15,7 +15,6 @@ import {
   FiArrowUp,
   FiArrowDown,
   FiTrash2,
-  FiX,
 } from "react-icons/fi";
 
 
