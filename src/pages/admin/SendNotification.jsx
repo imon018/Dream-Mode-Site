@@ -257,11 +257,16 @@ export default function SendNotification() {
 
 
 
-      <h1 className="text-2xl font-bold mb-6">
-
-        Send Notification
-
-      </h1>
+      <h1
+className="
+text-2xl
+font-bold
+mb-6
+text-center
+"
+>
+  Send Notification
+</h1>
 
 
 
