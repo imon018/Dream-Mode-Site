@@ -19,6 +19,7 @@ import {
   FiTrash2,
   FiLogOut,
   FiBell,
+  FiX,
   FiRefreshCw,
 } from "react-icons/fi";
 
