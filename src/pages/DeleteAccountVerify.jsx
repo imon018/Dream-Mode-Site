@@ -21,24 +21,25 @@ import {
 
 
 import {
-  deleteUser,
-} from "firebase/auth";
+  httpsCallable
+} from "firebase/functions";
 
 
 import {
-  db,
+  db
 } from "../firebase/firestore";
 
 
 import {
-  auth,
-} from "../firebase/auth";
+  functions
+} from "../firebase/firebaseConfig";
 
 
 import {
   successToast,
   errorToast,
 } from "../components/ui/Toast";
+
 
 
 
@@ -62,31 +63,8 @@ searchParams
 
 
 const token =
-searchParams.get(
-"token"
-);
+searchParams.get("token");
 
-
-
-
-
-const [
-message,
-setMessage
-]=useState(
-
-"Verifying delete request..."
-
-);
-
-
-
-
-
-const [
-loading,
-setLoading
-]=useState(false);
 
 
 
@@ -100,11 +78,27 @@ setRequestData
 
 
 
-
 const [
 requestId,
 setRequestId
 ]=useState(null);
+
+
+
+
+const [
+message,
+setMessage
+]=useState(
+"Verifying delete request..."
+);
+
+
+
+const [
+loading,
+setLoading
+]=useState(false);
 
 
 
@@ -130,10 +124,6 @@ findRequest();
 
 
 
-// =========================
-// FIND DELETE REQUEST
-// =========================
-
 const findRequest =
 async()=>{
 
@@ -143,11 +133,9 @@ try{
 
 if(!token){
 
-
 throw new Error(
-"Invalid delete account link."
+"Invalid delete link."
 );
-
 
 }
 
@@ -155,10 +143,7 @@ throw new Error(
 
 
 
-
-
 const q =
-
 query(
 
 collection(
@@ -178,23 +163,18 @@ token
 
 
 
-
-
-const snapshot =
+const snap =
 await getDocs(q);
 
 
 
 
 
-
-if(snapshot.empty){
-
+if(snap.empty){
 
 throw new Error(
-"Invalid or expired delete link."
+"Expired delete link."
 );
-
 
 }
 
@@ -202,31 +182,21 @@ throw new Error(
 
 
 
-
-
-
-const requestDoc =
-snapshot.docs[0];
+const deleteDocData =
+snap.docs[0];
 
 
 
 
 
 setRequestId(
-requestDoc.id
+deleteDocData.id
 );
 
 
 
-const data =
-requestDoc.data();
-
-
-
-
-
 setRequestData(
-data
+deleteDocData.data()
 );
 
 
@@ -234,9 +204,7 @@ data
 
 
 setMessage(
-
 "Are you sure you want to permanently delete your account?"
-
 );
 
 
@@ -245,14 +213,9 @@ setMessage(
 catch(error){
 
 
-console.log(error);
-
-
-
 errorToast(
 error.message
 );
-
 
 
 setMessage(
@@ -274,13 +237,6 @@ error.message
 
 
 
-
-
-
-// =========================
-// DELETE ACCOUNT
-// =========================
-
 const handleDelete =
 async()=>{
 
@@ -296,11 +252,9 @@ setLoading(true);
 
 if(!requestData){
 
-
 throw new Error(
-"Invalid delete request."
+"Invalid request."
 );
-
 
 }
 
@@ -308,47 +262,23 @@ throw new Error(
 
 
 
-
-
-const user =
-auth.currentUser;
-
-
-
-
-
-if(!user){
-
-
-throw new Error(
-"Please login again."
+const deleteAccount =
+httpsCallable(
+functions,
+"deleteAccount"
 );
 
 
-}
 
 
 
 
+await deleteAccount({
 
-
-
-
-// Delete Firestore User Data
-
-await deleteDoc(
-
-doc(
-
-db,
-
-"users",
-
+uid:
 requestData.uid
 
-)
-
-);
+});
 
 
 
@@ -356,19 +286,6 @@ requestData.uid
 
 
 
-// Delete Firebase Auth Account
-
-await deleteUser(
-user
-);
-
-
-
-
-
-
-
-// Remove request
 
 await deleteDoc(
 
@@ -391,25 +308,16 @@ requestId
 
 
 successToast(
-
 "Account deleted successfully."
-
 );
-
-
 
 
 
 
 
 setMessage(
-
-"Account deleted successfully. Redirecting..."
-
+"Account deleted successfully."
 );
-
-
-
 
 
 
@@ -468,51 +376,22 @@ setLoading(false);
 
 
 
-
-
-
-// =========================
-// CANCEL
-// =========================
-
-const handleCancel =()=>{
-
-
-navigate("/profile/security/delete");
-
-
-};
-
-
-
-
-
-
-
-
-
-
 return (
 
 <div className="
 min-h-screen
 bg-[#FAF7F2]
-p-4
 flex
 items-center
 justify-center
+p-4
 ">
-
-
-
 
 
 <div className="
 bg-white
 rounded-2xl
 shadow-lg
-border
-border-gray-100
 p-8
 max-w-md
 w-full
@@ -521,20 +400,12 @@ text-center
 
 
 
-
-
-
 <div className="
 text-5xl
 mb-5
 ">
-
 ⚠️
-
 </div>
-
-
-
 
 
 
@@ -551,11 +422,9 @@ Delete Account
 
 
 
-
-
 <p className="
 text-gray-600
-mb-8
+mb-6
 ">
 
 {message}
@@ -566,19 +435,11 @@ mb-8
 
 
 
-
-
-
 {
 
 requestData &&
 
-<div className="
-space-y-3
-">
-
-
-
+<>
 
 
 <button
@@ -594,7 +455,6 @@ bg-red-600
 text-white
 rounded-xl
 font-semibold
-disabled:opacity-50
 "
 
 >
@@ -619,35 +479,27 @@ loading
 
 
 
-
-
 <button
 
-onClick={handleCancel}
-
-disabled={loading}
+onClick={()=>navigate("/")}
 
 className="
 w-full
 h-12
 bg-gray-100
-text-gray-700
+mt-3
 rounded-xl
-font-semibold
 "
 
 >
 
-No, Keep My Account
+No, Cancel
 
 </button>
 
 
 
-
-
-
-</div>
+</>
 
 }
 
@@ -655,14 +507,11 @@ No, Keep My Account
 
 
 
-
+</div>
 
 
 </div>
 
-
-
-</div>
 
 );
 
