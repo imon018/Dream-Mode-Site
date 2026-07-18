@@ -43,6 +43,8 @@ export default function Orders(){
 
 const navigate = useNavigate();
 
+const [deleteId,setDeleteId] = useState(null);
+
 
 
 const [orders,setOrders] =
@@ -189,33 +191,20 @@ console.log(error);
 
 
 
-const removeOrder =
-async(id)=>{
-
-
-const confirmDelete =
-window.confirm(
-"Delete this order?"
-);
-
-
-
-if(!confirmDelete)
-return;
-
+const removeOrder = async()=>{
 
 
 try{
 
 
-await deleteOrder(id);
+await deleteOrder(deleteId);
 
 
 
 setOrders(prev=>
 
 prev.filter(
-order=>order.id!==id
+order=>order.id!==deleteId
 )
 
 );
@@ -228,7 +217,13 @@ successToast(
 
 
 
-}catch(error){
+setDeleteId(null);
+
+
+
+}
+
+catch(error){
 
 
 errorToast(
@@ -1166,7 +1161,7 @@ z-50
 
 <button
 
-onClick={()=>removeOrder(order.id)}
+onClick={()=>setDeleteId(order.id)}
 
 className="
 w-full
@@ -1183,7 +1178,6 @@ hover:bg-red-50
 Delete
 
 </button>
-
 
 </div>
 
@@ -1578,6 +1572,10 @@ Processing
 </option>
 
 <option>
+Shipped
+</option>
+	
+<option>
 Delivered
 </option>
 
@@ -1691,15 +1689,15 @@ z-50
 
 <button
 
-onClick={()=>removeOrder(order.id)}
+onClick={()=>setDeleteId(order.id)}
 
 className="
 w-full
+text-left
 px-3
 py-2
 text-xs
 text-red-600
-text-left
 hover:bg-red-50
 "
 
@@ -1708,7 +1706,6 @@ hover:bg-red-50
 Delete
 
 </button>
-
 
 </div>
 
@@ -1744,7 +1741,128 @@ Delete
 </div>
 
 
+{
+deleteId && (
 
+<div
+
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[100]
+"
+
+>
+
+
+<div
+
+className="
+bg-white
+rounded-xl
+p-5
+w-[300px]
+shadow-xl
+"
+
+>
+
+
+<h3
+
+className="
+font-black
+text-lg
+text-slate-900
+"
+
+>
+Delete Order?
+</h3>
+
+
+
+<p
+
+className="
+text-sm
+text-gray-500
+mt-2
+"
+
+>
+Are you sure you want to delete?
+</p>
+
+
+
+
+<div
+
+className="
+flex
+gap-3
+mt-5
+"
+
+>
+
+
+<button
+
+onClick={()=>setDeleteId(null)}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-gray-200
+font-bold
+text-sm
+"
+
+>
+No
+</button>
+
+
+
+
+
+<button
+
+onClick={removeOrder}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-red-500
+text-white
+font-bold
+text-sm
+"
+
+>
+Yes
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+)
+}
 
 
 </div>
@@ -1941,6 +2059,7 @@ overflow-hidden
 }
 
 
+	
 
 </div>
 
