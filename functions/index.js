@@ -493,12 +493,11 @@ return null;
 
 
 
+// =========================
+// VERIFY DELETE ACCOUNT
+// =========================
 
-// =================================================
-// DELETE ACCOUNT AFTER EMAIL VERIFY
-// =================================================
-
-exports.deleteAccount =
+exports.verifyDeleteAccount =
 
 onCall(
 
@@ -507,20 +506,19 @@ async(request)=>{
 
 const {
 
-uid
+token
 
 }=request.data;
 
 
 
-
-if(!uid){
+if(!token){
 
 throw new HttpsError(
 
 "invalid-argument",
 
-"User id required."
+"Token required."
 
 );
 
@@ -528,34 +526,30 @@ throw new HttpsError(
 
 
 
-
-
 try{
 
 
-const requestRef =
+const snapshot =
 
-admin.firestore()
+await admin.firestore()
 
 .collection(
 "deleteAccountRequests"
 )
 
-.doc(uid);
+.where(
+"token",
+"==",
+token
+)
+
+.get();
 
 
 
 
 
-const requestSnap =
-
-await requestRef.get();
-
-
-
-
-
-if(!requestSnap.exists){
+if(snapshot.empty){
 
 
 throw new HttpsError(
@@ -566,16 +560,19 @@ throw new HttpsError(
 
 );
 
-
 }
 
 
 
 
 
-const data =
+const doc =
+snapshot.docs[0];
 
-requestSnap.data();
+
+
+const data =
+doc.data();
 
 
 
@@ -584,13 +581,11 @@ requestSnap.data();
 if(data.verified !== true){
 
 
-throw new HttpsError(
+await doc.ref.update({
 
-"permission-denied",
+verified:true
 
-"Email verification required."
-
-);
+});
 
 
 }
@@ -599,26 +594,29 @@ throw new HttpsError(
 
 
 
-
-
-// Delete Firebase Auth user
+// Delete Firebase Authentication User
 
 await admin.auth()
 
-.deleteUser(uid);
+.deleteUser(
+
+data.uid
+
+);
 
 
 
 
 
 
-// Delete Firestore profile
+
+// Delete Firestore User Profile
 
 await admin.firestore()
 
 .collection("users")
 
-.doc(uid)
+.doc(data.uid)
 
 .delete();
 
@@ -627,9 +625,10 @@ await admin.firestore()
 
 
 
-// Delete delete request
 
-await requestRef.delete();
+// Delete Delete Request
+
+await doc.ref.delete();
 
 
 
@@ -651,19 +650,8 @@ catch(error){
 
 
 console.log(
-"Delete Account Error:",
 error
 );
-
-
-
-
-if(error instanceof HttpsError){
-
-throw error;
-
-}
-
 
 
 
@@ -671,13 +659,12 @@ throw new HttpsError(
 
 "internal",
 
-"Unable to delete account."
+error.message
 
 );
 
 
 }
-
 
 
 }
