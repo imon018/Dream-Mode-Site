@@ -15,8 +15,10 @@ import {
   FiUser,
   FiSearch,
   FiLogOut,
+  FiHome,
+  FiLogIn,
+  FiUserPlus,
 } from "react-icons/fi";
-
 
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
@@ -148,7 +150,7 @@ whitespace-nowrap
 
 &nbsp;&nbsp;&nbsp;
 
-🔥 Dream Mode Premium Collection
+🔥 🔥 {settings.storeName || "Dream Mode"} New Collection
 
 </div>
 
@@ -687,72 +689,85 @@ py-4
 
 
 <Link
-
 to="/"
-
 onClick={()=>setMobileOpen(false)}
-
-className="
-block
-px-6
-py-4
-text-lg
-"
-
->
-
-Home
-
-</Link>
-
-
-
-
-<Link
-
-to="/shop"
-
-onClick={()=>setMobileOpen(false)}
-
-className="
-block
-px-6
-py-4
-text-lg
-"
-
->
-
-Shop
-
-</Link>
-
-
-
-
-<Link
-
-to="/cart"
-
-onClick={()=>setMobileOpen(false)}
-
 className="
 flex
+items-center
+gap-3
+px-6
+py-4
+text-lg
+"
+>
+
+<FiHome size={20}/>
+
+<span>
+Home
+</span>
+
+</Link>
+
+
+
+
+<Link
+to="/shop"
+onClick={()=>setMobileOpen(false)}
+className="
+flex
+items-center
+gap-3
+px-6
+py-4
+text-lg
+"
+>
+
+<FiShoppingBag size={20}/>
+
+<span>
+Shop
+</span>
+
+</Link>
+
+
+
+
+<Link
+to="/cart"
+onClick={()=>setMobileOpen(false)}
+className="
+flex
+items-center
 justify-between
 px-6
 py-4
 text-lg
 "
-
 >
 
+<div
+className="
+flex
+items-center
+gap-3
+"
+>
+
+<FiShoppingBag size={20}/>
+
+<span>
 Cart
+</span>
+
+</div>
 
 
 <span>
-
 {cartCount}
-
 </span>
 
 
@@ -762,21 +777,23 @@ Cart
 
 
 <Link
-
 to="/login"
-
 onClick={()=>setMobileOpen(false)}
-
 className="
-block
+flex
+items-center
+gap-3
 px-6
 py-4
 text-lg
 "
-
 >
 
+<FiLogIn size={20}/>
+
+<span>
 Login
+</span>
 
 </Link>
 
@@ -803,7 +820,7 @@ py-3
 
 >
 
-Join Now
+Register Now
 
 
 </Link>
