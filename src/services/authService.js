@@ -3,11 +3,9 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   sendEmailVerification,
-  sendPasswordResetEmail,
   deleteUser,
   EmailAuthProvider,
   reauthenticateWithCredential,
-  updatePassword,
 } from "firebase/auth";
 
 
@@ -17,7 +15,6 @@ import {
   updateDoc,
   getDoc,
   serverTimestamp,
-  deleteDoc,
 } from "firebase/firestore";
 
 
@@ -31,6 +28,18 @@ import {
 } from "../firebase/firestore";
 
 
+import {
+  httpsCallable
+} from "firebase/functions";
+
+
+import {
+  functions
+} from "../firebase/functions";
+
+
+
+
 
 
 
@@ -42,6 +51,7 @@ export async function login(
 email,
 password
 ){
+
 
 const result =
 await signInWithEmailAndPassword(
@@ -75,15 +85,21 @@ let role =
 
 if(userSnap.exists()){
 
+
 role =
 userSnap.data().role || "user";
+
 
 }
 
 
 
+
+
 await updateDoc(
+
 userRef,
+
 {
 
 lastLogin:
@@ -103,6 +119,7 @@ result.user,
 role
 
 };
+
 
 }
 
@@ -124,12 +141,19 @@ password,
 name
 ){
 
+
 const result =
 await createUserWithEmailAndPassword(
+
 auth,
+
 email,
+
 password
+
 );
+
+
 
 
 
@@ -164,13 +188,20 @@ serverTimestamp()
 
 
 
+
+
 await sendEmailVerification(
+
 result.user
+
 );
 
 
 
+
+
 return result.user;
+
 
 }
 
@@ -183,12 +214,13 @@ return result.user;
 
 
 // =========================
-// RESEND EMAIL VERIFY
+// RESEND VERIFICATION
 // =========================
 
 export async function resendVerificationEmail(
 user
 ){
+
 
 if(!user){
 
@@ -204,6 +236,7 @@ await sendEmailVerification(
 user
 );
 
+
 }
 
 
@@ -215,7 +248,8 @@ user
 
 
 // =========================
-// PASSWORD CHANGE REQUEST
+// CHANGE PASSWORD
+// LOGIN REQUIRED
 // =========================
 
 export async function requestPasswordChange(
@@ -226,6 +260,7 @@ currentPassword
 
 ){
 
+
 if(!user){
 
 throw new Error(
@@ -237,8 +272,8 @@ throw new Error(
 
 
 
-
 const credential =
+
 EmailAuthProvider.credential(
 
 user.email,
@@ -246,6 +281,7 @@ user.email,
 currentPassword
 
 );
+
 
 
 
@@ -302,7 +338,9 @@ serverTimestamp()
 
 
 
-return true;
+
+
+return token;
 
 
 }
@@ -319,81 +357,11 @@ return true;
 // APPLY PASSWORD CHANGE
 // =========================
 
-export async function applyPasswordChange(
-
-user,
-
-newPassword
-
-){
-
-if(!user){
+export async function applyPasswordChange(){
 
 throw new Error(
-"User not found"
+"Use cloud function for password update."
 );
-
-}
-
-
-
-
-
-if(!newPassword){
-
-throw new Error(
-"Password required."
-);
-
-}
-
-
-
-
-
-if(newPassword.length < 6){
-
-throw new Error(
-"Password must be at least 6 characters."
-);
-
-}
-
-
-
-
-
-await updatePassword(
-
-user,
-
-newPassword
-
-);
-
-
-
-
-
-await deleteDoc(
-
-doc(
-
-db,
-
-"passwordChangeRequests",
-
-user.uid
-
-)
-
-);
-
-
-
-
-return true;
-
 
 }
 
@@ -406,20 +374,22 @@ return true;
 
 
 // =========================
-// VERIFY PASSWORD CHANGE LINK
+// VERIFY PASSWORD LINK
 // =========================
 
 export async function verifyPasswordChangeLink(
 token
 ){
 
+
 if(!token){
 
 throw new Error(
-"Invalid password change link."
+"Invalid token"
 );
 
 }
+
 
 
 return true;
@@ -437,29 +407,109 @@ return true;
 
 // =========================
 // FORGOT PASSWORD
+// CUSTOM EMAIL
+// NO LOGIN REQUIRED
 // =========================
 
 export async function forgotPassword(
+
 email
+
 ){
 
-await sendPasswordResetEmail(
 
-auth,
+if(!email){
 
-email,
+throw new Error(
+"Email required."
+);
+
+}
+
+
+
+
+
+const token =
+crypto.randomUUID();
+
+
+
+
+
+
+
+const resetRef =
+
+doc(
+
+db,
+
+"passwordResetRequests",
+
+token
+
+);
+
+
+
+
+
+
+
+await setDoc(
+
+resetRef,
 
 {
 
-url:
+email,
 
-`${window.location.origin}/reset-password`,
+token,
 
-handleCodeInApp:true
+verified:false,
+
+createdAt:
+serverTimestamp()
 
 }
 
 );
+
+
+
+
+
+
+
+const sendMail =
+
+httpsCallable(
+
+functions,
+
+"sendForgotPasswordEmail"
+
+);
+
+
+
+
+
+await sendMail({
+
+requestId:token
+
+});
+
+
+
+
+
+
+
+return true;
+
 
 }
 
@@ -477,9 +527,11 @@ handleCodeInApp:true
 
 export async function logout(){
 
+
 await signOut(
 auth
 );
+
 
 }
 
@@ -499,6 +551,7 @@ export async function deleteUserAccount(
 user
 ){
 
+
 if(!user){
 
 throw new Error(
@@ -512,5 +565,6 @@ throw new Error(
 await deleteUser(
 user
 );
+
 
 }
