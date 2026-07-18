@@ -1,6 +1,7 @@
-import { 
-  useEffect, 
-  useState 
+import {
+  useEffect,
+  useState,
+  useRef,
 } from "react";
 
 
@@ -46,7 +47,7 @@ const {id}=useParams();
 
 const navigate=useNavigate();
 
-
+const menuRef = useRef(null);
 
 const [order,setOrder]=useState(null);
 
@@ -54,6 +55,7 @@ const [loading,setLoading]=useState(true);
 
 const [menuOpen,setMenuOpen]=useState(false);
 
+const [deleteModal,setDeleteModal]=useState(false);
 
 
 
@@ -65,7 +67,46 @@ loadOrder();
 },[id]);
 
 
+useEffect(()=>{
 
+function handleClickOutside(event){
+
+if(
+menuRef.current &&
+!menuRef.current.contains(event.target)
+){
+
+setMenuOpen(false);
+
+}
+
+}
+
+document.addEventListener(
+"mousedown",
+handleClickOutside
+);
+
+document.addEventListener(
+"touchstart",
+handleClickOutside
+);
+
+return ()=>{
+
+document.removeEventListener(
+"mousedown",
+handleClickOutside
+);
+
+document.removeEventListener(
+"touchstart",
+handleClickOutside
+);
+
+};
+
+},[]);
 
 
 
@@ -194,41 +235,31 @@ errorToast(
 
 async function removeOrder(){
 
-
-const ok=window.confirm(
-"Delete this order?"
-);
-
-
-if(!ok)
-return;
-
-
+setDeleting(true);
 
 try{
 
-
 await deleteOrder(id);
 
-
-successToast(
-"Order deleted"
-);
-
+successToast("Order deleted");
 
 navigate("/admin/orders");
-
 
 }
 
 catch(error){
 
-errorToast(
-"Delete failed"
-);
+console.log(error);
+
+errorToast("Delete failed");
 
 }
 
+finally{
+
+setDeleting(false);
+
+}
 
 }
 
@@ -333,32 +364,52 @@ space-y-3
 
 {/* HEADER */}
 
-<div className="
+<div
+className="
 relative
 flex
 items-center
 justify-center
 mb-2
-">
+"
+>
 
+<button
 
+onClick={()=>navigate(-1)}
 
+className="
+absolute
+left-0
+w-10
+h-10
+rounded-full
+bg-white
+border
+border-gray-100
+shadow-sm
+flex
+items-center
+justify-center
+"
 
-<h1 className="
+>
+
+<FiArrowLeft size={22}/>
+
+</button>
+
+<h1
+className="
 font-bold
 text-lg
-">
-
+"
+>
 Order Details
-
 </h1>
 
-
-
-
-
-
 <div
+ref={menuRef}
 className="
 absolute
 right-0
@@ -405,7 +456,10 @@ z-50
 
 <button
 
-onClick={removeOrder}
+onClick={()=>{
+setMenuOpen(false);
+setDeleteModal(true);
+}}
 
 className="
 w-full
@@ -1397,7 +1451,7 @@ Cancelled
 
 <button
 
-onClick={removeOrder}
+onClick={()=>setDeleteModal(true)}
 
 className="
 w-full
@@ -1424,7 +1478,115 @@ Delete Order
 
 
 
+{
+deleteModal && (
 
+<div
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[999]
+"
+>
+
+<div
+className="
+bg-white
+rounded-xl
+p-6
+w-[90%]
+max-w-sm
+shadow-xl
+"
+>
+
+<h2
+className="
+text-lg
+font-bold
+text-center
+"
+>
+Delete Order
+</h2>
+
+<p
+className="
+text-sm
+text-gray-500
+text-center
+mt-3
+"
+>
+Are you sure you want to delete this order?
+</p>
+
+<div
+className="
+flex
+gap-3
+mt-6
+"
+>
+
+<button
+
+onClick={()=>setDeleteModal(false)}
+
+className="
+flex-1
+h-11
+rounded-lg
+border
+border-gray-300
+font-semibold
+"
+>
+
+No
+
+</button>
+
+<button
+
+disabled={deleting}
+
+onClick={async()=>{
+
+setDeleteModal(false);
+
+await removeOrder();
+
+}}
+
+className="
+flex-1
+h-11
+rounded-lg
+bg-red-600
+text-white
+font-semibold
+disabled:opacity-50
+"
+
+>
+
+{deleting ? "Deleting..." : "Yes"}
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+)
+}
 
 
 
