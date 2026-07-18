@@ -4,7 +4,8 @@ const {
 
 
 const {
-  onCall
+  onCall,
+  HttpsError
 } = require("firebase-functions/v2/https");
 
 
@@ -43,6 +44,7 @@ defineSecret(
 
 
 
+
 // =========================
 // SEND PASSWORD CHANGE EMAIL
 // =========================
@@ -52,13 +54,13 @@ exports.sendPasswordChangeEmail =
 onDocumentCreated(
 
 {
-document:
-"passwordChangeRequests/{requestId}",
+  document:
+  "passwordChangeRequests/{requestId}",
 
-secrets:[
-gmailEmail,
-gmailPassword
-]
+  secrets:[
+    gmailEmail,
+    gmailPassword
+  ]
 
 },
 
@@ -92,12 +94,14 @@ auth:{
 user:
 gmailEmail.value(),
 
+
 pass:
 gmailPassword.value()
 
 }
 
 });
+
 
 
 
@@ -120,9 +124,11 @@ from:
 `"Dream Mode" <${gmailEmail.value()}>`,
 
 
+
 to:
 
 data.email,
+
 
 
 subject:
@@ -131,11 +137,15 @@ subject:
 
 
 
+
 html:
 
 `
 
-<div style="font-family:Arial;padding:20px">
+<div style="
+font-family:Arial;
+padding:20px;
+">
 
 
 <h2>
@@ -148,16 +158,30 @@ You requested to change your password.
 </p>
 
 
+<p>
+Click the button below to continue.
+</p>
+
+
+
 <a href="${link}"
 
 style="
+
 display:inline-block;
+
 background:#F59E0B;
+
 color:white;
+
 padding:12px 20px;
+
 border-radius:8px;
+
 text-decoration:none;
+
 font-weight:bold;
+
 ">
 
 Change Password
@@ -165,9 +189,20 @@ Change Password
 </a>
 
 
-<p>
+
+
+<p style="
+margin-top:20px;
+color:#666;
+">
+
 If you did not request this, ignore this email.
+
 </p>
+
+
+
+<br/>
 
 
 <p>
@@ -180,6 +215,7 @@ Dream Mode Team
 `
 
 });
+
 
 
 
@@ -198,7 +234,7 @@ return null;
 
 
 // =========================
-// CHANGE PASSWORD FUNCTION
+// CHANGE PASSWORD
 // =========================
 
 
@@ -224,20 +260,35 @@ password
 
 if(!uid || !password){
 
-throw new Error(
-"Invalid password request"
+
+throw new HttpsError(
+
+"invalid-argument",
+
+"Invalid password request."
+
 );
 
+
 }
+
+
+
 
 
 
 
 if(password.length < 6){
 
-throw new Error(
-"Password must be at least 6 characters"
+
+throw new HttpsError(
+
+"invalid-argument",
+
+"Password must be at least 6 characters."
+
 );
+
 
 }
 
@@ -245,6 +296,10 @@ throw new Error(
 
 
 
+
+
+
+try{
 
 
 await admin.auth()
@@ -254,7 +309,7 @@ uid,
 
 {
 
-password:password
+password: password
 
 }
 
@@ -269,6 +324,27 @@ return {
 success:true
 
 };
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+
+
+throw new HttpsError(
+
+"internal",
+
+"Unable to update password."
+
+);
+
+
+}
+
 
 
 }
