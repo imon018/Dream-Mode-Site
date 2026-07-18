@@ -7,8 +7,6 @@ import {
 } from "react-router-dom";
 
 
-import AdminBackButton from "../components/admin/AdminBackButton";
-
 import AdminDrawer from "../components/admin/AdminDrawer";
 
 
@@ -59,27 +57,8 @@ lg:p-8
 >
 
 
-<div
-
-className="
-relative
-"
-
->
-
-
-<AdminBackButton
-
-setDrawerOpen={setDrawerOpen}
-
-/>
-
-
 
 <Outlet />
-
-
-</div>
 
 
 </main>
@@ -87,6 +66,7 @@ setDrawerOpen={setDrawerOpen}
 
 </div>
 
+  
 );
 
 
