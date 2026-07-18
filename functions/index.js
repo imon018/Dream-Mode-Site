@@ -4,6 +4,11 @@ const {
 
 
 const {
+  onCall
+} = require("firebase-functions/v2/https");
+
+
+const {
   defineSecret
 } = require("firebase-functions/params");
 
@@ -18,6 +23,7 @@ require("nodemailer");
 
 
 admin.initializeApp();
+
 
 
 
@@ -37,26 +43,21 @@ defineSecret(
 
 
 
-
-
+// =========================
+// SEND PASSWORD CHANGE EMAIL
+// =========================
 
 exports.sendPasswordChangeEmail =
 
 onDocumentCreated(
 
 {
-
 document:
-
 "passwordChangeRequests/{requestId}",
 
-
 secrets:[
-
 gmailEmail,
-
 gmailPassword
-
 ]
 
 },
@@ -70,14 +71,11 @@ event.data.data();
 
 
 
-
-
 if(!data){
 
 return null;
 
 }
-
 
 
 
@@ -91,20 +89,13 @@ service:"gmail",
 
 auth:{
 
-
 user:
-
 gmailEmail.value(),
 
-
-
 pass:
-
 gmailPassword.value()
 
-
 }
-
 
 });
 
@@ -112,15 +103,9 @@ gmailPassword.value()
 
 
 
-
-
-
 const link =
 
-
 `https://dream-mode-site-eight.vercel.app/password-change-verify?token=${data.token}`;
-
-
 
 
 
@@ -132,15 +117,12 @@ await transporter.sendMail({
 
 from:
 
-
 `"Dream Mode" <${gmailEmail.value()}>`,
-
 
 
 to:
 
 data.email,
-
 
 
 subject:
@@ -149,16 +131,11 @@ subject:
 
 
 
-
 html:
-
 
 `
 
-<div style="
-font-family:Arial;
-padding:20px;
-">
+<div style="font-family:Arial;padding:20px">
 
 
 <h2>
@@ -171,30 +148,16 @@ You requested to change your password.
 </p>
 
 
-<p>
-Click the button below to continue.
-</p>
-
-
-
 <a href="${link}"
 
 style="
-
 display:inline-block;
-
 background:#F59E0B;
-
 color:white;
-
 padding:12px 20px;
-
 border-radius:8px;
-
 text-decoration:none;
-
 font-weight:bold;
-
 ">
 
 Change Password
@@ -202,20 +165,9 @@ Change Password
 </a>
 
 
-
-
-<p style="
-margin-top:20px;
-color:#666;
-">
-
+<p>
 If you did not request this, ignore this email.
-
 </p>
-
-
-
-<br/>
 
 
 <p>
@@ -232,9 +184,93 @@ Dream Mode Team
 
 
 
-
-
 return null;
 
 
 });
+
+
+
+
+
+
+
+
+
+// =========================
+// CHANGE PASSWORD FUNCTION
+// =========================
+
+
+exports.changePassword =
+
+
+onCall(
+
+async(request)=>{
+
+
+const {
+
+uid,
+
+password
+
+}=request.data;
+
+
+
+
+
+if(!uid || !password){
+
+throw new Error(
+"Invalid password request"
+);
+
+}
+
+
+
+
+if(password.length < 6){
+
+throw new Error(
+"Password must be at least 6 characters"
+);
+
+}
+
+
+
+
+
+
+
+await admin.auth()
+.updateUser(
+
+uid,
+
+{
+
+password:password
+
+}
+
+);
+
+
+
+
+
+return {
+
+success:true
+
+};
+
+
+}
+
+);
