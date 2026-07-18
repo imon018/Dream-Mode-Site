@@ -11,7 +11,7 @@ import {
 
 
 import {
-  FiCloudUpload,
+  FiUploadCloud,
   FiArrowUp,
   FiArrowDown,
   FiTrash2,
@@ -1010,7 +1010,7 @@ text-amber-500
 
 >
 
-<FiCloudUpload size={22}/>
+<FiUploadCloud size={22}/>
 
 </div>
 
@@ -1038,7 +1038,7 @@ bg-[#FFFDF8]
 >
 
 
-<FiCloudUpload
+<FiUploadCloud
 
 size={55}
 
