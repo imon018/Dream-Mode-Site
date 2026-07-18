@@ -57,6 +57,8 @@ const [menuOpen,setMenuOpen]=useState(false);
 
 const [deleteModal,setDeleteModal]=useState(false);
 
+const [deleting, setDeleting] = useState(false);
+
 
 
 
