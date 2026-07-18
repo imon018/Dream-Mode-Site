@@ -255,32 +255,34 @@ max-w-3xl
 mx-auto
 ">
 
-<div className="
-flex
-items-center
-justify-between
-mb-6
-">
+<div
+className="
+mb-5
+text-center
+"
+>
 
-<div>
-
-<h1 className="
+<h1
+className="
 text-2xl
 font-black
 text-[#172033]
-">
+"
+>
 Add Product
 </h1>
 
-<p className="
+
+<p
+className="
 text-sm
 text-gray-500
 mt-1
-">
+"
+>
 Create a new product
 </p>
 
-</div>
 
 </div>
 
@@ -290,12 +292,13 @@ onSubmit={handleSubmit}
 
 className="
 bg-white
-rounded-xl
+rounded-lg
+p-5
+md:p-6
+shadow-sm
 border
 border-gray-100
-shadow-sm
-p-5
-space-y-5
+space-y-4
 "
 >
 
