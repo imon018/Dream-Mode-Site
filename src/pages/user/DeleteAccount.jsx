@@ -1,25 +1,30 @@
 import {
-  useState,
+  useState
 } from "react";
+
+
+import {
+  FiEye,
+  FiEyeOff,
+  FiLock
+} from "react-icons/fi";
+
+
+import Button from "../../components/ui/Button";
+
+
+import {
+  successToast,
+  errorToast
+} from "../../components/ui/Toast";
 
 
 import useAuth from "../../hooks/useAuth";
 
 
 import {
-  createDeleteAccountRequest,
+  createDeleteAccountRequest
 } from "../../services/deleteAccountService";
-
-
-import {
-  successToast,
-  errorToast,
-} from "../../components/ui/Toast";
-
-
-import Button from "../../components/ui/Button";
-
-
 
 
 
@@ -45,6 +50,11 @@ setPassword
 
 
 
+const [
+showPassword,
+setShowPassword
+]=useState(false);
+
 
 
 const [
@@ -59,9 +69,26 @@ setLoading
 
 
 
-
 const handleDeleteRequest =
 async()=>{
+
+
+
+if(!user){
+
+
+errorToast(
+"User session expired."
+);
+
+
+return;
+
+
+}
+
+
+
 
 
 
@@ -98,11 +125,10 @@ window.confirm(
 
 if(!confirm){
 
-
 return;
 
-
 }
+
 
 
 
@@ -124,23 +150,10 @@ setLoading(true);
 
 await createDeleteAccountRequest(
 
-user,
-
-password
+user
 
 );
 
-
-
-
-
-
-
-successToast(
-
-"Verification email sent. Please check your inbox."
-
-);
 
 
 
@@ -151,6 +164,14 @@ successToast(
 setPassword("");
 
 
+
+
+
+successToast(
+
+"Verification email sent. Please check your inbox."
+
+);
 
 
 
@@ -179,7 +200,6 @@ setLoading(false);
 
 
 
-
 };
 
 
@@ -192,13 +212,35 @@ setLoading(false);
 
 return (
 
-<div>
+<div className="
+min-h-screen
+bg-[#FAF7F2]
+p-4
+text-gray-900
+space-y-3
+">
+
+
+
+
+
+
+
+{/* HEADER */}
+
+<div className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+">
 
 
 <h1 className="
-text-3xl
+text-xl
 font-bold
-mb-8
 text-red-600
 ">
 
@@ -208,33 +250,64 @@ Delete Account
 
 
 
+<p className="
+text-xs
+text-gray-500
+mt-1
+">
+
+Please verify your email before deleting your account.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* FORM CARD */}
+
+
+<div className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+">
+
+
 
 
 
 
 
 <div className="
-bg-white
-rounded-3xl
-shadow
-p-8
+relative
 ">
 
 
 
 
 
+<FiLock
 
-<p className="
-text-gray-600
-mb-5
-">
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
 
-Enter your password. We will send a verification email before deleting your account.
-
-</p>
-
-
+/>
 
 
 
@@ -244,13 +317,31 @@ Enter your password. We will send a verification email before deleting your acco
 <input
 
 
-type="password"
+
+type={
+
+showPassword
+
+?
+
+"text"
+
+:
+
+"password"
+
+}
+
 
 
 placeholder="Enter your password"
 
 
-value={password}
+
+value={
+password
+}
+
 
 
 onChange={(e)=>
@@ -262,19 +353,116 @@ e.target.value
 }
 
 
+
 className="
 w-full
+h-12
+bg-[#FAF7F2]
+rounded-lg
 border
-rounded-xl
-p-3
+border-gray-100
+pl-10
+pr-10
+text-sm
 outline-none
 focus:border-red-500
 "
 
-
-
-
 />
+
+
+
+
+
+
+
+<button
+
+type="button"
+
+onClick={()=>
+
+
+setShowPassword(
+!showPassword
+)
+
+}
+
+
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+
+>
+
+
+{
+
+showPassword
+
+?
+
+<FiEyeOff/>
+
+:
+
+<FiEye/>
+
+}
+
+
+</button>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<p className="
+text-xs
+text-gray-500
+mt-3
+">
+
+
+✓ A verification email will be sent before account deletion.
+
+
+</p>
+
+
+
+
+
+
+
+<p className="
+text-xs
+text-red-500
+mt-2
+">
+
+
+⚠ This action cannot be undone after verification.
+
+
+</p>
 
 
 
@@ -287,15 +475,24 @@ focus:border-red-500
 <Button
 
 
-onClick={handleDeleteRequest}
+onClick={
+handleDeleteRequest
+}
 
 
-disabled={loading}
+disabled={
+loading
+}
+
 
 
 className="
 w-full
-mt-6
+h-12
+rounded-lg
+mt-4
+text-sm
+font-semibold
 bg-red-600
 "
 
@@ -309,7 +506,7 @@ loading
 
 ?
 
-"Sending Email..."
+"Sending..."
 
 :
 
@@ -329,6 +526,10 @@ loading
 
 
 </div>
+
+
+
+
 
 
 
