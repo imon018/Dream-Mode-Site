@@ -274,11 +274,27 @@ My Returns
 
 <NavLink
 
-to="/wishlist"
+to="/profile/wishlist"
 
 onClick={closeDrawer}
 
-className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
+className={({isActive})=>
+
+menuItem +
+
+(isActive
+
+?
+
+" bg-[#071F57] text-white shadow"
+
+:
+
+" text-slate-700 hover:bg-[#FFF7E8]"
+
+)
+
+}
 
 >
 
@@ -290,7 +306,6 @@ Wishlist
 
 
 </NavLink>
-
 
 
 
