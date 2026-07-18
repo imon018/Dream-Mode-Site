@@ -15,93 +15,103 @@ import WhatsAppButton from "../components/WhatsAppButton";
 export default function MainLayout() {
 
 
-  const location = useLocation();
+const location = useLocation();
 
 
 
-  const isUserPanel =
-    location.pathname.startsWith(
-      "/profile"
-    );
+const isUserPanel =
+location.pathname.startsWith(
+"/profile"
+);
 
 
 
-  const isAdminPanel =
-    location.pathname.startsWith(
-      "/admin"
-    );
+const isAdminPanel =
+location.pathname.startsWith(
+"/admin"
+);
 
 
 
-  const hideFooter =
-    isUserPanel ||
-    isAdminPanel;
+const hideFooter =
+isUserPanel ||
+isAdminPanel;
 
 
 
-  return (
+return (
 
-    <>
+<>
 
 
-      {
- !isUserPanel && !isAdminPanel && (
+{/* শুধু Public Page এ AnnouncementBar */}
 
-   <AnnouncementBar />
+{
+!isUserPanel &&
+!isAdminPanel && (
 
- )
+<AnnouncementBar />
+
+)
 }
 
+
+
+{/* সব জায়গায় Header থাকবে */}
 
 <Header />
 
 
 
 
-      <main
-        className={
-          hideFooter
 
-          ?
+<main
 
-          "min-h-screen"
+className={
+hideFooter
 
-          :
+?
 
-          "min-h-screen pb-20 md:pb-0"
-        }
-      >
+"min-h-screen"
 
-        <Outlet />
+:
 
-      </main>
+"min-h-screen pb-20 md:pb-0"
 
+}
 
+>
 
+<Outlet />
 
-
-      {
-        !hideFooter && (
-
-          <>
-
-            <WhatsAppButton />
-
-            <MobileBottomNav />
-
-            <Footer />
-
-          </>
-
-        )
-      }
+</main>
 
 
 
 
 
-    </>
+{/* শুধু Public Page এ Footer */}
 
-  );
+{
+!hideFooter && (
+
+<>
+
+<WhatsAppButton />
+
+<MobileBottomNav />
+
+<Footer />
+
+</>
+
+)
+
+}
+
+
+</>
+
+);
 
 }
