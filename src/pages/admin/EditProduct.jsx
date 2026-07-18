@@ -11,7 +11,7 @@ import {
 
 
 import {
-  FiUpload,
+  FiCloudUpload,
   FiArrowUp,
   FiArrowDown,
   FiTrash2,
@@ -993,10 +993,10 @@ left-3
 top-1/2
 -translate-y-1/2
 
-w-7
-h-7
+w-10
+h-10
 
-rounded-md
+rounded-xl
 
 bg-[#FFF7E8]
 
@@ -1010,11 +1010,76 @@ text-amber-500
 
 >
 
-<FiUpload size={15}/>
+<FiCloudUpload size={22}/>
 
 </div>
 
 
+
+
+
+<label
+
+className="
+w-full
+h-64
+border-2
+border-dashed
+border-amber-400
+rounded-3xl
+flex
+flex-col
+items-center
+justify-center
+cursor-pointer
+bg-[#FFFDF8]
+"
+
+>
+
+
+<FiCloudUpload
+
+size={55}
+
+className="
+text-amber-500
+mb-4
+"
+
+/>
+
+
+
+<p
+
+className="
+text-lg
+font-black
+text-[#172033]
+"
+
+>
+
+Click to Upload Images
+
+</p>
+
+
+
+<p
+
+className="
+text-sm
+text-gray-400
+mt-1
+"
+
+>
+
+JPG • PNG • WEBP (Multiple)
+
+</p>
 
 
 
@@ -1026,6 +1091,7 @@ multiple
 
 accept="image/*"
 
+hidden
 
 onChange={(e)=>{
 
@@ -1035,34 +1101,10 @@ Array.from(e.target.files)
 
 }}
 
+/>
 
-className="
 
-w-full
-
-h-12
-
-pl-12
-
-pr-3
-
-rounded-lg
-
-border
-
-border-gray-200
-
-outline-none
-
-text-sm
-
-text-gray-700
-
-focus:border-amber-400
-
-"
-
- />
+</label>
 
 
 
