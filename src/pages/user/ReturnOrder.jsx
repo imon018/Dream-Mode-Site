@@ -14,6 +14,7 @@ import {
 import {
   FiPackage,
   FiUploadCloud,
+  FiArrowLeft,
 } from "react-icons/fi";
 
 
@@ -760,15 +761,41 @@ space-y-4
 {/* HEADER */}
 
 <div
+className="
+relative
+flex
+items-center
+justify-center
+py-2
+"
+>
+
+<button
+
+onClick={()=>navigate(-1)}
 
 className="
-text-center
-py-2
+absolute
+left-0
+w-10
+h-10
+rounded-full
+bg-white
+border
+border-gray-100
+shadow-sm
+flex
+items-center
+justify-center
 "
 
 >
 
+<FiArrowLeft size={22}/>
 
+</button>
+
+  
 <h1
 
 className="
