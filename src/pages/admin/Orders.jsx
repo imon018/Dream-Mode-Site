@@ -431,29 +431,26 @@ lg:p-6
 
 {/* HEADER */}
 
-<div>
+<div
+className="
+flex
+items-center
+justify-center
+mb-4
+"
+>
 
-<h1 className="
+<h1
+className="
 text-2xl
 font-black
 text-slate-900
-">
+"
+>
 
 Orders
 
 </h1>
-
-
-<p className="
-text-xs
-text-gray-500
-mt-1
-">
-
-Dashboard › Orders
-
-</p>
-
 
 </div>
 
