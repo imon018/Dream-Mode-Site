@@ -170,7 +170,7 @@ element={<ReturnOrder />}
 
         {/* USER PROFILE */}
 
-         <Route element={<MainLayout />}>
+         
 
             
         <Route
@@ -232,7 +232,7 @@ element={<ReturnOrder />}
 
         </Route>
 
-            </Route>
+            
 
 
 
@@ -287,7 +287,7 @@ element={<ReturnOrder />}
           ADMIN ROUTES
       ========================= */}
 
-       <Route element={<MainLayout />}>
+       
 
       <Route
         path="/admin"
@@ -427,7 +427,7 @@ element={<ReturnOrder />}
 
       </Route>
 
-       </Route>
+       
 
 
 
