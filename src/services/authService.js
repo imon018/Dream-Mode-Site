@@ -28,19 +28,6 @@ import {
 } from "../firebase/firestore";
 
 
-import {
-  httpsCallable
-} from "firebase/functions";
-
-
-import {
-  functions
-} from "../firebase/functions";
-
-
-
-
-
 
 
 // =========================
@@ -51,7 +38,6 @@ export async function login(
 email,
 password
 ){
-
 
 const result =
 await signInWithEmailAndPassword(
@@ -85,13 +71,10 @@ let role =
 
 if(userSnap.exists()){
 
-
 role =
 userSnap.data().role || "user";
 
-
 }
-
 
 
 
@@ -111,10 +94,11 @@ serverTimestamp()
 
 
 
+
+
 return {
 
-user:
-result.user,
+user:result.user,
 
 role
 
@@ -248,7 +232,7 @@ user
 
 
 // =========================
-// CHANGE PASSWORD
+// CHANGE PASSWORD REQUEST
 // LOGIN REQUIRED
 // =========================
 
@@ -360,7 +344,7 @@ return token;
 export async function applyPasswordChange(){
 
 throw new Error(
-"Use cloud function for password update."
+"Use cloud function."
 );
 
 }
@@ -418,6 +402,7 @@ email
 ){
 
 
+
 if(!email){
 
 throw new Error(
@@ -425,6 +410,65 @@ throw new Error(
 );
 
 }
+
+
+
+
+// find user by email
+
+const usersRef =
+collection(
+db,
+"users"
+);
+
+
+
+const q =
+query(
+
+usersRef,
+
+where(
+"email",
+"==",
+email
+)
+
+);
+
+
+
+
+
+const snapshot =
+await getDocs(q);
+
+
+
+
+
+if(snapshot.empty){
+
+throw new Error(
+"No account found with this email."
+);
+
+}
+
+
+
+
+
+const userDoc =
+snapshot.docs[0];
+
+
+
+
+const uid =
+userDoc.id;
+
 
 
 
@@ -438,8 +482,7 @@ crypto.randomUUID();
 
 
 
-
-const resetRef =
+await setDoc(
 
 doc(
 
@@ -449,19 +492,11 @@ db,
 
 token
 
-);
-
-
-
-
-
-
-
-await setDoc(
-
-resetRef,
+),
 
 {
+
+uid,
 
 email,
 
@@ -475,33 +510,6 @@ serverTimestamp()
 }
 
 );
-
-
-
-
-
-
-
-const sendMail =
-
-httpsCallable(
-
-functions,
-
-"sendForgotPasswordEmail"
-
-);
-
-
-
-
-
-await sendMail({
-
-requestId:token
-
-});
-
 
 
 
@@ -527,11 +535,9 @@ return true;
 
 export async function logout(){
 
-
 await signOut(
 auth
 );
-
 
 }
 
