@@ -11,20 +11,19 @@ import {
 
 
 import {
-  getAuth,
-  updatePassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-
-
-import {
   collection,
   query,
   where,
   getDocs,
   deleteDoc,
-  doc,
+  doc
 } from "firebase/firestore";
+
+
+import {
+  getFunctions,
+  httpsCallable
+} from "firebase/functions";
 
 
 import {
@@ -112,11 +111,11 @@ setRequestId
 
 
 
+
+
 useEffect(()=>{
 
-
 findRequest();
-
 
 },[]);
 
@@ -128,7 +127,7 @@ findRequest();
 
 
 // =========================
-// FIND REQUEST BY TOKEN
+// FIND REQUEST
 // =========================
 
 const findRequest =
@@ -140,11 +139,9 @@ try{
 
 if(!token){
 
-
 throw new Error(
 "Invalid password change link."
 );
-
 
 }
 
@@ -193,7 +190,6 @@ throw new Error(
 
 
 
-
 const requestDoc =
 snapshot.docs[0];
 
@@ -207,22 +203,19 @@ requestDoc.id
 
 
 
-const data =
-requestDoc.data();
-
-
 
 
 setRequestData(
-data
+requestDoc.data()
 );
+
+
 
 
 
 setMessage(
 "Please enter your new password."
 );
-
 
 
 
@@ -233,11 +226,9 @@ catch(error){
 console.log(error);
 
 
-
 errorToast(
 error.message
 );
-
 
 
 setMessage(
@@ -246,7 +237,6 @@ error.message
 
 
 }
-
 
 
 };
@@ -260,9 +250,8 @@ error.message
 
 
 // =========================
-// UPDATE PASSWORD
+// CHANGE PASSWORD
 // =========================
-
 
 const handlePasswordChange =
 async()=>{
@@ -273,15 +262,11 @@ try{
 
 if(!requestData){
 
-
 throw new Error(
 "Invalid request."
 );
 
-
 }
-
-
 
 
 
@@ -289,14 +274,11 @@ throw new Error(
 
 if(!newPassword || !confirmPassword){
 
-
 throw new Error(
 "Please fill all fields."
 );
 
-
 }
-
 
 
 
@@ -304,11 +286,9 @@ throw new Error(
 
 if(newPassword.length < 6){
 
-
 throw new Error(
 "Password must be at least 6 characters."
 );
-
 
 }
 
@@ -316,14 +296,11 @@ throw new Error(
 
 
 
-
 if(newPassword !== confirmPassword){
-
 
 throw new Error(
 "Passwords do not match."
 );
-
 
 }
 
@@ -337,28 +314,18 @@ setLoading(true);
 
 
 
-const auth =
-getAuth();
+
+const functions =
+getFunctions();
 
 
 
+const changePassword =
+httpsCallable(
 
+functions,
 
-// Login user temporarily
-
-const result =
-await signInWithEmailAndPassword(
-
-auth,
-
-requestData.email,
-
-// IMPORTANT:
-// Firebase cannot know old password
-// so this only works after email verification flow
-// user must already be authenticated if required
-
-newPassword
+"changePassword"
 
 );
 
@@ -366,13 +333,19 @@ newPassword
 
 
 
-await updatePassword(
 
-result.user,
+await changePassword({
+
+uid:
+
+requestData.uid,
+
+
+password:
 
 newPassword
 
-);
+});
 
 
 
@@ -401,15 +374,21 @@ requestId
 
 
 successToast(
+
 "Password changed successfully."
+
 );
+
 
 
 
 
 setMessage(
+
 "Password changed successfully. Redirecting..."
+
 );
+
 
 
 
@@ -439,7 +418,11 @@ console.log(error);
 
 
 errorToast(
-error.message
+
+error.message ||
+
+"Password change failed."
+
 );
 
 
@@ -451,7 +434,6 @@ setLoading(false);
 
 
 }
-
 
 
 };
@@ -487,8 +469,6 @@ max-w-md
 w-full
 text-center
 ">
-
-
 
 
 
@@ -536,6 +516,7 @@ mb-6
 
 
 {
+
 requestData &&
 
 <div className="
@@ -614,6 +595,7 @@ focus:border-amber-500
 
 
 
+
 <button
 
 onClick={
@@ -634,7 +616,6 @@ disabled:opacity-50
 
 >
 
-
 {
 
 loading
@@ -649,8 +630,8 @@ loading
 
 }
 
-
 </button>
+
 
 
 
@@ -658,8 +639,6 @@ loading
 </div>
 
 }
-
-
 
 
 
