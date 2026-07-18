@@ -1,13 +1,10 @@
-// src/components/Header.jsx
-
 import {
-  useState,
+  useState
 } from "react";
-
 
 import {
   Link,
-  useNavigate,
+  useNavigate
 } from "react-router-dom";
 
 
@@ -21,22 +18,24 @@ import {
 
 
 import useAuth from "../hooks/useAuth";
-
 import useCart from "../hooks/useCart";
 
 
-import AdminDrawer from "./admin/AdminDrawer";
+import AdminDrawerHeader from "./admin/AdminDrawerHeader";
+import AdminDrawerMenu from "./admin/AdminDrawerMenu";
 
-import UserDrawer from "./user/UserDrawer";
+
+import UserDrawerHeader from "./user/UserDrawerHeader";
+import UserDrawerMenu from "./user/UserDrawerMenu";
 
 
 import {
-  logout,
+  logout
 } from "../services/authService";
 
 
 import {
-  useSettings,
+  useSettings
 } from "../context/SettingsContext";
 
 
@@ -101,18 +100,12 @@ const handleLogout = async()=>{
 
 
 
-
-
 return (
 
 <>
 
 
-
-
-
-{/* ================= TOP BAR ================= */}
-
+{/* TOP BAR */}
 
 
 <div
@@ -179,9 +172,7 @@ whitespace-nowrap
 
 
 
-
-
-{/* ================= HEADER ================= */}
+{/* HEADER */}
 
 
 
@@ -222,11 +213,7 @@ justify-between
 
 
 
-
-
-
 {/* LEFT */}
-
 
 
 <div
@@ -268,9 +255,6 @@ text-[#071F57]
 
 
 
-
-
-
 <Link
 
 to="/"
@@ -282,7 +266,6 @@ gap-3
 "
 
 >
-
 
 
 <img
@@ -303,8 +286,6 @@ object-contain
 "
 
 />
-
-
 
 
 
@@ -333,7 +314,8 @@ whitespace-nowrap
 
 style={{
 
-fontFamily:"'Lobster', cursive"
+fontFamily:
+"'Lobster', cursive"
 
 }}
 
@@ -347,7 +329,6 @@ settings.storeName ||
 
 
 </h2>
-
 
 
 
@@ -367,18 +348,18 @@ uppercase
 >
 
 
-Dress Your Dream, Live Your Style
+Dress Your Dream,
+Live Your Style
 
 
 </p>
 
 
+
 </div>
 
 
-
 </Link>
-
 
 
 </div>
@@ -390,7 +371,6 @@ Dress Your Dream, Live Your Style
 
 
 {/* DESKTOP MENU */}
-
 
 
 <nav
@@ -422,8 +402,6 @@ Home
 
 
 
-
-
 <Link
 
 to="/shop"
@@ -439,9 +417,7 @@ Shop
 </Link>
 
 
-
 </nav>
-
 
 
 
@@ -464,14 +440,10 @@ gap-4
 >
 
 
+
 <button
 
 onClick={()=>navigate("/shop")}
-
-className="
-hover:scale-110
-transition
-"
 
 >
 
@@ -488,6 +460,7 @@ text-[#071F57]
 
 
 </button>
+
 
 
 
@@ -517,8 +490,9 @@ text-[#071F57]
 
 
 
+
 {
-cartCount>0 &&
+cartCount > 0 && (
 
 <span
 
@@ -539,17 +513,23 @@ justify-center
 
 >
 
+
 {cartCount}
 
+
 </span>
+
+
+)
 
 }
 
 
-
 </Link>
 
-  {/* ================= LOGIN / USER ================= */}
+
+
+
 
 
 
@@ -562,7 +542,6 @@ justify-center
 className="
 hidden
 lg:flex
-items-center
 gap-3
 "
 
@@ -580,10 +559,6 @@ rounded-full
 border
 border-[#071F57]
 text-[#071F57]
-font-medium
-hover:bg-[#071F57]
-hover:text-white
-transition
 "
 
 >
@@ -591,8 +566,6 @@ transition
 Login
 
 </Link>
-
-
 
 
 
@@ -606,9 +579,6 @@ py-2.5
 rounded-full
 bg-[#071F57]
 text-white
-font-medium
-hover:bg-[#0A2E82]
-transition
 "
 
 >
@@ -618,7 +588,6 @@ Join Now
 </Link>
 
 
-
 </div>
 
 
@@ -626,6 +595,8 @@ Join Now
 )
 
 :
+
+
 
 (
 
@@ -642,12 +613,8 @@ gap-4
 >
 
 
-
-
 {
-
 isAdmin &&
-
 
 <Link
 
@@ -655,7 +622,6 @@ to="/admin"
 
 className="
 font-medium
-hover:text-[#071F57]
 "
 
 >
@@ -664,22 +630,24 @@ Dashboard
 
 </Link>
 
-
 }
-
-
 
 
 
 <Link
 
-to="/profile"
+to={
+isAdmin
+?
+"/admin/profile"
+:
+"/profile"
+}
 
 className="
 flex
 items-center
 gap-2
-hover:text-[#071F57]
 "
 
 >
@@ -688,13 +656,16 @@ hover:text-[#071F57]
 <FiUser size={20}/>
 
 
-Profile
+{
+isAdmin
+?
+"Admin"
+:
+"Profile"
+}
 
 
 </Link>
-
-
-
 
 
 
@@ -708,7 +679,6 @@ flex
 items-center
 gap-2
 text-red-600
-font-medium
 "
 
 >
@@ -716,12 +686,10 @@ font-medium
 
 <FiLogOut size={18}/>
 
-
 Logout
 
 
 </button>
-
 
 
 
@@ -738,9 +706,6 @@ Logout
 
 
 
-
-
-
 </div>
 
 
@@ -750,55 +715,214 @@ Logout
 </header>
 
 
+  {/* ================= MOBILE DRAWER ================= */}
 
+<div
+  className={`
+fixed
+top-0
+left-0
+h-screen
+w-[320px]
+z-[70]
+shadow-2xl
+transition-all
+duration-300
+flex
+flex-col
+${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+${isAdmin || user ? "bg-[#FAF7F2]" : "bg-white"}
+`}
+>
 
+  <div className="flex-1 overflow-y-auto">
 
+    {/* ================= GUEST ================= */}
 
+    {!user && (
+      <>
+        <div className="bg-[#071F57] text-white p-6">
 
+          <div className="flex items-center justify-between">
 
+            <div className="flex items-center gap-3">
 
-{/* ================= MOBILE DRAWER ================= */}
+              <img
+                src={settings.logoUrl || "/logo.png"}
+                className="w-10 h-10 object-contain"
+              />
 
+              <div>
 
+                <h2 className="text-xl font-bold">
+                  {settings.storeName || "DREAM MODE"}
+                </h2>
 
-{
+                <p className="text-xs text-white/70">
+                  Premium Fashion
+                </p>
 
-isAdmin
+              </div>
 
-?
+            </div>
 
+            <button
+              onClick={() => setMobileOpen(false)}
+            >
+              ✕
+            </button>
 
-<AdminDrawer
+          </div>
 
-open={mobileOpen}
+        </div>
 
-setOpen={setMobileOpen}
+        <div className="py-4">
 
-/>
+          <Link
+            to="/"
+            onClick={() => setMobileOpen(false)}
+            className="block px-6 py-4"
+          >
+            Home
+          </Link>
 
+          <Link
+            to="/shop"
+            onClick={() => setMobileOpen(false)}
+            className="block px-6 py-4"
+          >
+            Shop
+          </Link>
 
-:
+          <Link
+            to="/cart"
+            onClick={() => setMobileOpen(false)}
+            className="flex justify-between px-6 py-4"
+          >
+            Cart
+            <span>{cartCount}</span>
+          </Link>
 
+          <Link
+            to="/login"
+            onClick={() => setMobileOpen(false)}
+            className="block px-6 py-4"
+          >
+            Login
+          </Link>
 
-<UserDrawer
+          <Link
+            to="/register"
+            onClick={() => setMobileOpen(false)}
+            className="mx-6 mt-3 flex justify-center rounded-xl bg-[#071F57] text-white py-3"
+          >
+            Join Now
+          </Link>
 
-open={mobileOpen}
+        </div>
+      </>
+    )}
 
-setOpen={setMobileOpen}
+    {/* ================= ADMIN ================= */}
 
-/>
+    {user && isAdmin && (
+      <>
+        <AdminDrawerHeader
+          closeDrawer={() => setMobileOpen(false)}
+          onNotificationClick={() => {
+            navigate("/admin/notifications");
+            setMobileOpen(false);
+          }}
+        />
 
+        <AdminDrawerMenu
+          closeDrawer={() => setMobileOpen(false)}
+          onLogout={handleLogout}
+        />
+      </>
+    )}
 
-}
+    {/* ================= USER ================= */}
 
+    {user && !isAdmin && (
+      <>
+        <UserDrawerHeader
+          closeDrawer={() => setMobileOpen(false)}
+          onNotificationClick={() => {
+            navigate("/profile/notifications");
+            setMobileOpen(false);
+          }}
+        />
 
+        <UserDrawerMenu
+          closeDrawer={() => setMobileOpen(false)}
+          onLogout={handleLogout}
+        />
+      </>
+    )}
 
+  </div>
 
+  {/* ================= FOOTER ================= */}
 
+  <div
+    className="
+border-t
+border-slate-200
+p-6
+bg-white
+"
+  >
 
-</>
+    <div
+      className="
+rounded-2xl
+bg-[#071F57]
+text-white
+p-5
+text-center
+"
+    >
 
-);
+      <img
+        src={settings.logoUrl || "/logo.png"}
+        className="w-14 h-14 mx-auto mb-3 object-contain"
+      />
 
+      <h3 className="text-xl font-bold">
+        {settings.storeName || "Dream Mode"}
+      </h3>
 
-}
+      <p className="text-xs text-white/70 mt-2">
+        Dress Your Dream,
+        Live Your Style
+      </p>
+
+      <Link
+        to="/shop"
+        onClick={() => setMobileOpen(false)}
+        className="mt-5 flex items-center justify-center py-3 rounded-xl bg-white text-[#071F57] font-semibold"
+      >
+        Shop Now
+      </Link>
+
+    </div>
+
+  </div>
+
+</div>
+
+{/* ================= OVERLAY ================= */}
+
+{mobileOpen && (
+  <div
+    onClick={() => setMobileOpen(false)}
+    className="
+fixed
+inset-0
+bg-black/40
+backdrop-blur-sm
+z-[60]
+"
+  />
+)}
