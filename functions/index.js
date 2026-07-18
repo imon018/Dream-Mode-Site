@@ -706,19 +706,19 @@ success:true
 
 catch(error){
 
-
 console.log(error);
 
+if(error instanceof HttpsError){
+
+throw error;
+
+}
 
 
 throw new HttpsError(
-
 "internal",
-
-error.message
-
+"Password reset failed."
 );
-
 
 }
 
