@@ -20,7 +20,9 @@ search,
 
 setSearch,
 
-handleDelete
+handleDelete,
+
+setDeleteId
 
 }=data;
 
@@ -724,7 +726,7 @@ hover:bg-blue-100
 
 <button
 
-onClick={()=>handleDelete(product.id)}
+onClick={()=>setDeleteId(product.id)}
 
 className="
 
