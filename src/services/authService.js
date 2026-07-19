@@ -19,7 +19,6 @@ import {
 
 
 import {
-  getFunctions,
   httpsCallable
 } from "firebase/functions";
 
@@ -35,8 +34,8 @@ import {
 
 
 import {
-  app
-} from "../firebase/firebase";
+  functions
+} from "../firebase/functions";
 
 
 
@@ -406,15 +405,6 @@ throw new Error(
 
 
 
-const functions =
-
-getFunctions(app);
-
-
-
-
-
-
 const createResetRequest =
 
 httpsCallable(
@@ -424,7 +414,6 @@ functions,
 "createPasswordResetRequest"
 
 );
-
 
 
 
