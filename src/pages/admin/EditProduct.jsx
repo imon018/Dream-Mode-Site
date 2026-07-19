@@ -586,17 +586,14 @@ mx-auto
 
 {/* HEADER */}
 
-
-
-{/* HEADER */}
-
 <div
 
 className="
 mb-5
+relative
 flex
 items-center
-justify-between
+justify-center
 "
 
 >
