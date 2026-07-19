@@ -15,11 +15,13 @@ import {
   updateDoc,
   getDoc,
   serverTimestamp,
-  collection,
-  query,
-  where,
-  getDocs,
 } from "firebase/firestore";
+
+
+import {
+  getFunctions,
+  httpsCallable
+} from "firebase/functions";
 
 
 import {
@@ -30,6 +32,11 @@ import {
 import {
   db
 } from "../firebase/firestore";
+
+
+import {
+  app
+} from "../firebase/firebase";
 
 
 
@@ -110,13 +117,6 @@ role
 
 
 }
-
-
-
-
-
-
-
 
 
 // =========================
@@ -226,13 +226,6 @@ user
 
 
 }
-
-
-
-
-
-
-
 
 
 // =========================
@@ -386,13 +379,6 @@ return true;
 }
 
 
-
-
-
-
-
-
-
 // =========================
 // FORGOT PASSWORD
 // CUSTOM EMAIL
@@ -418,102 +404,38 @@ throw new Error(
 
 
 
-// find user by email
 
-const usersRef =
-collection(
-db,
-"users"
+
+const functions =
+
+getFunctions(app);
+
+
+
+
+
+
+const createResetRequest =
+
+httpsCallable(
+
+functions,
+
+"createPasswordResetRequest"
+
 );
 
 
 
-const q =
-query(
 
-usersRef,
 
-where(
-"email",
-"==",
+
+
+await createResetRequest({
+
 email
-)
 
-);
-
-
-
-
-
-const snapshot =
-await getDocs(q);
-
-
-
-
-
-if(snapshot.empty){
-
-throw new Error(
-"No account found with this email."
-);
-
-}
-
-
-
-
-
-const userDoc =
-snapshot.docs[0];
-
-
-
-
-const uid =
-userDoc.id;
-
-
-
-
-
-
-const token =
-crypto.randomUUID();
-
-
-
-
-
-
-await setDoc(
-
-doc(
-
-db,
-
-"passwordResetRequests",
-
-token
-
-),
-
-{
-
-uid,
-
-email,
-
-token,
-
-verified:false,
-
-createdAt:
-serverTimestamp()
-
-}
-
-);
+});
 
 
 
@@ -524,13 +446,6 @@ return true;
 
 
 }
-
-
-
-
-
-
-
 
 
 // =========================
