@@ -222,11 +222,15 @@ return result.user;
 
 // =========================
 // RESEND VERIFICATION
+// CUSTOM EMAIL
 // =========================
 
-export async function resendVerificationEmail(
-user
-){
+export async function resendVerificationEmail(){
+
+const user =
+auth.currentUser;
+
+
 
 if(!user){
 
@@ -235,6 +239,8 @@ throw new Error(
 );
 
 }
+
+
 
 
 
@@ -256,7 +262,8 @@ uid:user.uid,
 
 email:user.email,
 
-name:user.displayName || "",
+name:
+user.displayName || "",
 
 token:
 crypto.randomUUID(),
