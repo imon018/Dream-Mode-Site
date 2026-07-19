@@ -40,7 +40,13 @@ useNavigate();
 
 
 
+const [
+loading,
+setLoading
+]=useState(false);
 
+
+  
 const [
 name,
 setName
@@ -67,8 +73,14 @@ setPassword
 
 const handleRegister = async (e) => {
 
-
 e.preventDefault();
+
+
+if(loading)
+return;
+
+
+setLoading(true);
 
 
 
@@ -132,15 +144,17 @@ email
 
 } catch (err) {
 
-
 errorToast(
 err.message
 );
 
-
 }
 
+finally {
 
+setLoading(false);
+
+}
 
 };
 
@@ -553,6 +567,8 @@ e.target.value
 
 type="submit"
 
+disabled={loading}
+
 className="
 w-full
 h-12
@@ -563,12 +579,21 @@ font-semibold
 
 >
 
+{
 
-Register
+loading
 
+?
+
+"Registering..."
+
+:
+
+"Register"
+
+}
 
 </Button>
-
 
 
 
