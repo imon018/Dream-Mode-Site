@@ -6,7 +6,12 @@ Link
 import {
 FiPhone,
 FiMail,
-FiMapPin
+FiMapPin,
+FiHome,
+FiShoppingBag,
+FiFacebook,
+FiInfo,
+FiHelpCircle
 } from "react-icons/fi";
 
 import {
@@ -180,14 +185,16 @@ text-sm
 
 
 <li>
-<Link to="/">
+<Link to="/" className="flex items-center gap-2">
+<FiHome className="text-amber-500" />
 Home
 </Link>
 </li>
 
 
 <li>
-<Link to="/shop">
+<Link to="/shop" className="flex items-center gap-2">
+<FiShoppingBag className="text-amber-500" />
 Shop
 </Link>
 </li>
@@ -198,21 +205,25 @@ Shop
 href={settings.facebook || "#"}
 target="_blank"
 rel="noopener noreferrer"
+className="flex items-center gap-2"
 >
+<FiFacebook className="text-amber-500" />
 Facebook
 </a>
 </li>
   
 
 <li>
-<Link to="/about">
+<Link to="/about" className="flex items-center gap-2">
+<FiInfo className="text-amber-500" />
 About Us
 </Link>
 </li>
 
 
 <li>
-<Link to="/faqs">
+<Link to="/faqs" className="flex items-center gap-2">
+<FiHelpCircle className="text-amber-500" />
 FAQs
 </Link>
 </li>
