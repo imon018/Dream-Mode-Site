@@ -71,6 +71,8 @@ const [productId,setProductId]=useState("");
 
 const [productName,setProductName]=useState("");
 
+const [deleteId,setDeleteId]=useState(null);
+
 const [
 whatsappNumber,
 setWhatsappNumber
@@ -374,50 +376,34 @@ setLoading(false);
 
 
 
-const handleDelete=async(id)=>{
+const handleDelete=(id)=>{
 
+setDeleteId(id);
 
-const confirmDelete =
-window.confirm(
-"Delete this banner?"
-);
+};
 
-
-
-if(!confirmDelete)
-return;
-
-
+const removeBanner=async()=>{
 
 try{
 
-
-await deleteBanner(id);
-
+await deleteBanner(deleteId);
 
 successToast(
 "Banner Deleted"
 );
 
-
-
 loadData();
 
-
+setDeleteId(null);
 
 }
-
 catch{
-
 
 errorToast(
 "Delete Failed"
 );
 
-
 }
-
-
 
 };
 
@@ -1745,6 +1731,101 @@ Delete
 </div>
 
 
+
+
+  {
+deleteId && (
+
+<div
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[100]
+"
+>
+
+<div
+className="
+bg-white
+rounded-xl
+p-5
+w-[300px]
+shadow-xl
+"
+>
+
+<h3
+className="
+font-black
+text-lg
+text-slate-900
+"
+>
+Delete Banner?
+</h3>
+
+<p
+className="
+text-sm
+text-gray-500
+mt-2
+"
+>
+Are you sure you want to delete this banner?
+</p>
+
+<div
+className="
+flex
+gap-3
+mt-5
+"
+>
+
+<button
+onClick={()=>setDeleteId(null)}
+className="
+flex-1
+h-10
+rounded-lg
+bg-gray-200
+font-bold
+text-sm
+"
+>
+No
+</button>
+
+<button
+onClick={removeBanner}
+className="
+flex-1
+h-10
+rounded-lg
+bg-red-500
+text-white
+font-bold
+text-sm
+"
+>
+Yes
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+)
+}
+
+
+  
 </div>
 
 
