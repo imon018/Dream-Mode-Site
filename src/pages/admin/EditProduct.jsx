@@ -14,6 +14,7 @@ import {
   FiUploadCloud,
   FiArrowUp,
   FiArrowDown,
+  FiArrowLeft,
   FiTrash2,
 } from "react-icons/fi";
 
@@ -587,16 +588,46 @@ mx-auto
 
 
 
+{/* HEADER */}
+
 <div
 
 className="
 mb-5
 flex
 items-center
+justify-between
+"
+
+>
+
+
+<button
+
+onClick={()=>navigate(-1)}
+
+className="
+absolute
+left-0
+w-10
+h-10
+rounded-full
+bg-white
+border
+border-gray-100
+shadow-sm
+flex
+items-center
 justify-center
 "
 
 >
+
+<FiArrowLeft size={22}/>
+
+</button>
+
+
 
 
 <h1
@@ -613,6 +644,9 @@ Edit Product
 
 </h1>
 
+
+<div className="w-[75px]">
+</div>
 
 
 </div>
