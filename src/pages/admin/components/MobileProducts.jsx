@@ -20,7 +20,8 @@ const {
 products,
 search,
 setSearch,
-handleDelete
+handleDelete,
+setDeleteId
 
 }=data;
 
@@ -407,7 +408,7 @@ justify-center
 
 <button
 
-onClick={()=>handleDelete(product.id)}
+onClick={()=>setDeleteId(product.id)}
 
 className="
 w-8
