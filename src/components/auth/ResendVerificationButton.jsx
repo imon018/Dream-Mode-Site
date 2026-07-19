@@ -141,89 +141,98 @@ export default function ResendVerificationButton(){
 
   return(
 
-    <div className="mt-3">
+    <div className="mt-4 text-center">
 
-      <button
+  {
+    lastSent && (
 
-        type="button"
+      <>
 
-        disabled={
-          loading ||
-          cooldown>0
-        }
+        <p className="text-xs text-gray-500">
 
-        onClick={
-          handleResend
-        }
+          Last sent:
 
-        className="
-        text-amber-600
-        font-medium
-        text-sm
-        hover:underline
-        disabled:text-gray-400
-        disabled:no-underline
-        "
+        </p>
 
-      >
+        <p className="font-medium mb-3">
 
-        {
+          {
+            new Date(lastSent).toLocaleTimeString(
+              [],
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            )
+          }
 
-          loading
+        </p>
 
-          ?
+      </>
 
-          "Sending..."
+    )
+  }
 
-          :
+  {
 
-          cooldown>0
+    cooldown > 0
 
-          ?
+    ?
 
-          `Resend in ${cooldown}s`
+    <div>
 
-          :
+      <p className="text-xs text-gray-500">
 
-          "Resend Email"
+        Resend available after:
 
-        }
+      </p>
 
-      </button>
+      <p className="font-semibold text-amber-600">
+
+        {cooldown} seconds
+
+      </p>
+
+    </div>
+
+    :
+
+    <button
+
+      type="button"
+
+      disabled={loading}
+
+      onClick={handleResend}
+
+      className="
+      text-amber-600
+      font-medium
+      hover:underline
+      disabled:text-gray-400
+      "
+
+    >
 
       {
 
-        lastSent && (
+        loading
 
-          <p className="
-          text-xs
-          text-gray-500
-          mt-1
-          ">
+        ?
 
-            Last sent:{" "}
+        "Sending..."
 
-            {
+        :
 
-              new Date(
-                lastSent
-              ).toLocaleTimeString(
-                [],
-                {
-                  hour:"2-digit",
-                  minute:"2-digit",
-                }
-              )
-
-            }
-
-          </p>
-
-        )
+        "Resend Verification Email"
 
       }
 
-    </div>
+    </button>
+
+  }
+
+</div>
 
   );
 
