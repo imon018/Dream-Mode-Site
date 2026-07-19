@@ -324,97 +324,48 @@ throw new Error(
 
 
 
-const q =
+// Writing directly to
+// "emailVerificationRequests" from the
+// client fails here: the doc already
+// exists from registration, so this
+// write is an "update", and the rules
+// only allow admins to update that
+// collection ("Missing or insufficient
+// permissions").
+//
+// Also, sendVerificationEmail (the Cloud
+// Function that emails the link) only
+// triggers on document CREATE, not
+// update - so even if the write were
+// allowed, no email would go out.
+//
+// Fix: call a Cloud Function that uses
+// the Admin SDK (bypasses rules) and
+// creates a brand new request document,
+// which re-triggers the email.
 
-query(
+const resend =
 
-collection(
-db,
-"emailVerificationRequests"
-),
+httpsCallable(
 
-where(
-"email",
-"==",
+functions,
+
+"resendVerificationEmail"
+
+);
+
+
+
+await resend({
+
 email
-)
 
-);
-
-
-
-
-
-const snapshot =
-
-await getDocs(q);
-
-
-
-
-
-if(snapshot.empty){
-
-throw new Error(
-"No verification request found."
-);
-
-}
-
-
-
-
-
-const oldDoc =
-snapshot.docs[0];
-
-
-
-const data =
-oldDoc.data();
-
-
-
-
-
-await setDoc(
-
-doc(
-
-db,
-
-"emailVerificationRequests",
-
-data.uid
-
-),
-
-{
-
-uid:data.uid,
-
-email:data.email,
-
-name:data.name || "",
-
-token:
-crypto.randomUUID(),
-
-verified:false,
-
-createdAt:
-serverTimestamp()
-
-}
-
-);
-
+});
 
 
 
 
 return true;
-
 
 }
 
