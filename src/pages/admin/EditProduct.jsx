@@ -583,27 +583,25 @@ mx-auto
 
 
 
-
 {/* HEADER */}
 
 <div
-
 className="
 mb-5
-grid
-grid-cols-3
+relative
+flex
 items-center
+justify-center
 "
-
 >
-
 
 <button
 
 onClick={()=>navigate(-1)}
 
 className="
-justify-self-start
+absolute
+left-0
 w-10
 h-10
 rounded-full
@@ -623,7 +621,6 @@ justify-center
 </button>
 
 
-
 <h1
 
 className="
@@ -631,6 +628,7 @@ text-2xl
 font-black
 text-[#172033]
 text-center
+whitespace-nowrap
 "
 
 >
@@ -638,10 +636,6 @@ text-center
 Edit Product
 
 </h1>
-
-
-
-<div></div>
 
 
 </div>
