@@ -590,10 +590,9 @@ mx-auto
 
 className="
 mb-5
-relative
-flex
+grid
+grid-cols-3
 items-center
-justify-center
 "
 
 >
@@ -604,8 +603,7 @@ justify-center
 onClick={()=>navigate(-1)}
 
 className="
-absolute
-left-0
+justify-self-start
 w-10
 h-10
 rounded-full
@@ -626,7 +624,6 @@ justify-center
 
 
 
-
 <h1
 
 className="
@@ -643,8 +640,8 @@ Edit Product
 </h1>
 
 
-<div className="w-[75px]">
-</div>
+
+<div></div>
 
 
 </div>
