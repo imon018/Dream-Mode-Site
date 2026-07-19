@@ -299,10 +299,10 @@ className="
 min-h-screen
 bg-[#faf9f6]
 flex
-items-center
 justify-center
 px-4
-py-12
+pt-10
+pb-12
 "
 >
 
