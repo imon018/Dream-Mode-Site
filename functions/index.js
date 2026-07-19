@@ -87,11 +87,175 @@ gmailPassword.value()
 }
 
 
+// =================================================
+// CREATE PASSWORD RESET REQUEST
+// LOGIN NOT REQUIRED
+// =================================================
+
+
+exports.createPasswordResetRequest =
+
+
+onCall(
+
+async(request)=>{
+
+
+const {
+
+email
+
+}=request.data;
 
 
 
 
 
+if(!email){
+
+
+throw new HttpsError(
+
+"invalid-argument",
+
+"Email required."
+
+);
+
+}
+
+
+
+
+
+
+try{
+
+
+
+const userRecord =
+
+await admin.auth()
+
+.getUserByEmail(
+
+email
+
+);
+
+
+
+
+
+
+const token =
+
+crypto.randomUUID();
+
+
+
+
+
+
+
+await admin.firestore()
+
+.collection(
+
+"passwordResetRequests"
+
+)
+
+.doc(
+
+token
+
+)
+
+.set({
+
+uid:
+
+userRecord.uid,
+
+
+email,
+
+
+token,
+
+
+verified:false,
+
+
+createdAt:
+
+admin.firestore.FieldValue.serverTimestamp()
+
+
+});
+
+
+
+
+
+
+return {
+
+
+success:true
+
+
+};
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+
+
+
+if(error.code === "auth/user-not-found"){
+
+
+throw new HttpsError(
+
+"not-found",
+
+"No account found with this email."
+
+);
+
+
+}
+
+
+
+
+
+
+throw new HttpsError(
+
+"internal",
+
+"Password reset request failed."
+
+);
+
+
+}
+
+
+
+}
+
+);
 
 
 // =================================================
@@ -243,13 +407,6 @@ return null;
 
 
 });
-
-
-
-
-
-
-
 
 
 // =================================================
@@ -528,14 +685,6 @@ throw new HttpsError(
 
 );
 
-
-
-
-
-
-
-
-
 // =================================================
 // RESET PASSWORD
 // LOGIN NOT REQUIRED
@@ -726,6 +875,13 @@ throw new HttpsError(
 }
 
 );
+
+
+
+
+
+
+
 
 
 // =================================================
@@ -1018,9 +1174,6 @@ requestDoc.data();
 
 
 
-// Delete Firebase Authentication User
-
-
 await admin.auth()
 
 .deleteUser(
@@ -1034,9 +1187,6 @@ data.uid
 
 
 
-
-
-// Delete Firestore User Profile
 
 
 await admin.firestore()
@@ -1060,9 +1210,6 @@ data.uid
 
 
 
-
-
-// Delete Request Document
 
 
 await requestDoc.ref.delete();
