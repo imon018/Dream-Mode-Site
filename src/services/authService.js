@@ -13,6 +13,10 @@ import {
   setDoc,
   updateDoc,
   getDoc,
+  getDocs,
+  collection,
+  query,
+  where,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -38,6 +42,7 @@ import {
 
 
 
+
 // =========================
 // LOGIN
 // =========================
@@ -47,28 +52,69 @@ email,
 password
 ){
 
+
 const result =
 await signInWithEmailAndPassword(
+
 auth,
+
 email,
+
 password
+
 );
+
 
 
 
 const userRef =
 doc(
+
 db,
+
 "users",
+
 result.user.uid
+
 );
+
 
 
 
 const userSnap =
 await getDoc(
+
 userRef
+
 );
+
+
+
+
+// Email verification check
+
+if(
+
+userSnap.exists()
+
+&&
+
+userSnap.data().emailVerified !== true
+
+){
+
+
+await signOut(auth);
+
+
+throw new Error(
+
+"Please verify your email first."
+
+);
+
+}
+
 
 
 
@@ -77,12 +123,16 @@ let role =
 
 
 
+
 if(userSnap.exists()){
+
 
 role =
 userSnap.data().role || "user";
 
+
 }
+
 
 
 
@@ -94,6 +144,7 @@ userRef,
 {
 
 lastLogin:
+
 serverTimestamp()
 
 }
@@ -106,9 +157,14 @@ serverTimestamp()
 
 return {
 
-user:result.user,
+
+user:
+
+result.user,
+
 
 role
+
 
 };
 
@@ -145,9 +201,13 @@ password
 await setDoc(
 
 doc(
+
 db,
+
 "users",
+
 result.user.uid
+
 ),
 
 {
@@ -164,7 +224,10 @@ photoURL:"",
 
 role:"user",
 
+emailVerified:false,
+
 createdAt:
+
 serverTimestamp()
 
 }
@@ -174,34 +237,62 @@ serverTimestamp()
 
 
 
+
+
+
+// Create custom verification email request
 
 await setDoc(
 
 doc(
+
 db,
+
 "emailVerificationRequests",
+
 result.user.uid
+
 ),
 
 {
 
-uid: result.user.uid,
+uid:
+
+result.user.uid,
+
 
 email,
 
+
 name,
 
+
 token:
+
 crypto.randomUUID(),
+
 
 verified:false,
 
+
 createdAt:
+
 serverTimestamp()
 
 }
 
 );
+
+
+
+
+
+
+
+// Stop auto login after registration
+
+await signOut(auth);
+
 
 
 
@@ -213,32 +304,104 @@ return result.user;
 }
 
 
-
-
-
-
-
-
-
 // =========================
 // RESEND VERIFICATION
 // CUSTOM EMAIL
+// NO LOGIN REQUIRED
 // =========================
 
-export async function resendVerificationEmail(){
+export async function resendVerificationEmail(
 
-const user =
-auth.currentUser;
+email
+
+){
 
 
+if(!email){
 
-if(!user){
 
 throw new Error(
-"Please login again."
+
+"Email required."
+
 );
 
+
 }
+
+
+
+
+
+const q =
+
+query(
+
+collection(
+
+db,
+
+"users"
+
+),
+
+where(
+
+"email",
+
+"==",
+
+email
+
+)
+
+);
+
+
+
+
+
+
+const snapshot =
+
+await getDocs(q);
+
+
+
+
+
+
+if(snapshot.empty){
+
+
+throw new Error(
+
+"No account found with this email."
+
+);
+
+
+}
+
+
+
+
+
+
+const userDoc =
+
+snapshot.docs[0];
+
+
+
+
+
+
+const userData =
+
+userDoc.data();
+
+
 
 
 
@@ -252,30 +415,45 @@ db,
 
 "emailVerificationRequests",
 
-user.uid
+userDoc.id
 
 ),
 
 {
 
-uid:user.uid,
+uid:
 
-email:user.email,
+userDoc.id,
+
+
+email:
+
+userData.email,
+
 
 name:
-user.displayName || "",
+
+userData.name || "",
+
 
 token:
+
 crypto.randomUUID(),
+
 
 verified:false,
 
+
 createdAt:
+
 serverTimestamp()
 
 }
 
 );
+
+
+
 
 
 
@@ -299,13 +477,21 @@ currentPassword
 ){
 
 
+
 if(!user){
 
+
 throw new Error(
+
 "User not found"
+
 );
 
+
 }
+
+
+
 
 
 
@@ -325,6 +511,7 @@ currentPassword
 
 
 
+
 await reauthenticateWithCredential(
 
 user,
@@ -337,8 +524,13 @@ credential
 
 
 
+
+
+
 const token =
+
 crypto.randomUUID();
+
 
 
 
@@ -359,20 +551,31 @@ user.uid
 
 {
 
-uid:user.uid,
+uid:
 
-email:user.email,
+user.uid,
+
+
+email:
+
+user.email,
+
 
 token,
 
+
 verified:false,
 
+
 createdAt:
+
 serverTimestamp()
 
 }
 
 );
+
+
 
 
 
@@ -397,9 +600,13 @@ return token;
 
 export async function applyPasswordChange(){
 
+
 throw new Error(
+
 "Use cloud function."
+
 );
+
 
 }
 
@@ -416,17 +623,27 @@ throw new Error(
 // =========================
 
 export async function verifyPasswordChangeLink(
+
 token
+
 ){
+
 
 
 if(!token){
 
+
 throw new Error(
+
 "Invalid token"
+
 );
 
+
 }
+
+
+
 
 
 
@@ -434,6 +651,7 @@ return true;
 
 
 }
+
 
 
 // =========================
@@ -452,11 +670,16 @@ email
 
 if(!email){
 
+
 throw new Error(
+
 "Email required."
+
 );
 
+
 }
+
 
 
 
@@ -478,11 +701,13 @@ functions,
 
 
 
+
 await createResetRequest({
 
 email
 
 });
+
 
 
 
@@ -502,7 +727,9 @@ return true;
 export async function logout(){
 
 await signOut(
+
 auth
+
 );
 
 }
@@ -520,22 +747,33 @@ auth
 // =========================
 
 export async function deleteUserAccount(
+
 user
+
 ){
+
 
 
 if(!user){
 
+
 throw new Error(
+
 "User not found"
+
 );
+
 
 }
 
 
 
+
+
 await deleteUser(
+
 user
+
 );
 
 
