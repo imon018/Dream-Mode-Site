@@ -226,35 +226,52 @@ export async function resendVerificationEmail(
 user
 ){
 
-  if(!user){
+if(!user){
 
-    throw new Error(
-      "Please login again."
-    );
+throw new Error(
+"Please login again."
+);
 
-  }
+}
 
-  // Always get latest user info
-  await user.reload();
 
-  if(user.emailVerified){
 
-    throw new Error(
-      "Your email is already verified."
-    );
+await setDoc(
 
-  }
+doc(
 
-  await sendEmailVerification(
+db,
 
-  user,
+"emailVerificationRequests",
 
-  actionCodeSettings
+user.uid
+
+),
+
+{
+
+uid:user.uid,
+
+email:user.email,
+
+name:user.displayName || "",
+
+token:
+crypto.randomUUID(),
+
+verified:false,
+
+createdAt:
+serverTimestamp()
+
+}
 
 );
 
-  
-  return true;
+
+
+return true;
+
 
 }
 
