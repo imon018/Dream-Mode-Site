@@ -7,6 +7,8 @@ import {
 
 
 import {
+  signOut,
+  reload,
   onAuthStateChanged,
 } from "firebase/auth";
 
@@ -25,11 +27,6 @@ import {
 import {
   db,
 } from "../firebase/firestore";
-
-
-import {
-  signOut,
-} from "firebase/auth";
 
 
 
@@ -60,6 +57,67 @@ const logout = async()=>{
   await signOut(auth);
 
   setUser(null);
+
+};
+
+
+  const refreshUser = async()=>{
+
+  const firebaseUser =
+    auth.currentUser;
+
+  if(!firebaseUser){
+
+    setUser(null);
+
+    return;
+
+  }
+
+  try{
+
+    await reload(firebaseUser);
+
+    const userRef =
+      doc(
+        db,
+        "users",
+        firebaseUser.uid
+      );
+
+    const userSnap =
+      await getDoc(
+        userRef
+      );
+
+    if(userSnap.exists()){
+
+      setUser({
+
+  uid: firebaseUser.uid,
+  email: firebaseUser.email,
+  emailVerified: firebaseUser.emailVerified,
+  photoURL:
+    userSnap.data().photoURL || firebaseUser.photoURL,
+  metadata: firebaseUser.metadata,
+
+  ...userSnap.data(),
+
+});
+
+    }else{
+
+      setUser(
+        firebaseUser
+      );
+
+    }
+
+  }catch(error){
+
+    console.log(error);
+
+  }
 
 };
 
@@ -192,6 +250,7 @@ const logout = async()=>{
         setUser,
         loading,
         logout,
+        refreshUser,
 
       }}
 
