@@ -92,10 +92,9 @@ setLoading
 
 
 const [
-unverifiedUser,
-setUnverifiedUser
-]=useState(null);
-
+showResend,
+setShowResend
+]=useState(false);
 
 
 
@@ -127,13 +126,19 @@ try{
 setLoading(true);
 
 
+setShowResend(false);
+
+
 
 
 
 const result =
 await login(
+
 email,
+
 password
+
 );
 
 
@@ -151,44 +156,10 @@ await user.reload();
 
 
 
-
-
-if(
-!user.emailVerified
-){
-
-
-
-setUnverifiedUser(
-user
-);
-
-
-
-await logout();
-
-
-
-errorToast(
-"Please verify your email first."
-);
-
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
 successToast(
 "Login Successful"
 );
+
 
 
 
@@ -242,6 +213,7 @@ navigate(
 
 
 }
+
 else{
 
 
@@ -254,11 +226,6 @@ navigate(
 
 
 
-
-
-
-}
-
 catch(error){
 
 
@@ -267,6 +234,32 @@ console.log(
 "LOGIN ERROR:",
 error
 );
+
+
+
+
+
+if(
+error.message ===
+"Please verify your email first."
+){
+
+
+setShowResend(true);
+
+
+
+errorToast(
+"Please verify your email first."
+);
+
+
+
+return;
+
+
+}
+
 
 
 
@@ -284,8 +277,10 @@ switch(error.code){
 
 case "auth/user-not-found":
 
+
 message =
 "এই email দিয়ে কোনো account পাওয়া যায়নি.";
+
 
 break;
 
@@ -293,8 +288,10 @@ break;
 
 case "auth/wrong-password":
 
+
 message =
 "Password ভুল হয়েছে.";
+
 
 break;
 
@@ -302,8 +299,10 @@ break;
 
 case "auth/invalid-credential":
 
+
 message =
 "Email অথবা Password ভুল হয়েছে.";
+
 
 break;
 
@@ -311,8 +310,10 @@ break;
 
 case "auth/invalid-email":
 
+
 message =
 "সঠিক email address দিন.";
+
 
 break;
 
@@ -320,8 +321,10 @@ break;
 
 case "auth/too-many-requests":
 
+
 message =
 "অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন.";
+
 
 break;
 
@@ -329,13 +332,13 @@ break;
 
 default:
 
+
 message =
 error.message ||
 "Login failed.";
 
 
 }
-
 
 
 
@@ -370,11 +373,19 @@ setLoading(false);
 
 
 
+// =========================
+// RESEND VERIFICATION EMAIL
+// LOGIN NOT REQUIRED
+// CUSTOM MAIL
+// =========================
+
+
 const handleResendVerification =
 async()=>{
 
 
 try{
+
 
 
 if(!email){
@@ -418,6 +429,10 @@ successToast(
 catch(error){
 
 
+console.log(error);
+
+
+
 errorToast(
 
 error.message
@@ -429,12 +444,6 @@ error.message
 
 
 };
-
-
-
-
-
-
 
 
 
@@ -828,12 +837,6 @@ showPassword
 
 
 
-
-
-
-
-
-
 <div
 
 className="
@@ -953,9 +956,11 @@ Register Now
 
 
 
-{
-unverifiedUser &&
 
+
+{
+
+showResend && (
 
 <button
 
@@ -968,6 +973,7 @@ w-full
 text-sm
 text-amber-600
 font-medium
+hover:underline
 "
 
 >
@@ -977,7 +983,10 @@ Resend Verification Email
 </button>
 
 
+)
+
 }
+
 
 
 
