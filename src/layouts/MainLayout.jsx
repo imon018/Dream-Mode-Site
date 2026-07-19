@@ -41,7 +41,7 @@ isAdminPanel;
 
 return (
 
-<>
+<div className="flex flex-col min-h-screen">
 
 
 {/* শুধু Public Page এ AnnouncementBar */}
@@ -72,11 +72,11 @@ hideFooter
 
 ?
 
-"min-h-screen"
+"flex-1"
 
 :
 
-"min-h-screen pb-20 md:pb-0"
+"flex-1 pb-20 md:pb-0"
 
 }
 
@@ -110,7 +110,7 @@ hideFooter
 }
 
 
-</>
+</div>
 
 );
 
