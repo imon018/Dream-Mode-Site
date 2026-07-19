@@ -370,7 +370,6 @@ setLoading(false);
 
 
 
-
 const handleResendVerification =
 async()=>{
 
@@ -378,15 +377,27 @@ async()=>{
 try{
 
 
-if(!unverifiedUser)
+if(!email){
+
+
+errorToast(
+"Email required."
+);
+
+
 return;
+
+
+}
 
 
 
 
 
 await resendVerificationEmail(
-unverifiedUser
+
+email
+
 );
 
 
@@ -394,22 +405,27 @@ unverifiedUser
 
 
 successToast(
+
 "Verification email sent again."
+
 );
 
 
 
+
 }
+
 catch(error){
 
 
 errorToast(
+
 error.message
+
 );
 
 
 }
-
 
 
 };
