@@ -23,6 +23,9 @@ import {
   db,
 } from "../firebase/firestore";
 
+import ResendVerificationButton
+from "../components/auth/ResendVerificationButton";
+
 export default function Profile(){
 
   const {
@@ -262,48 +265,48 @@ export default function Profile(){
 
           </p>
 
-          <div className="mt-3">
+          <div className="flex items-center gap-3 flex-wrap">
 
-            {
-              user?.emailVerified
+  {
+    user?.emailVerified ?
 
-              ?
+    <span
+      className="
+      bg-green-100
+      text-green-700
+      px-4
+      py-2
+      rounded-full
+      font-medium
+      "
+    >
+      ✅ Verified
+    </span>
 
-              <span
-                className="
-                bg-green-600
-                text-white
-                px-3
-                py-1
-                rounded-full
-                text-sm
-                "
-              >
+    :
 
-                ✅ Email Verified
+    <>
 
-              </span>
+      <span
+        className="
+        bg-red-100
+        text-red-700
+        px-4
+        py-2
+        rounded-full
+        font-medium
+        "
+      >
+        ❌ Not Verified
+      </span>
 
-              :
+      <ResendVerificationButton/>
 
-              <span
-                className="
-                bg-red-600
-                text-white
-                px-3
-                py-1
-                rounded-full
-                text-sm
-                "
-              >
+    </>
 
-                ❌ Email Not Verified
+  }
 
-              </span>
-
-            }
-
-          </div>
+</div>
 
           <span
             className="
