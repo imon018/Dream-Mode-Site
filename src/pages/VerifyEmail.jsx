@@ -21,9 +21,10 @@ import {
 } from "../components/ui/Toast";
 
 
+import useAuth from "../hooks/useAuth";
+
+
 import ResendVerificationButton from "../components/auth/ResendVerificationButton";
-
-
 
 
 export default function VerifyEmail(){
@@ -39,7 +40,10 @@ const navigate =
 useNavigate();
 
 
-
+const {
+  refreshUser,
+} = useAuth();
+  
 
 const email =
 location.state?.email || "";
@@ -109,23 +113,13 @@ throw new Error(
 
 
 
+await refreshUser();
 
+if(!auth.currentUser?.emailVerified){
 
-await user.reload();
-
-
-
-
-
-
-
-if(!user.emailVerified){
-
-
-throw new Error(
-"Email is not verified yet."
-);
-
+  throw new Error(
+    "Email is not verified yet."
+  );
 
 }
 
