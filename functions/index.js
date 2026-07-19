@@ -87,6 +87,175 @@ gmailPassword.value()
 }
 
 
+
+
+
+
+
+
+
+// =================================================
+// SEND EMAIL VERIFICATION EMAIL
+// REGISTER REQUIRED
+// =================================================
+
+
+exports.sendVerificationEmail =
+
+
+onDocumentCreated(
+
+{
+
+document:
+
+"emailVerificationRequests/{requestId}",
+
+
+secrets:[
+
+gmailEmail,
+
+gmailPassword
+
+]
+
+
+},
+
+
+async(event)=>{
+
+
+const data =
+event.data.data();
+
+
+
+if(!data){
+
+return null;
+
+}
+
+
+
+
+
+const transporter =
+
+createTransporter();
+
+
+
+
+
+
+const link =
+
+`${WEBSITE_URL}/verify-email?token=${data.token}`;
+
+
+
+
+
+
+
+await transporter.sendMail({
+
+
+
+from:
+
+`"Dream Mode" <${gmailEmail.value()}>`,
+
+
+
+to:
+
+data.email,
+
+
+
+subject:
+
+"Verify Your Dream Mode Account",
+
+
+
+
+html:
+
+
+`
+
+<div style="font-family:Arial;padding:20px">
+
+
+<h2>
+Welcome to Dream Mode
+</h2>
+
+
+
+<p>
+Hi ${data.name},
+</p>
+
+
+
+<p>
+Thank you for creating an account.
+Please verify your email address.
+</p>
+
+
+
+<a href="${link}"
+
+style="
+display:inline-block;
+background:#F59E0B;
+color:white;
+padding:12px 20px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
+">
+
+Verify Email
+
+</a>
+
+
+
+<p>
+If you did not create this account, ignore this email.
+</p>
+
+
+
+<p>
+Dream Mode Team
+</p>
+
+
+</div>
+
+`
+
+});
+
+
+
+
+
+return null;
+
+
+});
+
+
 // =================================================
 // CREATE PASSWORD RESET REQUEST
 // LOGIN NOT REQUIRED
@@ -256,6 +425,8 @@ throw new HttpsError(
 }
 
 );
+
+
 
 
 // =================================================
@@ -685,6 +856,9 @@ throw new HttpsError(
 
 );
 
+
+
+
 // =================================================
 // RESET PASSWORD
 // LOGIN NOT REQUIRED
@@ -875,13 +1049,6 @@ throw new HttpsError(
 }
 
 );
-
-
-
-
-
-
-
 
 
 // =================================================
