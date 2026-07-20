@@ -152,21 +152,6 @@ export async function notifyAllUsers(data) {
 }
 
 
-/* ===========================================
-   Backward Compatibility
-=========================================== */
-
-export async function sendAdminNotification(data) {
-  return notifyAdmin(data);
-}
-
-export async function sendNotification(data) {
-  const { receiverId, ...notification } = data;
-
-  return notifyUser(receiverId, notification);
-}
-
-
 
 /* ===========================================
    USER REALTIME NOTIFICATIONS
