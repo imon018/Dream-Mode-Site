@@ -218,26 +218,25 @@ export default function WishlistProvider({
 
 
 
-        await addWishlistItem(
+        const result = await addWishlistItem(
           user.uid,
           product
         );
 
+        if (!result.alreadyExists) {
+          setWishlist(
+            prev => [
+              ...prev,
+              {
+                firestoreId: result.id,
+                userId: user.uid,
+                productId: product.id,
+                product,
+              },
+            ]
+          );
+        }
 
-
-        const newItem = await addWishlistItem(
-  user.uid,
-  product
-);
-
-
-setWishlist(
- prev => [
-  ...prev,
-
-  newItem
- ]
-);
 
 
 
