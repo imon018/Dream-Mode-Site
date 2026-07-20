@@ -3,6 +3,12 @@ import {
   useState,
 } from "react";
 
+
+import {
+  useLocation,
+} from "react-router-dom";
+
+
 import {
   getProductsFromDB,
 } from "../services/firestoreProductService";
@@ -14,6 +20,9 @@ import ShopHero from "../components/ShopHero";
 
 
 export default function Shop() {
+
+
+  const location = useLocation();
 
 
   const [products,setProducts] =
@@ -96,28 +105,82 @@ export default function Shop() {
   useEffect(()=>{
 
 
-    const fetchData =
-      async()=>{
+  const fetchData =
+    async()=>{
 
 
-        const data =
-          await getProductsFromDB();
+      const data =
+        await getProductsFromDB();
 
 
-        setProducts(data);
+      setProducts(data);
+
+
+
+      const params =
+        new URLSearchParams(
+          location.search
+        );
+
+
+      const keyword =
+        params.get("search");
+
+
+
+      if(keyword){
+
+
+        const filtered =
+        data.filter(
+          (product)=>
+
+            product.name
+            ?.toLowerCase()
+            .includes(
+              keyword.toLowerCase()
+            )
+
+            ||
+
+            product.description
+            ?.toLowerCase()
+            .includes(
+              keyword.toLowerCase()
+            )
+
+        );
+
+
+        setFilteredProducts(
+          filtered
+        );
+
+
+      }
+
+      else{
+
 
         setFilteredProducts(data);
 
-        setLoading(false);
+
+      }
 
 
-      };
+
+      setLoading(false);
 
 
-    fetchData();
+    };
 
 
-  },[]);
+  fetchData();
+
+
+},[
+location.search
+]);
 
 
 
