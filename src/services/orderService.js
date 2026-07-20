@@ -61,18 +61,19 @@ async(order)=>{
 
     await createUserNotification({
 
-      userId: order.userId,
+  userId: order.userId,
 
-      title:
-      "🛒 Order Placed",
+  title: "🛒 Order Placed",
 
-      message:
-      "Your order has been placed successfully.",
+  message: "Your order has been placed successfully.",
 
-      type:
-      "order",
+  type: "order",
 
-    });
+  actionUrl: `/profile/orders/${docRef.id}`,
+
+  priority: "medium",
+
+});
 
 
   }
@@ -83,16 +84,17 @@ async(order)=>{
 
   await createAdminNotification({
 
-    title:
-    "📦 New Order Received",
+  title: "📦 New Order Received",
 
-    message:
-    `${order.customerName || "Customer"} placed a new order.`,
+  message: `${order.customerName || "Customer"} placed a new order.`,
 
-    type:
-    "order",
+  type: "order",
 
-  });
+  actionUrl: `/admin/orders/${docRef.id}`,
+
+  priority: "high",
+
+});
 
 
 
@@ -474,15 +476,20 @@ if(order.userId){
 
 await createUserNotification({
 
-userId:
-order.userId,
+  userId: order.userId,
 
-title,
+  title,
 
-message,
+  message,
 
-type:
-"order",
+  type: "order",
+
+  actionUrl: `/profile/orders/${id}`,
+
+  priority:
+    status === "Delivered"
+      ? "high"
+      : "medium",
 
 });
 
@@ -526,17 +533,17 @@ if(order.userId){
 
 await createUserNotification({
 
-userId:
-order.userId,
+  userId: order.userId,
 
-title:
-"🛒 Order Created",
+  title: "🛒 Order Created",
 
-message:
-"An order has been created for you.",
+  message: "An order has been created for you.",
 
-type:
-"order",
+  type: "order",
+
+  actionUrl: `/profile/orders/${docRef.id}`,
+
+  priority: "medium",
 
 });
 
@@ -657,20 +664,17 @@ if(order.userId){
 
 await createUserNotification({
 
-userId:
-order.userId,
+  userId: order.userId,
 
+  title: "❌ Order Cancelled",
 
-title:
-"❌ Order Cancelled",
+  message: "Your order has been cancelled successfully.",
 
+  type: "order",
 
-message:
-"Your order has been cancelled successfully.",
+  actionUrl: `/profile/orders/${id}`,
 
-
-type:
-"order",
+  priority: "medium",
 
 });
 
@@ -686,16 +690,15 @@ type:
 
 await createAdminNotification({
 
-title:
-"❌ Order Cancelled",
+  title: "❌ Order Cancelled",
 
+  message: `${order.customerName || "Customer"} cancelled order #${id.slice(0,8)}.`,
 
-message:
-`${order.customerName || "Customer"} cancelled order #${id.slice(0,8)}.`,
+  type: "order",
 
+  actionUrl: `/admin/orders/${id}`,
 
-type:
-"order",
+  priority: "high",
 
 });
 
@@ -800,20 +803,15 @@ new Date()
 
 await createAdminNotification({
 
-title:
-"🔄 Return Request",
+  title: "🔄 Return Request",
 
+  message: `${order.customerName || "Customer"} requested return for order #${id.slice(0,8)}.`,
 
+  type: "order",
 
-message:
+  actionUrl: `/admin/returns/${id}`,
 
-`${order.customerName || "Customer"} requested return for order #${id.slice(0,8)}.`,
-
-
-
-type:
-"order",
-
+  priority: "high",
 
 });
 
@@ -827,21 +825,17 @@ if(order.userId){
 
 await createUserNotification({
 
-userId:
-order.userId,
+  userId: order.userId,
 
+  title: "🔄 Return Request Submitted",
 
-title:
-"🔄 Return Request Submitted",
+  message: "Your return request has been submitted successfully.",
 
+  type: "order",
 
-message:
-"Your return request has been submitted successfully.",
+  actionUrl: `/profile/returns/${id}`,
 
-
-type:
-"order",
-
+  priority: "medium",
 
 });
 
@@ -996,6 +990,22 @@ status
 
 );
 
+
+  const snapshot = await getDoc(orderDoc);
+
+const order = snapshot.data();
+
+if (order.userId) {
+  await createUserNotification({
+    userId: order.userId,
+    title: "🔄 Return Status Updated",
+    message: `Your return request is now ${status}.`,
+    type: "return",
+    actionUrl: `/profile/returns/${id}`,
+    priority: "medium",
+  });
+}
+  
 
 };
 
