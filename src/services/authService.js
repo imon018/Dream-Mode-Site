@@ -5,6 +5,7 @@ import {
   deleteUser,
   EmailAuthProvider,
   reauthenticateWithCredential,
+  updateProfile,
 } from "firebase/auth";
 
 
@@ -19,6 +20,13 @@ import {
   where,
   serverTimestamp,
 } from "firebase/firestore";
+
+
+import {
+  notifyUserRegistered,
+  notifyUserLogin,
+  notifyAdminLogin,
+} from "./notificationService";
 
 
 import {
@@ -153,6 +161,20 @@ serverTimestamp()
 
 
 
+  if (role === "admin") {
+  await notifyAdminLogin({
+    uid: result.user.uid,
+    displayName:
+      userSnap.data()?.name ||
+      result.user.displayName ||
+      "Admin",
+  });
+} else {
+  await notifyUserLogin({
+    uid: result.user.uid,
+  });
+}
+  
 
 
 return {
@@ -195,7 +217,9 @@ password
 );
 
 
-
+await updateProfile(result.user, {
+  displayName: name,
+});
 
 
 await setDoc(
@@ -291,12 +315,14 @@ serverTimestamp()
 
 // Stop auto login after registration
 
+await notifyUserRegistered({
+  uid: result.user.uid,
+  displayName: name,
+  email,
+  role: "user",
+});
+
 await signOut(auth);
-
-
-
-
-
 
 return result.user;
 
