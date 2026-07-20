@@ -90,7 +90,7 @@ hideFooter
 
 
 
-{/* শুধু Public Page এ Footer */}
+{/* শুধু Public Page এ Footer/WhatsApp, Bottom Nav সব জায়গায় থাকবে */}
 
 {
 !hideFooter && (
@@ -99,8 +99,6 @@ hideFooter
 
 <WhatsAppButton />
 
-<MobileBottomNav />
-
 <Footer />
 
 </>
@@ -108,6 +106,8 @@ hideFooter
 )
 
 }
+
+<MobileBottomNav />
 
 
 </div>
