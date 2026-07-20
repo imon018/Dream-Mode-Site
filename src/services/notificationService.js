@@ -177,6 +177,7 @@ export function listenUserNotifications(userId, callback) {
     },
     (error) => {
       console.error("User Notification Listener:", error);
+      callback([]);
     }
   );
 }
@@ -205,6 +206,7 @@ export function listenAdminNotifications(callback) {
     },
     (error) => {
       console.error("Admin Notification Listener:", error);
+      callback([]);
     }
   );
 }
