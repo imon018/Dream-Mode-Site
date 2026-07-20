@@ -313,47 +313,7 @@ export default function Notifications() {
 >
   <div className="flex gap-4">
 
-    {/* ICON */}
-    <div className="mt-1 text-xl">
-      {getIcon(item.type)}
-    </div>
-
-    {/* CONTENT */}
-    <div className="flex-1">
-      {/* আগের Content একই থাকবে */}
-    </div>
-
-    {/* ACTIONS */}
-    <div className="flex flex-col gap-2">
-
-      {!item.isRead && (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            markAsRead(item.id);
-          }}
-          className="w-9 h-9 rounded-lg hover:bg-green-100 text-green-600 flex items-center justify-center"
-        >
-          <FiCheck size={18} />
-        </button>
-      )}
-
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          removeNotification(item.id);
-        }}
-        className="w-9 h-9 rounded-lg hover:bg-red-100 text-red-600 flex items-center justify-center"
-      >
-        <FiTrash2 size={18} />
-      </button>
-
-    </div>
-
-  </div>
-</Link>
+    
 
               {/* ICON */}
 
@@ -446,6 +406,8 @@ export default function Notifications() {
               </div>
 
             </div>
+
+              </Link>
 
           ))}
 
