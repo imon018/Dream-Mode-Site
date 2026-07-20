@@ -16,8 +16,8 @@ import {
 
 import {
   sendAdminNotification,
+  sendNotification,
 } from "./notificationService";
-
 
 
 
@@ -60,25 +60,13 @@ async(product)=>{
   // ADMIN NOTIFICATION
 
   await sendAdminNotification({
-
-    title:
-    "New Product Added 🛍️",
-
-
-    message:
-    `${product.name} has been added successfully.`,
-
-
-    type:
-    "product",
-
-
-    productId:
-    docRef.id,
-
-
-  });
-
+  title: "🛍️ New Product Added",
+  message: `${product.name} has been added successfully.`,
+  type: "product",
+  productId: docRef.id,
+  actionUrl: `/admin/products/${docRef.id}`,
+  priority: "medium",
+});
 
 
 
@@ -280,6 +268,14 @@ async(
  );
 
 
+  await sendAdminNotification({
+  title: "✏️ Product Updated",
+  message: `${updatedData.name || "Product"} has been updated.`,
+  type: "product",
+  productId: id,
+  actionUrl: `/admin/products/${id}`,
+  priority: "low",
+});
 
 
 
@@ -299,24 +295,13 @@ async(
 
 
     await sendAdminNotification({
-
-      title:
-      "Out Of Stock 🚨",
-
-
-      message:
-      `${updatedData.name || "Product"} is out of stock.`,
-
-
-      type:
-      "product",
-
-
-      productId:
-      id,
-
-
-    });
+  title: "🚨 Out Of Stock",
+  message: `${updatedData.name || "Product"} is out of stock.`,
+  type: "product",
+  productId: id,
+  actionUrl: `/admin/products/${id}`,
+  priority: "high",
+});
 
 
    }
@@ -330,24 +315,13 @@ async(
 
 
     await sendAdminNotification({
-
-      title:
-      "Low Stock Alert ⚠️",
-
-
-      message:
-      `${updatedData.name || "Product"} stock is only ${updatedData.stock} left.`,
-
-
-      type:
-      "product",
-
-
-      productId:
-      id,
-
-
-    });
+  title: "⚠️ Low Stock Alert",
+  message: `${updatedData.name || "Product"} stock is only ${updatedData.stock} left.`,
+  type: "product",
+  productId: id,
+  actionUrl: `/admin/products/${id}`,
+  priority: "high",
+});
 
 
    }
@@ -370,20 +344,26 @@ async(
 // Delete Product
 // =========================
 
-export const deleteProductFromDB =
-async(id)=>{
+export const deleteProductFromDB = async (id) => {
 
+  const productDoc = doc(db, "products", id);
 
- await deleteDoc(
+  const snapshot = await getDoc(productDoc);
 
-  doc(
-   db,
-   "products",
-   id
-  )
+  const product = snapshot.exists()
+    ? snapshot.data()
+    : null;
 
- );
+  await deleteDoc(productDoc);
 
+  await sendAdminNotification({
+    title: "🗑️ Product Deleted",
+    message: `${product?.name || "Product"} has been deleted.`,
+    type: "product",
+    productId: id,
+    actionUrl: "/admin/products",
+    priority: "high",
+  });
 
 };
 
@@ -522,19 +502,4 @@ async(currentId)=>{
 
 
 // Alias Admin Delete
-export const deleteProduct =
-async(id)=>{
-
-
- await deleteDoc(
-
-  doc(
-   db,
-   "products",
-   id
-  )
-
- );
-
-
-};
+export const deleteProduct = deleteProductFromDB;
