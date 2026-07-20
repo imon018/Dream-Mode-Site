@@ -608,3 +608,21 @@ export async function notifyCustom(receiverId, title, message) {
     priority: NotificationPriority.MEDIUM,
   });
 }
+
+
+// =========================
+// Compatibility Helpers
+// =========================
+
+export async function sendAdminNotification(data) {
+  return notifyAdmin(data);
+}
+
+export async function sendNotification(data) {
+  const { receiverId, ...notification } = data;
+  return notifyUser(receiverId, notification);
+}
+
+export async function sendNotificationToAllUsers(data) {
+  return notifyAllUsers(data);
+}
