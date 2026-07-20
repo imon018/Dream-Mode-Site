@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
+import MobileBottomNav from "../components/MobileBottomNav";
 
 
 export default function AdminLayout(){
@@ -20,6 +21,8 @@ bg-[#F8F5EF]
 <main
 className="
 p-4
+pb-24
+md:pb-4
 lg:p-8
 "
 >
@@ -27,6 +30,9 @@ lg:p-8
 <Outlet />
 
 </main>
+
+
+<MobileBottomNav />
 
 
 </div>
