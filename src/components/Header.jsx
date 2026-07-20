@@ -276,7 +276,8 @@ justify-between
 className="
 flex
 items-center
-gap-3
+gap-1
+relative
 "
 >
 
@@ -418,143 +419,87 @@ gap-4
 >
 
 
-{/* SEARCH */}
+ {/* SEARCH */}
 
-<div
-className={`
-flex
-items-center
-transition-all
-duration-300
-ease-in-out
-overflow-hidden
-${searchOpen 
-? "w-[220px]" 
-: "w-10"
-}
-`}
->
+<div className="relative flex items-center gap-1">
 
+  {
+    searchOpen && (
 
-{
-searchOpen ? (
+      <form
+        onSubmit={handleSearch}
+        className="
+        absolute
+        right-9
+        top-1/2
+        -translate-y-1/2
+        w-[240px]
+        z-0
+        "
+      >
 
+        <FiSearch
+          size={18}
+          className="
+          absolute
+          left-3
+          top-1/2
+          -translate-y-1/2
+          text-gray-400
+          "
+        />
 
-<form
-onSubmit={handleSearch}
-className="
-relative
-w-full
-"
->
+        <input
+          autoFocus
+          value={search}
+          onChange={(e)=>setSearch(e.target.value)}
+          placeholder="Search products..."
+          className="
+          w-full
+          h-10
+          bg-[#FAF7F2]
+          border
+          border-gray-200
+          rounded-full
+          pl-10
+          pr-10
+          text-sm
+          outline-none
+          focus:border-[#D4AF37]
+          "
+        />
 
-<FiSearch
+        <button
+          type="button"
+          onClick={()=>{
+            setSearchOpen(false);
+            setSearch("");
+          }}
+          className="
+          absolute
+          right-3
+          top-1/2
+          -translate-y-1/2
+          text-gray-500
+          "
+        >
+          <FiX size={18}/>
+        </button>
 
-size={18}
+      </form>
 
-className="
-absolute
-left-3
-top-1/2
--translate-y-1/2
-text-gray-400
-"
+    )
+  }
 
-/>
-
-
-
-<input
-
-autoFocus
-
-value={search}
-
-onChange={(e)=>
-setSearch(e.target.value)
-}
-
-placeholder="Search products..."
-
-className="
-w-full
-h-10
-bg-[#FAF7F2]
-border
-border-gray-200
-rounded-full
-pl-10
-pr-10
-text-sm
-outline-none
-focus:border-[#D4AF37]
-"
-
-/>
-
-
-
-<button
-
-type="button"
-
-onClick={()=>{
-
-setSearchOpen(false);
-
-setSearch("");
-
-}}
-
-className="
-absolute
-right-3
-top-1/2
--translate-y-1/2
-text-gray-500
-"
-
->
-
-<FiX size={18}/>
-
-</button>
-
-
-
-</form>
-
-
-
-)
-
-:(
-
-
-
-<button
-
-onClick={()=>setSearchOpen(true)}
-
->
-
-<FiSearch
-
-size={22}
-
-className="text-[#071F57]"
-
-/>
-
-</button>
-
-
-
-)
-
-}
-
-
+  <button
+    onClick={()=>setSearchOpen(true)}
+    className="relative z-10"
+  >
+    <FiSearch
+      size={22}
+      className="text-[#071F57]"
+    />
+  </button>
 
 </div>
 
