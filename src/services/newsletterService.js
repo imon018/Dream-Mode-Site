@@ -13,6 +13,12 @@ import {
 
 import { db } from "../firebase/firebaseConfig";
 
+import {
+  notifyAdmin,
+  NotificationTypes,
+  NotificationPriority,
+} from "./notificationService";
+
 const subscribersRef = collection(db, "subscribers");
 
 
@@ -40,6 +46,18 @@ export async function subscribeEmail(email) {
     active: true,
     createdAt: serverTimestamp(),
   });
+
+ await notifyAdmin({
+  title: "👥 New Subscriber",
+  message: `${email} subscribed to the newsletter.`,
+  type: NotificationTypes.SUBSCRIBER,
+  priority: NotificationPriority.MEDIUM,
+  actionUrl: "/admin/subscribers",
+  metadata: {
+    email,
+  },
+});
+  
 
 }
 
@@ -83,5 +101,13 @@ export async function deleteSubscriber(id) {
   await deleteDoc(
     doc(db, "subscribers", id)
   );
+
+  await notifyAdmin({
+  title: "🗑 Subscriber Removed",
+  message: "A subscriber has been removed.",
+  type: NotificationTypes.SUBSCRIBER,
+  priority: NotificationPriority.LOW,
+  actionUrl: "/admin/subscribers",
+});
 
 }
