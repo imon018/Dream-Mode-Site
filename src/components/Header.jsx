@@ -15,14 +15,22 @@ import {
   FiShoppingBag,
   FiUser,
   FiSearch,
+  FiBell,
   FiLogOut,
   FiHome,
   FiLogIn,
   FiUserPlus,
+  FiX,
 } from "react-icons/fi";
+
 
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
+
+
+import {
+  useNotifications
+} from "../context/NotificationContext";
 
 
 import AdminDrawerHeader from "./admin/AdminDrawerHeader";
@@ -71,12 +79,20 @@ const {
 
 
 
+const {
+ unreadCount
+}=useNotifications();
+
+
+
+
 const navigate = useNavigate();
 
 
-
-
 const location = useLocation();
+
+
+
 
 const isPanel =
 location.pathname.startsWith("/profile") ||
@@ -91,10 +107,30 @@ user?.role === "admin";
 
 
 
+
 const [
  mobileOpen,
  setMobileOpen
 ]=useState(false);
+
+
+
+
+
+const [
+ searchOpen,
+ setSearchOpen
+]=useState(false);
+
+
+
+
+
+const [
+ search,
+ setSearch
+]=useState("");
+
 
 
 
@@ -110,6 +146,39 @@ const handleLogout = async()=>{
 
 
  setMobileOpen(false);
+
+
+};
+
+
+
+
+
+
+const handleSearch = (e)=>{
+
+
+e.preventDefault();
+
+
+
+const keyword =
+search.trim();
+
+
+
+if(!keyword)
+return;
+
+
+
+navigate(
+`/shop?search=${encodeURIComponent(keyword)}`
+);
+
+
+
+setSearchOpen(false);
 
 
 };
@@ -309,10 +378,7 @@ Live Your Style
 </div>
 
 
-
-
-
-{/* DESKTOP MENU */}
+  {/* DESKTOP MENU */}
 
 <nav
 className="
@@ -352,37 +418,208 @@ gap-4
 >
 
 
-<button
-onClick={()=>navigate("/shop")}
+{/* SEARCH */}
+
+<div
+className={`
+flex
+items-center
+transition-all
+duration-300
+ease-in-out
+overflow-hidden
+${searchOpen 
+? "w-[220px]" 
+: "w-10"
+}
+`}
+>
+
+
+{
+searchOpen ? (
+
+
+<form
+onSubmit={handleSearch}
+className="
+relative
+w-full
+"
 >
 
 <FiSearch
+
+size={18}
+
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+
+/>
+
+
+
+<input
+
+autoFocus
+
+value={search}
+
+onChange={(e)=>
+setSearch(e.target.value)
+}
+
+placeholder="Search products..."
+
+className="
+w-full
+h-10
+bg-[#FAF7F2]
+border
+border-gray-200
+rounded-full
+pl-10
+pr-10
+text-sm
+outline-none
+focus:border-[#D4AF37]
+"
+
+/>
+
+
+
+<button
+
+type="button"
+
+onClick={()=>{
+
+setSearchOpen(false);
+
+setSearch("");
+
+}}
+
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-500
+"
+
+>
+
+<FiX size={18}/>
+
+</button>
+
+
+
+</form>
+
+
+
+)
+
+:(
+
+
+
+<button
+
+onClick={()=>setSearchOpen(true)}
+
+>
+
+<FiSearch
+
 size={22}
+
 className="text-[#071F57]"
+
 />
 
 </button>
 
 
 
+)
+
+}
 
 
-<Link
-to="/cart"
-className="relative"
+
+</div>
+
+
+
+
+
+
+
+
+{/* NOTIFICATION */}
+
+
+<button
+
+onClick={()=>{
+
+
+if(!user){
+
+navigate("/login");
+
+return;
+
+}
+
+
+
+if(isAdmin){
+
+navigate("/admin/notifications");
+
+}
+
+else{
+
+navigate("/profile/notifications");
+
+}
+
+
+}}
+
+className="
+relative
+"
+
 >
 
+<FiBell
 
-<FiShoppingBag
 size={24}
+
 className="text-[#071F57]"
+
 />
 
 
+
 {
-cartCount > 0 && (
+
+unreadCount > 0 && (
 
 <span
+
 className="
 absolute
 -top-2
@@ -397,17 +634,20 @@ flex
 items-center
 justify-center
 "
+
 >
 
-{cartCount}
+{unreadCount}
 
 </span>
 
+
 )
+
 }
 
 
-</Link>
+</button>
 
 
 
@@ -556,10 +796,14 @@ Logout
 
 </header>
 
-  {/* ================= MOBILE DRAWER ================= */}
 
 
-<div
+
+
+{/* ================= MOBILE DRAWER ================= */}
+
+
+  <div
 
 className={`
 fixed
