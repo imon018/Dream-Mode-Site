@@ -1,7 +1,4 @@
-import {
-  db
-} from "../firebase/firestore";
-
+import { db } from "../firebase/firestore";
 
 import {
   collection,
@@ -14,493 +11,142 @@ import {
   where,
   orderBy,
   onSnapshot,
-  getDocs
+  getDocs,
+  limit,
 } from "firebase/firestore";
 
+/* ===========================================
+   Notification Types
+=========================================== */
 
+export const NotificationTypes = {
+  REGISTER: "register",
+  LOGIN: "login",
+  PROFILE: "profile",
+  ORDER: "order",
+  ORDER_STATUS: "order_status",
+  RETURN: "return",
+  CANCEL: "cancel",
+  REVIEW: "review",
+  PRODUCT: "product",
+  BANNER: "banner",
+  SETTINGS: "settings",
+  SUBSCRIBER: "subscriber",
+  ADMIN: "admin",
+  SYSTEM: "system",
+  CUSTOM: "custom",
+};
 
+/* ===========================================
+   Priority
+=========================================== */
 
-// CREATE NOTIFICATION
+export const NotificationPriority = {
+  HIGH: "high",
+  MEDIUM: "medium",
+  LOW: "low",
+};
 
-export async function createNotification(data){
+/* ===========================================
+   Build Notification Object
+=========================================== */
 
-  await addDoc(
+function buildNotification(data) {
+  return {
+    title: data.title || "Notification",
 
-    collection(
-      db,
-      "notifications"
-    ),
+    message: data.message || "",
 
-    {
+    type: data.type || NotificationTypes.SYSTEM,
 
-      ...data,
+    priority:
+      data.priority || NotificationPriority.LOW,
 
-      isRead:false,
+    receiverId: data.receiverId,
 
-      createdAt:
-      serverTimestamp()
+    senderId: data.senderId || null,
 
-    }
+    senderName: data.senderName || "",
 
+    senderRole: data.senderRole || "",
+
+    actionUrl: data.actionUrl || "",
+
+    image: data.image || "",
+
+    extra: data.extra || {},
+
+    isRead: false,
+
+    isDeleted: false,
+
+    createdAt: serverTimestamp(),
+  };
+}
+
+/* ===========================================
+   Duplicate Prevention
+=========================================== */
+
+async function hasDuplicate(data) {
+  const q = query(
+    collection(db, "notifications"),
+    where("receiverId", "==", data.receiverId),
+    where("title", "==", data.title),
+    where("message", "==", data.message),
+    limit(1)
   );
 
+  const snap = await getDocs(q);
+
+  return !snap.empty;
 }
 
+/* ===========================================
+   Create Notification
+=========================================== */
 
+export async function createNotification(data) {
+  try {
+    const notification = buildNotification(data);
 
+    const duplicate = await hasDuplicate(notification);
 
+    if (duplicate) return;
 
-// USER REALTIME NOTIFICATION
-
-export function listenUserNotifications(
-  userId,
-  callback
-){
-
-
-const q=query(
-
-collection(
-db,
-"notifications"
-),
-
-
-where(
-"receiverId",
-"in",
-[
-userId,
-"ALL_USERS"
-]
-),
-
-
-orderBy(
-"createdAt",
-"desc"
-)
-
-);
-
-
-
-return onSnapshot(
-
-q,
-
-(snapshot)=>{
-
-
-const data =
-snapshot.docs.map(
-
-doc=>({
-
-id:doc.id,
-
-...doc.data()
-
-})
-
-);
-
-
-callback(data);
-
-
+    await addDoc(
+      collection(db, "notifications"),
+      notification
+    );
+  } catch (error) {
+    console.error(
+      "Create Notification Error:",
+      error
+    );
+  }
 }
 
-);
+/* ===========================================
+   Shortcut Helpers
+=========================================== */
 
-
+export async function notifyAdmin(data) {
+  return createNotification({
+    ...data,
+    receiverId: "ADMIN",
+  });
 }
 
-
-
-
-
-
-
-// ADMIN REALTIME
-
-export function listenAdminNotifications(
-callback
-){
-
-
-const q=query(
-
-collection(
-db,
-"notifications"
-),
-
-
-where(
-"receiverId",
-"==",
-"ADMIN"
-),
-
-
-orderBy(
-"createdAt",
-"desc"
-)
-
-);
-
-
-
-return onSnapshot(
-
-q,
-
-(snapshot)=>{
-
-
-callback(
-
-snapshot.docs.map(
-
-doc=>({
-
-id:doc.id,
-
-...doc.data()
-
-})
-
-)
-
-);
-
-
+export async function notifyUser(userId, data) {
+  return createNotification({
+    ...data,
+    receiverId: userId,
+  });
 }
 
-);
-
-
-}
-
-
-
-
-
-
-
-
-// GET USER
-
-export async function getUserNotifications(
-userId
-){
-
-
-const q=query(
-
-collection(
-db,
-"notifications"
-),
-
-where(
-"receiverId",
-"==",
-userId
-),
-
-orderBy(
-"createdAt",
-"desc"
-)
-
-);
-
-
-
-const snap =
-await getDocs(q);
-
-
-
-return snap.docs.map(
-doc=>({
-
-id:doc.id,
-
-...doc.data()
-
-})
-
-);
-
-
-}
-
-
-
-
-
-
-
-// GET ADMIN
-
-export async function getAdminNotifications(){
-
-
-const q=query(
-
-collection(
-db,
-"notifications"
-),
-
-where(
-"receiverId",
-"==",
-"ADMIN"
-),
-
-orderBy(
-"createdAt",
-"desc"
-)
-
-);
-
-
-
-const snap =
-await getDocs(q);
-
-
-
-return snap.docs.map(
-doc=>({
-
-id:doc.id,
-
-...doc.data()
-
-})
-
-);
-
-
-}
-
-
-
-
-
-
-
-// MARK ONE READ
-
-export async function markNotificationRead(
-id
-){
-
-
-await updateDoc(
-
-doc(
-db,
-"notifications",
-id
-),
-
-{
-
-isRead:true
-
-}
-
-);
-
-
-}
-
-
-
-
-
-
-
-
-// MARK ALL READ
-
-export async function markAllNotificationsRead(
-notifications
-){
-
-
-const updates =
-notifications.map(
-
-(item)=>
-
-updateDoc(
-
-doc(
-db,
-"notifications",
-item.id
-),
-
-{
-
-isRead:true
-
-}
-
-)
-
-);
-
-
-
-await Promise.all(
-updates
-);
-
-
-}
-
-
-
-
-
-
-
-
-// DELETE ONE
-
-export async function deleteNotification(
-id
-){
-
-
-await deleteDoc(
-
-doc(
-db,
-"notifications",
-id
-)
-
-);
-
-
-}
-
-
-
-
-
-
-
-
-// DELETE ALL
-
-export async function deleteAllNotifications(
-notifications
-){
-
-
-const deletes =
-notifications.map(
-
-(item)=>
-
-deleteDoc(
-
-doc(
-db,
-"notifications",
-item.id
-)
-
-)
-
-);
-
-
-
-await Promise.all(
-deletes
-);
-
-
-}
-
-
-
-
-
-
-
-
-// ADMIN SEND
-
-export async function sendAdminNotification(
-data
-){
-
-
-return createNotification({
-
-...data,
-
-receiverId:"ADMIN"
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-// SEND ALL USERS
-
-export async function sendNotificationToAllUsers(
-data
-){
-
-
-return createNotification({
-
-...data,
-
-receiverId:"ALL_USERS"
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-// SEND SINGLE USER
-
-export async function sendNotification(
-data
-){
-
-
-return createNotification(data);
-
-
+export async function notifyAllUsers(data) {
+  return createNotification({
+    ...data,
+    receiverId: "ALL_USERS",
+  });
 }
