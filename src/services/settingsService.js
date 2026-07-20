@@ -10,6 +10,13 @@ import {
 } from "../firebase/firestore";
 
 
+import {
+  notifyAdmin,
+  NotificationTypes,
+  NotificationPriority,
+} from "./notificationService";
+
+
 
 
 // SAVE SETTINGS
@@ -33,6 +40,17 @@ export const saveSettings = async(data)=>{
       }
 
     );
+
+   await notifyAdmin({
+  title: "⚙️ Settings Updated",
+  message: `Updated: ${Object.keys(data).join(", ")}`,
+  type: NotificationTypes.SETTINGS,
+  priority: NotificationPriority.MEDIUM,
+  actionUrl: "/admin/settings",
+  metadata: {
+    updatedFields: Object.keys(data),
+  },
+}); 
 
 
   }
@@ -124,6 +142,15 @@ export const disableMaintenance = async()=>{
       maintenanceMode:false,
 
     });
+
+
+    await notifyAdmin({
+  title: "🟢 Maintenance Disabled",
+  message: "Maintenance mode has been disabled.",
+  type: NotificationTypes.SETTINGS,
+  priority: NotificationPriority.MEDIUM,
+  actionUrl: "/admin/settings",
+});
 
 
   }
