@@ -7,6 +7,9 @@ import {
   useCallback,
 } from "react";
 
+import { db } from "../firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
+
 import useAuth from "../hooks/useAuth";
 
 import {
@@ -27,6 +30,9 @@ export function NotificationProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+  let unsubscribe = () => {};
+
+  async function initNotifications() {
     setLoading(true);
 
     if (!user) {
@@ -35,21 +41,32 @@ export function NotificationProvider({ children }) {
       return;
     }
 
-    let unsubscribe = () => {};
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
 
-    const onData = (data) => {
-      setNotifications(data || []);
+      const role = snap.exists() ? snap.data().role : "user";
+
+      const onData = (data) => {
+        setNotifications(data || []);
+        setLoading(false);
+      };
+
+      if (role === "admin") {
+        unsubscribe = listenAdminNotifications(onData);
+      } else {
+        unsubscribe = listenUserNotifications(user.uid, onData);
+      }
+    } catch (err) {
+      console.error(err);
       setLoading(false);
-    };
-
-    if (user.role === "admin") {
-      unsubscribe = listenAdminNotifications(onData);
-    } else {
-      unsubscribe = listenUserNotifications(user.uid, onData);
     }
+  }
 
-    return () => unsubscribe();
-  }, [user]);
+  initNotifications();
+
+  return () => unsubscribe();
+}, [user]);
 
   /* =====================================
       COUNTERS
