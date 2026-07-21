@@ -20,6 +20,8 @@ import {
   FiTrash2,
   FiPackage,
   FiCreditCard,
+  FiChevronRight,
+  FiX,
 } from "react-icons/fi";
 
 
@@ -59,7 +61,7 @@ const [deleteModal,setDeleteModal]=useState(false);
 
 const [deleting, setDeleting] = useState(false);
 
-
+const [showProductsModal, setShowProductsModal] = useState(false);
 
 
 useEffect(()=>{
@@ -865,17 +867,15 @@ mb-4
   </div>
 
   <button
-    onClick={() =>
-      navigate(`/product/${order.items?.[0]?.id}`)
-    }
-    className="
+  onClick={() => setShowProductsModal(true)}
+  className="
     text-xs
     font-bold
     text-amber-600
-    "
-  >
-    View &gt;
-  </button>
+  "
+>
+  View &gt;
+</button>
 
 </div>
 
@@ -1591,6 +1591,77 @@ disabled:opacity-50
 }
 
 
+
+
+  {showProductsModal && (
+  <div className="fixed inset-0 z-[999] bg-black/40 flex items-end">
+    <div className="bg-white w-full rounded-t-3xl max-h-[80vh] overflow-y-auto">
+
+      <div className="p-5">
+
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-lg font-bold">
+            Order Products
+          </h2>
+
+          <button
+            onClick={() => setShowProductsModal(false)}
+          >
+            <FiX size={22}/>
+          </button>
+        </div>
+
+        <div className="space-y-3">
+
+          {order.items?.map((item,index)=>(
+
+            <button
+              key={item.id || index}
+              onClick={()=>{
+                setShowProductsModal(false);
+                navigate(`/product/${item.id}`);
+              }}
+              className="w-full flex items-center justify-between border rounded-xl p-3"
+            >
+
+              <div className="flex items-center gap-3">
+
+                <img
+                  src={item.image}
+                  className="w-14 h-14 rounded-lg object-cover"
+                />
+
+                <div className="text-left">
+
+                  <p className="font-bold">
+                    {item.name}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    Qty : {item.quantity}
+                  </p>
+
+                </div>
+
+              </div>
+
+              <FiChevronRight/>
+
+            </button>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
+
+
+  
 
 </div>
 
