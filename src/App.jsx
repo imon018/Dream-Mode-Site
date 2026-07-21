@@ -56,11 +56,12 @@ function AppContent(){
 
 const {
   settings,
+  loading: settingsLoading,
 } = useSettings();
 
 
 
-  if(loading){
+  if (loading || settingsLoading) {
 
 
     return (
