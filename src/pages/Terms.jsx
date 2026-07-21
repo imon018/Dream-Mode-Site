@@ -43,10 +43,10 @@ export default function Terms(){
 
     {
       question:
-      `Who owns ${settings.storeName || "DREAM MODE"} website content?`,
+      `Who owns ${settings.storeName || ""} website content?`,
 
       answer:
-      `All website content, logo, images and design belong to ${settings.storeName || "DREAM MODE"}.`
+      `All website content, logo, images and design belong to ${settings.storeName || ""}.`
     }
 
 
@@ -68,7 +68,7 @@ export default function Terms(){
 
 
       description={
-        `Please read our terms before using ${settings.storeName || "DREAM MODE"} website and services.`
+        `Please read our terms before using ${settings.storeName || ""} website and services.`
       }
 
 
@@ -86,7 +86,7 @@ export default function Terms(){
 
           By accessing and using{" "}
 
-          {settings.storeName || "DREAM MODE"}
+          {settings.storeName || ""}
 
           {" "}website, you agree
           to follow our terms and conditions.
@@ -153,7 +153,7 @@ export default function Terms(){
 
         <p>
 
-          {settings.storeName || "DREAM MODE"}
+          {settings.storeName || ""}
 
           {" "}reserves the right to cancel orders due to
           incorrect information, payment verification issues or
@@ -201,7 +201,7 @@ export default function Terms(){
 
           All logos, designs, images and content belong to{" "}
 
-          {settings.storeName || "DREAM MODE"}
+          {settings.storeName || ""}
 
           {" "}and cannot be used without permission.
 
