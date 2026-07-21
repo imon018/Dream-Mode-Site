@@ -29,6 +29,9 @@ import {
 } from "../components/ui/Toast";
 
 
+import { useSettings } from "../context/SettingsContext";
+
+
 import Button from "../components/ui/Button";
 
 
@@ -39,6 +42,10 @@ export default function Register() {
 
 const navigate =
 useNavigate();
+
+
+
+const { settings } = useSettings();
 
 
 
@@ -276,7 +283,7 @@ mt-1
 
 >
 
-Create your Dream Mode account.
+Create your {settings.storeName || ""} account.
 
 </p>
 
