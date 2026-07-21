@@ -859,46 +859,58 @@ focus:border-amber-400
 
   {/* WEBSITE */}
 
+<div>
 
-  <div>
+<label
 
-<label className="
+className="
 block
 font-bold
 text-sm
 text-[#172033]
 mb-2
-">
+"
+
+>
+
 Website URL
+
 </label>
 
 
-<div className="
-relative
-">
+<div
 
-<div className="
+className="
+relative
+"
+
+>
+
+
+<div
+
+className="
 absolute
-left-4
+left-3
 top-1/2
 -translate-y-1/2
-w-12
-h-12
-rounded-xl
-bg-amber-50
+w-8
+h-8
+rounded-lg
+bg-[#FFF7E8]
 flex
 items-center
 justify-center
-">
-
-<FiGlobe
-className="
 text-amber-500
-text-xl
 "
-/>
+
+>
+
+<FiGlobe size={16}/>
 
 </div>
+
+
 
 
 <input
@@ -913,21 +925,14 @@ onChange={handleChange}
 
 placeholder="Website URL"
 
-className="
-w-full
-h-14
-pl-20
-rounded-xl
-border
-border-gray-200
-focus:ring-2
-focus:ring-amber-400
-outline-none
-"
+className={inputClass}
 
 />
 
+
+
 </div>
+
 
 </div>
 
