@@ -42,6 +42,7 @@ import UserDetails from "../pages/admin/UserDetails";
 import SendNotification from "../pages/admin/SendNotification";
 import ReturnOrders from "../pages/admin/ReturnOrders";
 import ReturnOrderDetails from "../pages/admin/ReturnOrderDetails";
+import AddReturn from "../pages/admin/AddReturn";
 
 
 /* =========================
@@ -422,6 +423,11 @@ element={<ReturnOrder />}
          <Route
  path="return-orders/:id"
  element={<ReturnOrderDetails />}
+/>
+
+         <Route
+  path="add-return"
+  element={<AddReturn />}
 />
 
 
