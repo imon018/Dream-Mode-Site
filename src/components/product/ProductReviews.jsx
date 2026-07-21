@@ -51,6 +51,12 @@ export default function ProductReviews({
   ] = useState("");
 
 
+  const [
+  images,
+  setImages,
+] = useState([]);
+
+
 
   const [
     loading,
@@ -498,7 +504,53 @@ photoURL:
 
 
 
+<div className="mt-5">
 
+  <label className="block font-semibold mb-2">
+    📷 Add Photos (Optional)
+  </label>
+
+  <input
+    type="file"
+    multiple
+    accept="image/*"
+    onChange={(e) =>
+      setImages(
+        Array.from(e.target.files).slice(0, 5)
+      )
+    }
+  />
+
+</div>
+
+{
+  images.length > 0 && (
+
+    <div className="flex gap-3 flex-wrap mt-4">
+
+      {
+        images.map((image, index) => (
+
+          <img
+            key={index}
+            src={URL.createObjectURL(image)}
+            alt=""
+            className="
+              w-24
+              h-24
+              rounded-xl
+              object-cover
+              border
+            "
+          />
+
+        ))
+      }
+
+    </div>
+
+  )
+}
 
 
 
