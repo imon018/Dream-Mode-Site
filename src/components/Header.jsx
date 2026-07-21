@@ -293,7 +293,7 @@ whitespace-nowrap
 
 &nbsp;&nbsp;&nbsp;
 
-🔥 🔥 {settings.storeName || "Dream Mode"} New Collection
+🔥  {settings.storeName || ""} New Collection 🔥
 
 </div>
 
@@ -408,7 +408,7 @@ fontFamily:"'Lobster', cursive"
 >
 
 {
-settings.storeName || "DREAM MODE"
+settings.storeName || ""
 }
 
 </h2>
@@ -771,7 +771,7 @@ text-white
 "
 >
 
-Join Now
+Register Now
 
 </Link>
 
@@ -966,7 +966,7 @@ font-bold
 
 {
 settings.storeName ||
-"Dream Mode"
+""
 }
 
 </h2>
@@ -1226,7 +1226,7 @@ font-bold
 
 {
 settings.storeName ||
-"Dream Mode"
+""
 }
 
 </h3>
