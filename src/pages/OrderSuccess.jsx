@@ -143,7 +143,7 @@ export default function OrderSuccess(){
               mx-1
             "
           >
-            Dream Mode
+            {settings.storeName || ""}
           </span>
 
           Your order has been placed successfully.
