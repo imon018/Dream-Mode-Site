@@ -194,7 +194,7 @@ fontFamily:
 
 settings.storeName ||
 
-"DREAM MODE"
+""
 
 }
 
