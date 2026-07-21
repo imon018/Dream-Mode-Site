@@ -867,7 +867,23 @@ mb-4
   </div>
 
   <button
-  onClick={() => setShowProductsModal(true)}
+  onClick={() => {
+
+  if ((order.items?.length || 0) === 1) {
+
+    navigate(
+      `/product/${
+        order.items[0].productId || order.items[0].id
+      }`
+    );
+
+  } else {
+
+    setShowProductsModal(true);
+
+  }
+
+}}
   className="
     text-xs
     font-bold
