@@ -357,7 +357,7 @@ export default function ProductDetailsView() {
                 font-bold
               "
             >
-              ✨ Premium Collection
+              ✨ New Collection
             </div>
 
 
