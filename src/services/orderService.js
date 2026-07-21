@@ -802,17 +802,11 @@ new Date()
 
 
 await createAdminNotification({
-
   title: "🔄 Return Request",
-
   message: `${order.customerName || "Customer"} requested return for order #${id.slice(0,8)}.`,
-
   type: "order",
-
-  actionUrl: `/admin/returns/${id}`,
-
+  actionUrl: `/admin/return-orders/${id}`,
   priority: "high",
-
 });
 
 
