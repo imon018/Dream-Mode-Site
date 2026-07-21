@@ -618,77 +618,175 @@ export default function ProductDetailsView() {
 
             {/* PREMIUM FEATURES */}
 
+<div
+  className="
+    mt-8
+    bg-white
+    rounded-3xl
+    border
+    border-amber-200
+    px-5
+    py-6
+  "
+>
+
+<div
+  className="
+    grid
+    grid-cols-4
+    gap-2
+    text-center
+  "
+>
 
 
-            <div
-              className="
-                mt-8
-                grid
-                gap-3
-              "
-            >
+<div>
 
+<div
+className="
+text-3xl
+text-amber-500
+mb-2
+"
+>
+🛡️
+</div>
 
-              <div
-                className="
-                  bg-white
-                  rounded-xl
-                  border
-                  border-amber-500/20
-                  p-4
-                  text-sm
-                  font-semibold
-                  text-[#172033]
-                "
-              >
+<h4
+className="
+text-sm
+font-black
+text-[#172033]
+"
+>
+Premium
+</h4>
 
-                🚚 Fast & Secure Delivery
+<p
+className="
+text-xs
+text-gray-500
+"
+>
+Quality
+</p>
 
-              </div>
-
-
-
-
-              <div
-                className="
-                  bg-white
-                  rounded-xl
-                  border
-                  border-amber-500/20
-                  p-4
-                  text-sm
-                  font-semibold
-                  text-[#172033]
-                "
-              >
-
-                🔒 Secure Payment System
-
-              </div>
-
-
-
-
-              <div
-                className="
-                  bg-white
-                  rounded-xl
-                  border
-                  border-amber-500/20
-                  p-4
-                  text-sm
-                  font-semibold
-                  text-[#172033]
-                "
-              >
-
-                💎 Premium Quality Guarantee
-
-              </div>
+</div>
 
 
 
-            </div>
+
+<div>
+
+<div
+className="
+text-3xl
+text-amber-500
+mb-2
+"
+>
+🚚
+</div>
+
+<h4
+className="
+text-sm
+font-black
+text-[#172033]
+"
+>
+Fast
+</h4>
+
+<p
+className="
+text-xs
+text-gray-500
+"
+>
+Delivery
+</p>
+
+</div>
+
+
+
+
+
+<div>
+
+<div
+className="
+text-3xl
+text-amber-500
+mb-2
+"
+>
+🔄
+</div>
+
+<h4
+className="
+text-sm
+font-black
+text-[#172033]
+"
+>
+Easy
+</h4>
+
+<p
+className="
+text-xs
+text-gray-500
+"
+>
+Return
+</p>
+
+</div>
+
+
+
+
+
+<div>
+
+<div
+className="
+text-3xl
+text-amber-500
+mb-2
+"
+>
+🔒
+</div>
+
+<h4
+className="
+text-sm
+font-black
+text-[#172033]
+"
+>
+Secure
+</h4>
+
+<p
+className="
+text-xs
+text-gray-500
+"
+>
+Order
+</p>
+
+</div>
+
+
+</div>
+
+</div>
 
 
 
