@@ -19,6 +19,9 @@ import {
 } from "../ui/Toast";
 
 
+import { FiUploadCloud } from "react-icons/fi";
+
+
 
 export default function ProductReviews({
   productId,
@@ -504,24 +507,55 @@ photoURL:
 
 
 
-<div className="mt-5">
-
-  <label className="block font-semibold mb-2">
-    📷 Add Photos (Optional)
-  </label>
+<label
+  className="
+    mt-5
+    flex
+    flex-col
+    items-center
+    justify-center
+    gap-2
+    w-full
+    h-36
+    rounded-3xl
+    border-2
+    border-dashed
+    border-yellow-300
+    bg-yellow-50
+    cursor-pointer
+    hover:bg-yellow-100
+    transition-all
+    duration-300
+  "
+>
 
   <input
     type="file"
     multiple
     accept="image/*"
-    onChange={(e) =>
+    className="hidden"
+    onChange={(e)=>
       setImages(
-        Array.from(e.target.files).slice(0, 5)
+        Array.from(e.target.files).slice(0,5)
       )
     }
   />
 
-</div>
+  <FiUploadCloud
+  size={52}
+  className="text-yellow-500"
+/>
+
+  <h4 className="font-bold text-lg text-blue-900">
+    Upload Photos
+  </h4>
+
+  <p className="text-sm text-gray-500 text-center">
+    JPG • PNG • WEBP <br />
+    Maximum 5 Images
+  </p>
+
+</label>
 
 {
   images.length > 0 && (
