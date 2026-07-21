@@ -198,7 +198,7 @@ font-bold
 
 {
 settings.storeName ||
-"DREAM MODE"
+""
 }
 
 </h2>
@@ -599,7 +599,7 @@ font-bold
 
 {
 settings.storeName ||
-"Dream Mode"
+""
 }
 
 </h3>
