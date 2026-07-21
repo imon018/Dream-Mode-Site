@@ -27,6 +27,57 @@ admin.initializeApp();
 
 
 
+async function getWebsiteUrl(){
+
+const snap =
+await admin.firestore()
+.collection("settings")
+.doc("store")
+.get();
+
+
+if(
+snap.exists &&
+snap.data().websiteUrl
+){
+
+return snap.data().websiteUrl.replace(/\/$/, "");
+
+}
+
+
+throw new Error(
+"Website URL not found"
+);
+
+
+}
+
+
+
+async function getStoreName(){
+
+const snap =
+await admin.firestore()
+.collection("settings")
+.doc("store")
+.get();
+
+
+if(
+snap.exists &&
+snap.data().storeName
+){
+
+return snap.data().storeName.trim();
+
+}
+
+
+return "DREAM MODE";
+
+}
+
 
 
 const gmailEmail =
@@ -44,9 +95,6 @@ defineSecret(
 
 
 
-
-const WEBSITE_URL =
-"https://dream-mode-site-eight.vercel.app";
 
 
 
@@ -148,7 +196,11 @@ createTransporter();
 
 
 
+const WEBSITE_URL =
+await getWebsiteUrl();
 
+const STORE_NAME =
+await getStoreName();
 
 
 const link =
@@ -167,8 +219,7 @@ await transporter.sendMail({
 
 from:
 
-`"Dream Mode" <${gmailEmail.value()}>`,
-
+`"${STORE_NAME}" <${gmailEmail.value()}>`,
 
 
 to:
@@ -179,7 +230,7 @@ data.email,
 
 subject:
 
-"Verify Your Dream Mode Account",
+`Verify Your ${STORE_NAME} Account`,
 
 
 
@@ -193,7 +244,7 @@ html:
 
 
 <h2>
-Welcome to Dream Mode
+Welcome to ${STORE_NAME}
 </h2>
 
 
@@ -236,7 +287,7 @@ If you did not create this account, ignore this email.
 
 
 <p>
-Dream Mode Team
+${STORE_NAME} Team
 </p>
 
 
@@ -835,6 +886,12 @@ const transporter =
 createTransporter();
 
 
+const WEBSITE_URL =
+await getWebsiteUrl();
+
+
+const STORE_NAME =
+await getStoreName();
 
 
 
@@ -853,8 +910,7 @@ await transporter.sendMail({
 
 from:
 
-`"Dream Mode" <${gmailEmail.value()}>`,
-
+`"${STORE_NAME}" <${gmailEmail.value()}>`,
 
 
 to:
@@ -865,8 +921,7 @@ data.email,
 
 subject:
 
-"Password Change Verification",
-
+`${STORE_NAME} Password Change Verification`,
 
 
 
@@ -879,7 +934,7 @@ html:
 
 
 <h2>
-Dream Mode Password Change
+${STORE_NAME} Password Change
 </h2>
 
 
@@ -915,7 +970,7 @@ If you did not request this, ignore this email.
 
 
 <p>
-Dream Mode Team
+${STORE_NAME} Team
 </p>
 
 
@@ -987,6 +1042,13 @@ const transporter =
 createTransporter();
 
 
+const WEBSITE_URL =
+await getWebsiteUrl();
+
+
+const STORE_NAME =
+await getStoreName();
+
 
 
 
@@ -1006,7 +1068,7 @@ await transporter.sendMail({
 
 from:
 
-`"Dream Mode" <${gmailEmail.value()}>`,
+`"${STORE_NAME}" <${gmailEmail.value()}>`,
 
 
 
@@ -1018,7 +1080,7 @@ data.email,
 
 subject:
 
-"Reset Your Dream Mode Password",
+`Reset Your ${STORE_NAME} Password`,
 
 
 
@@ -1032,7 +1094,7 @@ html:
 
 
 <h2>
-Dream Mode Password Reset
+${STORE_NAME} Password Reset
 </h2>
 
 
@@ -1068,7 +1130,7 @@ If you did not request this, ignore this email.
 
 
 <p>
-Dream Mode Team
+${STORE_NAME} Team
 </p>
 
 
@@ -1460,6 +1522,12 @@ createTransporter();
 
 
 
+const WEBSITE_URL =
+await getWebsiteUrl();
+
+
+const STORE_NAME =
+await getStoreName();
 
 
 
@@ -1481,8 +1549,7 @@ await transporter.sendMail({
 
 from:
 
-`"Dream Mode" <${gmailEmail.value()}>`,
-
+`"${STORE_NAME}" <${gmailEmail.value()}>`,
 
 
 
@@ -1495,8 +1562,7 @@ data.email,
 
 subject:
 
-"Delete Account Verification",
-
+`${STORE_NAME} Account Delete Verification`,
 
 
 
@@ -1509,7 +1575,7 @@ html:
 
 
 <h2>
-Dream Mode Account Delete
+${STORE_NAME} Account Delete
 </h2>
 
 
@@ -1549,11 +1615,9 @@ If you did not request this, ignore this email.
 </p>
 
 
-
 <p>
-Dream Mode Team
+${STORE_NAME} Team
 </p>
-
 
 </div>
 
