@@ -548,6 +548,7 @@ Dashboard
 className="
 border-t
 p-6
+mb-20
 "
 
 >
