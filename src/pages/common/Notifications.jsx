@@ -369,7 +369,11 @@ export default function Notifications() {
 
                 {!item.isRead && (
                   <button
-                    onClick={() => markAsRead(item.id)}
+                    onClick={(e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  markAsRead(item.id);
+}}
                     title="Mark as Read"
                     className="
                       w-9
@@ -387,7 +391,11 @@ export default function Notifications() {
                 )}
 
                 <button
-                  onClick={() => removeNotification(item.id)}
+                  onClick={(e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  removeNotification(item.id);
+}}
                   title="Delete"
                   className="
                     w-9
