@@ -67,6 +67,25 @@ function timeAgo(timestamp) {
   return timestamp.toDate().toLocaleDateString();
 }
 
+function getNotificationUrl(item) {
+
+  if (
+    item.type === "return" &&
+    item.actionUrl?.includes("/admin/orders/")
+  ) {
+
+    return item.actionUrl.replace(
+      "/admin/orders/",
+      "/admin/return-orders/"
+    );
+
+  }
+
+
+  return item.actionUrl || "#";
+
+}
+
 export default function Notifications() {
   const {
     notifications,
@@ -290,7 +309,7 @@ export default function Notifications() {
 
             <Link
   key={item.id}
-  to={item.actionUrl || "#"}
+  to={getNotificationUrl(item)}
   onClick={() => {
     if (!item.isRead) {
       markAsRead(item.id);
