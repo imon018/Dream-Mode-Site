@@ -36,7 +36,7 @@ export default function ShippingPolicy(){
       "Do you deliver all over Bangladesh?",
 
       answer:
-      `Yes, ${settings.storeName || "DREAM MODE"} delivers products across Bangladesh.`
+      `Yes, ${settings.storeName || ""} delivers products across Bangladesh.`
     },
 
 
@@ -68,7 +68,7 @@ export default function ShippingPolicy(){
 
 
       description={
-        `Everything you need to know about ${settings.storeName || "DREAM MODE"} delivery process.`
+        `Everything you need to know about ${settings.storeName || ""} delivery process.`
       }
 
 
@@ -84,7 +84,7 @@ export default function ShippingPolicy(){
 
         <p>
 
-          {settings.storeName || "DREAM MODE"}
+          {settings.storeName || ""}
 
           {" "}provides secure and reliable delivery service
           to make sure your premium fashion products reach you safely.
