@@ -303,7 +303,7 @@ export default function MaintenancePage(){
             "
           >
 
-            {settings.storeName || "Dream Mode"}
+            {settings.storeName || ""}
 
             {" "}is upgrading the website experience.
 
