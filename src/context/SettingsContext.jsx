@@ -23,13 +23,15 @@ export function SettingsProvider({
 
   const [settings,setSettings] = useState({
 
-    storeName:"Dream Mode",
+    storeName:"",
 
     email:"",
 
     phone:"",
 
     address:"",
+
+    websiteUrl:"",
 
     facebook:"",
 
