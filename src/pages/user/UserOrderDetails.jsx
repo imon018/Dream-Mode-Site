@@ -18,6 +18,8 @@ import {
   FiShoppingBag,
   FiTruck,
   FiCheck,
+  FiChevronRight,
+  FiX,
 } from "react-icons/fi";
 
 
@@ -58,6 +60,9 @@ const [loading,setLoading]=useState(true);
 
 
 const [showCancelModal,setShowCancelModal]=useState(false);
+
+
+const [showProductsModal, setShowProductsModal] = useState(false);
 
 
 
@@ -894,16 +899,24 @@ shadow-sm
 >
 
 
-<h3
-className="
-font-bold
-mb-4
-"
->
+<div className="flex items-center justify-between mb-4">
 
-Order Items
+  <h3 className="font-bold">
+    Order Items
+  </h3>
 
-</h3>
+  <button
+    onClick={() => setShowProductsModal(true)}
+    className="
+      text-xs
+      font-bold
+      text-amber-600
+    "
+  >
+    View &gt;
+  </button>
+
+</div>
 
 
 
@@ -1633,6 +1646,107 @@ Buy Again
 
 
 
+
+
+  {showProductsModal && (
+  <div className="fixed inset-0 z-[999] bg-black/40 flex items-end">
+
+    <div className="bg-white w-full rounded-t-3xl max-h-[80vh] flex flex-col">
+
+      <div
+        className="
+          flex-1
+          overflow-y-auto
+          p-5
+          pb-[calc(8rem+env(safe-area-inset-bottom))]
+        "
+      >
+
+        <div className="flex justify-between items-center mb-5">
+
+          <h2 className="text-lg font-bold">
+            Order Products
+          </h2>
+
+          <button
+            onClick={() => setShowProductsModal(false)}
+          >
+            <FiX size={22}/>
+          </button>
+
+        </div>
+
+        <div className="space-y-3">
+
+          {order.items?.map((item,index)=>(
+
+            <button
+              key={item.id || index}
+              onClick={()=>{
+                setShowProductsModal(false);
+
+                navigate(
+                  `/product/${item.productId || item.id}`
+                );
+              }}
+              className="
+                w-full
+                flex
+                items-center
+                justify-between
+                border
+                rounded-xl
+                p-3
+              "
+            >
+
+              <div className="flex items-center gap-3">
+
+                <img
+                  src={
+                    item.image ||
+                    "https://via.placeholder.com/60"
+                  }
+                  className="
+                    w-14
+                    h-14
+                    rounded-lg
+                    object-cover
+                  "
+                />
+
+                <div className="text-left">
+
+                  <p className="font-bold">
+                    {item.name}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    Qty : {item.quantity}
+                  </p>
+
+                </div>
+
+              </div>
+
+              <FiChevronRight size={20}/>
+
+            </button>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
+
+
+
+  
 
 
 
