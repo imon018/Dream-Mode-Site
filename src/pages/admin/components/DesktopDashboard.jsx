@@ -14,9 +14,7 @@ import {
 } from "react-chartjs-2";
 
 
-import {
-  useSettings,
-} from "../../context/SettingsContext";
+import { useSettings } from "../../../context/SettingsContext";
 
 
 import {
