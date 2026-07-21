@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import {
+  FiShield,
+  FiTruck,
+  FiRefreshCw,
+  FiLock
+} from "react-icons/fi";
+
 import Button from "./ui/Button";
 import RelatedProducts from "./RelatedProducts";
 import ProductReviews from "./product/ProductReviews";
@@ -616,7 +623,8 @@ export default function ProductDetailsView() {
 
 
 
-            {/* PREMIUM FEATURES */}
+           {/* PREMIUM FEATURES */}
+
 
 <div
   className="
@@ -630,6 +638,7 @@ export default function ProductDetailsView() {
   "
 >
 
+
 <div
   className="
     grid
@@ -640,6 +649,8 @@ export default function ProductDetailsView() {
 >
 
 
+{/* Premium */}
+
 <div>
 
 <div
@@ -647,10 +658,13 @@ className="
 text-3xl
 text-amber-500
 mb-2
+flex
+justify-center
 "
 >
-🛡️
+<FiShield />
 </div>
+
 
 <h4
 className="
@@ -662,6 +676,7 @@ text-[#172033]
 Premium
 </h4>
 
+
 <p
 className="
 text-xs
@@ -671,10 +686,14 @@ text-gray-500
 Quality
 </p>
 
+
 </div>
 
 
 
+
+
+{/* Delivery */}
 
 <div>
 
@@ -683,10 +702,13 @@ className="
 text-3xl
 text-amber-500
 mb-2
+flex
+justify-center
 "
 >
-🚚
+<FiTruck />
 </div>
+
 
 <h4
 className="
@@ -698,6 +720,7 @@ text-[#172033]
 Fast
 </h4>
 
+
 <p
 className="
 text-xs
@@ -707,11 +730,15 @@ text-gray-500
 Delivery
 </p>
 
+
 </div>
 
 
 
 
+
+
+{/* Return */}
 
 <div>
 
@@ -720,10 +747,13 @@ className="
 text-3xl
 text-amber-500
 mb-2
+flex
+justify-center
 "
 >
-🔄
+<FiRefreshCw />
 </div>
+
 
 <h4
 className="
@@ -735,6 +765,7 @@ text-[#172033]
 Easy
 </h4>
 
+
 <p
 className="
 text-xs
@@ -744,11 +775,15 @@ text-gray-500
 Return
 </p>
 
+
 </div>
 
 
 
 
+
+
+{/* Secure */}
 
 <div>
 
@@ -757,10 +792,13 @@ className="
 text-3xl
 text-amber-500
 mb-2
+flex
+justify-center
 "
 >
-🔒
+<FiLock />
 </div>
+
 
 <h4
 className="
@@ -772,6 +810,7 @@ text-[#172033]
 Secure
 </h4>
 
+
 <p
 className="
 text-xs
@@ -781,12 +820,16 @@ text-gray-500
 Order
 </p>
 
+
 </div>
+
 
 
 </div>
 
+
 </div>
+            
 
 
 
