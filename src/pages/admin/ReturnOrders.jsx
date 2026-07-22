@@ -312,34 +312,6 @@ dateMatch
 
 
 
-if(loading){
-
-return(
-
-<div
-
-className="
-min-h-screen
-flex
-items-center
-justify-center
-font-bold
-"
-
->
-
-Loading Return Orders...
-
-</div>
-
-);
-
-}
-
-
-
-
-
 return(
 
 <div
@@ -358,7 +330,6 @@ lg:p-6
 
 
 
-{/* HEADER */}
 {/* HEADER */}
 
 <div className="flex items-center justify-between">
