@@ -629,7 +629,7 @@ border-t-indigo-700
 <div
 className="
 mt-6
-bg-[#fffaf0]
+bg-gray-50
 rounded-lg
 p-5
 "
@@ -649,7 +649,7 @@ images.length > 1 && (
 className="
 flex
 gap-3
-mt-2
+mt-4
 overflow-x-auto
 "
 >
@@ -722,7 +722,7 @@ ${
 
 <h2
 className="
-text-xs
+text-sm
 font-bold
 mt-2
 text-purple-700
@@ -787,15 +787,15 @@ mb-3
 
 <div
 className="
-w-6
-h-6
+w-4
+h-4
 rounded-full
 bg-purple-700
 text-white
 flex
 items-center
 justify-center
-text-sm
+text-xs
 font-bold
 shrink-0
 "
@@ -863,7 +863,7 @@ text-purple-700
 
 <span
 className="
-text-xl
+text-sm
 text-gray-400
 font-bold
 line-through
@@ -1054,7 +1054,7 @@ font-bold
 className="
 my-8
 border-t
-border-gray-300
+border-gray-200
 "
 ></div>
 
@@ -1067,7 +1067,7 @@ border-gray-300
 <div
 className="
 mt-10
-bg-[#fffaf0]
+bg-gray-50
 p-5
 "
 >
