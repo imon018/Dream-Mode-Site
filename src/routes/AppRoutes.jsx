@@ -43,6 +43,7 @@ import SendNotification from "../pages/admin/SendNotification";
 import ReturnOrders from "../pages/admin/ReturnOrders";
 import ReturnOrderDetails from "../pages/admin/ReturnOrderDetails";
 import AddReturn from "../pages/admin/AddReturn";
+import LandingPages from "./pages/admin/landing/LandingPages";
 
 
 /* =========================
@@ -428,6 +429,11 @@ element={<ReturnOrder />}
          <Route
   path="add-return"
   element={<AddReturn />}
+/>
+
+         <Route
+  path="/admin/landing"
+  element={<LandingPages />}
 />
 
 
