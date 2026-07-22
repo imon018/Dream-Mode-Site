@@ -9,14 +9,19 @@ import {
 } from "react-icons/fi";
 
 
+import { useSettings } from "../context/SettingsContext";
+
+
 
 export default function OrderSuccess(){
 
 
   const location =
     useLocation();
+  
 
-
+const { settings } = useSettings();
+  
 
   const orderId =
     location.state?.orderId;
