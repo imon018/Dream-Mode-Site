@@ -14,7 +14,6 @@ import {
   FiSmartphone,
   FiX,
   FiGift,
-  FiMaximize2,
 } from "react-icons/fi";
 
 import Button from "../../components/ui/Button";
@@ -1426,7 +1425,7 @@ object-contain
 
 </div>
 
-
+</div>
 
 
 
