@@ -1123,7 +1123,7 @@ text-xs
 
 <p
 className="
-text-xl
+text-lg
 font-black
 text-amber-600
 whitespace-nowrap
