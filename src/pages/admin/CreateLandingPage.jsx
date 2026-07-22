@@ -75,13 +75,8 @@ useState([]);
 
 const [uploading,setUploading]=useState(false);
 
-const [deliveryZone,setDeliveryZone]=useState("inside");
-
-const [deliveryCharge,setDeliveryCharge]=useState(80);
-
-const [cashOnDelivery,setCashOnDelivery]=useState(true);
-
-const [status]=useState("published");
+const [status,setStatus]=
+useState("published");
 
 const [showCancelModal,setShowCancelModal]=useState(false);
 
@@ -476,10 +471,6 @@ price,
 
 offerPrice,
 
-deliveryCharge,
-
-cashOnDelivery,
-
 status,
 
 facebookPixel,
@@ -674,7 +665,7 @@ mt-1
 "
 >
 
-Facebook Single Product Landing Builder
+Landing Builder
 
 </p>
 
@@ -876,17 +867,18 @@ border-amber-200
 
 <div
 className="
+w-1/2
 px-4
 bg-amber-50
 flex
 items-center
 text-sm
 text-gray-500
-whitespace-nowrap
+truncate
 "
 >
 
-{websiteUrl}/landing/
+{`${websiteUrl}/landing/`}
 
 </div>
 
@@ -905,7 +897,7 @@ e.target.value
 placeholder="landing-page"
 
 className="
-flex-1
+w-1/2
 h-12
 px-4
 outline-none
@@ -2094,8 +2086,9 @@ focus:ring-amber-100
 
 
   {/* =========================
-DELIVERY SETTINGS
+					Status
 ========================= */}
+
 
 <div
 className="
@@ -2110,223 +2103,84 @@ overflow-hidden
 
 <div
 className="
-px-5
-py-4
-bg-amber-50
-border-b
-border-amber-100
-flex
-items-center
-gap-3
-"
->
-
-<div
-className="
-w-10
-h-10
-rounded-lg
-bg-amber-500
-text-white
-flex
-items-center
-justify-center
-"
->
-
-<FiTruck/>
-
-</div>
-
-<div>
-
-<h2
-className="
-text-lg
-font-bold
-"
->
-
-Delivery Settings
-
-</h2>
-
-<p
-className="
-text-xs
-text-gray-500
-"
->
-
-Configure delivery & payment options.
-
-</p>
-
-</div>
-
-</div>
-
-<div
-className="
 p-5
-space-y-5
 "
 >
-
-<div>
 
 <label
 className="
 block
 font-semibold
-mb-2
+mb-3
 "
 >
 
-Delivery Charge
+Status
 
 </label>
 
-<select
-
-value={deliveryZone}
-
-onChange={(e)=>
-
-setDeliveryZone(
-e.target.value
-)
-
-}
-
-className="
-w-full
-h-12
-rounded-lg
-border
-border-amber-200
-px-4
-outline-none
-focus:border-amber-500
-focus:ring-4
-focus:ring-amber-100
-"
-
->
-
-<option value="inside">
-
-Dhaka Inside — ৳80
-
-</option>
-
-<option value="sub">
-
-Sub Area — ৳100
-
-</option>
-
-<option value="outside">
-
-Outside Dhaka — ৳120
-
-</option>
-
-</select>
-
-</div>
-
 <div
 className="
-rounded-lg
-border
-border-amber-200
-p-4
-flex
-items-center
-justify-between
+grid
+grid-cols-2
+gap-4
 "
 >
 
-<div>
-
-<h3
-className="
-font-semibold
-"
->
-
-Cash On Delivery
-
-</h3>
-
-<p
-className="
-text-sm
-text-gray-500
-mt-1
-"
->
-
-Enable COD Payment
-
-</p>
-
-</div>
-
-<label
-className="
-relative
-inline-flex
-cursor-pointer
-"
->
-
-<input
-
-type="checkbox"
-
-checked={cashOnDelivery}
-
-onChange={(e)=>
-
-setCashOnDelivery(
-e.target.checked
-)
-
+<button
+type="button"
+onClick={()=>
+setStatus("published")
 }
+className={`
+h-14
+rounded-xl
+font-bold
+${
+status==="published"
+?
+"bg-amber-500 text-white"
+:
+"border border-amber-200 bg-white text-slate-800"
+}
+`}
+>
 
-className="sr-only peer"
+Published
 
-/>
+</button>
 
-<div
-className="
-w-11
-h-6
-rounded-full
-bg-gray-300
-peer-checked:bg-amber-500
-after:content-['']
-after:absolute
-after:left-[2px]
-after:top-[2px]
-after:w-5
-after:h-5
-after:bg-white
-after:rounded-full
-after:transition-all
-peer-checked:after:translate-x-5
-"
-/>
+<button
+type="button"
+onClick={()=>
+setStatus("draft")
+}
+className={`
+h-14
+rounded-xl
+font-bold
+${
+status==="draft"
+?
+"bg-amber-500 text-white"
+:
+"border border-amber-200 bg-white text-slate-800"
+}
+`}
+>
 
-</label>
+Draft
+
+</button>
 
 </div>
 
 </div>
 
 </div>
+
+
+
 
 {/* =========================
 ACTION BUTTONS
@@ -2595,6 +2449,3 @@ Yes
 );
 
 }
-
-
-
