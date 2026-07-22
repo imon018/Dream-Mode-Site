@@ -16,24 +16,110 @@ const landingCollection = collection(db, "landingPages");
 
 // Create Landing Page
 export const createLandingPage = async (data) => {
-  const slug = data.slug.toLowerCase().trim();
 
-  const q = query(landingCollection, where("slug", "==", slug));
-  const exists = await getDocs(q);
+  const slug =
+  data.slug
+  .toLowerCase()
+  .trim();
 
-  if (!exists.empty) {
-    throw new Error("Landing page slug already exists.");
+  const q=query(
+
+    landingCollection,
+
+    where(
+      "slug",
+      "==",
+      slug
+    )
+
+  );
+
+  const exists=
+  await getDocs(q);
+
+  if(!exists.empty){
+
+    throw new Error(
+      "Landing page slug already exists."
+    );
+
   }
 
-  const docRef = await addDoc(landingCollection, {
-    ...data,
+  const landing={
+
+    productId:
+    data.productId,
+
+    title:
+    data.title,
+
     slug,
-    status: "draft",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+
+    description:
+    data.description,
+
+    heroTitle:
+    data.heroTitle||"",
+
+    heroDescription:
+    data.heroDescription||"",
+
+    heroImages:
+    data.heroImages||[],
+
+    price:
+    Number(data.price)||0,
+
+    offerPrice:
+    Number(data.offerPrice)||0,
+
+    deliveryCharge:
+    Number(data.deliveryCharge)||0,
+
+    cashOnDelivery:
+    data.cashOnDelivery,
+
+    orderForm:
+    data.orderForm||{},
+
+    facebookPixel:
+    data.facebookPixel||"",
+
+    googleAnalytics:
+    data.googleAnalytics||"",
+
+    successMessage:
+    data.successMessage||"",
+
+    status:
+    data.status||
+    "published",
+
+    views:0,
+
+    orders:0,
+
+    revenue:0,
+
+    createdAt:
+    serverTimestamp(),
+
+    updatedAt:
+    serverTimestamp(),
+
+  };
+
+  const docRef=
+  await addDoc(
+
+    landingCollection,
+
+    landing
+
+  );
 
   return docRef.id;
+
 };
 
 // Get All Landing Pages
@@ -170,10 +256,12 @@ export const duplicateLandingPage = async (id) => {
     Date.now();
 
   landing.title =
-    landing.title +
-    " Copy";
+  `${landing.title} Copy`;
 
   landing.status = "draft";
+
+  landing.heroImages =
+  landing.heroImages || [];
 
   landing.createdAt = serverTimestamp();
   landing.updatedAt = serverTimestamp();
