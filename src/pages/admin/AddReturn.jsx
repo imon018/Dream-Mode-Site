@@ -4,12 +4,16 @@ import {
   useState,
 } from "react";
 
+
+import { useNavigate } from "react-router-dom";
+
 import {
   FiSearch,
   FiImage,
   FiTrash2,
   FiPlus,
   FiMinus,
+  FiArrowLeft,
   FiX,
 } from "react-icons/fi";
 
@@ -41,7 +45,7 @@ export default function AddReturn() {
 
   const [email,setEmail]=useState("");
 
-
+  const navigate = useNavigate();
 
   const [products,setProducts]=useState([]);
 
@@ -49,25 +53,15 @@ export default function AddReturn() {
 
   const [selectedProducts,setSelectedProducts]=useState([]);
 
-
-
-
   const [reason,setReason]=useState("");
 
   const [description,setDescription]=useState("");
 
-
-
   const [returnType,setReturnType]=useState("Exchange");
-
-
 
   const [refundMethod,setRefundMethod]=useState("");
 
   const [refundNumber,setRefundNumber]=useState("");
-
-
-
 
   const [pickupName,setPickupName]=useState("");
 
@@ -81,15 +75,9 @@ export default function AddReturn() {
 
   const [pickupDistrict,setPickupDistrict]=useState("");
 
-
-
-
   const [images,setImages]=useState([]);
 
   const [previewImages,setPreviewImages]=useState([]);
-
-
-
 
   const [loading,setLoading]=useState(false);
 
@@ -602,9 +590,64 @@ mx-auto
 <div
 className="
 mb-5
-text-center
+relative
+flex
+items-center
+justify-center
 "
 >
+
+<button
+
+onClick={()=>navigate(-1)}
+
+className="
+absolute
+left-0
+w-10
+h-10
+rounded-full
+bg-white
+border
+border-gray-100
+shadow-sm
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiArrowLeft size={22}/>
+
+</button>
+
+<div className="text-center">
+
+<h1
+className="
+text-2xl
+font-black
+text-[#172033]
+"
+>
+Add Return
+</h1>
+
+<p
+className="
+text-sm
+text-gray-500
+mt-1
+"
+>
+Create a new return request
+</p>
+
+</div>
+
+</div>
+  
 
 <h1
 className="
@@ -634,7 +677,7 @@ onSubmit={handleSubmit}
 
 className="
 bg-white
-rounded-xl
+rounded-lg
 border
 border-gray-100
 shadow-sm
@@ -655,7 +698,7 @@ space-y-5
 <div
 className="
 border
-rounded-xl
+rounded-lg
 p-5
 space-y-4
 "
@@ -742,7 +785,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -785,7 +828,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -806,7 +849,7 @@ focus:border-amber-400
 <div
 className="
 border
-rounded-xl
+rounded-lg
 p-5
 space-y-4
 "
@@ -847,7 +890,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 pl-11
 pr-4
 outline-none
@@ -864,7 +907,7 @@ filteredProducts.length>0 && (
 <div
 className="
 border
-rounded-xl
+rounded-lg
 overflow-hidden
 max-h-72
 overflow-y-auto
@@ -967,7 +1010,7 @@ key={product.id}
 
 className="
 border
-rounded-xl
+rounded-lg
 p-4
 "
 
@@ -1031,8 +1074,9 @@ text-red-500
 <div
 className="
 flex
-justify-between
 items-center
+justify-between
+gap-3
 mt-4
 "
 >
@@ -1054,13 +1098,14 @@ decreaseQty(product.id)
 }
 
 className="
-w-8
-h-8
+w-7
+h-7
 rounded-lg
 bg-gray-100
 flex
 items-center
 justify-center
+text-sm
 "
 
 >
@@ -1090,14 +1135,15 @@ increaseQty(product.id)
 }
 
 className="
-w-8
-h-8
+w-7
+h-7
 rounded-lg
 bg-amber-500
 text-white
 flex
 items-center
 justify-center
+text-sm
 "
 
 >
@@ -1110,8 +1156,10 @@ justify-center
 
 <p
 className="
+text-xl
 font-black
 text-amber-600
+whitespace-nowrap
 "
 >
 
@@ -1144,7 +1192,7 @@ text-amber-600
 <div
 className="
 border
-rounded-xl
+rounded-lg
 p-5
 space-y-4
 "
@@ -1188,7 +1236,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -1228,7 +1276,7 @@ placeholder="Describe the problem..."
 className="
 w-full
 border
-rounded-xl
+rounded-lg
 p-4
 resize-none
 outline-none
@@ -1266,7 +1314,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -1323,7 +1371,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -1352,12 +1400,6 @@ Nagad
 <option value="Rocket">
 
 Rocket
-
-</option>
-
-<option value="Bank">
-
-Bank
 
 </option>
 
@@ -1396,7 +1438,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -1423,7 +1465,7 @@ focus:border-amber-400
 <div
 className="
 border
-rounded-xl
+rounded-lg
 p-5
 space-y-4
 "
@@ -1437,84 +1479,6 @@ text-lg
 >
 Pickup Address
 </h2>
-
-<div>
-
-<label
-className="
-block
-font-semibold
-text-sm
-mb-2
-"
->
-Pickup Name
-</label>
-
-<input
-
-type="text"
-
-value={pickupName}
-
-onChange={(e)=>
-setPickupName(e.target.value)
-}
-
-className="
-w-full
-h-12
-border
-rounded-xl
-px-4
-outline-none
-focus:border-amber-400
-"
-
-/>
-
-</div>
-
-
-
-
-
-<div>
-
-<label
-className="
-block
-font-semibold
-text-sm
-mb-2
-"
->
-Pickup Phone
-</label>
-
-<input
-
-type="text"
-
-value={pickupPhone}
-
-onChange={(e)=>
-setPickupPhone(e.target.value)
-}
-
-className="
-w-full
-h-12
-border
-rounded-xl
-px-4
-outline-none
-focus:border-amber-400
-"
-
-/>
-
-</div>
 
 
 
@@ -1546,7 +1510,7 @@ setPickupAddress(e.target.value)
 className="
 w-full
 border
-rounded-xl
+rounded-lg
 p-4
 resize-none
 outline-none
@@ -1597,7 +1561,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -1638,7 +1602,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -1681,7 +1645,7 @@ className="
 w-full
 h-12
 border
-rounded-xl
+rounded-lg
 px-4
 outline-none
 focus:border-amber-400
@@ -1703,7 +1667,7 @@ focus:border-amber-400
 <div
 className="
 border
-rounded-xl
+rounded-lg
 p-5
 space-y-4
 "
@@ -1727,7 +1691,7 @@ h-44
 border-2
 border-dashed
 border-gray-300
-rounded-xl
+rounded-lg
 bg-[#FAF7F2]
 flex
 flex-col
@@ -1817,7 +1781,7 @@ key={index}
 
 className="
 relative
-rounded-xl
+rounded-lg
 overflow-hidden
 border
 "
@@ -1891,7 +1855,7 @@ disabled={loading}
 className="
 w-full
 h-12
-rounded-xl
+rounded-lg
 bg-gradient-to-r
 from-amber-400
 to-amber-500
