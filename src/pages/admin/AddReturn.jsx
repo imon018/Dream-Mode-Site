@@ -63,10 +63,6 @@ export default function AddReturn() {
 
   const [refundNumber,setRefundNumber]=useState("");
 
-  const [pickupName,setPickupName]=useState("");
-
-  const [pickupPhone,setPickupPhone]=useState("");
-
   const [pickupAddress,setPickupAddress]=useState("");
 
   const [pickupPostOffice,setPickupPostOffice]=useState("");
@@ -463,10 +459,6 @@ export default function AddReturn() {
 
           pickupAddress:{
 
-            name:pickupName,
-
-            phone:pickupPhone,
-
             address:pickupAddress,
 
             postOffice:pickupPostOffice,
@@ -524,10 +516,6 @@ export default function AddReturn() {
       setRefundNumber("");
 
 
-
-      setPickupName("");
-
-      setPickupPhone("");
 
       setPickupAddress("");
 
@@ -648,28 +636,6 @@ Create a new return request
 
 </div>
   
-
-<h1
-className="
-text-2xl
-font-black
-text-[#172033]
-"
->
-Add Return
-</h1>
-
-<p
-className="
-text-sm
-text-gray-500
-mt-1
-"
->
-Create a new return request
-</p>
-
-</div>
 
 <form
 
