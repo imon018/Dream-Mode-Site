@@ -213,8 +213,6 @@ return (
 className="
 min-h-screen
 bg-[#FAF7F2]
-p-4
-lg:p-8
 "
 >
 
@@ -476,13 +474,14 @@ Desktop View
 
 
 
-className={
-view==="mobile"
-?
-"mt-0 w-full overflow-hidden"
-:
-"mt-8 w-full overflow-hidden"
-}
+<div
+className="
+mt-0
+w-full
+overflow-hidden
+bg-[#FAF7F2]
+"
+>
 
 
 
