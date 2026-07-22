@@ -629,7 +629,7 @@ border-t-indigo-700
 <div
 className="
 mt-6
-bg-[#FAFAFA]
+bg-[#fffaf0]
 rounded-lg
 p-5
 "
@@ -713,10 +713,6 @@ ${
 }
 
 
-
-
-
-</div>
 
 
 
@@ -1052,7 +1048,7 @@ font-bold
 </div>
 
 
-
+</div>
 
 
 {/* ORDER FORM */}
