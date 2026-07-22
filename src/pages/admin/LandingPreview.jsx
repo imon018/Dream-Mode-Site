@@ -651,6 +651,8 @@ flex
 gap-3
 mt-4
 overflow-x-auto
+pb-0
+border-none
 "
 >
 
@@ -676,20 +678,7 @@ h-20
 object-cover
 rounded-md
 cursor-pointer
-border-2
 
-${
-(activeImage || images[0])===img
-
-?
-
-"border-amber-500"
-
-:
-
-"border-transparent"
-
-}
 
 `}
 
@@ -863,15 +852,13 @@ text-purple-700
 
 <span
 className="
-text-sm
+text-base
 text-gray-400
-font-bold
+font-medium
 line-through
 "
 >
-
 ৳{landing.price}
-
 </span>
 
 
@@ -1053,6 +1040,8 @@ font-bold
 <div
 className="
 my-8
+h-6
+bg-gray-50
 border-t
 border-gray-200
 "
@@ -1066,7 +1055,7 @@ border-gray-200
 
 <div
 className="
-mt-10
+mt-0
 bg-gray-50
 p-5
 "
