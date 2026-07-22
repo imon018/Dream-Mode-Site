@@ -629,7 +629,7 @@ border-t-indigo-700
 <div
 className="
 mt-6
-bg-[#fffaf0]
+bg-gray-50
 rounded-lg
 p-5
 "
@@ -989,8 +989,8 @@ setQuantity(quantity-1)
 }}
 
 className="
-w-8
-h-8
+w-6
+h-6
 rounded-lg
 bg-gray-200
 font-bold
@@ -1023,8 +1023,8 @@ text-xl
 onClick={()=>setQuantity(quantity+1)}
 
 className="
-w-8
-h-8
+w-6
+h-6
 rounded-lg
 bg-amber-500
 text-white
@@ -1059,7 +1059,7 @@ font-bold
 className="
 mt-10
 bg-gray-50
-rounded-2xl
+rounded-lg
 p-5
 "
 >
@@ -1237,7 +1237,7 @@ mb-5
 "
 >
 
-পণ্যের বিবরণ
+প্রোডাক্ট ডিটেইলস
 
 </h2>
 
