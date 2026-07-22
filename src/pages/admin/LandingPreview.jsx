@@ -90,7 +90,7 @@ bg-gray-100
 <div
 className="
 bg-white
-rounded-xl
+rounded-lg
 p-8
 shadow
 "
@@ -237,7 +237,7 @@ mx-auto
 <div
 className="
 bg-white
-rounded-2xl
+rounded-lg
 border
 border-amber-200
 shadow-sm
@@ -305,7 +305,7 @@ onClick={()=>navigate(-1)}
 className="
 bg-slate-900
 text-white
-rounded-xl
+rounded-lg
 px-6
 flex
 items-center
@@ -329,7 +329,7 @@ type="button"
 className="
 bg-black
 text-white
-rounded-xl
+rounded-lg
 px-6
 "
 >
@@ -580,7 +580,6 @@ font-black
 
 </div>
   
- ) 
 
 }
 
@@ -826,7 +825,6 @@ font-bold
 
 </span>
 
-  )
 
 }
 
