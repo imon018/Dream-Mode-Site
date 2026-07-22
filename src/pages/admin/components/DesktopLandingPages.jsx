@@ -47,12 +47,12 @@ export default function DesktopLandingPages({ data }) {
         </div>
 
         <Link
-          to="/admin/landing-pages/create"
-          className="h-11 px-5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold flex items-center gap-2"
-        >
-          <FiPlus />
-          Create Landing
-        </Link>
+  to="/admin/landing/create"
+  className="h-11 px-5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold flex items-center gap-2"
+>
+  <FiPlus />
+  Create Landing
+</Link>
 
       </div>
 
