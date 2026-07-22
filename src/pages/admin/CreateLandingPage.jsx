@@ -458,27 +458,64 @@ collectNotes,
 
 function handlePreview(){
 
-if(!slug){
+const previewData={
 
-errorToast(
+productId:selectedProduct,
 
-"Landing URL required."
+title,
 
+slug,
+
+description,
+
+heroTitle,
+
+heroDescription,
+
+heroImages,
+
+price:Number(price),
+
+offerPrice:Number(
+offerPrice
+),
+
+orderForm:{
+
+collectName,
+
+collectPhone,
+
+collectAddress,
+
+collectCity,
+
+collectNotes,
+
+},
+
+status,
+
+createdAt:new Date(),
+
+};
+
+
+sessionStorage.setItem(
+"landingPreviewData",
+JSON.stringify(previewData)
 );
 
-return;
-
-}
 
 window.open(
-
-`/landing/${slug}`,
-
+"/admin/landing/preview",
 "_blank"
-
 );
 
+
 }
+
+	
 
 async function handleSubmit(e){
 
