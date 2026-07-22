@@ -188,29 +188,19 @@ export async function getLatestReviews(
 
           // Sync profile data
 
-          if(data.userId){
+          if (data.userId) {
+  try {
+    const profile = await getUserProfile(data.userId);
 
-
-            const profile =
-              await getUserProfile(
-                data.userId
-              );
-
-
-            if(profile){
-
-              name =
-                profile.name ||
-                name;
-
-
-              photo =
-                profile.photoURL ||
-                photo;
-
-            }
-
-          }
+    if (profile) {
+      name = profile.name || name;
+      photo = profile.photoURL || photo;
+    }
+  } catch (error) {
+    // Guest user বা permission error হলেও review দেখাবে
+    console.log("Profile sync skipped:", error);
+  }
+}
 
 
 
