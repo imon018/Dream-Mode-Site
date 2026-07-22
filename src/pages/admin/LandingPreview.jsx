@@ -1197,24 +1197,59 @@ landing.description
 
 {/* OUR PROMISE */}
 
-
-
 <div
 className="
 mt-10
-bg-[#FFF9E8]
-rounded-2xl
+bg-gradient-to-br
+from-purple-50
+to-white
+border
+border-purple-100
+rounded-lg
 p-6
 "
 >
 
 
+<div
+className="
+flex
+items-start
+gap-4
+"
+>
+
+
+<div
+className="
+w-12
+h-12
+rounded-lg
+bg-purple-100
+flex
+items-center
+justify-center
+text-purple-600
+text-2xl
+font-black
+shrink-0
+"
+>
+
+🛡️
+
+</div>
+
+
+
+<div>
+
 
 <h2
 className="
-text-3xl
+text-xl
 font-black
-mb-5
+text-purple-700
 "
 >
 
@@ -1224,47 +1259,24 @@ mb-5
 
 
 
-
-<ul
+<p
 className="
-space-y-4
-text-gray-700
-text-lg
+mt-3
+text-gray-600
+leading-7
 "
 >
 
+আমরা অরিজিনাল এবং দ্রুত ডেলিভারি নিশ্চিত করি। আপনার সন্তুষ্টিই আমাদের প্রধান লক্ষ্য
 
-<li>
-
-✓ উচ্চমানের পণ্য নিশ্চিত করা
-
-</li>
+</p>
 
 
-<li>
-
-✓ দ্রুত ডেলিভারি সুবিধা
-
-</li>
-
-
-<li>
-
-✓ নিরাপদ ও সহজ অর্ডার ব্যবস্থা
-
-</li>
-
-
-<li>
-
-✓ গ্রাহকের সন্তুষ্টি আমাদের লক্ষ্য
-
-</li>
+</div>
 
 
 
-</ul>
-
+</div>
 
 
 </div>
@@ -1286,7 +1298,7 @@ w-full
 bg-amber-500
 text-white
 py-5
-rounded-xl
+rounded-lg
 font-black
 text-xl
 "
@@ -1362,7 +1374,7 @@ alt="fullscreen"
 className="
 max-h-full
 max-w-full
-rounded-xl
+rounded-lg
 object-contain
 "
 
