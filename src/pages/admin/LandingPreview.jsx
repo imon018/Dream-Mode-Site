@@ -11,7 +11,12 @@ import {
   FiArrowLeft,
   FiEdit3,
   FiMonitor,
-  FiSmartphone,
+  FiHome,
+  FiFileText,
+  FiMap,
+  FiMapPin,
+  FiUser,
+  FiPhone,
   FiX,
   FiGift,
 } from "react-icons/fi";
@@ -561,56 +566,62 @@ cursor-pointer
 
 
 {
-
-discount > 0 &&
+discount > 0 && (
 
 <div
 className="
 absolute
-top-0
-left-0
-w-16
-bg-indigo-600
-text-white
-text-center
-font-bold
+top-3
+left-3
 z-20
-relative
-overflow-visible
+w-12
+text-center
 "
 >
 
-<div className="py-3">
-<div className="text-2xl">
+<div
+className="
+relative
+overflow-visible
+rounded-t-md
+bg-transparent
+backdrop-blur-lg
+border
+border-amber-300/80
+shadow-[0_0_12px_rgba(251,191,36,0.35)]
+"
+>
+
+<div className="py-2">
+<div className="text-lg font-black leading-none">
 {discount}%
 </div>
 
-<div className="text-base">
+<div className="text-[11px] font-bold mt-1">
 OFF
 </div>
 </div>
 
+{/* Bottom Ribbon */}
 <div
 className="
-absolute
-bottom-[-18px]
-left-0
 w-0
 h-0
-border-l-[32px]
-border-r-[32px]
-border-t-[18px]
-border-l-indigo-700
-border-r-indigo-700
-border-t-transparent
+mx-auto
+border-l-[24px]
+border-r-[24px]
+border-t-[14px]
+border-l-transparent
+border-r-transparent
+border-t-indigo-600
 "
 />
 
-  
 </div>
 
-  
+</div>
 
+)
 }
 
 
@@ -1082,7 +1093,7 @@ mb-5
 "
 >
 
-অর্ডার করুন
+অর্ডার ফর্ম
 
 </h2>
 
@@ -1090,124 +1101,180 @@ mb-5
 
 
 
+<div className="relative mb-3">
+
+<FiUser
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
 <input
 placeholder="আপনার নাম"
-
 className="
 w-full
+pl-10
+pr-4
+py-3
 border
 rounded-lg
-p-4
-mb-3
 "
 />
 
+</div>
 
 
+
+
+<div className="relative mb-3">
+
+<FiPhone
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
 
 <input
-
-placeholder="মোবাইল নাম্বার"
-
+placeholder="ফোন নাম্বার"
 className="
 w-full
+pl-10
+pr-4
+py-3
 border
 rounded-lg
-p-4
-mb-3
 "
-
 />
 
+</div>
 
 
+
+
+<div className="relative mb-3">
+
+<FiHone
+className="
+absolute
+left-3
+top-4
+text-gray-400
+"
+/>
 
 <textarea
-
 placeholder="আপনার ঠিকানা"
-
 rows="3"
-
 className="
 w-full
+pl-10
+pr-4
+py-3
 border
 rounded-lg
-p-4
-mb-3
+resize-none
 "
+/>
 
-></textarea>
-
-
-
+</div>
 
 
-<select
 
+
+<div className="relative mb-3">
+
+<FiMap
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
+<input
+placeholder="থানা"
 className="
 w-full
+pl-10
+pr-4
+py-3
 border
 rounded-lg
-p-4
-mb-3
 "
+/>
 
->
-
-<option>
-
-বিভাগ নির্বাচন করুন
-
-</option>
+</div>
 
 
-</select>
+  
 
+<div className="relative mb-3">
 
+<FiMapPin
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
 
-
-
-<select
-
+<input
+placeholder="জেলা"
 className="
 w-full
+pl-10
+pr-4
+py-3
 border
 rounded-lg
-p-4
 "
+/>
 
->
-
-<option>
-
-জেলা নির্বাচন করুন
-
-</option>
-
-
-</select>
+</div>
 
 
 
 
 
 
+<div className="relative mt-3">
+
+<FiFileText
+className="
+absolute
+left-3
+top-4
+text-gray-400
+"
+/>
 
 <textarea
-
 placeholder="অতিরিক্ত নোট (যদি থাকে)"
-
 rows="3"
-
 className="
-mt-3
 w-full
+pl-10
+pr-4
+py-3
 border
 rounded-lg
-p-4
+resize-none
 "
+/>
 
-></textarea>
+</div>
 
 
 
