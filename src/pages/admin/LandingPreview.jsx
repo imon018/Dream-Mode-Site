@@ -62,11 +62,22 @@ const data = sessionStorage.getItem(
 
 if(data){
 
-setLanding(
-JSON.parse(data)
-);
+const parsed = JSON.parse(data);
 
+setLanding(parsed);
+
+const images =
+  landing?.heroImages?.length
+    ? landing.heroImages
+    : landing?.heroImage
+    ? [landing.heroImage]
+    : [];
+
+if (imgs.length) {
+  setActiveImage(imgs[0]);
+ }
 }
+
 
 
 
@@ -74,6 +85,21 @@ JSON.parse(data)
 
 
 
+
+
+  useEffect(() => {
+  if (images.length <= 1) return;
+
+  const interval = setInterval(() => {
+    setActiveImage((prev) => {
+      const currentIndex = images.indexOf(prev || images[0]);
+      const nextIndex = (currentIndex + 1) % images.length;
+      return images[nextIndex];
+    });
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [images]);
 
 
 
@@ -587,18 +613,16 @@ overflow-visible
 rounded-t-md
 bg-transparent
 backdrop-blur-lg
-border
-border-amber-300/80
 shadow-[0_0_12px_rgba(251,191,36,0.35)]
 "
 >
 
 <div className="py-2">
-<div className="text-lg font-black leading-none">
+<div className="text-lg font-black leading-none text-purple-700">
 {discount}%
 </div>
 
-<div className="text-[11px] font-bold mt-1">
+<div className="text-[11px] font-bold mt-1 text-purple-700">
 OFF
 </div>
 </div>
@@ -1371,7 +1395,13 @@ landing.description
 
 
 
-</div>
+  
+<div
+className="
+border-t
+border-gray-200
+"
+/></div>
 
 
 
@@ -1382,14 +1412,14 @@ landing.description
 
 <div
 className="
-mt-0
 bg-white/40
 backdrop-blur-xl
-border
-border-white/40
-rounded-xl
-p-5
-shadow-lg
+border-t
+border-purple-200
+rounded-lg
+px-5
+py-3
+shadow-none
 "
 >
 
@@ -1403,63 +1433,50 @@ gap-4
 >
 
 
+
+
+<div className="flex gap-3">
+
 <div
 className="
-w-12
-h-12
+w-10
+h-10
 rounded-lg
 bg-purple-100
 flex
 items-center
 justify-center
-text-purple-600
-text-2xl
-font-black
 shrink-0
+text-xl
 "
 >
-
 🛡️
-
 </div>
-
-
 
 <div className="flex-1">
 
-
 <h2
 className="
-text-xl
+text-lg
 font-black
 text-purple-700
-text-center
 "
 >
-
 আমাদের প্রতিশ্রুতি
-
 </h2>
-
-
 
 <p
 className="
-mt-3
+mt-2
 text-gray-600
-leading-7
-text-center
+leading-6
 "
 >
-
-আমরা অরিজিনাল এবং দ্রুত ডেলিভারি নিশ্চিত করি। আপনার সন্তুষ্টিই আমাদের প্রধান লক্ষ্য
-
+আমরা অরিজিনাল এবং দ্রুত ডেলিভারি নিশ্চিত করি।<br/>
+আপনার সন্তুষ্টিই আমাদের প্রধান লক্ষ্য
 </p>
 
-
 </div>
-
-
 
 </div>
 
