@@ -1,171 +1,115 @@
-// src/pages/PublicLandingPage.jsx
-
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import {
-  useParams,
   useNavigate,
 } from "react-router-dom";
 
-
 import {
+  FiArrowLeft,
+  FiEdit3,
+  FiMonitor,
+  FiHome,
+  FiFileText,
+  FiSmartphone,
+  FiMap,
+  FiMapPin,
   FiUser,
   FiPhone,
-  FiHome,
-  FiMapPin,
-  FiFileText,
-  FiTruck,
-  FiShoppingBag,
+  FiX,
+  FiGift,
 } from "react-icons/fi";
 
+import Button from "../../components/ui/Button";
 
-import {
-  getLandingPageBySlug,
-} from "../services/landingPageService";
 
 
-import {
-  createOrder,
-} from "../services/orderService";
 
+export default function LandingPreview(){
 
-import {
-  errorToast,
-  successToast,
-} from "../components/ui/Toast";
 
+const navigate = useNavigate();
 
 
 
+const [landing,setLanding] = useState(null);
 
-export default function PublicLandingPage(){
 
+const [view,setView] = useState("mobile");
 
-const {
-  slug
-}=useParams();
 
+const [quantity,setQuantity] = useState(1);
 
 
-const navigate =
-useNavigate();
+const [activeImage,setActiveImage] = useState(null);
 
 
+const [fullscreen,setFullscreen] = useState(false);
 
 
 
-const [landing,setLanding]=useState(null);
 
+useEffect(() => {
 
-const [loading,setLoading]=useState(true);
+  const data = sessionStorage.getItem("landingPreviewData");
 
+  if (data) {
 
-const [orderLoading,setOrderLoading]=useState(false);
+    const parsed = JSON.parse(data);
 
+    setLanding(parsed);
 
+    const imgs =
+      parsed.heroImages?.length
+        ? parsed.heroImages
+        : parsed.heroImage
+        ? [parsed.heroImage]
+        : [];
 
-const [quantity,setQuantity]=useState(1);
+    if (imgs.length) {
+      setActiveImage(imgs[0]);
+    }
 
+  }
 
+}, []);
 
-const [form,setForm]=useState({
 
-name:"",
 
-phone:"",
 
-address:"",
+// Moved above the early return, and memoized so it doesn't
+// produce a brand-new array reference on every render.
+const images = useMemo(() => {
 
-city:"",
+  if (!landing) return [];
 
-note:"",
+  return landing.heroImages?.length
+    ? landing.heroImages
+    : landing.heroImage
+    ? [landing.heroImage]
+    : [];
 
-});
+}, [landing]);
 
 
 
 
+  useEffect(() => {
+  if (images.length <= 1) return;
 
+  const interval = setInterval(() => {
+    setActiveImage((prev) => {
+      const currentIndex = images.indexOf(prev || images[0]);
+      const nextIndex = (currentIndex + 1) % images.length;
+      return images[nextIndex];
+    });
+  }, 3000);
 
-useEffect(()=>{
-
-
-const loadLanding =
-async()=>{
-
-
-try{
-
-
-const data =
-await getLandingPageBySlug(slug);
-
-
-
-setLanding(data);
-
-
-
-}
-catch(error){
-
-console.log(error);
-
-}
-
-
-
-finally{
-
-setLoading(false);
-
-}
-
-
-};
-
-
-
-loadLanding();
-
-
-
-},[slug]);
-
-
-
-
-
-
-
-if(loading){
-
-
-return (
-
-<div
-className="
-min-h-screen
-flex
-items-center
-justify-center
-bg-[#FAF7F2]
-"
->
-
-Loading...
-
-</div>
-
-);
-
-
-}
-
-
+  return () => clearInterval(interval);
+}, [images]);
 
 
 
@@ -181,15 +125,32 @@ min-h-screen
 flex
 items-center
 justify-center
-bg-[#FAF7F2]
+bg-gray-100
 "
 >
 
-<h2 className="text-xl font-bold">
+<div
+className="
+bg-white
+rounded-lg
+p-8
+shadow
+"
+>
 
-Landing Page Not Found
+<h2
+className="
+text-xl
+font-bold
+"
+>
+
+Preview Data পাওয়া যায়নি
 
 </h2>
+
+
+</div>
 
 
 </div>
@@ -204,20 +165,32 @@ Landing Page Not Found
 
 
 
+const discount =
 
-const price =
-landing.offerPrice > 0
+landing.offerPrice > 0 &&
+landing.price > 0
+
 ?
-landing.offerPrice
+
+Math.round(
+
+(
+
+(landing.price - landing.offerPrice)
+
+/
+
+landing.price
+
+)
+
+*100
+
+)
+
 :
-landing.price;
 
-
-
-
-
-const subtotal =
-price * quantity;
+0;
 
 
 
@@ -225,223 +198,20 @@ price * quantity;
 
 
 
-const deliveryCharge =
-landing.deliveryCharge || 0;
+const formattedText = (text)=>{
+
+
+if(!text)
+
+return "";
 
 
 
-const total =
-subtotal + deliveryCharge;
-
-
-
-
-
-
-
-
-
-const updateForm=(key,value)=>{
-
-
-setForm(prev=>({
-
-...prev,
-
-[key]:value
-
-}));
+return text
+.replace(/\\n/g,"\n");
 
 
 };
-
-
-
-
-
-
-
-
-const handleOrder =
-async()=>{
-
-
-if(orderLoading)
-return;
-
-
-
-if(
-!form.name ||
-!form.phone ||
-!form.address
-){
-
-
-errorToast(
-"Please fill required information"
-);
-
-
-return;
-
-
-}
-
-
-
-
-
-try{
-
-
-setOrderLoading(true);
-
-
-
-const orderId =
-await createOrder({
-
-
-
-customerName:
-form.name,
-
-
-
-phone:
-form.phone,
-
-
-
-address:
-form.address,
-
-
-
-email:"",
-
-
-
-userId:null,
-
-
-
-items:[
-
-{
-
-productId:
-landing.productId,
-
-
-name:
-landing.title,
-
-
-image:
-landing.heroImages?.[0] || "",
-
-
-price,
-
-
-quantity,
-
-
-}
-
-],
-
-
-
-
-subtotal,
-
-
-deliveryCharge,
-
-
-total,
-
-
-
-status:
-"Pending",
-
-
-
-landingPageId:
-landing.id,
-
-
-
-landingSlug:
-slug,
-
-
-
-note:
-form.note,
-
-
-
-createdAt:
-new Date()
-.toISOString(),
-
-
-
-});
-
-
-
-
-
-
-
-successToast(
-"Order placed successfully"
-);
-
-
-
-
-
-navigate(
-`/landing/order-success/${orderId}`
-);
-
-
-
-
-
-}
-catch(error){
-
-
-console.log(error);
-
-
-errorToast(
-error.message ||
-"Order failed"
-);
-
-
-}
-finally{
-
-
-setOrderLoading(false);
-
-
-}
-
-
-
-};
-
 
 
 
@@ -457,55 +227,31 @@ return (
 className="
 min-h-screen
 bg-[#FAF7F2]
-px-4
-py-8
 "
 >
 
 
+
+<div className="w-full max-w-none">
+
+
+
+
+
+
+{/* PREVIEW HEADER */}
+
+
 <div
 className="
-max-w-xl
-mx-auto
 bg-white
-rounded-2xl
-shadow-xl
-overflow-hidden
+rounded-lg
+border
+border-amber-200
+shadow-sm
+p-4
 "
 >
-
-
-
-
-
-{/* IMAGE */}
-
-
-<img
-
-src={
-landing.heroImages?.[0] || ""
-}
-
-alt={landing.title}
-
-className="
-w-full
-object-cover
-"
-/>
-
-
-
-
-
-
-<div
-className="
-p-5
-"
->
-
 
 
 
@@ -513,6 +259,596 @@ p-5
 className="
 text-3xl
 font-black
+text-gray-900
+whitespace-nowrap
+"
+>
+Preview Landing Page
+</h1>
+
+
+
+
+<div
+className="
+flex
+items-center
+gap-3
+mt-4
+text-xl
+font-bold
+"
+>
+
+
+<button
+
+onClick={()=>{
+navigate("/admin/landing/create");
+}}
+
+className="
+w-9
+h-9
+rounded-full
+bg-white
+border
+border-gray-200
+shadow-sm
+flex
+items-center
+justify-center
+shrink-0
+"
+
+>
+
+<FiArrowLeft size={22}/>
+
+</button>
+
+
+<span>
+Preview - {landing.title}
+</span>
+
+
+</div>
+
+
+
+
+
+<div
+className="
+flex
+justify-center
+gap-3
+mt-4
+"
+>
+
+
+
+<Button
+
+type="button"
+
+onClick={()=>{
+navigate("/admin/landing/create");
+}}
+
+className="
+bg-purple-700
+text-white
+rounded-lg
+px-4
+py-2
+h-8
+flex
+items-center
+gap-2
+text-sm
+"
+>
+
+<FiEdit3/>
+
+Edit
+
+</Button>
+
+
+
+
+<Button
+
+type="button"
+
+className="
+bg-purple-700
+text-white
+rounded-lg
+px-4
+py-2
+h-8
+text-sm
+"
+>
+
+Publish
+
+</Button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* VIEW SWITCH */}
+
+
+
+<div
+className="
+mt-4
+flex
+justify-center
+"
+>
+
+
+<div
+className="
+bg-gray-100
+rounded-lg
+p-1
+flex
+"
+>
+
+
+
+<button
+
+onClick={()=>setView("mobile")}
+
+className={`
+px-3
+py-1
+rounded-lg
+flex
+gap-2
+items-center
+font-bold
+
+${
+view==="mobile"
+
+?
+
+"bg-white shadow text-amber-600"
+
+:
+
+"text-gray-500"
+
+}
+
+`}
+>
+
+
+<FiSmartphone size={18}/>
+
+Mobile View
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+onClick={()=>setView("desktop")}
+
+className={`
+px-3
+py-1
+rounded-lg
+flex
+gap-2
+items-center
+font-bold
+
+${
+view==="desktop"
+
+?
+
+"bg-white shadow text-amber-600"
+
+:
+
+"text-gray-500"
+
+}
+
+`}
+>
+
+
+<FiMonitor size={18}/>
+
+Desktop View
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* PREVIEW AREA */}
+
+
+
+<div
+className={`
+mt-0
+overflow-x-auto
+overflow-y-hidden
+bg-[#FAF7F2]
+transition-all
+duration-300
+mx-auto
+
+
+${
+view === "mobile"
+
+?
+
+"w-full"
+
+:
+
+"w-[1280px] max-w-none mx-auto"
+
+}
+`}
+>
+
+
+
+<div
+className={`
+pt-0
+transition-all
+duration-300
+
+${
+view === "desktop"
+
+?
+
+"rounded-lg shadow-lg w-[1280px]"
+
+:
+
+""
+
+}
+
+`}
+>
+
+
+
+
+
+
+<div
+className="
+bg-purple-700
+text-white
+h-10
+px-3
+flex
+items-center
+justify-center
+gap-2
+text-xs
+font-semibold
+whitespace-nowrap
+"
+>
+
+<FiGift className="text-base shrink-0"/>
+
+<span>
+আজই অর্ডার করুন, ফ্রি ডেলিভারি!
+</span>
+
+</div>
+
+  
+
+{/* IMAGE GALLERY */}
+
+
+
+<div
+className="
+relative
+"
+>
+
+
+
+{
+images.length > 0 && (
+
+
+<>
+
+
+<img
+
+src={
+activeImage || images[0]
+}
+
+alt="product"
+
+onClick={()=>setFullscreen(true)}
+
+className="
+w-full
+h-auto
+object-contain
+cursor-pointer
+"
+
+/>
+
+
+
+{
+discount > 0 && (
+
+<div
+className="
+absolute
+top-3
+right-3
+z-20
+w-12
+text-center
+"
+>
+
+<div
+className="
+relative
+overflow-visible
+rounded-t-md
+bg-transparent
+border
+border-amber-300
+shadow-none
+"
+>
+
+<div className="py-2">
+<div className="text-lg font-black leading-none text-purple-700">
+{discount}%
+</div>
+
+<div className="text-[11px] font-bold mt-1 text-purple-700">
+OFF
+</div>
+</div>
+
+{/* Bottom Ribbon */}
+
+  
+<div className="relative h-3">
+
+<div
+className="
+absolute
+left-0
+right-0
+top-0
+h-[2px]
+bg-amber-300
+"
+/>
+
+<div
+className="
+absolute
+left-1/2
+top-[-1px]
+-translate-x-1/2
+w-0
+h-0
+border-l-[24px]
+border-r-[24px]
+border-t-[14px]
+border-l-transparent
+border-r-transparent
+border-t-amber-300
+"
+/>
+
+</div>
+
+</div>
+
+</div>
+
+)
+}
+
+
+
+</>
+
+
+)
+
+}
+
+
+
+
+
+</div>
+
+
+
+ {/* PRODUCT INFO CARD */}
+
+<div
+className="
+mt-6
+bg-gray-50
+rounded-lg
+p-5
+"
+>
+
+
+
+{/* THUMBNAILS */}
+
+
+{
+
+images.length > 1 && (
+
+
+<div
+className="
+flex
+gap-3
+mt-4
+overflow-x-auto
+pb-0
+[-ms-overflow-style:none]
+[scrollbar-width:none]
+[&::-webkit-scrollbar]:hidden
+"
+>
+
+
+{
+
+images.map((img,index)=>(
+
+
+<img
+
+key={index}
+
+src={img}
+
+alt="thumb"
+
+onClick={()=>setActiveImage(img)}
+
+className={`
+w-20
+h-20
+object-cover
+rounded-md
+cursor-pointer
+
+
+`}
+
+/>
+
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+)
+
+}
+
+
+
+
+
+ 
+
+  {/*  HERO TITLE */}
+
+
+<h2
+className="
+text-sm
+font-bold
+mt-2
+text-purple-700
+"
+>
+
+{formattedText(landing.heroTitle)}
+
+</h2>
+
+
+
+
+
+{/* PRODUCT NAME */}
+
+<h1
+className="
+text-3xl
+font-black
+mt-3
 text-gray-900
 "
 >
@@ -525,68 +861,167 @@ text-gray-900
 
 
 
-<p
-className="
-mt-3
-text-gray-600
-leading-7
-whitespace-pre-line
-"
->
-
-{landing.heroDescription}
-
-</p>
 
 
 
-
-
+{/* HERO DESCRIPTION */}
 
 
 <div
 className="
 mt-5
-flex
-items-center
-gap-3
+text-gray-600
+leading-8
+whitespace-pre-line
 "
 >
 
+{
+formattedText(landing.heroDescription)
+.split("\n")
+.map((line,index)=>(
+<div
+key={index}
+className="
+flex
+items-center
+gap-3
+mb-3
+"
+>
+
+<div
+className="
+w-4
+h-4
+rounded-full
+bg-purple-700
+text-white
+flex
+items-center
+justify-center
+text-xs
+font-bold
+shrink-0
+"
+>
+✓
+</div>
+
+
+<span>
+{line}
+</span>
+
+
+</div>
+))
+}
+
+</div>
+
+
+
+
+
+
+
+
+{/* PRICE SECTION */}
+
+<div
+className="
+mt-8
+flex
+items-center
+gap-4
+flex-wrap
+"
+>
+
+{
+landing.price > 0 && landing.offerPrice > 0 && landing.offerPrice < landing.price
+
+?
+
+<>
 
 <span
 className="
-text-3xl
+text-2xl
 font-black
 text-purple-700
 "
 >
+৳{landing.offerPrice}
+</span>
 
-৳{price}
 
+<span
+className="
+text-base
+text-gray-400
+font-medium
+line-through
+"
+>
+৳{landing.price}
 </span>
 
 
 {
-landing.price > price && (
+discount > 0 && (
 
 <span
 className="
-line-through
-text-gray-400
+px-4
+py-2
+rounded-lg
+font-bold
+text-red-600
+bg-white/40
+backdrop-blur-md
+border
+border-white/60
+shadow-lg
 "
 >
-
-৳{landing.price}
-
+{discount}% OFF
 </span>
 
 )
 
 }
 
+</>
+
+
+:
+
+landing.price > 0
+
+?
+
+<span
+className="
+text-4xl
+font-black
+text-purple-700
+"
+>
+৳{landing.price}
+</span>
+
+
+:
+
+null
+
+}
 
 </div>
+
+
 
 
 
@@ -598,22 +1033,27 @@ text-gray-400
 {/* QUANTITY */}
 
 
+
 <div
 className="
 mt-5
+mb-0
+border
+border-gray-200
+rounded-lg
+px-4
+py-2
 flex
 justify-between
 items-center
-border
-rounded-xl
-p-3
 "
 >
 
 
 <span
 className="
-font-bold
+font-black
+text-lg
 "
 >
 
@@ -622,11 +1062,13 @@ Quantity
 </span>
 
 
+
+
 <div
 className="
 flex
 items-center
-gap-4
+gap-5
 "
 >
 
@@ -642,8 +1084,8 @@ setQuantity(quantity-1)
 }}
 
 className="
-w-8
-h-8
+w-6
+h-6
 rounded-lg
 bg-gray-200
 font-bold
@@ -655,9 +1097,12 @@ font-bold
 </button>
 
 
+
+
 <span
 className="
 font-black
+text-xl
 "
 >
 
@@ -667,15 +1112,16 @@ font-black
 
 
 
+
 <button
 
 onClick={()=>setQuantity(quantity+1)}
 
 className="
-w-8
-h-8
+w-6
+h-6
 rounded-lg
-bg-purple-700
+bg-amber-500
 text-white
 font-bold
 "
@@ -694,128 +1140,133 @@ font-bold
 
 
 
+</div>
+
+
+</div>
+
+
+<div
+className="
+border-t
+border-gray-200
+"
+></div>
 
 
 
+{/* ORDER FORM */}
 
 
 
-{/* FORM */}
+<div
+className="
+bg-gray-50
+pt-5
+px-5
+pb-5
+"
+>
 
 
 
 <h2
 className="
-mt-8
-text-xl
+text-2xl
 font-black
+text-center
+mb-5
 "
 >
-
-অর্ডার করুন
-
+অর্ডার ফর্ম
 </h2>
 
 
 
 
 
+{
+landing.orderForm?.collectName && (
 
-<div className="mt-4 space-y-3">
-
-
-
-
-
-<div className="relative">
+<div className="relative mb-3">
 
 <FiUser
 className="
 absolute
 left-3
-top-4
+top-1/2
+-translate-y-1/2
 text-gray-400
 "
 />
 
-
 <input
-
 placeholder="আপনার নাম"
-
-value={form.name}
-
-onChange={
-e=>updateForm(
-"name",
-e.target.value
-)
-}
-
 className="
 w-full
 pl-10
-p-3
+pr-4
+py-3
 border
-rounded-xl
+rounded-lg
+focus:border-purple-700
+focus:ring-2
+focus:ring-purple-700/30
+focus:outline-none
 "
 />
 
-
 </div>
 
+)
+}
 
 
 
 
+{
+landing.orderForm?.collectPhone && (
 
-
-<div className="relative">
-
+<div className="relative mb-3">
 
 <FiPhone
 className="
 absolute
 left-3
-top-4
+top-1/2
+-translate-y-1/2
 text-gray-400
 "
 />
 
-
 <input
-
 placeholder="ফোন নাম্বার"
-
-value={form.phone}
-
-onChange={
-e=>updateForm(
-"phone",
-e.target.value
-)
-}
-
 className="
 w-full
 pl-10
-p-3
+pr-4
+py-3
 border
-rounded-xl
+rounded-lg
+focus:border-purple-700
+focus:ring-2
+focus:ring-purple-700/30
+focus:outline-none
 "
 />
 
-
 </div>
 
+)
+}
 
 
 
 
+{
+landing.orderForm?.collectAddress && (
 
-
-<div className="relative">
-
+<div className="relative mb-3">
 
 <FiHome
 className="
@@ -826,87 +1277,149 @@ text-gray-400
 "
 />
 
-
-
 <textarea
-
-placeholder="ঠিকানা"
-
-value={form.address}
-
-onChange={
-e=>updateForm(
-"address",
-e.target.value
-)
-}
-
+placeholder="আপনার ঠিকানা"
+rows="3"
 className="
 w-full
 pl-10
-p-3
+pr-4
+py-3
 border
-rounded-xl
+rounded-lg
+resize-none
+focus:border-purple-700
+focus:ring-2
+focus:ring-purple-700/30
+focus:outline-none
 "
 />
 
-
-
 </div>
 
+)
+}
 
 
 
 
 
+
+{
+landing.orderForm?.collectCity && (
+
+<>
+  
+<div className="relative mb-3">
+
+<FiMap
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
 
 <input
-
-placeholder="থানা / জেলা"
-
-value={form.city}
-
-onChange={
-e=>updateForm(
-"city",
-e.target.value
-)
-}
-
+placeholder="থানা"
 className="
 w-full
-p-3
+pl-10
+pr-4
+py-3
 border
-rounded-xl
+rounded-lg
+focus:border-purple-700
+focus:ring-2
+focus:ring-purple-700/30
+focus:outline-none
 "
 />
 
+</div>
+
+
+  
+
+<div className="relative mb-3">
+
+<FiMapPin
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
+<input
+placeholder="জেলা"
+className="
+w-full
+pl-10
+pr-4
+py-3
+border
+rounded-lg
+focus:border-purple-700
+focus:ring-2
+focus:ring-purple-700/30
+focus:outline-none
+"
+/>
+
+</div>
+
+</>
+
+)
+}
+
+  
 
 
 
+{
+landing.orderForm?.collectNotes && (
+  
+<div className="relative mt-3">
 
+<FiFileText
+className="
+absolute
+left-3
+top-4
+text-gray-400
+"
+/>
 
 <textarea
-
-placeholder="অতিরিক্ত নোট"
-
-value={form.note}
-
-onChange={
-e=>updateForm(
-"note",
-e.target.value
-)
-}
-
+placeholder="অতিরিক্ত নোট (যদি থাকে)"
+rows="3"
 className="
 w-full
-p-3
+pl-10
+pr-4
+py-3
 border
-rounded-xl
+rounded-lg
+resize-none
+focus:border-purple-700
+focus:ring-2
+focus:ring-purple-700/30
+focus:outline-none
 "
 />
 
+</div>
+
+)
+}
+
+
 
 
 
@@ -921,126 +1434,40 @@ rounded-xl
 
 
 
-{/* TOTAL */}
 
-
-
-<div
-className="
-mt-6
-space-y-2
-bg-gray-50
-rounded-xl
-p-4
-"
->
-
-
-<div className="flex justify-between">
-
-<span>
-Subtotal
-</span>
-
-<b>
-৳{subtotal}
-</b>
-
-</div>
-
-
-
-<div className="flex justify-between">
-
-<span>
-Delivery
-</span>
-
-<b>
-৳{deliveryCharge}
-</b>
-
-</div>
+{/* PRODUCT DESCRIPTION */}
 
 
 
 <div
 className="
 border-t
-pt-3
-flex
-justify-between
-text-xl
-font-black
+border-gray-200
 "
->
+></div>
 
-<span>
-Total
-</span>
-
-<span className="text-purple-700">
-
-৳{total}
-
-</span>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<button
-
-onClick={handleOrder}
-
-disabled={orderLoading}
-
+<div
 className="
-mt-6
-w-full
-bg-purple-700
-text-white
-py-4
-rounded-xl
-font-black
-text-lg
-flex
-items-center
-justify-center
-gap-2
+bg-gray-50
+px-5
+py-5
 "
 >
 
 
-<FiShoppingBag/>
 
-{
+<h2
+className="
+text-2xl
+font-black
+text-center
+mb-5
+"
+>
 
-orderLoading
-?
+প্রোডাক্ট ডিটেইলস
 
-"Processing..."
-
-:
-
-"অর্ডার করুন এখনই"
-
-}
-
-
-
-</button>
-
+</h2>
 
 
 
@@ -1048,18 +1475,114 @@ orderLoading
 
 <div
 className="
-mt-5
-flex
-items-center
-justify-center
-gap-2
-text-gray-500
+text-gray-700
+leading-8
+whitespace-pre-line
+bg-white
+border
+border-gray-200
+rounded-lg
+p-5
 "
 >
 
-<FiTruck/>
+{formattedText(
+landing.description
+)}
 
-Cash On Delivery Available
+</div>
+
+
+
+  
+<div
+className="
+border-t
+border-gray-200
+"
+/></div>
+
+
+
+
+
+
+{/* OUR PROMISE */}
+
+<div
+className="
+bg-purple-200
+backdrop-blur-xl
+border-t
+border-purple-200
+rounded-lg
+px-3
+py-1
+shadow-none
+"
+>
+
+
+<div
+className="
+flex
+items-start
+gap-4
+"
+>
+
+
+
+
+<div className="flex gap-3">
+
+<div
+className="
+w-8
+h-8
+rounded-lg
+bg-purple-100
+flex
+items-center
+justify-center
+shrink-0
+text-sm
+"
+>
+🛡️
+</div>
+
+<div className="flex-1">
+
+<h2
+className="
+text-base
+font-black
+text-purple-700
+whitespace-nowrap
+"
+>
+আমাদের প্রতিশ্রুতি
+</h2>
+
+<p
+className="
+mt-1
+text-sm
+text-gray-600
+leading-5
+"
+>
+আমরা অরিজিনাল এবং দ্রুত ডেলিভারি নিশ্চিত করি।<br/>
+আপনার সন্তুষ্টিই আমাদের প্রধান লক্ষ্য
+</p>
+
+</div>
+
+</div>
+
+
+</div>
 
 </div>
 
@@ -1067,14 +1590,172 @@ Cash On Delivery Available
 
 
 
+{/* ORDER BUTTON FULL WIDTH */}
+
+
+<button
+
+onClick={()=>{
+
+
+const orderData = {
+
+title:
+landing.title,
+
+
+heroImages:
+images,
+
+
+price:
+landing.offerPrice > 0
+?
+landing.offerPrice
+:
+landing.price,
+
+
+regularPrice:
+landing.price,
+
+
+quantity,
+
+
+successMessage:
+landing.successMessage ||
+"আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে।"
+
+};
+
+
+
+sessionStorage.setItem(
+
+"landingOrderSuccessPreviewData",
+
+JSON.stringify(orderData)
+
+);
+
+
+
+navigate(
+"/admin/landing/order-success-preview"
+);
+
+
+}}
+
+className="
+mt-2
+w-full
+bg-purple-700
+text-white
+py-2.5
+rounded-lg
+font-bold
+text-lg
+"
+
+>
+
+অর্ডার করুন এখনই
+
+</button>
+
+
+
+  
+  {/*  MOBILE IMAGE FULLSCREEN */}
+
+
+{
+fullscreen && (
+
+<div
+className="
+fixed
+inset-0
+bg-black/90
+z-50
+flex
+items-center
+justify-center
+p-5
+"
+>
+
+
+<button
+
+onClick={()=>setFullscreen(false)}
+
+className="
+absolute
+top-5
+right-5
+bg-white
+text-black
+rounded-full
+w-12
+h-12
+flex
+items-center
+justify-center
+text-xl
+"
+>
+
+<FiX/>
+
+</button>
+
+
+
+
+<img
+
+src={
+activeImage || images[0]
+}
+
+alt="fullscreen"
+
+className="
+max-h-full
+max-w-full
+rounded-lg
+object-contain
+"
+
+/>
+
+
 
 </div>
 
+)
+
+}
+
+
+
+
+
+
+  
+
+{/* CLOSE PREVIEW CONTAINER */}
+
 
 </div>
 
+</div>
 
 </div>
+
 
 
 );
