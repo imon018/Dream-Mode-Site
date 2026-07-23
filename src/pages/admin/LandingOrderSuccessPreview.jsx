@@ -329,7 +329,7 @@ Landing Page Order Confirmation
 <div
 className="
 relative
-bg-white
+bg-[#fffaf0]
 py-8
 text-center
 overflow-hidden
@@ -393,7 +393,7 @@ w-24
 h-24
 mx-auto
 rounded-full
-bg-green-600
+bg-green-100
 flex
 items-center
 justify-center
