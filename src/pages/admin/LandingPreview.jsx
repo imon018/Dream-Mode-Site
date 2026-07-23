@@ -284,7 +284,7 @@ font-bold
 <button
 
 onClick={()=>{
-window.close();
+navigate("/admin/landing/create");
 }}
 
 className="
@@ -335,7 +335,7 @@ mt-4
 type="button"
 
 onClick={()=>{
-window.close();
+navigate("/admin/landing/create");
 }}
 
 className="
@@ -1012,9 +1012,7 @@ shadow-lg
 
 :
 
-
-{
-landing.price && (
+landing.price > 0 && (
 
 <span
 className="
@@ -1027,9 +1025,6 @@ text-red-500
 </span>
 
 )
-}
-
-
 
 }
 
