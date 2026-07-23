@@ -46,6 +46,7 @@ import AddReturn from "../pages/admin/AddReturn";
 import LandingPages from "../pages/admin/LandingPages";
 import CreateLandingPage from "../pages/admin/CreateLandingPage";
 import LandingPreview from "../pages/admin/LandingPreview";
+import LandingOrderSuccessPreview from "../pages/admin/LandingOrderSuccessPreview";
 
 
 /* =========================
@@ -446,6 +447,11 @@ element={<ReturnOrder />}
          <Route
  path="landing/preview"
  element={<LandingPreview />}
+/>
+
+         <Route
+ path="landing/order-success-preview"
+ element={<LandingOrderSuccessPreview />}
 />
 
 
