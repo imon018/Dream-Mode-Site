@@ -172,6 +172,17 @@ element={<ReturnOrder />}
  element={<ResetPassword />}
 />
 
+         <Route
+  path="/landing/:slug"
+  element={<PublicLandingPage />}
+/>
+
+
+<Route
+  path="/landing/:slug/success/:orderId"
+  element={<LandingOrderSuccess />}
+/>
+
 
 
 
@@ -454,17 +465,6 @@ element={<ReturnOrder />}
          <Route
  path="landing/order-success-preview"
  element={<LandingOrderSuccessPreview />}
-/>
-
-         <Route
-  path="/landing/:slug"
-  element={<PublicLandingPage />}
-/>
-
-
-<Route
-  path="/landing/:slug/success/:orderId"
-  element={<LandingOrderSuccess />}
 />
 
 
