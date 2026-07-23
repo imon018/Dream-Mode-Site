@@ -30,10 +30,9 @@ export default function LandingOrderSuccessPreview(){
 
 const navigate = useNavigate();
 
-
+const [currentImage,setCurrentImage] = useState(0);
 
 const [order,setOrder] = useState(null);
-
 
 const confetti = [
   {
@@ -80,7 +79,29 @@ const confetti = [
   }
 ];
 
+  
 
+useEffect(()=>{
+
+if(!order?.heroImages?.length) return;
+
+const interval = setInterval(()=>{
+
+  setCurrentImage(prev=>
+
+(prev+1)%order.heroImages.length
+
+);
+
+},3000);
+
+return ()=>clearInterval(interval);
+
+},[order]);
+
+
+
+  
 
 useEffect(()=>{
 
@@ -468,7 +489,7 @@ className="
 bg-gray-50
 rounded-b-lg
 border
-border-gray-200
+border-gray-50
 overflow-hidden
 "
 >
@@ -543,7 +564,7 @@ overflow-hidden
   justify-between
   px-5
   py-4
-  bg-white
+  bg-gray-50
   "
   >
 
@@ -599,7 +620,7 @@ overflow-hidden
   justify-between
   px-5
   py-4
-  bg-white
+  bg-gray-50
   "
   >
 
@@ -655,7 +676,7 @@ overflow-hidden
   justify-between
   px-5
   py-4
-  bg-white
+  bg-gray-50
   "
   >
 
@@ -727,15 +748,9 @@ mb-4
 
 <div
 className="
-bg-white
-rounded-xl
-border
-border-gray-200
-shadow-sm
-p-4
 flex
 items-center
-gap-4
+gap-2
 "
 >
 
@@ -746,19 +761,25 @@ className="
 w-24
 h-24
 shrink-0
-rounded-xl
+rounded-lg
 overflow-hidden
 bg-gray-100
 "
 >
 
 <img
-src={order.heroImages?.[0]}
+src={
+order.heroImages?.[
+currentImage
+]
+}
 alt={order.title}
 className="
 w-full
 h-full
 object-cover
+transition-opacity
+duration-500
 "
 />
 
@@ -769,16 +790,21 @@ object-cover
 <div
 className="
 flex-1
+flex
+flex-col
+justify-between
+self-stretch
 min-w-0
 "
 >
 
 <h3
 className="
-text-xl
 font-bold
+text-lg
 text-gray-900
-truncate
+leading-6
+line-clamp-2
 "
 >
 {order.title}
@@ -787,20 +813,12 @@ truncate
 <p
 className="
 text-gray-500
-mt-1
-"
->
-{order.variant || ""}
-</p>
-
-<p
-className="
-text-gray-500
-mt-2
+text-base
 "
 >
 পরিমাণ: {order.quantity}
 </p>
+
 
 </div>
 
@@ -808,19 +826,22 @@ mt-2
 
 <div
 className="
+self-end
 text-right
 shrink-0
+pb-1
 "
 >
 
 <p
 className="
-text-2xl
+text-3xl
 font-black
 text-purple-700
+leading-none
 "
 >
-৳{order.price}
+  ৳{order.price}
 </p>
 
 {
