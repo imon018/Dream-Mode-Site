@@ -929,7 +929,6 @@ shrink-0
 
 {/* PRICE SECTION */}
 
-
 <div
 className="
 mt-8
@@ -940,16 +939,12 @@ flex-wrap
 "
 >
 
-
-
 {
-
-landing.offerPrice > 0
+landing.price > 0 && landing.offerPrice > 0 && landing.offerPrice < landing.price
 
 ?
 
 <>
-
 
 <span
 className="
@@ -958,12 +953,8 @@ font-black
 text-purple-700
 "
 >
-
 ৳{landing.offerPrice}
-
 </span>
-
-
 
 
 <span
@@ -978,10 +969,8 @@ line-through
 </span>
 
 
-
 {
-
-discount > 0 &&
+discount > 0 && (
 
 <span
 className="
@@ -997,22 +986,21 @@ border-white/60
 shadow-lg
 "
 >
-
 {discount}% OFF
-
 </span>
 
+)
 
 }
-
-
 
 </>
 
 
 :
 
-landing.price > 0 && (
+landing.price > 0
+
+?
 
 <span
 className="
@@ -1024,14 +1012,15 @@ text-red-500
 ৳{landing.price}
 </span>
 
-)
+
+:
+
+null
 
 }
 
-
-
-
 </div>
+
 
 
 
