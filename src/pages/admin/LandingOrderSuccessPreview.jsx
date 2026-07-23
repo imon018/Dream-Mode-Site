@@ -86,7 +86,7 @@ justify-center
 <div
 className="
 bg-white
-rounded-xl
+rounded-lg
 shadow
 p-8
 text-center
@@ -166,7 +166,7 @@ return (
 className="
 min-h-screen
 bg-[#FAF7F2]
-p-4
+p-0
 "
 
 >
@@ -175,9 +175,8 @@ p-4
 <div
 
 className="
-max-w-xl
-mx-auto
-space-y-5
+w-full
+space-y-4
 "
 
 >
@@ -191,7 +190,7 @@ space-y-5
 
 className="
 bg-white
-rounded-xl
+rounded-lg
 border
 border-purple-200
 shadow-sm
@@ -282,16 +281,14 @@ Landing Page Order Confirmation
 
 
 <div
-
 className="
-bg-white
-rounded-xl
+bg-green-50
+rounded-lg
 border
 border-green-200
-shadow-sm
-overflow-hidden
+p-6
+text-center
 "
-
 >
 
 
