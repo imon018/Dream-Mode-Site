@@ -1488,8 +1488,18 @@ landing.deliveryCharge || 0
 
   productName: landing.title,
   title: landing.title,
-	heroImages: images,
-	slug: slug,
+  heroImages: images,
+  items: [
+  {
+    productId: landing.productId || "",
+    id: landing.productId || "",
+    name: landing.title,
+    image: images[0] || "",
+    quantity,
+    price: orderData.price,
+  },
+],
+  slug: slug,
   quantity,
 
   price: orderData.price,
@@ -1499,7 +1509,7 @@ landing.deliveryCharge || 0
   total: orderData.total,
 
   status: "Pending",
-  paymentStatus: "Unpaid",
+  paymentStatus: "Paid",
 
   createdAt: new Date(),
 });
