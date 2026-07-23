@@ -283,7 +283,9 @@ font-bold
 
 <button
 
-onClick={()=>navigate(-1)}
+onClick={()=>{
+window.close();
+}}
 
 className="
 w-9
@@ -332,7 +334,9 @@ mt-4
 
 type="button"
 
-onClick={()=>navigate(-1)}
+onClick={()=>{
+window.close();
+}}
 
 className="
 bg-purple-700
@@ -1009,6 +1013,9 @@ shadow-lg
 :
 
 
+{
+landing.price && (
+
 <span
 className="
 text-4xl
@@ -1016,10 +1023,11 @@ font-black
 text-red-500
 "
 >
-
 ৳{landing.price}
-
 </span>
+
+)
+}
 
 
 
@@ -1193,6 +1201,9 @@ mb-5
 
 
 
+{
+landing.orderForm?.collectName && (
+
 <div className="relative mb-3">
 
 <FiUser
@@ -1219,8 +1230,14 @@ rounded-lg
 
 </div>
 
+)
+}
 
 
+
+
+{
+landing.orderForm?.collectPhone && (
 
 <div className="relative mb-3">
 
@@ -1248,8 +1265,14 @@ rounded-lg
 
 </div>
 
+)
+}
 
 
+
+
+{
+landing.orderForm?.collectAddress && (
 
 <div className="relative mb-3">
 
@@ -1278,9 +1301,19 @@ resize-none
 
 </div>
 
+)
+}
 
 
 
+
+
+
+{
+landing.orderForm?.collectAddress && (
+
+<>
+  
 <div className="relative mb-3">
 
 <FiMap
@@ -1336,11 +1369,18 @@ rounded-lg
 
 </div>
 
+</>
+
+)
+}
+
+  
 
 
 
-
-
+{
+landing.orderForm?.collectNotes && (
+  
 <div className="relative mt-3">
 
 <FiFileText
@@ -1367,6 +1407,9 @@ resize-none
 />
 
 </div>
+
+)
+}
 
 
 
