@@ -484,7 +484,7 @@ view==="desktop"
 >
 
 
-<FiSmartphone size={18}/>
+<FiMonitor size={18}/>
 
 Desktop View
 
@@ -536,7 +536,7 @@ view === "mobile"
 
 :
 
-"max-w-5xl"
+"w-[1280px] max-w-none"
 
 }
 
@@ -566,6 +566,17 @@ view === "desktop"
 }
 
 `}
+style={
+view === "desktop"
+?
+{
+transform:"scale(0.75)",
+transformOrigin:"top center",
+width:"133.33%"
+}
+:
+{}
+}
 >
 
 
@@ -640,7 +651,7 @@ view === "desktop"
 
 ?
 
-"h-[520px]"
+"h-[600px]"
 
 :
 
