@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -79,6 +80,22 @@ useEffect(() => {
 
 
 
+// Moved above the early return, and memoized so it doesn't
+// produce a brand-new array reference on every render.
+const images = useMemo(() => {
+
+  if (!landing) return [];
+
+  return landing.heroImages?.length
+    ? landing.heroImages
+    : landing.heroImage
+    ? [landing.heroImage]
+    : [];
+
+}, [landing]);
+
+
+
 
   useEffect(() => {
   if (images.length <= 1) return;
@@ -128,7 +145,7 @@ font-bold
 "
 >
 
-Preview Data পাওয়া যায়নি
+Preview Data পাওয়া যায়নি
 
 </h2>
 
@@ -142,32 +159,6 @@ Preview Data পাওয়া যায়নি
 
 
 }
-
-
-
-
-
-
-const images =
-
-landing.heroImages?.length
-
-?
-
-landing.heroImages
-
-:
-
-landing.heroImage
-
-?
-
-[landing.heroImage]
-
-:
-
-[];
-
 
 
 
