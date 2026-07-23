@@ -269,13 +269,12 @@ Preview Landing Page
 
 
 
-
 <div
 className="
 flex
 items-center
 gap-3
-mt-5
+mt-4
 text-xl
 font-bold
 "
@@ -287,18 +286,17 @@ font-bold
 onClick={()=>navigate(-1)}
 
 className="
-absolute
-left-0
-w-10
-h-10
+w-9
+h-9
 rounded-full
 bg-white
 border
-border-gray-100
+border-gray-200
 shadow-sm
 flex
 items-center
 justify-center
+shrink-0
 "
 
 >
@@ -307,7 +305,10 @@ justify-center
 
 </button>
 
+
+<span>
 Preview - {landing.title}
+</span>
 
 
 </div>
@@ -319,8 +320,9 @@ Preview - {landing.title}
 <div
 className="
 flex
+justify-center
 gap-3
-mt-6
+mt-4
 "
 >
 
@@ -333,11 +335,12 @@ type="button"
 onClick={()=>navigate(-1)}
 
 className="
-bg-slate-900
+bg-purple-200
 text-white
 rounded-lg
 px-4
 py-2
+h-8
 flex
 items-center
 gap-2
@@ -359,11 +362,12 @@ Edit
 type="button"
 
 className="
-bg-black
+bg-purple-200
 text-white
 rounded-lg
 px-4
 py-2
+h-8
 text-sm
 "
 >
@@ -1467,7 +1471,7 @@ text-sm
 
 <h2
 className="
-text-sm
+text-base
 font-black
 text-purple-700
 whitespace-nowrap
