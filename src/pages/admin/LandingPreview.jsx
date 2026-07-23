@@ -521,11 +521,13 @@ Desktop View
 <div
 className={`
 mt-0
-overflow-hidden
+overflow-x-auto
+overflow-y-hidden
 bg-[#FAF7F2]
 transition-all
 duration-300
 mx-auto
+
 
 ${
 view === "mobile"
@@ -536,12 +538,9 @@ view === "mobile"
 
 :
 
-"w-[1280px] max-w-none"
+"w-[1280px] max-w-none mx-auto"
 
 }
-
-`}
->
 
 
 
@@ -557,7 +556,7 @@ view === "desktop"
 
 ?
 
-"rounded-lg shadow-lg overflow-hidden"
+"rounded-lg shadow-lg overflow-hidden w-[1280px]"
 
 :
 
@@ -566,17 +565,6 @@ view === "desktop"
 }
 
 `}
-style={
-view === "desktop"
-?
-{
-transform:"scale(0.75)",
-transformOrigin:"top center",
-width:"133.33%"
-}
-:
-{}
-}
 >
 
 
