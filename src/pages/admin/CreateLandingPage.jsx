@@ -380,7 +380,12 @@ heroDescription,
 
 heroImages,
 
-price:Number(price),
+price:
+price
+?
+Number(price)
+:
+null,
 
 offerPrice:Number(
 offerPrice
@@ -474,7 +479,12 @@ heroDescription,
 
 heroImages,
 
-price:Number(price),
+price:
+price
+?
+Number(price)
+:
+null,
 
 offerPrice:Number(
 offerPrice
