@@ -604,19 +604,39 @@ OFF
 </div>
 
 {/* Bottom Ribbon */}
+
+  
+<div className="relative h-3">
+
 <div
 className="
+absolute
+left-0
+right-0
+top-0
+h-[2px]
+bg-amber-300
+"
+/>
+
+<div
+className="
+absolute
+left-1/2
+-top-[1px]
+-translate-x-1/2
 w-0
 h-0
-mx-auto
 border-l-[24px]
 border-r-[24px]
 border-t-[14px]
 border-l-transparent
 border-r-transparent
-border-t-indigo-600
+border-t-amber-300
 "
 />
+
+</div>
 
 </div>
 
@@ -1090,12 +1110,11 @@ pb-5
 className="
 text-2xl
 font-black
+text-center
 mb-5
 "
 >
-
 অর্ডার ফর্ম
-
 </h2>
 
 
@@ -1299,7 +1318,16 @@ resize-none
 
 <div
 className="
-mt-10
+border-t
+border-gray-200
+"
+></div>
+
+<div
+className="
+bg-gray-50
+px-5
+py-5
 "
 >
 
@@ -1307,8 +1335,9 @@ mt-10
 
 <h2
 className="
-text-3xl
+text-2xl
 font-black
+text-center
 mb-5
 "
 >
@@ -1326,6 +1355,11 @@ className="
 text-gray-700
 leading-8
 whitespace-pre-line
+bg-white
+border
+border-gray-200
+rounded-lg
+p-5
 "
 >
 
@@ -1348,14 +1382,14 @@ landing.description
 
 <div
 className="
-mt-10
-bg-gradient-to-br
-from-purple-50
-to-white
+mt-0
+bg-white/40
+backdrop-blur-xl
 border
-border-purple-100
-rounded-lg
-p-6
+border-white/40
+rounded-xl
+p-5
+shadow-lg
 "
 >
 
@@ -1391,7 +1425,7 @@ shrink-0
 
 
 
-<div>
+<div className="flex-1">
 
 
 <h2
@@ -1399,6 +1433,7 @@ className="
 text-xl
 font-black
 text-purple-700
+text-center
 "
 >
 
@@ -1413,6 +1448,7 @@ className="
 mt-3
 text-gray-600
 leading-7
+text-center
 "
 >
 
@@ -1442,14 +1478,14 @@ leading-7
 <button
 
 className="
-mt-8
+mt-4
 w-full
-bg-amber-500
+bg-purple-700
 text-white
-py-5
+py-2.5
 rounded-lg
-font-black
-text-xl
+font-bold
+text-lg
 "
 >
 
