@@ -557,7 +557,7 @@ view === "desktop"
 
 ?
 
-"rounded-lg shadow-lg overflow-hidden w-[1280px]"
+"rounded-lg shadow-lg w-[1280px]"
 
 :
 
@@ -621,34 +621,19 @@ images.length > 0 && (
 <img
 
 src={
-
 activeImage || images[0]
-
 }
 
 alt="product"
 
 onClick={()=>setFullscreen(true)}
 
-className={`
+className="
 w-full
-object-cover
+h-auto
+object-contain
 cursor-pointer
-
-${
-view === "desktop"
-
-?
-
-"h-[600px]"
-
-:
-
-"h-[420px]"
-
-}
-
-`}
+"
 
 />
 
