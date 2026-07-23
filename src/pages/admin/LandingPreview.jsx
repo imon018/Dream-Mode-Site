@@ -249,7 +249,7 @@ rounded-lg
 border
 border-amber-200
 shadow-sm
-p-6
+p-4
 "
 >
 
@@ -257,14 +257,13 @@ p-6
 
 <h1
 className="
-text-4xl
+text-3xl
 font-black
 text-gray-900
+whitespace-nowrap
 "
 >
-
 Preview Landing Page
-
 </h1>
 
 
@@ -283,7 +282,30 @@ font-bold
 >
 
 
-<FiArrowLeft/>
+<button
+
+onClick={()=>navigate(-1)}
+
+className="
+absolute
+left-0
+w-10
+h-10
+rounded-full
+bg-white
+border
+border-gray-100
+shadow-sm
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiArrowLeft size={22}/>
+
+</button>
 
 Preview - {landing.title}
 
@@ -314,10 +336,12 @@ className="
 bg-slate-900
 text-white
 rounded-lg
-px-6
+px-4
+py-2
 flex
 items-center
 gap-2
+text-sm
 "
 >
 
@@ -338,7 +362,9 @@ className="
 bg-black
 text-white
 rounded-lg
-px-6
+px-4
+py-2
+text-sm
 "
 >
 
@@ -363,7 +389,7 @@ Publish
 
 <div
 className="
-mt-8
+mt-4
 flex
 justify-center
 "
@@ -386,8 +412,8 @@ flex
 onClick={()=>setView("mobile")}
 
 className={`
-px-6
-py-3
+px-3
+py-1
 rounded-lg
 flex
 gap-2
@@ -429,8 +455,8 @@ Mobile View
 onClick={()=>setView("desktop")}
 
 className={`
-px-6
-py-3
+px-3
+py-1
 rounded-lg
 flex
 gap-2
@@ -1441,7 +1467,7 @@ text-sm
 
 <h2
 className="
-text-base
+text-sm
 font-black
 text-purple-700
 whitespace-nowrap
