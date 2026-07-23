@@ -5,11 +5,11 @@ import {
 
 import {
   useNavigate,
-  useParams,
 } from "react-router-dom";
 
 
 import {
+  FiArrowLeft,
   FiCheckCircle,
   FiPackage,
   FiCalendar,
@@ -18,167 +18,119 @@ import {
   FiShoppingBag,
   FiHeadphones,
   FiHome,
+  FiFileText,
 } from "react-icons/fi";
 
 
-import {
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { IoShieldCheckmarkSharp } from "react-icons/io5";
 
+import { useSettings } from "../../context/SettingsContext";
 
-import {
-  db,
-} from "../firebase/firestore";
-
-
-import {
-  useSettings,
-} from "../context/SettingsContext";
-
-
-import {
-  getLandingPageBySlug,
-} from "../services/landingPageService";
-
-
-
-export default function LandingOrderSuccess(){
+export default function LandingOrderSuccessPreview(){
 
 
 const navigate = useNavigate();
 
+const [currentImage,setCurrentImage] = useState(0);
 
-const {
-  slug,
-  orderId,
-}=useParams();
+const [order,setOrder] = useState(null);
+
+const { settings } = useSettings();
+
+const confetti = [
+  {
+    left:"20%",
+    top:"15%",
+    color:"bg-green-400",
+    delay:"0s"
+  },
+  {
+    left:"35%",
+    top:"8%",
+    color:"bg-yellow-400",
+    delay:"0.3s"
+  },
+  {
+    left:"50%",
+    top:"12%",
+    color:"bg-purple-500",
+    delay:"0.6s"
+  },
+  {
+    left:"65%",
+    top:"10%",
+    color:"bg-blue-400",
+    delay:"0.9s"
+  },
+  {
+    left:"80%",
+    top:"20%",
+    color:"bg-orange-400",
+    delay:"1.2s"
+  },
+  {
+    left:"25%",
+    top:"35%",
+    color:"bg-purple-400",
+    delay:"1.5s"
+  },
+  {
+    left:"75%",
+    top:"35%",
+    color:"bg-green-400",
+    delay:"1.8s"
+  }
+];
+
+  
+
+useEffect(()=>{
+
+if(!order?.heroImages?.length) return;
+
+const interval = setInterval(()=>{
+
+  setCurrentImage(prev=>
+
+(prev+1)%order.heroImages.length
+
+);
+
+},3000);
+
+return ()=>clearInterval(interval);
+
+},[order]);
 
 
 
-const {
-  settings
-}=useSettings();
-
-
-
-const [order,setOrder]=useState(null);
-
-const [landing,setLanding]=useState(null);
-
-const [loading,setLoading]=useState(true);
-
-
-
-
+  
 
 useEffect(()=>{
 
 
-const loadData = async()=>{
-
-
-try{
-
-
-const orderSnap =
-await getDoc(
-doc(
-db,
-"orders",
-orderId
-)
+const data = sessionStorage.getItem(
+"landingOrderSuccessPreviewData"
 );
 
 
 
-if(orderSnap.exists()){
+if(data){
 
 
-setOrder({
+const parsed =
+JSON.parse(data);
 
-id:orderSnap.id,
 
-...orderSnap.data(),
 
-});
+setOrder(parsed);
 
 
 }
 
 
 
-
-
-const landingData =
-await getLandingPageBySlug(
-slug
-);
-
-
-setLanding(
-landingData
-);
-
-
-
-}
-
-catch(error){
-
-console.log(
-error
-);
-
-}
-
-finally{
-
-setLoading(false);
-
-}
-
-
-};
-
-
-loadData();
-
-
-},[
-slug,
-orderId
-]);
-
-
-
-
-
-
-
-if(loading){
-
-
-return (
-
-<div
-className="
-min-h-screen
-flex
-items-center
-justify-center
-bg-[#FAF7F2]
-"
->
-
-Loading...
-
-</div>
-
-);
-
-}
-
+},[]);
 
 
 
@@ -192,23 +144,37 @@ return (
 <div
 className="
 min-h-screen
+bg-[#FAF7F2]
 flex
 items-center
 justify-center
-bg-[#FAF7F2]
 "
 >
+
 
 <div
 className="
 bg-white
-p-8
-rounded-xl
+rounded-lg
 shadow
+p-8
+text-center
 "
 >
 
-Order not found
+
+<h2
+className="
+text-xl
+font-bold
+text-gray-800
+"
+>
+
+Order Preview Data পাওয়া যায়নি
+
+</h2>
+
 
 </div>
 
@@ -217,32 +183,46 @@ Order not found
 
 );
 
+
 }
 
+
+
+
+const orderId =
+
+"DM-" +
+
+Date.now()
+.toString()
+.slice(-8);
 
 
 
 
 
 const orderDate =
-order.createdAt
-?
-new Date(
-order.createdAt
-)
+
+new Date()
 .toLocaleString(
+
 "en-GB",
+
 {
+
 day:"2-digit",
+
 month:"short",
-year:"numeric"
+
+year:"numeric",
+
+hour:"2-digit",
+
+minute:"2-digit",
+
 }
-)
-:
-"";
 
-
-
+);
 
 
 
@@ -251,37 +231,183 @@ year:"numeric"
 return (
 
 <div
+
 className="
 min-h-screen
 bg-[#FAF7F2]
-px-4
-py-8
+p-0
 "
+
 >
 
 
 <div
+
 className="
-max-w-xl
-mx-auto
+w-full
 "
+
 >
 
 
 
-
-{/* SUCCESS */}
+{/* HEADER */}
 
 
 <div
+
 className="
-bg-[#fffaf0]
-rounded-2xl
-text-center
-py-10
+bg-white
+rounded-lg
+border
+border-purple-200
 shadow-sm
+p-5
+"
+
+>
+
+
+<div
+className="
+flex
+items-center
+gap-3
+"
+
+>
+
+
+<button
+
+onClick={()=>navigate(-1)}
+
+className="
+w-10
+h-10
+rounded-full
+border
+flex
+items-center
+justify-center
+bg-white
+"
+
+>
+
+<FiArrowLeft size={20}/>
+
+</button>
+
+
+
+<div>
+
+<h1
+
+className="
+text-2xl
+font-black
+text-gray-900
+"
+
+>
+
+Order Success Preview
+
+</h1>
+
+
+<p
+
+className="
+text-sm
+text-gray-500
+"
+
+>
+
+Landing Page Order Confirmation
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+  {/* SUCCESS MESSAGE CARD */}
+
+
+<div
+className="
+relative
+bg-[#fffaf0]
+py-8
+text-center
+overflow-hidden
+rounded-t-lg
 "
 >
+
+
+{/* CONFETTI / FIRE CRACKER EFFECT */}
+
+<div
+className="
+absolute
+inset-0
+pointer-events-none
+"
+>
+
+
+{
+confetti.map((item,index)=>(
+
+<span
+
+key={index}
+
+style={{
+left:item.left,
+top:item.top,
+animationDelay:item.delay
+}}
+
+className={`
+absolute
+w-3
+h-3
+${item.color}
+rounded-sm
+animate-confetti
+`}
+>
+
+</span>
+
+))
+
+}
+
+
+</div>
+
+
+
+
+
+{/* CHECK ICON */}
 
 
 <div
@@ -294,17 +420,19 @@ bg-green-100
 flex
 items-center
 justify-center
+success-icon-animation
 "
 >
 
-
 <FiCheckCircle
+
 size={65}
+
 className="
 text-green-600
 "
-/>
 
+/>
 
 </div>
 
@@ -312,8 +440,10 @@ text-green-600
 
 
 
-<h1
+<h2
 className="
+relative
+z-10
 mt-6
 text-3xl
 font-black
@@ -323,360 +453,422 @@ text-green-700
 
 অর্ডার সফল হয়েছে
 
-</h1>
-
-
-
-<p
-className="
-mt-3
-text-gray-600
-"
->
-
-আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* ORDER INFO */}
-
-
-
-<div
-className="
-mt-4
-bg-white
-rounded-2xl
-overflow-hidden
-shadow
-"
->
-
-
-
-<div
-className="
-p-5
-flex
-items-center
-gap-4
-"
->
-
-<FiPackage
-size={28}
-className="
-text-green-600
-"
-/>
-
-
-<div>
-
-<p
-className="
-text-gray-500
-text-sm
-"
->
-অর্ডার নম্বর
-</p>
-
-
-<p
-className="
-font-black
-text-xl
-text-green-700
-"
->
-
-#{order.id.slice(0,8)}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div
-className="
-border-t
-"
-/>
-
-
-
-
-
-<div
-className="
-p-5
-flex
-justify-between
-"
->
-
-
-<div
-className="
-flex
-gap-3
-items-center
-"
->
-
-<FiCalendar/>
-
-<span>
-তারিখ
-</span>
-
-</div>
-
-
-<span>
-{orderDate}
-</span>
-
-
-</div>
-
-
-
-
-
-<div
-className="
-border-t
-"
-/>
-
-
-
-<div
-className="
-p-5
-flex
-justify-between
-"
->
-
-
-<div
-className="
-flex
-gap-3
-items-center
-"
->
-
-<FiCreditCard/>
-
-<span>
-Payment
-</span>
-
-</div>
-
-
-<span>
-Cash On Delivery
-</span>
-
-
-</div>
-
-
-
-
-
-<div
-className="
-border-t
-"
-/>
-
-
-
-
-<div
-className="
-p-5
-flex
-justify-between
-"
->
-
-
-<div
-className="
-flex
-gap-3
-items-center
-"
->
-
-<FiTruck/>
-
-<span>
-Delivery
-</span>
-
-</div>
-
-
-<span>
-2-4 Days
-</span>
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-
-{/* PRODUCT */}
-
-
-
-<div
-className="
-mt-4
-bg-white
-rounded-2xl
-p-5
-shadow
-"
->
-
-
-<h2
-className="
-font-black
-text-xl
-mb-4
-"
->
-
-অর্ডারকৃত পণ্য
-
 </h2>
 
 
 
-<div
+
+
+<p
 className="
-flex
-gap-4
-items-center
+relative
+z-10
+mt-3
+text-gray-600
+leading-7
 "
 >
 
+আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে।
+
+<br/>
+
+ধন্যবাদ আমাদের উপর আস্থা রাখার জন্য।
+
+</p>
 
 
-<img
 
-src={
-landing?.heroImages?.[0]
-}
+</div>
 
+
+
+
+  {/* ORDER INFORMATION */}
+
+<div
+className="
+-mt-px
+bg-gray-50
+rounded-b-lg
+border
+border-gray-50
+overflow-hidden
+"
+>
+
+  {/* ORDER ID */}
+
+  <div
+  className="
+  flex
+  items-center
+  justify-between
+  px-5
+  py-4
+  bg-gray-50
+  "
+  >
+
+    <div
+    className="
+    flex
+    items-center
+    gap-4
+    "
+    >
+
+      <FiPackage
+      size={26}
+      className="
+      text-green-600
+      "
+      />
+
+      <div>
+
+        <p
+        className="
+        text-sm
+        text-gray-500
+        "
+        >
+        অর্ডার নম্বর
+        </p>
+
+        <p
+        className="
+        text-2xl
+        font-black
+        text-green-700
+        "
+        >
+        {orderId}
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div className="border-t border-gray-200"/>
+
+
+
+  {/* ORDER DATE */}
+
+  <div
+  className="
+  flex
+  items-center
+  justify-between
+  px-5
+  py-4
+  bg-gray-50
+  "
+  >
+
+    <div
+    className="
+    flex
+    items-center
+    gap-4
+    "
+    >
+
+      <FiCalendar
+      size={22}
+      className="
+      text-gray-600
+      "
+      />
+
+      <p
+      className="
+      text-gray-700
+      font-medium
+      "
+      >
+      অর্ডারের তারিখ
+      </p>
+
+    </div>
+
+    <p
+    className="
+    text-gray-700
+    font-medium
+    "
+    >
+    {orderDate}
+    </p>
+
+  </div>
+
+
+
+  <div className="border-t border-gray-200"/>
+
+
+
+  {/* PAYMENT */}
+
+  <div
+  className="
+  flex
+  items-center
+  justify-between
+  px-5
+  py-4
+  bg-gray-50
+  "
+  >
+
+    <div
+    className="
+    flex
+    items-center
+    gap-4
+    "
+    >
+
+      <FiCreditCard
+      size={22}
+      className="
+      text-gray-600
+      "
+      />
+
+      <p
+      className="
+      text-gray-700
+      font-medium
+      "
+      >
+      পেমেন্ট মেথড
+      </p>
+
+    </div>
+
+    <p
+    className="
+    text-gray-700
+    font-medium
+    "
+    >
+    Cash on Delivery
+    </p>
+
+  </div>
+
+
+
+  <div className="border-t border-gray-200"/>
+
+
+
+  {/* DELIVERY */}
+
+  <div
+  className="
+  flex
+  items-center
+  justify-between
+  px-5
+  py-4
+  bg-gray-50
+  "
+  >
+
+    <div
+    className="
+    flex
+    items-center
+    gap-4
+    "
+    >
+
+      <FiTruck
+      size={22}
+      className="
+      text-gray-600
+      "
+      />
+
+      <p
+      className="
+      text-gray-700
+      font-medium
+      "
+      >
+      ডেলিভারি টাইম
+      </p>
+
+    </div>
+
+    <p
+    className="
+    text-gray-700
+    font-medium
+    "
+    >
+    2 - 4 কর্মদিবস
+    </p>
+
+  </div>
+
+</div>
+  
+  
+  
+
+  {/* PRODUCT CARD */}
+
+<div
+className="
+mt-4
+bg-gray-50
+rounded-lg
+border
+border-gray-200
+p-3
+"
+>
+
+<p
+className="
+text-lg
+font-bold
+text-gray-900
+mb-4
+"
+>
+অর্ডারকৃত পণ্য
+</p>
+
+<div
+className="
+flex
+items-center
+gap-2
+"
+>
+
+{/* PRODUCT IMAGE */}
+
+<div
 className="
 w-24
 h-24
-rounded-xl
-object-cover
+shrink-0
+rounded-lg
+overflow-hidden
+bg-gray-100
 "
+>
 
+<img
+src={
+order.heroImages?.[
+currentImage
+]
+}
+alt={order.title}
+className="
+w-full
+h-full
+object-cover
+transition-opacity
+duration-500
+"
 />
 
+</div>
 
+{/* PRODUCT DETAILS */}
 
 <div
 className="
 flex-1
+flex
+flex-col
+justify-between
+self-stretch
+min-w-0
 "
 >
 
 <h3
 className="
 font-bold
+text-lg
+text-gray-900
+leading-6
+line-clamp-2
 "
 >
-
-{
-order.items?.[0]?.name ||
-landing?.title
-
-}
-
+{order.title}
 </h3>
 
-
-<p>
-পরিমাণ:
-{
-order.items?.[0]?.quantity ||
-1
-}
-
+<p
+className="
+text-gray-500
+text-base
+"
+>
+পরিমাণ: {order.quantity}
 </p>
 
 
 </div>
 
+{/* PRICE */}
 
-
-
-<strong
+<div
 className="
-text-purple-700
-text-xl
+self-end
+text-right
+shrink-0
+pb-1
 "
 >
 
-৳
+<p
+className="
+text-3xl
+font-black
+text-purple-700
+leading-none
+"
+>
+  ৳{order.price}
+</p>
+
 {
-order.total ||
-order.items?.[0]?.price
+Number(order.regularPrice) >
+Number(order.price) && (
+
+<p
+className="
+mt-1
+text-sm
+text-gray-400
+line-through
+"
+>
+৳{order.regularPrice}
+</p>
+
+)
+
 }
 
-
-</strong>
-
-
-
 </div>
 
-
+</div>
 
 </div>
 
@@ -687,10 +879,74 @@ order.items?.[0]?.price
 
 
 
+
+
+{/* =========================
+    ORDER CONFIRMATION
+========================= */}
+
+<div
+className="
+mt-3
+bg-gradient-to-r
+from-green-50
+to-lime-50
+border
+border-green-200
+rounded-lg
+px-4
+py-3
+flex
+items-start
+gap-3
+"
+>
+
+<IoShieldCheckmarkSharp
+size={42}
+className="
+text-green-600
+shrink-0
+mt-1
+"
+/>
+
+<div className="flex-1 min-w-0">
+
+<h3
+className="
+text-[17px]
+font-bold
+text-green-700
+leading-6
+"
+>
+আমরা আপনার অর্ডারটি নিশ্চিত করেছি
+</h3>
+
+<p
+className="
+mt-1
+text-[13px]
+text-gray-600
+leading-5
+"
+>
+আমাদের টিম দ্রুত আপনার অর্ডারটি প্রসেস করছে।
+আপনার সাথে শীঘ্রই যোগাযোগ করা হবে।
+</p>
+
+</div>
+
+</div>
+
+
+
+{/* HOME BUTTON  */}
 
 <button
 
-onClick={()=>navigate("/")}
+type="button"
 
 className="
 mt-5
@@ -698,11 +954,12 @@ w-full
 bg-purple-700
 text-white
 py-3
-rounded-xl
+rounded-lg
 font-bold
+text-lg
 flex
-justify-center
 items-center
+justify-center
 gap-2
 "
 
@@ -716,10 +973,11 @@ gap-2
 
 
 
-
-
+{/* SOPPING BUTTON */}
 
 <button
+
+type="button"
 
 onClick={()=>navigate("/")}
 
@@ -730,70 +988,147 @@ border
 border-purple-700
 text-purple-700
 py-3
-rounded-xl
+rounded-lg
 font-bold
+text-lg
 flex
-justify-center
 items-center
+justify-center
 gap-2
+hover:bg-purple-50
+transition
 "
 
 >
-
 
 <FiShoppingBag/>
 
 আরও কেনাকাটা করুন
 
-
 </button>
 
 
 
-
-
-
+{/* SUPPORT & FEATURES */}
 
 <div
 className="
-mt-6
-flex
-justify-center
-items-center
-gap-3
-text-gray-600
+mt-5
 "
 >
 
-<FiHeadphones/>
+  {/* Help Line */}
 
-হেল্পলাইন:
+  <div
+  className="
+  flex
+  items-center
+  justify-center
+  gap-3
+  py-5
+  "
+  >
 
-<span
+    <FiHeadphones
+    size={28}
+    className="text-gray-700"
+    />
+
+    <div>
+
+      <p
+      className="
+      text-gray-800
+      font-bold
+      "
+      >
+      কোনো প্রশ্ন আছে?
+      </p>
+
+      <p
+      className="
+      text-[15px]
+      text-gray-600
+      "
+      >
+      হেল্প লাইন:
+      <span
 className="
-font-bold
 text-purple-700
+font-bold
+ml-1
+"
+>
+{settings?.phone || settings?.phoneNumber || ""}
+</span>
+      </p>
+
+    </div>
+
+  </div>
+
+  <div className="border-t border-gray-200" />
+
+  {/* Bottom Features */}
+
+  <div
+  className="
+  flex
+  items-center
+  justify-center
+  py-4
+  text-[14px]
+  "
+  >
+
+    <div
+    className="
+    flex
+    items-center
+    gap-2
+    text-green-700
+    font-medium
+    "
+    >
+
+      <IoShieldCheckmarkSharp size={20} />
+
+      নিরাপদ পেমেন্ট
+
+    </div>
+
+    <div className="mx-5 text-gray-300">|</div>
+
+    <div
+className="
+flex
+items-center
+gap-2
+text-green-700
+font-medium
 "
 >
 
-{
-settings?.phone ||
-""
-}
+  <FiTruck
+  size={20}
+  className="text-green-700"
+  />
 
-</span>
+  <span className="text-green-700">
+    ক্যাশ অন ডেলিভারি
+  </span>
 
+</div>
+
+  </div>
 
 </div>
 
 
-
-
-
+  
 
 
 </div>
-
 
 </div>
 
