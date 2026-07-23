@@ -1521,7 +1521,7 @@ JSON.stringify(orderData)
 
 
 
-window.location.href = "/landing/order-success";
+window.location.href = `/landing/order-success/${orderId}`;
 
 
 }}
