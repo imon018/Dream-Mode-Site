@@ -18,6 +18,7 @@ import {
   FiHash,
   FiShoppingBag,
   FiHome,
+  FiFileText,
 } from "react-icons/fi";
 
 
