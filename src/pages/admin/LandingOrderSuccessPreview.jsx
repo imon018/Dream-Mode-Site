@@ -891,30 +891,31 @@ to-lime-50
 border
 border-green-200
 rounded-lg
-px-5
-py-4
+px-4
+py-3
 flex
-items-center
+items-start
 gap-3
 "
 >
 
-
 <IoShieldCheckmarkSharp
-  size={42}
-  className="text-green-600"
+size={42}
+className="
+text-green-600
+shrink-0
+mt-1
+"
 />
 
-
-<div className="flex-1">
+<div className="flex-1 min-w-0">
 
 <h3
 className="
-text-[18px]
+text-[17px]
 font-bold
 text-green-700
 leading-6
-whitespace-nowrap
 "
 >
 আমরা আপনার অর্ডারটি নিশ্চিত করেছি
@@ -922,10 +923,10 @@ whitespace-nowrap
 
 <p
 className="
-mt-2
-text-[15px]
+mt-1
+text-[14px]
 text-gray-600
-leading-7
+leading-6
 "
 >
 আমাদের টিম দ্রুত আপনার অর্ডারটি প্রসেস করছে।
