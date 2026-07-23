@@ -582,7 +582,7 @@ discount > 0 && (
 className="
 absolute
 top-3
-left-3
+right-3
 z-20
 w-12
 text-center
@@ -595,8 +595,9 @@ relative
 overflow-visible
 rounded-t-md
 bg-transparent
-backdrop-blur-lg
-shadow-[0_0_12px_rgba(251,191,36,0.35)]
+border
+border-amber-300
+shadow-none
 "
 >
 
@@ -630,7 +631,7 @@ bg-amber-300
 className="
 absolute
 left-1/2
--top-[1px]
+top-[-1px]
 -translate-x-1/2
 w-0
 h-0
@@ -1395,13 +1396,13 @@ border-gray-200
 
 <div
 className="
-bg-white/40
+bg-purple-200
 backdrop-blur-xl
 border-t
 border-purple-200
 rounded-lg
-px-5
-py-3
+px-3
+py-1
 shadow-none
 "
 >
@@ -1422,15 +1423,15 @@ gap-4
 
 <div
 className="
-w-10
-h-10
+w-8
+h-8
 rounded-lg
 bg-purple-100
 flex
 items-center
 justify-center
 shrink-0
-text-xl
+text-sm
 "
 >
 🛡️
@@ -1440,9 +1441,10 @@ text-xl
 
 <h2
 className="
-text-lg
+text-base
 font-black
 text-purple-700
+whitespace-nowrap
 "
 >
 আমাদের প্রতিশ্রুতি
@@ -1450,9 +1452,10 @@ text-purple-700
 
 <p
 className="
-mt-2
+mt-1
+text-sm
 text-gray-600
-leading-6
+leading-5
 "
 >
 আমরা অরিজিনাল এবং দ্রুত ডেলিভারি নিশ্চিত করি।<br/>
@@ -1478,7 +1481,7 @@ leading-6
 <button
 
 className="
-mt-4
+mt-2
 w-full
 bg-purple-700
 text-white
