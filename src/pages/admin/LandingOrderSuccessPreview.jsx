@@ -21,6 +21,9 @@ import {
 } from "react-icons/fi";
 
 
+import { IoShieldCheckmarkSharp } from "react-icons/io5";
+
+
 
 export default function LandingOrderSuccessPreview(){
 
@@ -888,32 +891,18 @@ to-lime-50
 border
 border-green-200
 rounded-lg
-px-4
-py-5
-flex
-items-start
-gap-4
-"
->
-
-<div
-className="
-w-14
-h-14
-shrink-0
-rounded-full
-bg-green-100
+px-5
+py-4
 flex
 items-center
-justify-center
+gap-3
 "
 >
 
-<FiCheckCircle
-size={34}
-className="
-text-green-700
-"
+
+<IoShieldCheckmarkSharp
+  size={42}
+  className="text-green-600"
 />
 
 </div>
@@ -922,9 +911,11 @@ text-green-700
 
 <h3
 className="
-text-lg
+text-[18px]
 font-bold
 text-green-700
+leading-6
+whitespace-nowrap
 "
 >
 আমরা আপনার অর্ডারটি নিশ্চিত করেছি
@@ -933,13 +924,14 @@ text-green-700
 <p
 className="
 mt-2
+text-[15px]
 text-gray-600
 leading-7
 "
 >
 আমাদের টিম দ্রুত আপনার অর্ডারটি প্রসেস করছে।
 <br/>
-শীঘ্রই আপনার সাথে যোগাযোগ করা হবে।
+আপনার সাথে শীঘ্রই যোগাযোগ করা হবে।
 </p>
 
 </div>
