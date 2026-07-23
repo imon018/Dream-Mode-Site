@@ -905,7 +905,6 @@ gap-3
   className="text-green-600"
 />
 
-</div>
 
 <div className="flex-1">
 
