@@ -21,9 +21,6 @@ import {
 } from "react-icons/fi";
 
 
-import Button from "../../components/ui/Button";
-
-
 
 export default function LandingOrderSuccessPreview(){
 
@@ -503,7 +500,7 @@ overflow-hidden
   justify-between
   px-5
   py-4
-  bg-white
+  bg-gray-50
   "
   >
 
@@ -878,137 +875,87 @@ line-through
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  {/* =========================
-      ORDER SUCCESS FOOTER
+{/* =========================
+    ORDER CONFIRMATION
 ========================= */}
-
 
 <div
 className="
-bg-white
-border-t
-border-gray-200
-px-5
-py-6
-text-center
+mt-3
+bg-gradient-to-r
+from-green-50
+to-lime-50
+border
+border-green-200
+rounded-lg
+px-4
+py-5
+flex
+items-start
+gap-4
 "
 >
 
-
 <div
 className="
-w-16
-h-16
-mx-auto
+w-14
+h-14
+shrink-0
 rounded-full
 bg-green-100
 flex
 items-center
 justify-center
-mb-4
 "
 >
 
 <FiCheckCircle
-size={36}
+size={34}
 className="
-text-green-600
+text-green-700
 "
 />
 
 </div>
 
+<div className="flex-1">
 
-
-<h2
+<h3
 className="
-text-xl
-font-black
-text-gray-900
+text-lg
+font-bold
+text-green-700
 "
 >
-
-ধন্যবাদ!
-
-</h2>
-
-
+আমরা আপনার অর্ডারটি নিশ্চিত করেছি
+</h3>
 
 <p
 className="
 mt-2
-text-gray-500
+text-gray-600
 leading-7
 "
 >
-
-আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।
-
+আমাদের টিম দ্রুত আপনার অর্ডারটি প্রসেস করছে।
 <br/>
-
-আমাদের টিম খুব দ্রুত আপনার সাথে যোগাযোগ করবে।
-
+শীঘ্রই আপনার সাথে যোগাযোগ করা হবে।
 </p>
 
+</div>
+
+</div>
 
 
 
-{
-order.successMessage && (
-
-<p
-className="
-mt-4
-bg-purple-50
-border
-border-purple-100
-rounded-lg
-px-4
-py-3
-text-purple-700
-font-semibold
-"
->
-
-{order.successMessage}
-
-</p>
-
-)
-
-}
-
-
-
-
-
-{/* ORDER SUMMARY BUTTON */}
+{/* HOME BUTTON  */}
 
 <button
 
 type="button"
 
 className="
-mt-6
+mt-5
 w-full
 bg-purple-700
 text-white
@@ -1024,28 +971,21 @@ gap-2
 
 >
 
-<FiFileText/>
+<FiHome/>
 
-অর্ডার সামারি দেখুন
+হোম পেজে যান
 
 </button>
 
 
 
-
-
-{/* BACK HOME BUTTON */}
-
+{/* SOPPING BUTTON */}
 
 <button
 
 type="button"
 
-onClick={()=>{
-
-navigate("/");
-
-}}
+onClick={()=>navigate("/")}
 
 className="
 mt-3
@@ -1067,17 +1007,11 @@ transition
 
 >
 
-<FiHome/>
+<FiShoppingBag/>
 
-হোমে ফিরে যান
+আরও কেনাকাটা করুন
 
 </button>
-
-
-
-
-</div>
-
 
 
 
