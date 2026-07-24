@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { SITE_SEO } from "./siteSEO";
+import { useSettings } from "../context/SettingsContext";
 
 export default function SEO({
   title,
