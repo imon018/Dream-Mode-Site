@@ -410,7 +410,6 @@ whitespace-nowrap
                 font-black
                 leading-tight
                 text-purple-700
-				border-t
               "
             >
 
@@ -513,6 +512,7 @@ whitespace-nowrap
                 items-center
                 justify-between
                 rounded-xl
+				border-t
                 p-2
               "
             >
