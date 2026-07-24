@@ -9,6 +9,11 @@ import {
 } from "./context/NotificationContext";
 
 
+import {
+  SEOProvider,
+} from "./context/SEOContext";
+
+
 import CartProvider from "./context/CartContext";
 
 
@@ -202,6 +207,9 @@ export default function App(){
 
 
       <SettingsProvider>
+        
+
+        <SEOProvider>
 
 
 
@@ -235,6 +243,10 @@ export default function App(){
 
 
         </NotificationProvider>
+
+
+
+          <SEOProvider>
 
 
 
