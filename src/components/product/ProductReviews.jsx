@@ -360,6 +360,7 @@ photoURL:
             to-yellow-500
             bg-clip-text
             text-transparent
+			text-center
           ">
             Customer Reviews
           </h2>
@@ -368,7 +369,9 @@ photoURL:
           <p className="
             mt-2
             text-gray-500
-          ">
+			text-center
+		    "
+		  >
             Trusted reviews from our customers
           </p>
 
@@ -384,15 +387,15 @@ photoURL:
           from-blue-900
           to-blue-700
           text-white
-          rounded-3xl
-          px-8
-          py-5
+          rounded-lg
+          px-3
+          py-2
           shadow-xl
         ">
 
 
           <div className="
-            text-3xl
+            text-xl
             font-black
           ">
             ⭐ {averageRating}
@@ -423,7 +426,7 @@ photoURL:
 
       <div className="
         bg-white
-        rounded-[32px]
+        rounded-lg
         border
         border-yellow-100
         shadow-xl
@@ -512,7 +515,7 @@ photoURL:
 
           className="
             w-full
-            rounded-2xl
+            rounded-lg
             border
             border-gray-200
             p-4
@@ -535,7 +538,7 @@ photoURL:
     gap-1
     w-full
     h-24
-    rounded-2xl
+    rounded-lg
     border-2
     border-dashed
     border-yellow-300
@@ -564,7 +567,7 @@ photoURL:
   />
 
   <FiUploadCloud
-  size={34}
+  size={30}
   className="text-yellow-500"
 />
 
@@ -656,9 +659,9 @@ photoURL:
 
           className="
             mt-5
-            px-8
-            py-4
-            rounded-2xl
+            px-6
+            py-2
+            rounded-lg
             font-black
             text-white
             bg-gradient-to-r
