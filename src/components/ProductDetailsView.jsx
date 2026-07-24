@@ -6,7 +6,8 @@ import {
   FiShield,
   FiTruck,
   FiRefreshCw,
-  FiLock
+  FiLock,
+  FiX
 } from "react-icons/fi";
 
 import Button from "./ui/Button";
@@ -50,6 +51,8 @@ export default function ProductDetailsView() {
 
   const [selectedImage,setSelectedImage] =
     useState("");
+
+  const [fullscreen, setFullscreen] = useState(false);
 
 
 
@@ -242,41 +245,75 @@ export default function ProductDetailsView() {
 
           {/* IMAGE SECTION */}
 
+<div>
 
+  <div className="relative">
 
-          <div>
+    <img
+      src={selectedImage}
+      alt={product.name}
+      onClick={() => setFullscreen(true)}
+      className="
+        w-full
+        h-auto
+        object-contain
+        cursor-pointer
+      	transition
+				duration-300
+      "
+    />
 
+  </div>
 
-            <div
-              className="
-                bg-white
-                rounded-xl
+  {
+    galleryImages.length > 1 && (
+
+      <div
+        className="
+          flex
+          gap-3
+          mt-4
+          overflow-x-auto
+          pb-1
+          [-ms-overflow-style:none]
+          [scrollbar-width:none]
+          [&::-webkit-scrollbar]:hidden
+        "
+      >
+
+        {
+          galleryImages.map((img,index)=>(
+
+            <img
+              key={index}
+              src={img}
+              alt=""
+              onClick={()=>setSelectedImage(img)}
+              className={`
+                w-20
+                h-20
+                object-cover
+                rounded-md
+                cursor-pointer
                 border
-                border-amber-500/20
-                shadow-sm
-                p-4
-                overflow-hidden
-              "
-            >
 
+                ${
+                  selectedImage===img
+                  ? "border-amber-500"
+                  : "border-gray-200"
+                }
+              `}
+            />
 
-              <img
+          ))
+        }
 
-                src={selectedImage}
+      </div>
 
-                alt={product.name}
+    )
+  }
 
-                className="
-                  w-full
-                  h-[380px]
-                  md:h-[520px]
-                  object-contain
-                "
-
-              />
-
-
-            </div>
+</div>
 
 
 
@@ -284,80 +321,54 @@ export default function ProductDetailsView() {
 
             {/* THUMBNAILS */}
 
+{
+  galleryImages.length > 1 && (
 
+    <div
+      className="
+        flex
+        gap-3
+        mt-4
+        overflow-x-auto
+        pb-1
+        [-ms-overflow-style:none]
+        [scrollbar-width:none]
+        [&::-webkit-scrollbar]:hidden
+      "
+    >
 
-            {
-              galleryImages.length > 1 &&
+      {
+        galleryImages.map((img,index)=>(
 
+          <img
+            key={index}
+            src={img}
+            alt=""
+            onClick={()=>setSelectedImage(img)}
+            className={`
+              w-20
+              h-20
+              object-cover
+              rounded-md
+              cursor-pointer
+              border
+              transition
 
-              <div
-                className="
-                  flex
-                  gap-3
-                  mt-4
-                  flex-wrap
-                "
-              >
+              ${
+                selectedImage===img
+                ? "border-amber-500"
+                : "border-gray-200"
+              }
+            `}
+          />
 
+        ))
+      }
 
-                {
-                  galleryImages.map(
-                    (img,index)=>(
+    </div>
 
-
-                      <button
-
-                        key={index}
-
-                        onClick={()=>
-                          setSelectedImage(img)
-                        }
-
-                        className={`
-                          w-20
-                          h-20
-                          rounded-xl
-                          overflow-hidden
-                          border
-
-                          ${
-                            selectedImage===img
-                            ?
-                            "border-amber-500"
-                            :
-                            "border-gray-200"
-                          }
-
-                        `}
-
-                      >
-
-                        <img
-
-                          src={img}
-
-                          alt=""
-
-                          className="
-                            w-full
-                            h-full
-                            object-cover
-                          "
-
-                        />
-
-                      </button>
-
-
-                    )
-                  )
-                }
-
-
-              </div>
-
-
-            }
+  )
+}
 
 
 
@@ -919,6 +930,71 @@ Order
 
     </div>
 
+
+    
+
+    {
+fullscreen && (
+
+<div
+className="
+fixed
+inset-0
+bg-black/90
+z-50
+flex
+items-center
+justify-center
+p-5
+"
+>
+
+<button
+
+onClick={()=>setFullscreen(false)}
+
+className="
+absolute
+top-5
+right-5
+bg-white
+text-black
+rounded-full
+w-12
+h-12
+flex
+items-center
+justify-center
+text-xl
+"
+>
+
+<FiX/>
+
+</button>
+
+<img
+
+src={selectedImage}
+
+alt={product.name}
+
+className="
+max-h-full
+max-w-full
+rounded-lg
+object-contain
+"
+
+/>
+
+</div>
+
+)
+}
+
+
+  
   </>
 
   );
