@@ -487,10 +487,6 @@ location.search
 
         {/* PAGINATION */}
 
-
-        {
-          totalPages > 1 && (
-
          
                 <div
   className="
