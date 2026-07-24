@@ -320,7 +320,7 @@ whitespace-nowrap
 
   </div>
 
-	<div className="mx-5">
+	<div className="mx-5 bg-gray-50">
 
   {
     galleryImages.length > 1 && (
@@ -410,6 +410,7 @@ whitespace-nowrap
                 font-black
                 leading-tight
                 text-purple-700
+				border-t
               "
             >
 
@@ -427,7 +428,8 @@ whitespace-nowrap
 
             <div
               className="
-                mt-5			
+                mt-5
+				border-t
               "
             >
 
@@ -630,7 +632,7 @@ whitespace-nowrap
 
                 className="
                   h-12
-                  rounded-lg
+                  rounded-xl
                   bg-black
                   border
                   border-amber-500
@@ -665,7 +667,7 @@ whitespace-nowrap
 
                 className="
                   h-12
-                  rounded-lg
+                  rounded-xl
                   bg-green-600
                   font-bold
                   flex
@@ -710,7 +712,7 @@ whitespace-nowrap
   className="
     mt-8
     bg-white
-    rounded-lg
+    rounded-xl
     border
     border-amber-200
     px-5
