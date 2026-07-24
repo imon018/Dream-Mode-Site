@@ -104,7 +104,7 @@ export default function MobileLandingPages({ data }) {
               <img
   src={landing.heroImages?.[0] || landing.heroImage}
   alt={landing.title}
-  className="w-20 h-24 rounded-lg object-cover"
+  className="w-20 h-20 rounded-lg object-cover"
 />
 
               <div className="flex-1">
