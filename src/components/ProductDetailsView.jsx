@@ -340,7 +340,7 @@ export default function ProductDetailsView() {
     )
   }
 
-</div>
+
 
 
 
@@ -618,6 +618,8 @@ export default function ProductDetailsView() {
 			  </div>
 
 	</div>
+
+		</div>
 	
 
 
