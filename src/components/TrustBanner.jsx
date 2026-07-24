@@ -32,7 +32,7 @@ export default function TrustBanner() {
           className="
           relative
           overflow-hidden
-          rounded-[40px]
+          rounded-lg
           bg-white
           border
           border-slate-100
@@ -68,7 +68,7 @@ export default function TrustBanner() {
             -right-20
             w-60
             h-60
-            rounded-full
+            rounded-lg
             bg-blue-500/10
             blur-[100px]
             "
@@ -129,7 +129,7 @@ export default function TrustBanner() {
             <div
   className="
   grid
-  grid-cols-1
+  grid-cols-3
   md:grid-cols-3
   gap-5
   "
@@ -166,7 +166,7 @@ export default function TrustBanner() {
                       className="
                       w-16
                       h-16
-                      rounded-2xl
+                      rounded-lg
                       bg-blue-50
                       flex
                       items-center
