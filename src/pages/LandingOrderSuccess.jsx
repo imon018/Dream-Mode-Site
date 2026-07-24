@@ -809,7 +809,7 @@ line-through
     mb-4
     "
   >
-    Order Summary
+    অর্ডার বিবরণ
   </h2>
 
   <div className="space-y-3">
