@@ -57,6 +57,13 @@ export default function ProductDetailsView() {
   const [fullscreen, setFullscreen] = useState(false);
 
 
+	const galleryImages =
+  product?.images?.length
+    ? product.images
+    : product?.image
+      ? [product.image]
+      : [];
+	
 
 	useEffect(() => {
 
@@ -173,15 +180,6 @@ export default function ProductDetailsView() {
 
   }
 
-
-
-	
-	const galleryImages =
-  product?.images?.length
-    ? product.images
-    : product?.image
-      ? [product.image]
-      : [];
 
 	
 
