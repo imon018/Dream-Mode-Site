@@ -1868,6 +1868,21 @@ exports.sitemap = onRequest(async (req, res) => {
     "https://dream-mode-site-eight.vercel.app"
   ).replace(/\/$/, "");
 
+  const landingPages = await admin
+  .firestore()
+  .collection("landingPages")
+  .where("status", "==", "published")
+  .get();
+
+let landingUrls = "";
+
+landingPages.forEach((doc) => {
+  landingUrls += `
+<url>
+  <loc>${site}/landing/${doc.data().slug}</loc>
+</url>`;
+});
+
   const products = await admin
     .firestore()
     .collection("products")
@@ -1900,7 +1915,48 @@ exports.sitemap = onRequest(async (req, res) => {
   <loc>${site}/categories</loc>
 </url>
 
+<url>
+  <loc>${site}/shop</loc>
+</url>
+
+<url>
+  <loc>${site}/about</loc>
+</url>
+
+<url>
+  <loc>${site}/contact</loc>
+</url>
+
+<url>
+  <loc>${site}/about-us</loc>
+</url>
+
+<url>
+  <loc>${site}/faqs</loc>
+</url>
+
+<url>
+  <loc>${site}/page/returnpolicy</loc>
+</url>
+
+<url>
+  <loc>${site}/page/refundpolicy</loc>
+</url>
+
+<url>
+  <loc>${site}/page/shippingpolicy</loc>
+</url>
+
+<url>
+  <loc>${site}/page/privacypolicy</loc>
+</url>
+
+<url>
+  <loc>${site}/page/terms</loc>
+</url>
+
 ${urls}
+${landingUrls}
 
 </urlset>`;
 
@@ -1937,6 +1993,14 @@ exports.robots = onRequest(async (req, res) => {
   res.send(`User-agent: *
 
 Allow: /
+
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /login
+Disallow: /register
+Disallow: /checkout
+Disallow: /cart
+Disallow: /wishlist
 
 Sitemap: ${site}/sitemap.xml`);
 });
