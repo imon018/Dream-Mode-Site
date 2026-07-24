@@ -219,6 +219,11 @@ const siteLogo =
   content={settings.googleVerification || ""}
 />
 
+      <meta
+  name="msvalidate.01"
+  content={settings.bingVerification || ""}
+/>
+
 <script type="application/ld+json">
   {JSON.stringify(schemaData)}
 </script>
