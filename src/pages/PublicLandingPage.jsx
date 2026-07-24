@@ -21,7 +21,7 @@ import {
 } from "react-icons/fi";
 
 
-
+import SEO from "../seo/SEO";
 
 import {
   getLandingPageBySlug,
@@ -317,7 +317,37 @@ return text
 
 
 return (
-
+<>
+  <SEO
+    title={landing.title}
+    description={
+      landing.description ||
+      landing.heroDescription ||
+      `${landing.title} available at ${landing.storeName || settings?.storeName || ""}.`
+    }
+    image={
+      landing.heroImages?.[0] ||
+      landing.heroImage
+    }
+    url={`/landing/${landing.slug}`}
+    type="product"
+    product={{
+      id: landing.id,
+      name: landing.title,
+      description:
+        landing.description ||
+        landing.heroDescription,
+      images:
+        landing.heroImages,
+      image:
+        landing.heroImage,
+      price:
+        landing.offerPrice > 0
+          ? landing.offerPrice
+          : landing.price,
+      stock: 999
+    }}
+  />
 
 <div
 className="
@@ -1817,7 +1847,7 @@ object-contain
 
 </div>
 
-
+</>
 
 );
 
