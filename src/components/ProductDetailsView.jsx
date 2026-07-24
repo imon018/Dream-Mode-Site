@@ -58,6 +58,34 @@ export default function ProductDetailsView() {
 
 
 
+	useEffect(() => {
+
+  if (galleryImages.length <= 1) return;
+
+  const interval = setInterval(() => {
+
+    setSelectedImage((prev) => {
+
+      const currentIndex =
+        galleryImages.indexOf(prev);
+
+      const nextIndex =
+        (currentIndex + 1) %
+        galleryImages.length;
+
+      return galleryImages[nextIndex];
+
+    });
+
+  }, 3000);
+
+  return () => clearInterval(interval);
+
+}, [galleryImages]);
+
+
+
+
   useEffect(()=>{
 
 
@@ -147,44 +175,13 @@ export default function ProductDetailsView() {
 
 
 
-
+	
 	const galleryImages =
-    product.images?.length
-      ?
-      product.images
-      :
-      [
-        product.image
-      ];
-
-
-
-
-	useEffect(() => {
-
-  if (galleryImages.length <= 1) return;
-
-  const interval = setInterval(() => {
-
-    setSelectedImage((prev) => {
-
-      const currentIndex =
-        galleryImages.indexOf(prev);
-
-      const nextIndex =
-        (currentIndex + 1) %
-        galleryImages.length;
-
-      return galleryImages[nextIndex];
-
-    });
-
-  }, 3000);
-
-  return () => clearInterval(interval);
-
-}, [galleryImages]);
-
+  product?.images?.length
+    ? product.images
+    : product?.image
+      ? [product.image]
+      : [];
 
 	
 
