@@ -669,6 +669,8 @@ whitespace-nowrap
                   h-12
                   rounded-xl
                   bg-green-600
+				  border
+                  border-amber-500
                   font-bold
                   flex
                   items-center
