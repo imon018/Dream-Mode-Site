@@ -344,7 +344,7 @@ export default function ProductDetailsView() {
 
 
 
-
+<div className="mt-4">
 
 
                     {/* PRODUCT INFO */}
@@ -616,6 +616,10 @@ export default function ProductDetailsView() {
             </div>
 
 			  </div>
+
+	</div>
+	
+	</div>
 
 
 
