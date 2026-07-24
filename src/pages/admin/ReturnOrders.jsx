@@ -59,7 +59,9 @@ useState("All Status");
 const [dateFilter,setDateFilter] =
 useState("");
 
+const [page, setPage] = useState(1);
 
+const ordersPerPage = 10;
 
 
 const statuses = [
@@ -88,6 +90,10 @@ loadReturns();
 
 
 
+  useEffect(() => {
+  setPage(1);
+}, [search, statusFilter, dateFilter]);
+  
 
 
 async function loadReturns(){
@@ -310,7 +316,18 @@ dateMatch
 
 
 
+const totalPages = Math.max(
+  1,
+  Math.ceil(filteredOrders.length / ordersPerPage)
+);
 
+const currentOrders = filteredOrders.slice(
+  (page - 1) * ordersPerPage,
+  page * ordersPerPage
+);
+
+
+  
 
 return(
 
@@ -632,7 +649,7 @@ space-y-3
 
 {
 
-filteredOrders.map((order)=>(
+currentOrders.map(order => (
 
 
 <div
@@ -1046,7 +1063,7 @@ Action
 
 {
 
-filteredOrders.map(order=>(
+currentOrders.map(order => (
 
 
 <tr
@@ -1333,6 +1350,77 @@ Delete
 
 
 
+
+
+
+
+  {totalPages > 1 && (
+  <div className="flex justify-center items-center gap-2 mt-6 mb-6">
+
+    <button
+      disabled={page === 1}
+      onClick={() => setPage(page - 1)}
+      className="px-4 py-2 rounded-lg border disabled:opacity-40"
+    >
+      Previous
+    </button>
+
+    {[...Array(totalPages)].map((_, index) => {
+      const pageNumber = index + 1;
+
+      const showPage =
+        pageNumber === 1 ||
+        pageNumber === totalPages ||
+        Math.abs(pageNumber - page) <= 1;
+
+      const showDots =
+        (pageNumber === 2 && page > 4) ||
+        (pageNumber === totalPages - 1 &&
+          page < totalPages - 3);
+
+      if (showDots) {
+        return (
+          <span
+            key={pageNumber}
+            className="px-2 text-gray-500 font-bold"
+          >
+            ...
+          </span>
+        );
+      }
+
+      if (!showPage) return null;
+
+      return (
+        <button
+          key={pageNumber}
+          onClick={() => setPage(pageNumber)}
+          className={`w-10 h-10 rounded-lg font-bold ${
+            page === pageNumber
+              ? "bg-amber-500 text-white"
+              : "bg-white border border-gray-200"
+          }`}
+        >
+          {pageNumber}
+        </button>
+      );
+    })}
+
+    <button
+      disabled={page === totalPages}
+      onClick={() => setPage(page + 1)}
+      className="px-4 py-2 rounded-lg border disabled:opacity-40"
+    >
+      Next
+    </button>
+
+  </div>
+)}
+
+
+
+
+  
 
 
 
