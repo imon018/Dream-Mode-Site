@@ -390,7 +390,7 @@ whitespace-nowrap
 <FiGift className="text-base shrink-0"/>
 
 <span>
-আজই অর্ডার করুন, ফ্রি ডেলিভারি!
+আজই অর্ডার করুন, ক্যাশ অন ডেলিভারি!
 </span>
 
 </div>
