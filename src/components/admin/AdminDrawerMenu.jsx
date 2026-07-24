@@ -271,7 +271,7 @@ Products
 {/* LANDING PAGES */}
 
 <NavLink
-  to="/admin/landing-pages"
+  to="/admin/landing"
   onClick={closeDrawer}
   className={({ isActive }) =>
     menuItem +
