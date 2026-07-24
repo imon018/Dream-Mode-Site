@@ -503,53 +503,7 @@ location.search
           >
 
 
-            {[...Array(totalPages)].map((_, index) => {
-  const page = index + 1;
-
-  const showPage =
-    page === 1 ||
-    page === totalPages ||
-    Math.abs(page - currentPage) <= 1;
-
-  const showDots =
-    (page === 2 && currentPage > 4) ||
-    (page === totalPages - 1 &&
-      currentPage < totalPages - 3);
-
-  if (showDots) {
-    return (
-      <span
-        key={page}
-        className="px-2 text-gray-500 font-bold"
-      >
-        ...
-      </span>
-    );
-  }
-
-  if (!showPage) return null;
-
-  return (
-    <button
-      key={page}
-      onClick={() => {
-        setCurrentPage(page);
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      }}
-      className={`w-10 h-10 rounded-full font-bold transition ${
-        currentPage === page
-          ? "bg-amber-500 text-black"
-          : "bg-white border border-gray-200 text-gray-600"
-      }`}
-    >
-      {page}
-    </button>
-  );
-})}
+            
 
 
                 <div
