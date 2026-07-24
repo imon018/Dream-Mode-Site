@@ -798,15 +798,25 @@ text-gray-500
 
 
 
-<p>
+<div className="space-y-2 text-sm text-gray-700">
 
-{
-order.address ||
-"No address available"
-}
+  <p>
+    <strong>Address:</strong> {order.address || "-"}
+  </p>
 
-</p>
+  <p>
+    <strong>Thana:</strong> {order.thana || "-"}
+  </p>
 
+  <p>
+    <strong>District:</strong> {order.district || "-"}
+  </p>
+
+  <p>
+    <strong>Notes:</strong> {order.notes || "-"}
+  </p>
+
+</div>
 
 
 </div>
