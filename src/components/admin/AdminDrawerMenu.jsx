@@ -15,6 +15,7 @@ import {
   FiUser,
   FiUsers,
   FiBox,
+  FiLayout,
   FiShoppingCart,
   FiSend,
   FiUpload,
@@ -267,7 +268,23 @@ Products
 
 
 
+{/* LANDING PAGES */}
 
+<NavLink
+  to="/admin/landing-pages"
+  onClick={closeDrawer}
+  className={({ isActive }) =>
+    menuItem +
+    (isActive
+      ? " bg-[#071F57] text-white"
+      : " text-slate-700 hover:bg-[#FFF7E8]")
+  }
+>
+  <FiLayout size={20} />
+  Landing Pages
+</NavLink>
+
+  
 
 
 {/* ORDERS */}
