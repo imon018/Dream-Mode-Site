@@ -39,6 +39,13 @@ import {
 import ScrollToTop from "./components/ScrollToTop";
 
 
+import { useLocation } from "react-router-dom";
+
+import SEO from "./seo/SEO";
+
+import { routeSEO } from "./seo/routeSEO";
+
+
 
 
 
@@ -51,6 +58,11 @@ function AppContent(){
   const {
     loading,
   } = useAuth();
+
+
+  const location = useLocation();
+
+const seo = routeSEO[location.pathname] || {};
 
 
 
@@ -144,33 +156,31 @@ const {
 
   return (
 
-    <>
+  <>
 
+    <SEO
+      title={seo.title}
+      description={seo.description}
+      keywords={seo.keywords}
+      image={seo.image}
+      url={location.pathname}
+      type={seo.type}
+      noIndex={seo.noIndex}
+    />
 
-      <MaintenanceGuard>
+    <MaintenanceGuard>
 
+      <AppRoutes />
 
-        <AppRoutes />
+    </MaintenanceGuard>
 
+    <Toaster
+      position="top-right"
+    />
 
-      </MaintenanceGuard>
+  </>
 
-
-
-
-
-      <Toaster
-
-        position="top-right"
-
-      />
-
-
-
-    </>
-
-  );
-
+);
 
 }
 
