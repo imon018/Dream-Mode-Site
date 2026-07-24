@@ -1909,3 +1909,34 @@ ${urls}
   res.send(xml);
 
 });
+
+
+
+
+// =================================================
+// ROBOTS.TXT
+// =================================================
+
+exports.robots = onRequest(async (req, res) => {
+
+  const settingsSnap = await admin
+    .firestore()
+    .collection("settings")
+    .doc("store")
+    .get();
+
+  const settings = settingsSnap.data() || {};
+
+  const site = (
+    settings.websiteUrl ||
+    "https://dream-mode-site-eight.vercel.app"
+  ).replace(/\/$/, "");
+
+  res.set("Content-Type", "text/plain");
+
+  res.send(`User-agent: *
+
+Allow: /
+
+Sitemap: ${site}/sitemap.xml`);
+});
