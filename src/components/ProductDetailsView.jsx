@@ -345,44 +345,6 @@ export default function ProductDetailsView() {
 
 
 
-	{/* DESCRIPTION */}
-
-
-
-            <div
-              className="
-                mt-5
-              "
-            >
-
-              <h3
-                className="
-                  text-lg
-                  font-black
-                  text-[#172033]
-                  mb-2
-                "
-              >
-                Product Description
-              </h3>
-
-
-
-              <p
-                className="
-                  text-gray-600
-                  leading-7
-                  text-sm
-                  md:text-base
-                "
-              >
-                {product.description}
-              </p>
-
-
-            </div>
-
-
 
 
                     {/* PRODUCT INFO */}
@@ -427,6 +389,48 @@ export default function ProductDetailsView() {
 
 
 
+			  
+
+	{/* DESCRIPTION */}
+
+
+
+            <div
+              className="
+                mt-5
+              "
+            >
+
+              <h3
+                className="
+                  text-lg
+                  font-black
+                  text-[#172033]
+                  mb-2
+                "
+              >
+                Product Description
+              </h3>
+
+
+
+              <p
+                className="
+                  text-gray-600
+                  leading-7
+                  text-sm
+                  md:text-base
+                "
+              >
+                {product.description}
+              </p>
+
+
+            </div>
+
+
+
+
 
 
             <div
@@ -438,7 +442,7 @@ export default function ProductDetailsView() {
                 bg-gray-50
                 border
                 border-amber-500/20
-                rounded-lg
+                rounded-xl
                 p-2
               "
             >
@@ -552,7 +556,7 @@ export default function ProductDetailsView() {
                 }
 
                 className="
-                  h-8
+                  h-12
                   rounded-xl
                   bg-black
                   border
@@ -587,7 +591,7 @@ export default function ProductDetailsView() {
                 rel="noreferrer"
 
                 className="
-                  h-8
+                  h-12
                   rounded-xl
                   bg-green-600
                   font-bold
