@@ -235,7 +235,7 @@ export default function DesktopLandingPages({ data }) {
                     </a>
 
                     <Link
-                      to={`/admin/landing-pages/edit/${landing.id}`}
+                      to={`/admin/landing/edit/${landing.id}`}
                       className="w-9 h-9 rounded-lg bg-green-50 text-green-600 flex items-center justify-center"
                     >
                       <FiEdit2 />
