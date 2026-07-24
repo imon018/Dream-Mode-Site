@@ -379,7 +379,7 @@ export default function ProductDetailsView() {
                 md:text-5xl
                 font-black
                 leading-tight
-                text-amber-500
+                text-purple-700
               "
             >
 
@@ -435,7 +435,7 @@ export default function ProductDetailsView() {
     w-4
     h-4
     rounded-full
-    bg-amber-500
+    bg-purple-700
     text-white
     flex
     items-center
@@ -507,7 +507,7 @@ export default function ProductDetailsView() {
                   className="
                     text-3xl
                     font-black
-                    text-amber-600
+                    text-purple-700
                   "
                 >
                   ৳ {product.price}
@@ -573,7 +573,7 @@ export default function ProductDetailsView() {
 	</div>
 
 
-
+</div>
 
 
 
@@ -661,7 +661,7 @@ export default function ProductDetailsView() {
 
             </div>
 
-			  </div>
+			  
 
 	
 
