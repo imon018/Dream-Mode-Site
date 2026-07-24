@@ -630,7 +630,7 @@ whitespace-nowrap
 
                 className="
                   h-12
-                  rounded-xl
+                  rounded-lg
                   bg-black
                   border
                   border-amber-500
@@ -665,7 +665,7 @@ whitespace-nowrap
 
                 className="
                   h-12
-                  rounded-xl
+                  rounded-lg
                   bg-green-600
                   font-bold
                   flex
@@ -710,7 +710,7 @@ whitespace-nowrap
   className="
     mt-8
     bg-white
-    rounded-3xl
+    rounded-lg
     border
     border-amber-200
     px-5
