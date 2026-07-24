@@ -158,7 +158,7 @@ export default function MobileLandingPages({ data }) {
               </a>
 
               <Link
-                to={`/admin/landing-pages/edit/${landing.id}`}
+                to={`/admin/landing/edit/${landing.id}`}
                 className="h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center"
               >
                 <FiEdit2 />
