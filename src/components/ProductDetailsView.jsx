@@ -7,7 +7,8 @@ import {
   FiTruck,
   FiRefreshCw,
   FiLock,
-  FiX
+  FiX,
+  FiGift
 } from "react-icons/fi";
 
 import { FaWhatsapp } from "react-icons/fa6";
@@ -264,6 +265,32 @@ export default function ProductDetailsView() {
             gap-8
           "
         >
+
+
+
+			<div
+className="
+bg-purple-700
+text-white
+h-10
+px-3
+flex
+items-center
+justify-center
+gap-2
+text-xs
+font-semibold
+whitespace-nowrap
+"
+>
+
+<FiGift className="text-base shrink-0"/>
+
+<span>
+আজই অর্ডার করুন, ক্যাশ অন ডেলিভারি!
+</span>
+
+</div>
 
 
 
@@ -897,7 +924,7 @@ Order
 
         <div
           className="
-            mt-12
+            mt-8
           "
         >
 
@@ -925,17 +952,16 @@ Order
 
 
           <h2
-            className="
-              text-2xl
-              font-black
-              text-[#172033]
-              mb-5
-            "
-          >
-
-            Related Products
-
-          </h2>
+  className="
+    text-2xl
+    font-black
+    text-[#172033]
+    text-center
+    mb-5
+  "
+>
+  Related Products
+</h2>
 
 
 
