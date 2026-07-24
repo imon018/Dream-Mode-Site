@@ -318,7 +318,7 @@ export default function ProductDetailsView() {
               onClick={()=>setSelectedImage(img)}
               className={`
                 w-14
-                h-14
+                h-20
                 object-cover
                 rounded-md
                 cursor-pointer
@@ -570,6 +570,8 @@ export default function ProductDetailsView() {
 
 			  </div>
 
+	</div>
+
 
 
 
@@ -661,7 +663,7 @@ export default function ProductDetailsView() {
 
 			  </div>
 
-	</div>
+	
 
 		
 	
@@ -685,7 +687,7 @@ export default function ProductDetailsView() {
     border
     border-amber-200
     px-5
-    py-6
+    py-4
   "
 >
 
