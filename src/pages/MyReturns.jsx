@@ -43,6 +43,11 @@ const navigate =
 useNavigate();
 
 
+const [currentPage, setCurrentPage] = useState(1);
+
+const returnsPerPage = 10;
+
+
 
 
 const [
@@ -78,7 +83,9 @@ const [
 
 
 
-
+useEffect(() => {
+  setCurrentPage(1);
+}, [filter]);
 
 
 
@@ -220,7 +227,15 @@ filter
 
 
 
+const totalPages = Math.ceil(
+  filteredOrders.length / returnsPerPage
+);
 
+const currentReturns = filteredOrders.slice(
+  (currentPage - 1) * returnsPerPage,
+  currentPage * returnsPerPage
+);
+  
 
 
 // =========================
@@ -748,7 +763,7 @@ space-y-4
 {
 
 
-filteredOrders.map((order)=>{
+currentReturns.map((order)=>{
 
 
 return (
@@ -1205,6 +1220,61 @@ size={18}
 
 
 
+
+
+
+  {
+  totalPages > 1 && (
+    <div className="flex justify-center items-center gap-2 pt-6">
+
+      <button
+        onClick={() =>
+          setCurrentPage((p) => Math.max(p - 1, 1))
+        }
+        disabled={currentPage === 1}
+        className="px-4 py-2 rounded-lg border bg-white disabled:opacity-50"
+      >
+        Previous
+      </button>
+
+      {Array.from(
+        { length: totalPages },
+        (_, index) => (
+          <button
+            key={index}
+            onClick={() =>
+              setCurrentPage(index + 1)
+            }
+            className={`w-10 h-10 rounded-lg font-bold ${
+              currentPage === index + 1
+                ? "bg-amber-500 text-white"
+                : "bg-white border"
+            }`}
+          >
+            {index + 1}
+          </button>
+        )
+      )}
+
+      <button
+        onClick={() =>
+          setCurrentPage((p) =>
+            Math.min(p + 1, totalPages)
+          )
+        }
+        disabled={currentPage === totalPages}
+        className="px-4 py-2 rounded-lg border bg-white disabled:opacity-50"
+      >
+        Next
+      </button>
+
+    </div>
+  )
+}
+
+
+
+  
 
 
 </div>
