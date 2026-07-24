@@ -20,6 +20,9 @@ import {
 } from "react-icons/fi";
 
 
+import { serverTimestamp } from "firebase/firestore";
+
+
 import {
   getLandingPageBySlug,
   incrementLandingOrders,
@@ -1509,9 +1512,9 @@ landing.deliveryCharge || 0
   total: orderData.total,
 
   status: "Pending",
-  paymentStatus: "Paid",
+  paymentStatus: "Pending",
 
-  createdAt: new Date(),
+  createdAt: serverTimestamp(),
 });
 
 await incrementLandingOrders(
