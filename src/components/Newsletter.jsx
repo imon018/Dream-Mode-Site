@@ -97,15 +97,15 @@ export default function Newsletter() {
 
         <div
           className="
-            rounded-[40px]
+            rounded-lg
             bg-white
             border
             border-slate-200
             shadow-premium
             px-6
-            py-10
-            md:px-12
-            md:py-14
+            py-4
+            md:px-8
+            md:py-6
             text-center
           "
         >
@@ -183,7 +183,7 @@ export default function Newsletter() {
 
               className="
                 flex-1
-                rounded-2xl
+                rounded-lg
                 border
                 border-gray-200
                 px-5
@@ -202,7 +202,7 @@ export default function Newsletter() {
               disabled={loading}
 
               className="
-                rounded-2xl
+                rounded-lg
                 px-8
                 py-4
                 bg-blue-900
