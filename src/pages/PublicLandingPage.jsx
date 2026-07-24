@@ -20,7 +20,6 @@ import {
 } from "react-icons/fi";
 
 
-import { serverTimestamp } from "firebase/firestore";
 
 
 import {
@@ -1514,7 +1513,7 @@ landing.deliveryCharge || 0
   status: "Pending",
   paymentStatus: "Pending",
 
-  createdAt: serverTimestamp(),
+  createdAt: new Date().toISOString(),
 });
 
 await incrementLandingOrders(
