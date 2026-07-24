@@ -23,6 +23,11 @@ export default function WishlistPage() {
   const navigate = useNavigate();
 
 
+  const [currentPage, setCurrentPage] = useState(1);
+
+	const itemsPerPage = 10;
+
+
 
   const {
     wishlist,
@@ -70,7 +75,17 @@ export default function WishlistPage() {
 
 
 
+const totalPages = Math.ceil(
+  wishlist.length / itemsPerPage
+);
 
+const currentWishlist = wishlist.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
+
+
+  
 
 
 return (
@@ -345,9 +360,7 @@ space-y-4
 
 
 {
-wishlist.map(
-
-(item)=>(
+currentWishlist.map((item)=>(
 
 
 <div
@@ -608,6 +621,62 @@ text-sm
 
 
 }
+
+
+
+
+
+  {
+  totalPages > 1 && (
+    <div className="flex justify-center items-center gap-2 pt-6">
+
+      <button
+        onClick={() =>
+          setCurrentPage((p) => Math.max(p - 1, 1))
+        }
+        disabled={currentPage === 1}
+        className="px-4 py-2 rounded-lg border bg-white disabled:opacity-50"
+      >
+        Previous
+      </button>
+
+      {Array.from(
+        { length: totalPages },
+        (_, index) => (
+          <button
+            key={index}
+            onClick={() =>
+              setCurrentPage(index + 1)
+            }
+            className={`w-10 h-10 rounded-lg font-bold ${
+              currentPage === index + 1
+                ? "bg-amber-500 text-white"
+                : "bg-white border"
+            }`}
+          >
+            {index + 1}
+          </button>
+        )
+      )}
+
+      <button
+        onClick={() =>
+          setCurrentPage((p) =>
+            Math.min(p + 1, totalPages)
+          )
+        }
+        disabled={currentPage === totalPages}
+        className="px-4 py-2 rounded-lg border bg-white disabled:opacity-50"
+      >
+        Next
+      </button>
+
+    </div>
+  )
+}
+
+
+  
 
 
 </div>
