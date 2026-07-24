@@ -317,7 +317,7 @@ className="px-4 py-2 rounded-lg border disabled:opacity-40"
 Previous
 </button>
 
-{
+
 
 {[...Array(totalPages)].map((_, index) => {
 
@@ -360,7 +360,6 @@ page === pageNumber
 
   
 
-}
 
 <button
 disabled={page===totalPages}
