@@ -46,6 +46,11 @@ const navigate = useNavigate();
 const [deleteId,setDeleteId] = useState(null);
 
 
+const [page, setPage] = useState(1);
+
+const ordersPerPage = 10;
+
+
 
 const [orders,setOrders] =
 useState([]);
@@ -98,7 +103,15 @@ loadOrders();
 
 
 
-
+useEffect(() => {
+  setPage(1);
+}, [
+  search,
+  statusFilter,
+  paymentFilter,
+  dateFilter
+]);
+	
 
 
 const loadOrders = async()=>{
@@ -275,9 +288,7 @@ order.id
 .includes(searchText);
 
 
-
-
-
+	
 
 
 const statusMatch =
@@ -336,10 +347,6 @@ new Date(order.createdAt)
 
 
 
-
-
-
-
 return(
 
 searchMatch &&
@@ -355,7 +362,16 @@ dateMatch
 
 
 
+const totalPages = Math.max(
+  1,
+  Math.ceil(filteredOrders.length / ordersPerPage)
+);
 
+const currentOrders = filteredOrders.slice(
+  (page - 1) * ordersPerPage,
+  page * ordersPerPage
+);
+	
 
 
 
@@ -792,7 +808,7 @@ space-y-3
 ">
 
 {
-filteredOrders.map(order=>(
+currentOrders.map(order=>(
 
 <div
 key={order.id}
@@ -1343,7 +1359,7 @@ Action
 
 {
 
-filteredOrders.map(order=>(
+currentOrders.map(order=>(
 
 
 <tr
