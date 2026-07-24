@@ -318,62 +318,6 @@ export default function ProductDetailsView() {
 
 
 
-
-            {/* THUMBNAILS */}
-
-{
-  galleryImages.length > 1 && (
-
-    <div
-      className="
-        flex
-        gap-3
-        mt-4
-        overflow-x-auto
-        pb-1
-        [-ms-overflow-style:none]
-        [scrollbar-width:none]
-        [&::-webkit-scrollbar]:hidden
-      "
-    >
-
-      {
-        galleryImages.map((img,index)=>(
-
-          <img
-            key={index}
-            src={img}
-            alt=""
-            onClick={()=>setSelectedImage(img)}
-            className={`
-              w-20
-              h-20
-              object-cover
-              rounded-md
-              cursor-pointer
-              border
-              transition
-
-              ${
-                selectedImage===img
-                ? "border-amber-500"
-                : "border-gray-200"
-              }
-            `}
-          />
-
-        ))
-      }
-
-    </div>
-
-  )
-}
-
-
-
-          </div>
-
                     {/* PRODUCT INFO */}
 
 
