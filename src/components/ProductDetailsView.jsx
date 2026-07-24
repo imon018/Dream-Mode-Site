@@ -258,13 +258,7 @@ export default function ProductDetailsView() {
 
 
 
-        <div
-          className="
-            grid
-            lg:grid-cols-2
-            gap-8
-          "
-        >
+        
 
 
 
@@ -291,6 +285,15 @@ whitespace-nowrap
 </span>
 
 </div>
+
+
+		  <div
+          className="
+            grid
+            lg:grid-cols-2
+            gap-8
+          "
+        >
 
 
 
@@ -424,7 +427,7 @@ whitespace-nowrap
 
             <div
               className="
-                mt-5
+                mt-5			
               "
             >
 
@@ -507,9 +510,6 @@ whitespace-nowrap
                 flex
                 items-center
                 justify-between
-                bg-gray-50
-                border
-                border-amber-500/20
                 rounded-xl
                 p-2
               "
