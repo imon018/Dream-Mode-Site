@@ -660,6 +660,79 @@ No subscribers found
 
 
 
+
+  {totalPages > 1 && (
+  <div className="flex justify-center items-center gap-2 mt-6 mb-6">
+
+    <button
+      disabled={page === 1}
+      onClick={() => setPage(page - 1)}
+      className="px-4 py-2 rounded-lg border disabled:opacity-40"
+    >
+      Previous
+    </button>
+
+    {[...Array(totalPages)].map((_, index) => {
+      const pageNumber = index + 1;
+
+      const showPage =
+        pageNumber === 1 ||
+        pageNumber === totalPages ||
+        Math.abs(pageNumber - page) <= 1;
+
+      const showDots =
+        (pageNumber === 2 && page > 4) ||
+        (pageNumber === totalPages - 1 &&
+          page < totalPages - 3);
+
+      if (showDots) {
+        return (
+          <span
+            key={pageNumber}
+            className="px-2 text-gray-500 font-bold"
+          >
+            ...
+          </span>
+        );
+      }
+
+      if (!showPage) return null;
+
+      return (
+        <button
+          key={pageNumber}
+          onClick={() => setPage(pageNumber)}
+          className={`w-10 h-10 rounded-lg font-bold ${
+            page === pageNumber
+              ? "bg-amber-500 text-white"
+              : "bg-white border border-gray-200"
+          }`}
+        >
+          {pageNumber}
+        </button>
+      );
+    })}
+
+    <button
+      disabled={page === totalPages}
+      onClick={() => setPage(page + 1)}
+      className="px-4 py-2 rounded-lg border disabled:opacity-40"
+    >
+      Next
+    </button>
+
+  </div>
+)}
+
+
+
+
+  
+
+
+
+
+
   {
 deleteId && (
 
