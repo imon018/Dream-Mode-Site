@@ -27,7 +27,7 @@ export default function Users() {
   const [deleteUserData, setDeleteUserData] = useState(null);
   const [page, setPage] = useState(1);
 
-  const usersPerPage = 6;
+  const usersPerPage = 10;
 
   useEffect(() => {
     loadUsers();
