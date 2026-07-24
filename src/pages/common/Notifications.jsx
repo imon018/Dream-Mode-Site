@@ -331,6 +331,7 @@ const currentNotifications = filteredNotifications.slice(
           </p>
         </div>
       ) : (
+		<>
         <div className="space-y-4">
 
           {currentNotifications.map((item) => (
@@ -506,7 +507,7 @@ const currentNotifications = filteredNotifications.slice(
 )}
 
 
-
+	</>
 
 
       )}
