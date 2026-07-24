@@ -49,6 +49,7 @@ import LandingPreview from "../pages/admin/LandingPreview";
 import LandingOrderSuccessPreview from "../pages/admin/LandingOrderSuccessPreview";
 import PublicLandingPage from "../pages/PublicLandingPage";
 import LandingOrderSuccess from "../pages/LandingOrderSuccess";
+import LandingEdit from "../pages/admin/LandingEdit";
 
 
 /* =========================
@@ -465,6 +466,11 @@ element={<ReturnOrder />}
          <Route
  path="landing/order-success-preview"
  element={<LandingOrderSuccessPreview />}
+/>
+
+         <Route
+  path="landing/edit/:id"
+  element={<LandingEdit />}
 />
 
 
