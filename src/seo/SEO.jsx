@@ -17,10 +17,11 @@ export default function SEO({
 const siteName =
   settings.storeName || "";
 
-const siteUrl =
+const siteUrl = (
   settings.websiteUrl ||
-  SITE_SEO.siteUrl;
-
+  SITE_SEO.siteUrl
+).replace(/\/$/, "");
+  
 const siteLogo =
   settings.seoImage ||
   settings.logoUrl ||
