@@ -1,7 +1,3 @@
-const pageTitle = title
-  ? `${title} | ${siteName}`
-  : `${siteName} | Dress Your Dream Live Your Style Online Shopping`;
-
 export const routeSEO = {
   "/": {
   title: "Home",
@@ -19,12 +15,6 @@ export const routeSEO = {
     title: "Categories",
     description:
       "Explore products by category.",
-  },
-
-  "/shop": {
-    title: "Shop",
-    description:
-      "Browse all products available in our store.",
   },
 
   "/about": {
