@@ -17,6 +17,10 @@
     ],
 
     "rewrites": [
+       {
+    "source": "/robots.txt",
+    "function": "robots"
+  },
       {
         "source": "/sitemap.xml",
         "function": "sitemap"
