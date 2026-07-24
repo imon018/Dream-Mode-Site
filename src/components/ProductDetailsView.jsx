@@ -195,18 +195,19 @@ export default function ProductDetailsView() {
   <>
 
     <SEO
-      title={product.name}
-      description={
-        product.description ||
-        `${product.name} available at ${settings.storeName}.`
-      }
-      image={
-        product.images?.[0] ||
-        product.image
-      }
-      url={`/product/${product.id}`}
-      type="product"
-    />
+  title={product.name}
+  description={
+    product.description ||
+    `${product.name} available at ${settings.storeName}.`
+  }
+  image={
+    product.images?.[0] ||
+    product.image
+  }
+  url={`/product/${product.id}`}
+  type="product"
+  product={product}
+/>
 
     <div
       className="
