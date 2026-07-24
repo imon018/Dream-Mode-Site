@@ -214,6 +214,11 @@ const siteLogo =
         content={pageImage}
       />
 
+        <meta
+  name="google-site-verification"
+  content={settings.googleVerification || ""}
+/>
+
 <script type="application/ld+json">
   {JSON.stringify(schemaData)}
 </script>
