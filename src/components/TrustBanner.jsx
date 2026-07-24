@@ -128,10 +128,10 @@ export default function TrustBanner() {
 
             <div
   className="
-  grid
-  grid-cols-3
-  md:grid-cols-3
-  gap-5
+    grid
+    grid-cols-3
+    gap-2
+    md:gap-5
   "
 >
 
@@ -142,21 +142,23 @@ export default function TrustBanner() {
                   <div
                     key={item.title}
                     className="
-                    flex
-                    items-center
-                    gap-6
-                    rounded-3xl
-                    bg-white
-                    border
-                    border-slate-200
-                    px-6
-                    py-5
-                    shadow-md
-                    transition
-                    duration-300
-                    hover:-translate-y-1
-                    hover:shadow-xl
-                    "
+flex
+flex-col
+items-center
+text-center
+gap-2
+rounded-lg
+bg-white
+border
+border-slate-200
+px-2
+py-3
+shadow-md
+transition
+duration-300
+hover:-translate-y-1
+hover:shadow-xl
+"
                   >
 
 
@@ -164,15 +166,18 @@ export default function TrustBanner() {
 
                     <div
                       className="
-                      w-16
-                      h-16
-                      rounded-lg
-                      bg-blue-50
-                      flex
-                      items-center
-                      justify-center
-                      text-4xl
-                      "
+w-10
+h-10
+md:w-16
+md:h-16
+rounded-lg
+bg-blue-50
+flex
+items-center
+justify-center
+text-2xl
+md:text-4xl
+"
                     >
 
                       {item.icon}
@@ -186,26 +191,12 @@ export default function TrustBanner() {
 
                     <div>
 
-                      <p
-                        className="
-                        text-gray-600
-                        text-sm
-                        md:text-base
-                        "
-                      >
+                      <p className="text-[10px] md:text-base text-gray-600">
                         {item.title}
                       </p>
 
 
-                      <h3
-                        className="
-                        text-2xl
-                        md:text-3xl
-                        font-black
-                        text-blue-900
-                        mt-1
-                        "
-                      >
+                      <h3 className="text-sm md:text-3xl font-black text-blue-900 mt-1">
                         {item.value}
                       </h3>
 
