@@ -10,6 +10,8 @@ import {
   FiX
 } from "react-icons/fi";
 
+import { FaWhatsapp } from "react-icons/fa6";
+
 import Button from "./ui/Button";
 import RelatedProducts from "./RelatedProducts";
 import ProductReviews from "./product/ProductReviews";
@@ -155,6 +157,35 @@ export default function ProductDetailsView() {
         product.image
       ];
 
+
+
+
+	useEffect(() => {
+
+  if (galleryImages.length <= 1) return;
+
+  const interval = setInterval(() => {
+
+    setSelectedImage((prev) => {
+
+      const currentIndex =
+        galleryImages.indexOf(prev);
+
+      const nextIndex =
+        (currentIndex + 1) %
+        galleryImages.length;
+
+      return galleryImages[nextIndex];
+
+    });
+
+  }, 3000);
+
+  return () => clearInterval(interval);
+
+}, [galleryImages]);
+
+
 	
 
 
@@ -188,34 +219,6 @@ export default function ProductDetailsView() {
 
   }
 
-
-
-
-
-  useEffect(() => {
-
-  if (galleryImages.length <= 1) return;
-
-  const interval = setInterval(() => {
-
-    setSelectedImage((prev) => {
-
-      const currentIndex =
-        galleryImages.indexOf(prev);
-
-      const nextIndex =
-        (currentIndex + 1) %
-        galleryImages.length;
-
-      return galleryImages[nextIndex];
-
-    });
-
-  }, 3000);
-
-  return () => clearInterval(interval);
-
-}, [galleryImages]);
 
 
 
@@ -292,6 +295,8 @@ export default function ProductDetailsView() {
 
   </div>
 
+	<div className="mx-5">
+
   {
     galleryImages.length > 1 && (
 
@@ -317,8 +322,8 @@ export default function ProductDetailsView() {
               alt=""
               onClick={()=>setSelectedImage(img)}
               className={`
-                w-20
-                h-20
+                w-14
+                h-14
                 object-cover
                 rounded-md
                 cursor-pointer
@@ -345,6 +350,46 @@ export default function ProductDetailsView() {
 
 
 
+	{/* DESCRIPTION */}
+
+
+
+            <div
+              className="
+                mt-5
+              "
+            >
+
+              <h3
+                className="
+                  text-lg
+                  font-black
+                  text-[#172033]
+                  mb-2
+                "
+              >
+                Product Description
+              </h3>
+
+
+
+              <p
+                className="
+                  text-gray-600
+                  leading-7
+                  text-sm
+                  md:text-base
+                "
+              >
+                {product.description}
+              </p>
+
+
+            </div>
+
+
+
+
                     {/* PRODUCT INFO */}
 
 
@@ -354,8 +399,8 @@ export default function ProductDetailsView() {
             <div
               className="
                 inline-flex
-                px-3
-                py-2
+                px-2
+                py-1
                 rounded-xl
                 bg-black
                 text-amber-400
@@ -372,7 +417,7 @@ export default function ProductDetailsView() {
 
             <h1
               className="
-                mt-5
+                mt-3
                 text-3xl
                 md:text-5xl
                 font-black
@@ -391,15 +436,15 @@ export default function ProductDetailsView() {
 
             <div
               className="
-                mt-5
+                mt-3
                 flex
                 items-center
                 justify-between
-                bg-white
+                bg-gray-50
                 border
                 border-amber-500/20
-                rounded-xl
-                p-4
+                rounded-lg
+                p-2
               "
             >
 
@@ -489,50 +534,6 @@ export default function ProductDetailsView() {
 
 
 
-            {/* DESCRIPTION */}
-
-
-
-            <div
-              className="
-                mt-5
-              "
-            >
-
-              <h3
-                className="
-                  text-lg
-                  font-black
-                  text-[#172033]
-                  mb-2
-                "
-              >
-                Product Description
-              </h3>
-
-
-
-              <p
-                className="
-                  text-gray-600
-                  leading-7
-                  text-sm
-                  md:text-base
-                "
-              >
-                {product.description}
-              </p>
-
-
-            </div>
-
-
-
-
-
-
-
-
             {/* ACTION BUTTONS */}
 
 
@@ -556,7 +557,7 @@ export default function ProductDetailsView() {
                 }
 
                 className="
-                  h-12
+                  h-8
                   rounded-xl
                   bg-black
                   border
@@ -591,10 +592,9 @@ export default function ProductDetailsView() {
                 rel="noreferrer"
 
                 className="
-                  h-12
+                  h-8
                   rounded-xl
                   bg-green-600
-                  text-white
                   font-bold
                   flex
                   items-center
@@ -605,7 +605,8 @@ export default function ProductDetailsView() {
 
               >
 
-                WhatsApp Order
+                <FaWhatsapp className="text-xl" />
+<span>WhatsApp Order</span>
 
 
               </a>
@@ -614,6 +615,8 @@ export default function ProductDetailsView() {
 
 
             </div>
+
+			  </div>
 
 
 
