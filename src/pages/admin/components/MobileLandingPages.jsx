@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
+
 import {
   FiSearch,
   FiEye,
   FiEdit2,
   FiTrash2,
   FiPlus,
+  FiShare2,
 } from "react-icons/fi";
 
 import { toggleLandingPageStatus } from "../../../services/landingPageService";
@@ -26,6 +28,27 @@ export default function MobileLandingPages({ data }) {
       console.log(err);
     }
   }
+
+  async function shareLanding(slug) {
+
+  const url = `${window.location.origin}/landing/${slug}`;
+
+  if (navigator.share) {
+
+    await navigator.share({
+      title: "Dream Mode Landing Page",
+      url,
+    });
+
+  } else {
+
+    await navigator.clipboard.writeText(url);
+
+    alert("Link copied!");
+
+  }
+
+}
 
   return (
     <div className="bg-[#faf9f6] min-h-screen p-3">
@@ -79,10 +102,10 @@ export default function MobileLandingPages({ data }) {
             <div className="flex gap-3">
 
               <img
-                src={landing.heroImage}
-                className="w-20 h-20 rounded-lg object-cover"
-                alt=""
-              />
+  src={landing.heroImages?.[0] || landing.heroImage}
+  alt={landing.title}
+  className="w-14 h-14 rounded-lg object-cover"
+/>
 
               <div className="flex-1">
 
@@ -123,7 +146,7 @@ export default function MobileLandingPages({ data }) {
 
             </div>
 
-            <div className="grid grid-cols-3 gap-2 mt-4">
+            <div className="grid grid-cols-4 gap-2 mt-4">
 
               <a
                 href={`/landing/${landing.slug}`}
@@ -147,6 +170,13 @@ export default function MobileLandingPages({ data }) {
               >
                 <FiTrash2 />
               </button>
+
+              <button
+  onClick={() => shareLanding(landing.slug)}
+  className="h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center"
+>
+  <FiShare2 />
+</button>
 
             </div>
 
