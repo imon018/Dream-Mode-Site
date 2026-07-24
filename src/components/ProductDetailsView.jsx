@@ -379,7 +379,7 @@ export default function ProductDetailsView() {
                 md:text-5xl
                 font-black
                 leading-tight
-                text-[#172033]
+                text-amber-500
               "
             >
 
@@ -403,27 +403,68 @@ export default function ProductDetailsView() {
 
               <h3
                 className="
-                  text-lg
+                  text-xl
                   font-black
                   text-[#172033]
                   mb-2
                 "
               >
-                Product Description
+                পণ্যের বিবরণ
               </h3>
 
 
 
-              <p
-                className="
-                  text-gray-600
-                  leading-7
-                  text-sm
-                  md:text-base
-                "
-              >
-                {product.description}
-              </p>
+              <div className="space-y-3 mt-2">
+
+  {(product.description || "")
+    .split("\n")
+    .filter(line => line.trim() !== "")
+    .map((line, index) => (
+
+      <div
+        key={index}
+        className="
+          flex
+          items-start
+          gap-2
+        "
+      >
+
+        <div
+  className="
+    w-4
+    h-4
+    rounded-full
+    bg-amber-500
+    text-white
+    flex
+    items-center
+    justify-center
+    text-xs
+    font-bold
+    shrink-0
+    mt-1
+  "
+>
+  ✓
+</div>
+
+        <p
+          className="
+            text-gray-600
+            leading-7
+            text-sm
+            md:text-base
+          "
+        >
+          {line}
+        </p>
+
+      </div>
+
+    ))}
+
+</div>
 
 
             </div>
@@ -527,6 +568,9 @@ export default function ProductDetailsView() {
             </div>
 
 
+			  </div>
+
+
 
 
 
@@ -619,7 +663,7 @@ export default function ProductDetailsView() {
 
 	</div>
 
-		</div>
+		
 	
 
 
