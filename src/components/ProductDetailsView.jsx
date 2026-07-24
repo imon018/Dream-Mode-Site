@@ -619,7 +619,7 @@ export default function ProductDetailsView() {
 
 	</div>
 	
-	</div>
+
 
 
 
