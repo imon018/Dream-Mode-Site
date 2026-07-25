@@ -10,6 +10,33 @@ import "./index.css";
 import "swiper/css";
 import "swiper/css/pagination";
 
+
+window.deferredPrompt = null;
+
+window.addEventListener(
+  "beforeinstallprompt",
+  (e) => {
+
+    e.preventDefault();
+
+    window.deferredPrompt = e;
+
+  }
+);
+
+window.addEventListener(
+  "appinstalled",
+  () => {
+
+    window.deferredPrompt = null;
+
+    console.log("Dream Mode installed");
+
+  }
+);
+
+
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
   <HelmetProvider>
