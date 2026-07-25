@@ -1,4 +1,4 @@
-import { db } from "./firebaseAdmin";
+import { db } from "./firebaseAdmin.js";
 
 function escapeXml(value = "") {
   return String(value)
