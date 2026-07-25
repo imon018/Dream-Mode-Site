@@ -39,3 +39,4 @@ Sitemap: ${site}/sitemap.xml`);
     res.status(500).send("Failed to generate robots.txt");
   }
 }
+
