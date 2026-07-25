@@ -423,44 +423,33 @@ match /notifications/{notificationId} {
 // PASSWORD CHANGE REQUESTS  
 // =========================  
 
-match /passwordChangeRequests/{requestId} {  
+match /passwordChangeRequests/{requestId} {
 
+  allow create:
+    if request.auth != null
+    &&
+    request.resource.data.uid == request.auth.uid;
 
-  // Create request from logged in user  
+  allow update:
+    if request.auth != null
+    &&
+    resource.data.uid == request.auth.uid
+    &&
+    request.resource.data.uid == request.auth.uid;
 
-  allow create:  
-    if request.auth != null  
-    &&  
-    request.resource.data.uid == request.auth.uid;  
+  allow read:
+    if true;
 
+  allow delete:
+    if request.auth != null
+    &&
+    resource.data.uid == request.auth.uid;
 
+  allow read, delete:
+    if isAdmin();
+}
 
-
-  // Read request using email verification link token  
-
-  allow read:  
-    if true;  
-
-
-
-
-  // Delete after successful password change  
-
-  allow delete:  
-    if request.auth != null  
-    &&  
-    resource.data.uid == request.auth.uid;  
-
-
-
-
-  // Admin access  
-
-  allow read, delete:  
-    if isAdmin();  
-
-
-}  
+  
 
 // =========================
 // PASSWORD RESET REQUESTS
