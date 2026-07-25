@@ -5,6 +5,15 @@ export default function useInstallPrompt() {
   const [installable, setInstallable] = useState(false);
 
   useEffect(() => {
+    const isInstalled =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone;
+
+    if (isInstalled) {
+      setInstallable(false);
+      return;
+    }
+
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -14,7 +23,10 @@ export default function useInstallPrompt() {
     window.addEventListener("beforeinstallprompt", handler);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handler
+      );
     };
   }, []);
 
@@ -22,12 +34,16 @@ export default function useInstallPrompt() {
     if (!deferredPrompt) return false;
 
     deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
 
-    setDeferredPrompt(null);
-    setInstallable(false);
+    const choice =
+      await deferredPrompt.userChoice;
 
-    return true;
+    if (choice.outcome === "accepted") {
+      setInstallable(false);
+      setDeferredPrompt(null);
+    }
+
+    return choice.outcome === "accepted";
   };
 
   return {
