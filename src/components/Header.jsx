@@ -22,6 +22,7 @@ import {
   FiLogIn,
   FiUserPlus,
   FiX,
+  FiDownload,
 } from "react-icons/fi";
 
 
@@ -86,6 +87,9 @@ const {
 const {
  unreadCount
 }=useNotifications();
+
+
+const [showInstallDialog, setShowInstallDialog] = useState(false);
 
 
 
@@ -165,6 +169,23 @@ const handleLogout = async()=>{
 
 
 
+
+
+  const handleInstallClick = () => {
+
+  setShowInstallDialog(false);
+
+  if (!window.deferredPrompt) {
+    alert("App installation is not available yet.");
+    return;
+  }
+
+  window.deferredPrompt.prompt();
+};
+
+
+
+  
 
 
 const handleSearch = (e)=>{
@@ -1111,6 +1132,36 @@ Cart
 
 
 
+  <button
+
+onClick={() => setShowInstallDialog(true)}
+
+className="
+flex
+items-center
+gap-3
+px-6
+py-4
+text-lg
+w-full
+text-left
+"
+
+>
+
+<FiDownload size={20}/>
+
+<span>App</span>
+
+</button>
+
+
+
+  
+
+
+
+
 <Link
 to="/login"
 onClick={()=>setMobileOpen(false)}
@@ -1382,6 +1433,87 @@ onLogout={handleLogout}
 
 </div>
 
+
+
+
+
+  {
+showInstallDialog && (
+
+<div
+className="
+fixed
+inset-0
+bg-black/40
+z-[100]
+flex
+items-center
+justify-center
+p-5
+"
+>
+
+<div
+className="
+bg-white
+rounded-2xl
+p-6
+w-full
+max-w-sm
+"
+>
+
+<h3 className="text-xl font-bold">
+
+Downloading Dream Mode App?
+
+</h3>
+
+<div className="flex gap-3 mt-6">
+
+<button
+
+onClick={handleInstallClick}
+
+className="
+flex-1
+bg-[#071F57]
+text-white
+py-3
+rounded-xl
+"
+
+>
+
+Yes
+
+</button>
+
+<button
+
+onClick={() => setShowInstallDialog(false)}
+
+className="
+flex-1
+border
+py-3
+rounded-xl
+"
+
+>
+
+No
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+)
+}
 
 
 
