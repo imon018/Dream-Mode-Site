@@ -6,6 +6,7 @@ import {
 import {
   doc,
   setDoc,
+  deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -35,39 +36,40 @@ const token =
 crypto.randomUUID();
 
 
+const requestRef =
+doc(
+db,
+"passwordChangeRequests",
+user.uid
+);
 
 
+// আগের leftover request (যদি থাকে) আগে delete করে দিচ্ছি,
+// যাতে নিচের setDoc সবসময় সত্যিকারের "create" হয় এবং
+// Cloud Function এর onDocumentCreated trigger ঠিকমতো ফায়ার করে।
+// আগেরটা না থাকলেও deleteDoc error দেয় না, তাই safe।
+
+await deleteDoc(
+requestRef
+).catch(
+()=>{}
+);
 
 
 await setDoc(
-
-doc(
-
-db,
-
-"passwordChangeRequests",
-
-user.uid
-
-),
-
+requestRef,
 {
 
 uid:user.uid,
-
 email:user.email,
-
 token,
-
 verified:false,
-
 createdAt:
 serverTimestamp()
 
 }
 
 );
-
 
 
 
