@@ -45,9 +45,9 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Build APK
-        run: |
-          cd android
-          ./gradlew assembleRelease
+			  run: |
+   			  cd android
+   		 	  ./gradlew assembleDebug
 
       - name: Build AAB
         run: |
@@ -55,11 +55,11 @@ jobs:
           ./gradlew bundleRelease
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: DreamMode-APK
-          path: android/app/build/outputs/apk/release/*.apk
-
+			  uses: actions/upload-artifact@v4
+		    with:
+   		    name: DreamMode-Debug-APK
+   			  path: android/app/build/outputs/apk/debug/*.apk
+    
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
