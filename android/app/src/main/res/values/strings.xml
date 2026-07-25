@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Dream Mode</string>
+    <string name="title_activity_main">Dream Mode</string>
+    <string name="package_name">com.dreammode.app</string>
+    <string name="custom_url_scheme">com.dreammode.app</string>
+</resources>
