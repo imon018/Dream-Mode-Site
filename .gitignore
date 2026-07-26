@@ -3,3 +3,7 @@ dist
 .env
 .firebase
 .vscode
+android/.gradle
+android/app/build
+android/build
+

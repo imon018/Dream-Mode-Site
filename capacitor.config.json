@@ -4,7 +4,13 @@
   "webDir": "dist",
   "plugins": {
     "CapacitorUpdater": {
-      "appId": "com.dreammode.app"
+      "appId": "com.dreammode.app",
+      "version": "0.0.0",
+      "autoUpdate": "always",
+      "autoSplashscreen": true
+    },
+    "SplashScreen": {
+      "launchAutoHide": false
     }
   }
 }
