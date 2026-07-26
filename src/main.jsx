@@ -11,7 +11,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 
-
 CapacitorUpdater.notifyAppReady()
   .then(() => {
     console.log("Capgo App Ready");
@@ -21,16 +20,14 @@ CapacitorUpdater.notifyAppReady()
   });
 
 
-
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-  <HelmetProvider>
-    <SettingsProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </SettingsProvider>
-  </HelmetProvider>
-</React.StrictMode>
+    <HelmetProvider>
+      <SettingsProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </SettingsProvider>
+    </HelmetProvider>
+  </React.StrictMode>
 );
