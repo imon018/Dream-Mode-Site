@@ -1,7 +1,7 @@
 export const SITE_SEO = {
   siteName: "Dream Mode",
 
-  siteUrl: "https://dream-mode-site-eight.vercel.app",
+  siteUrl: "https://dream-mode.shop",
 
   defaultTitle: "Dream Mode | Premium Online Shopping",
 
