@@ -1,5 +1,7 @@
 import {
-  useState
+  useState,
+  useEffect,
+  useRef
 } from "react";
 
 
@@ -30,9 +32,20 @@ import {
 
 
 
+// ১ মিনিট কুলডাউন (সেকেন্ডে)
+const COOLDOWN_SECONDS = 60;
+
+
+// এই ব্রাউজারে forgot-password রিকোয়েস্টের কুলডাউন সেভ রাখার key
+const COOLDOWN_KEY = "forgotPasswordCooldownUntil";
+
+
+
+
 
 
 export default function ForgotPassword(){
+
 
 
 
@@ -50,6 +63,155 @@ setLoading
 
 
 
+const [
+remainingSeconds,
+setRemainingSeconds
+]=useState(0);
+
+
+const intervalRef =
+useRef(null);
+
+
+
+
+// =========================
+// COOLDOWN TIMER START করার হেল্পার
+// =========================
+
+const startCooldownFrom =
+(untilTimestamp)=>{
+
+
+if(intervalRef.current){
+
+clearInterval(
+intervalRef.current
+);
+
+}
+
+
+
+const tick =
+()=>{
+
+const secondsLeft =
+Math.ceil(
+(untilTimestamp - Date.now())
+/
+1000
+);
+
+
+if(secondsLeft <= 0){
+
+setRemainingSeconds(0);
+
+
+if(intervalRef.current){
+
+clearInterval(
+intervalRef.current
+);
+
+intervalRef.current = null;
+
+}
+
+
+localStorage.removeItem(
+COOLDOWN_KEY
+);
+
+
+return;
+
+}
+
+
+setRemainingSeconds(
+secondsLeft
+);
+
+};
+
+
+
+tick();
+
+
+intervalRef.current =
+setInterval(
+tick,
+1000
+);
+
+
+};
+
+
+
+
+// =========================
+// PAGE LOAD হলে আগের চলমান cooldown আছে কিনা চেক
+// =========================
+
+useEffect(()=>{
+
+
+const savedUntil =
+localStorage.getItem(
+COOLDOWN_KEY
+);
+
+
+if(savedUntil){
+
+
+const untilTimestamp =
+Number(
+savedUntil
+);
+
+
+if(untilTimestamp > Date.now()){
+
+startCooldownFrom(
+untilTimestamp
+);
+
+}
+else{
+
+localStorage.removeItem(
+COOLDOWN_KEY
+);
+
+}
+
+
+}
+
+
+
+return ()=>{
+
+if(intervalRef.current){
+
+clearInterval(
+intervalRef.current
+);
+
+}
+
+};
+
+
+},[]);
+
+
+
 
 
 
@@ -57,6 +219,21 @@ setLoading
 
 const handleReset =
 async()=>{
+
+
+// কুলডাউন চলাকালীন ক্লিক ঠেকানোর extra safety
+// (বাটন disabled থাকবে, তাও guard হিসেবে রাখা হলো)
+if(remainingSeconds > 0){
+
+errorToast(
+`Please wait ${remainingSeconds}s before trying again.`
+);
+
+return;
+
+}
+
+
 
 
 if(!email){
@@ -102,6 +279,27 @@ successToast(
 
 
 setEmail("");
+
+
+
+
+// কুলডাউন শুরু + localStorage এ সেভ (রিফ্রেশ করলেও ঠিক থাকবে)
+
+const untilTimestamp =
+Date.now() + COOLDOWN_SECONDS * 1000;
+
+
+localStorage.setItem(
+COOLDOWN_KEY,
+String(
+untilTimestamp
+)
+);
+
+
+startCooldownFrom(
+untilTimestamp
+);
 
 
 
@@ -363,7 +561,6 @@ focus:border-amber-500
 
 
 
-
 <p
 
 className="
@@ -389,7 +586,7 @@ mt-3
 
 onClick={handleReset}
 
-disabled={loading}
+disabled={loading || remainingSeconds > 0}
 
 className="
 w-full
@@ -410,6 +607,14 @@ loading
 ?
 
 "Sending..."
+
+:
+
+remainingSeconds > 0
+
+?
+
+`Resend in ${remainingSeconds}s`
 
 :
 
@@ -464,8 +669,6 @@ Back to Login
 
 
 
-
-
 </div>
 
 
@@ -474,7 +677,6 @@ Back to Login
 
 
 </div>
-
 
 
 
