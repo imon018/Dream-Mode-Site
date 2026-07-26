@@ -1,5 +1,7 @@
 import {
-  useState
+  useState,
+  useEffect,
+  useRef
 } from "react";
 
 
@@ -30,6 +32,9 @@ import {
 
 
 
+
+// ১ মিনিট কুলডাউন (সেকেন্ডে)
+const COOLDOWN_SECONDS = 60;
 
 
 
@@ -66,6 +71,178 @@ setLoading
 
 
 
+const [
+remainingSeconds,
+setRemainingSeconds
+]=useState(0);
+
+
+const intervalRef =
+useRef(null);
+
+
+// প্রতিটা user এর জন্য আলাদা cooldown key,
+// যাতে অন্য অ্যাকাউন্টে লগইন করলে আগের cooldown প্রভাব না ফেলে
+const cooldownKey =
+user
+?
+`pwdChangeCooldownUntil_${user.uid}`
+:
+null;
+
+
+
+
+// =========================
+// COOLDOWN TIMER START করার হেল্পার
+// =========================
+
+const startCooldownFrom =
+(untilTimestamp)=>{
+
+
+if(intervalRef.current){
+
+clearInterval(
+intervalRef.current
+);
+
+}
+
+
+
+const tick =
+()=>{
+
+const secondsLeft =
+Math.ceil(
+(untilTimestamp - Date.now())
+/
+1000
+);
+
+
+if(secondsLeft <= 0){
+
+setRemainingSeconds(0);
+
+
+if(intervalRef.current){
+
+clearInterval(
+intervalRef.current
+);
+
+intervalRef.current = null;
+
+}
+
+
+if(cooldownKey){
+
+localStorage.removeItem(
+cooldownKey
+);
+
+}
+
+
+return;
+
+}
+
+
+setRemainingSeconds(
+secondsLeft
+);
+
+};
+
+
+
+tick();
+
+
+intervalRef.current =
+setInterval(
+tick,
+1000
+);
+
+
+};
+
+
+
+
+// =========================
+// PAGE LOAD হলে আগের চলমান cooldown আছে কিনা চেক
+// =========================
+
+useEffect(()=>{
+
+
+if(!cooldownKey){
+
+return;
+
+}
+
+
+const savedUntil =
+localStorage.getItem(
+cooldownKey
+);
+
+
+if(savedUntil){
+
+
+const untilTimestamp =
+Number(
+savedUntil
+);
+
+
+if(untilTimestamp > Date.now()){
+
+startCooldownFrom(
+untilTimestamp
+);
+
+}
+else{
+
+localStorage.removeItem(
+cooldownKey
+);
+
+}
+
+
+}
+
+
+
+return ()=>{
+
+if(intervalRef.current){
+
+clearInterval(
+intervalRef.current
+);
+
+}
+
+};
+
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+},[]);
+
+
+
+
 
 
 
@@ -91,6 +268,20 @@ return;
 
 
 
+// কুলডাউন চলাকালীন ক্লিক ঠেকানোর extra safety
+// (বাটন disabled থাকবে, তাও guard হিসেবে রাখা হলো)
+if(remainingSeconds > 0){
+
+errorToast(
+`Please wait ${remainingSeconds}s before trying again.`
+);
+
+return;
+
+}
+
+
+
 
 if(!currentPassword){
 
@@ -104,7 +295,6 @@ return;
 
 
 }
-
 
 
 
@@ -141,6 +331,31 @@ successToast(
 
 
 
+
+// কুলডাউন শুরু + localStorage এ সেভ (রিফ্রেশ করলেও ঠিক থাকবে)
+
+const untilTimestamp =
+Date.now() + COOLDOWN_SECONDS * 1000;
+
+
+if(cooldownKey){
+
+localStorage.setItem(
+cooldownKey,
+String(
+untilTimestamp
+)
+);
+
+}
+
+
+startCooldownFrom(
+untilTimestamp
+);
+
+
+
 }
 catch(error){
 
@@ -167,7 +382,6 @@ setLoading(false);
 
 
 };
-
 
 
 
@@ -411,7 +625,7 @@ handleChangePassword
 }
 
 disabled={
-loading
+loading || remainingSeconds > 0
 }
 
 className="
@@ -436,6 +650,14 @@ loading
 
 :
 
+remainingSeconds > 0
+
+?
+
+`Resend in ${remainingSeconds}s`
+
+:
+
 "Change Password"
 
 }
@@ -448,10 +670,7 @@ loading
 
 
 
-
 </div>
-
-
 
 
 
