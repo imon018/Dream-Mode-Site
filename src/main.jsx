@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { SettingsProvider } from "./context/SettingsContext";
-import { registerSW } from "virtual:pwa-register";
 import { CapacitorUpdater } from "@capgo/capacitor-updater";
 
 import App from "./App";
@@ -24,32 +23,6 @@ CapacitorUpdater.notifyAppReady()
 
 
 
-window.deferredPrompt = null;
-
-window.addEventListener(
-  "beforeinstallprompt",
-  (e) => {
-
-    e.preventDefault();
-
-    window.deferredPrompt = e;
-
-  }
-);
-
-window.addEventListener(
-  "appinstalled",
-  () => {
-
-    window.deferredPrompt = null;
-
-    console.log("Dream Mode installed");
-
-  }
-);
-
-
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
   <HelmetProvider>
@@ -61,7 +34,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   </HelmetProvider>
 </React.StrictMode>
 );
-
-registerSW({
-  immediate: true,
-});
