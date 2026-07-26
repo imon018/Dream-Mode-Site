@@ -246,6 +246,43 @@ export default function ProductDetailsView() {
     0;
 
 
+  // এই প্রোডাক্টে যদি themeColor সেট করা না থাকে (পুরাতন প্রোডাক্ট)
+  // তাহলে আগের ডিফল্ট বেগুনী (purple-700) কালারই ব্যবহার হবে,
+  // যাতে বিদ্যমান প্রোডাক্টের UI ভেঙে না যায়।
+  // themeMode === "gradient" হলে দুইটা কালার মিক্স করে gradient দেখানো হবে।
+
+  const themeColor =
+    product.themeColor || "#7e22ce";
+
+  const isGradientTheme =
+    product.themeMode === "gradient" &&
+    product.themeColorTo;
+
+  const gradientCSS =
+    isGradientTheme
+      ? `linear-gradient(${product.themeGradientDirection || "to right"}, ${themeColor}, ${product.themeColorTo})`
+      : null;
+
+  // ব্যাকগ্রাউন্ড হিসেবে ব্যবহারের জন্য (যেমন CTA ব্যানার, চেকমার্ক বৃত্ত)
+
+  const themeBgStyle =
+    isGradientTheme
+      ? { backgroundImage: gradientCSS }
+      : { backgroundColor: themeColor };
+
+  // টেক্সট কালার হিসেবে ব্যবহারের জন্য (গ্রেডিয়েন্ট হলে gradient text)
+
+  const themeTextStyle =
+    isGradientTheme
+      ? {
+          backgroundImage: gradientCSS,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent",
+        }
+      : { color: themeColor };
+
+
 
 
   return (
@@ -291,8 +328,8 @@ export default function ProductDetailsView() {
 
 
 			<div
+style={themeBgStyle}
 className="
-bg-purple-700
 text-white
 h-10
 px-3
@@ -451,11 +488,11 @@ whitespace-nowrap
               product.title && (
 
                 <h2
+                  style={themeTextStyle}
                   className="
                     text-sm
                     font-bold
                     mt-2
-                    text-purple-700
                   "
                 >
 
@@ -512,11 +549,11 @@ whitespace-nowrap
       >
 
         <div
+  style={themeBgStyle}
   className="
     w-4
     h-4
     rounded-full
-    bg-purple-700
     text-white
     flex
     items-center
@@ -589,10 +626,10 @@ whitespace-nowrap
                   <>
 
                     <span
+                      style={themeTextStyle}
                       className="
                         text-2xl
                         font-black
-                        text-purple-700
                       "
                     >
                       ৳{product.offerPrice}
@@ -644,10 +681,10 @@ whitespace-nowrap
                   ?
 
                   <span
+                    style={themeTextStyle}
                     className="
                       text-3xl
                       font-black
-                      text-purple-700
                     "
                   >
                     ৳{product.price}
