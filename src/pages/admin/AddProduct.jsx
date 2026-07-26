@@ -414,7 +414,7 @@ space-y-4
           className="
             w-full
             h-12
-            rounded-xl
+            rounded-lg
             border
             border-gray-200
             px-4
@@ -444,7 +444,7 @@ space-y-4
           className="
             w-full
             h-12
-            rounded-xl
+            rounded-lg
             border
             border-gray-200
             px-4
@@ -474,7 +474,7 @@ space-y-4
           placeholder="Write product description..."
           className="
             w-full
-            rounded-xl
+            rounded-lg
             border
             border-gray-200
             p-4
@@ -505,7 +505,7 @@ space-y-4
           className="
             w-full
             h-12
-            rounded-xl
+            rounded-lg
             border
             border-gray-200
             px-4
@@ -535,7 +535,7 @@ space-y-4
           className="
             w-full
             h-12
-            rounded-xl
+            rounded-lg
             border
             border-gray-200
             px-4
@@ -566,7 +566,7 @@ space-y-4
           className="
             w-full
             h-12
-            rounded-xl
+            rounded-lg
             border
             border-gray-200
             px-4
@@ -587,7 +587,7 @@ space-y-4
           bg-[#FFF9ED]
           border
           border-[#FDECC8]
-          rounded-xl
+          rounded-lg
           p-4
           flex
           items-center
@@ -665,7 +665,7 @@ space-y-4
           htmlFor="product-images"
           className="
             h-44
-            rounded-xl
+            rounded-lg
             border-2
             border-dashed
             border-gray-300
@@ -723,7 +723,7 @@ space-y-4
                 key={index}
                 className="
                   relative
-                  rounded-xl
+                  rounded-lg
                   overflow-hidden
                   border
                   border-gray-200
@@ -785,7 +785,7 @@ space-y-4
         className="
           w-full
           h-12
-          rounded-xl
+          rounded-lg
           bg-gradient-to-r
           from-amber-400
           to-amber-500
