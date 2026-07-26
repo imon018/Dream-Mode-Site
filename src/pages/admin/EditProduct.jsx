@@ -1503,7 +1503,7 @@ h-30
 border-2
 border-dashed
 border-amber-400
-rounded-3xl
+rounded-lg
 flex
 flex-col
 items-center
