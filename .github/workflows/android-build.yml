@@ -36,6 +36,8 @@ jobs:
       GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
       GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
 
+      CAPGO_TOKEN: ${{ secrets.CAPGO_TOKEN }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -53,6 +55,9 @@ jobs:
 
       - name: Build Vite
         run: npm run build
+
+      - name: Upload OTA Bundle to Capgo
+        run: npx @capgo/cli@latest bundle upload -a $CAPGO_TOKEN
 
       - name: Setup Java
         uses: actions/setup-java@v4
