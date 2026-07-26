@@ -218,6 +218,34 @@ export default function ProductDetailsView() {
 
 
 
+  // PublicLandingPage.jsx এর মতোই offer % হিসাব করা হচ্ছে,
+  // যাতে অফার প্রাইজ দিলে percentage সহ দেখায়
+
+  const discount =
+
+    product.offerPrice > 0 &&
+    product.price > 0 &&
+    product.offerPrice < product.price
+
+    ?
+
+    Math.round(
+
+      (
+        (product.price - product.offerPrice)
+        /
+        product.price
+      )
+
+      * 100
+
+    )
+
+    :
+
+    0;
+
+
 
 
   return (
@@ -320,7 +348,7 @@ whitespace-nowrap
 
   </div>
 
-	<div className="mx-5 bg-gray-50">
+	<div className="mx-3 px-2 bg-gray-50">
 
   {
     galleryImages.length > 1 && (
@@ -409,13 +437,34 @@ whitespace-nowrap
                 md:text-5xl
                 font-black
                 leading-tight
-                text-purple-700
+                text-black
               "
             >
 
               {product.name}
 
             </h1>
+
+
+
+            {
+              product.title && (
+
+                <h2
+                  className="
+                    text-sm
+                    font-bold
+                    mt-2
+                    text-purple-700
+                  "
+                >
+
+                  {product.title}
+
+                </h2>
+
+              )
+            }
 
 
 
@@ -434,10 +483,11 @@ whitespace-nowrap
 
               <h3
                 className="
-                  text-xl
+                  text-2xl
                   font-black
                   text-[#172033]
                   mb-2
+                  text-center
                 "
               >
                 পণ্যের বিবরণ
@@ -511,6 +561,8 @@ whitespace-nowrap
                 flex
                 items-center
                 justify-between
+                flex-wrap
+                gap-3
                 rounded-xl
 				border-t
                 p-2
@@ -518,30 +570,96 @@ whitespace-nowrap
             >
 
 
-              <div>
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-4
+                  flex-wrap
+                "
+              >
+
+                {
+
+                  product.price > 0 &&
+                  product.offerPrice > 0 &&
+                  product.offerPrice < product.price
+
+                  ?
+
+                  <>
+
+                    <span
+                      className="
+                        text-2xl
+                        font-black
+                        text-purple-700
+                      "
+                    >
+                      ৳{product.offerPrice}
+                    </span>
 
 
-                <p
-                  className="
-                    text-xs
-                    text-gray-500
-                  "
-                >
-                  Price
-                </p>
+                    <span
+                      className="
+                        text-base
+                        text-gray-400
+                        font-medium
+                        line-through
+                      "
+                    >
+                      ৳{product.price}
+                    </span>
 
 
+                    {
+                      discount > 0 && (
 
-                <h2
-                  className="
-                    text-3xl
-                    font-black
-                    text-purple-700
-                  "
-                >
-                  ৳ {product.price}
-                </h2>
+                        <span
+                          className="
+                            px-4
+                            py-2
+                            rounded-lg
+                            font-bold
+                            text-red-600
+                            bg-white/40
+                            backdrop-blur-md
+                            border
+                            border-white/60
+                            shadow-lg
+                          "
+                        >
+                          {discount}% OFF
+                        </span>
 
+                      )
+                    }
+
+                  </>
+
+
+                  :
+
+                  product.price > 0
+
+                  ?
+
+                  <span
+                    className="
+                      text-3xl
+                      font-black
+                      text-purple-700
+                    "
+                  >
+                    ৳{product.price}
+                  </span>
+
+
+                  :
+
+                  null
+
+                }
 
               </div>
 
