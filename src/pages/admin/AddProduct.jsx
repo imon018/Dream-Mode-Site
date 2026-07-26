@@ -16,17 +16,32 @@ import {
 } from "../../services/uploadService";
 
 import {
+  addBanner,
+  canAddBanner,
+} from "../../services/firestoreBannerService";
+
+import {
+  useSettings,
+} from "../../context/SettingsContext";
+
+import {
   successToast,
   errorToast,
 } from "../../components/ui/Toast";
 
 export default function AddProduct() {
 
+  const { settings } = useSettings();
+
   const [name,setName]=useState("");
+
+  const [productTitle,setProductTitle]=useState("");
 
   const [description,setDescription]=useState("");
 
   const [price,setPrice]=useState("");
+
+  const [offerPrice,setOfferPrice]=useState("");
 
   const [stock,setStock]=useState("");
 
@@ -118,7 +133,6 @@ export default function AddProduct() {
 
 
 
-
   const handleSubmit=async(e)=>{
 
     e.preventDefault();
@@ -163,13 +177,20 @@ export default function AddProduct() {
 
 
 
-      await addProductToDB({
+      const productId = await addProductToDB({
 
         name,
+
+        title: productTitle,
 
         description,
 
         price:Number(price),
+
+        offerPrice:
+          offerPrice
+            ? Number(offerPrice)
+            : 0,
 
         stock:Number(stock),
 
@@ -195,6 +216,77 @@ export default function AddProduct() {
 
 
 
+      // =========================
+      // HERO BANNER: যদি toggle অন থাকে তাহলে
+      // heroBanners কালেকশনে ব্যানার তৈরি করে দেওয়া হচ্ছে,
+      // যাতে এটা হোমপেজ হিরো ব্যানার স্লাইডারে দেখায়।
+      // এতদিন এই toggle শুধু product.heroBanner ফিল্ড সেভ করত,
+      // কিন্তু heroBanners কালেকশনে কিছু তৈরি করত না — তাই
+      // toggle অন করলেও ব্যানারে কিছু যোগ হতো না।
+      // =========================
+
+      if(heroBanner){
+
+        try{
+
+          const allowed =
+            await canAddBanner();
+
+          if(allowed){
+
+            await addBanner({
+
+              title: name,
+
+              subtitle:
+                productTitle || name,
+
+              image: uploaded[0].imageUrl,
+
+              productId,
+
+              productName: name,
+
+              whatsappNumber:
+                settings?.whatsapp || "",
+
+              offerPrice:
+                offerPrice
+                  ? Number(offerPrice)
+                  : 0,
+
+              regularPrice:
+                Number(price),
+
+              badgeText:
+                "New Collection",
+
+            });
+
+          }
+          else{
+
+            errorToast(
+              "Product saved, but Hero Banner limit (5) reached. Banner not added."
+            );
+
+          }
+
+        }
+        catch(bannerError){
+
+          console.log(bannerError);
+
+          errorToast(
+            "Product saved, but adding to Hero Banner failed."
+          );
+
+        }
+
+      }
+
+
+
       successToast(
 
         "Product added successfully."
@@ -205,9 +297,13 @@ export default function AddProduct() {
 
       setName("");
 
+      setProductTitle("");
+
       setDescription("");
 
       setPrice("");
+
+      setOfferPrice("");
 
       setStock("");
 
@@ -332,6 +428,36 @@ space-y-4
 
 
 
+      {/* PRODUCT TITLE */}
+
+      <div>
+
+        <label className="block font-bold text-sm mb-2 text-[#172033]">
+          Product Title
+        </label>
+
+        <input
+          type="text"
+          value={productTitle}
+          onChange={(e)=>setProductTitle(e.target.value)}
+          placeholder="Short title shown below product name"
+          className="
+            w-full
+            h-12
+            rounded-xl
+            border
+            border-gray-200
+            px-4
+            outline-none
+            focus:border-amber-400
+          "
+        />
+
+      </div>
+
+
+
+
 
       {/* DESCRIPTION */}
 
@@ -363,7 +489,6 @@ space-y-4
 
 
 
-
       {/* PRICE */}
 
       <div>
@@ -377,6 +502,36 @@ space-y-4
           value={price}
           onChange={(e)=>setPrice(e.target.value)}
           placeholder="Price"
+          className="
+            w-full
+            h-12
+            rounded-xl
+            border
+            border-gray-200
+            px-4
+            outline-none
+            focus:border-amber-400
+          "
+        />
+
+      </div>
+
+
+
+
+      {/* OFFER PRICE */}
+
+      <div>
+
+        <label className="block font-bold text-sm mb-2 text-[#172033]">
+          Offer Price
+        </label>
+
+        <input
+          type="number"
+          value={offerPrice}
+          onChange={(e)=>setOfferPrice(e.target.value)}
+          placeholder="Leave empty if no offer"
           className="
             w-full
             h-12
@@ -421,7 +576,6 @@ space-y-4
         />
 
       </div>
-
 
 
 
