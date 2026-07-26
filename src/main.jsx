@@ -3,8 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { SettingsProvider } from "./context/SettingsContext";
-import { checkForUpdate } from "./utils/updateChecker";
-import { getNativeUpdatePath } from "./utils/nativeUpdater";
+import { runUpdateManager } from "./utils/updateManager";
 import { Capacitor } from "@capacitor/core";
 
 import App from "./App";
@@ -17,26 +16,26 @@ async function initApp() {
   if (Capacitor.isNativePlatform()) {
 
     const updatePath =
-      await getNativeUpdatePath();
+      await runUpdateManager();
+
 
     if (updatePath) {
 
       console.log(
-        "Using updated frontend:",
+        "Loading updated frontend:",
         updatePath
       );
 
-      window.location.replace(updatePath);
+
+      window.location.replace(
+        updatePath
+      );
 
       return;
     }
   }
 
-
-  checkForUpdate();
-
 }
-
 
 initApp();
 

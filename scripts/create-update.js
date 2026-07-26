@@ -1,72 +1,171 @@
 import { execSync } from "child_process";
 import fs from "fs";
+import path from "path";
 
 
 console.log("Building frontend...");
+
 
 execSync("npm run build", {
   stdio: "inherit",
 });
 
 
-const packageDir = "public/updates/package";
-const zipPath = "public/updates/app.zip";
+const packageDir =
+  "public/updates/package";
+
+const updateDir =
+  "public/updates";
+
+const zipPath =
+  "public/updates/app.zip";
 
 
-// Remove old package
+const versionFile =
+  "public/updates/version.json";
+
+
+// Read current app version
+
+const appVersion =
+  JSON.parse(
+    fs.readFileSync(
+      "package.json",
+      "utf-8"
+    )
+  ).version;
+
+
+
+// Clean old package
+
 if (fs.existsSync(packageDir)) {
-  fs.rmSync(packageDir, {
-    recursive: true,
-    force: true,
-  });
+
+  fs.rmSync(
+    packageDir,
+    {
+      recursive:true,
+      force:true,
+    }
+  );
+
 }
 
 
-// Remove old zip
 if (fs.existsSync(zipPath)) {
+
   fs.rmSync(zipPath);
+
 }
+
 
 
 // Create package folder
-fs.mkdirSync(packageDir, {
-  recursive: true,
-});
+
+fs.mkdirSync(
+  packageDir,
+  {
+    recursive:true,
+  }
+);
 
 
-// Copy only dist files
+
+// Copy build
+
 fs.cpSync(
   "dist",
   packageDir,
   {
-    recursive: true,
+    recursive:true,
   }
 );
 
 
-// Remove unnecessary nested update folder if exists
-const nestedUpdates = `${packageDir}/updates`;
 
-if (fs.existsSync(nestedUpdates)) {
-  fs.rmSync(nestedUpdates, {
-    recursive: true,
-    force: true,
-  });
+// Remove unwanted nested folder
+
+const nested =
+  path.join(
+    packageDir,
+    "updates"
+  );
+
+
+if (fs.existsSync(nested)) {
+
+  fs.rmSync(
+    nested,
+    {
+      recursive:true,
+      force:true,
+    }
+  );
+
 }
 
 
-console.log("Frontend package created");
+
+// Create package version
+
+const packageVersion = {
+
+  version: appVersion,
+
+  buildTime:
+    new Date().toISOString(),
+
+  type:
+    "frontend-update"
+
+};
+
+
+fs.writeFileSync(
+  `${packageDir}/version.json`,
+  JSON.stringify(
+    packageVersion,
+    null,
+    2
+  )
+);
+
+
+
+fs.writeFileSync(
+  versionFile,
+  JSON.stringify(
+    packageVersion,
+    null,
+    2
+  )
+);
+
+
+
+console.log(
+  "Frontend package created"
+);
+
 
 
 // Create zip
-console.log("Creating update zip...");
+
+console.log(
+  "Creating update zip..."
+);
+
 
 execSync(
   "cd public/updates && zip -r app.zip package",
   {
-    stdio: "inherit",
+    stdio:"inherit",
   }
 );
 
 
-console.log("Update zip created successfully");
+
+console.log(
+  "Update package ready:",
+  appVersion
+);
