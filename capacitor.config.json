@@ -2,10 +2,6 @@
   "appId": "com.dreammode.app",
   "appName": "Dream Mode",
   "webDir": "dist",
-  "server": {
-    "url": "https://dream-mode.shop",
-    "cleartext": false
-  },
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": false
