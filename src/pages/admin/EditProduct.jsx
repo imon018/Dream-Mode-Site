@@ -75,6 +75,13 @@ setName
 
 
 const [
+productTitle,
+setProductTitle
+]=useState("");
+
+
+
+const [
 category,
 setCategory
 ]=useState("");
@@ -91,6 +98,13 @@ setDescription
 const [
 price,
 setPrice
+]=useState("");
+
+
+
+const [
+offerPrice,
+setOfferPrice
 ]=useState("");
 
 
@@ -168,6 +182,12 @@ product.name || ""
 
 
 
+setProductTitle(
+product.title || ""
+);
+
+
+
 setCategory(
 product.category || ""
 );
@@ -182,6 +202,12 @@ product.description || ""
 
 setPrice(
 product.price || ""
+);
+
+
+
+setOfferPrice(
+product.offerPrice || ""
 );
 
 
@@ -446,6 +472,9 @@ id,
 name,
 
 
+title:productTitle,
+
+
 category,
 
 
@@ -453,6 +482,12 @@ description,
 
 
 price:Number(price),
+
+
+offerPrice:
+offerPrice
+? Number(offerPrice)
+: 0,
 
 
 stock:Number(stock),
@@ -720,6 +755,56 @@ setName(e.target.value)
 
 
 
+{/* PRODUCT TITLE */}
+
+
+<div>
+
+<label
+
+className="
+block
+font-bold
+text-sm
+text-[#172033]
+mb-2
+"
+
+>
+
+Product Title
+
+</label>
+
+
+
+<input
+
+className="
+w-full
+h-12
+px-3
+rounded-lg
+border
+border-gray-200
+outline-none
+text-sm
+text-gray-700
+focus:border-amber-400
+"
+
+placeholder="Short title shown below product name"
+
+value={productTitle}
+
+onChange={(e)=>
+setProductTitle(e.target.value)
+}
+
+/>
+
+
+</div>
 
 
 
@@ -911,7 +996,58 @@ setPrice(e.target.value)
 
 
 
+{/* OFFER PRICE */}
 
+
+<div>
+
+<label
+
+className="
+block
+font-bold
+text-sm
+text-[#172033]
+mb-2
+"
+
+>
+
+Offer Price (৳)
+
+</label>
+
+
+
+<input
+
+type="number"
+
+className="
+w-full
+h-12
+px-3
+rounded-lg
+border
+border-gray-200
+outline-none
+text-sm
+text-gray-700
+focus:border-amber-400
+"
+
+placeholder="Leave empty if no offer"
+
+value={offerPrice}
+
+onChange={(e)=>
+setOfferPrice(e.target.value)
+}
+
+/>
+
+
+</div>
 
 
 <div>
@@ -964,7 +1100,6 @@ setStock(e.target.value)
 
 
 </div>
-
 
 
 
