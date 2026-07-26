@@ -342,13 +342,13 @@ whitespace-nowrap
         object-contain
         cursor-pointer
       	transition
-				duration-300
+		duration-300
       "
     />
 
   </div>
 
-	<div className="mx-3 px-2 bg-gray-50">
+	<div className="mx-0 px-5 bg-gray-50">
 
   {
     galleryImages.length > 1 && (
@@ -563,7 +563,7 @@ whitespace-nowrap
                 justify-between
                 flex-wrap
                 gap-3
-                rounded-xl
+                rounded-lg
 				border-t
                 p-2
               "
