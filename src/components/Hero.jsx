@@ -338,7 +338,10 @@ pt-6
 
 </div>
 
-          <h1
+          {
+  banner?.title && (
+
+    <h1
   className="
     mt-4
     text-3xl
@@ -351,10 +354,16 @@ pt-6
     drop-shadow-[0_3px_12px_rgba(245,158,11,.35)]
   "
 >
-  {banner?.title || "Premium Product"}
+  {banner.title}
 </h1>
-         
-          <p
+
+  )
+}
+
+          {
+  banner?.subtitle && (
+
+    <p
   className="
     mt-3
     text-[13px]
@@ -364,13 +373,23 @@ pt-6
     leading-6
   "
 >
-  {banner.title}
+  {banner.subtitle}
 </p>
+
+  )
+}
 
       
          
                       {/* PRICE BOX */}
-          
+
+{
+  banner.offerPrice > 0
+
+  ?
+
+  (
+
 <div
   className="
     absolute
@@ -481,8 +500,6 @@ md:text-lg
 
   {/* SAVE */}
 
-  {/* SAVE */}
-
 <div
   className="
     aspect-square
@@ -529,6 +546,77 @@ md:text-lg
 
 </div>
 </div>
+
+  )
+
+  :
+
+  (
+
+    banner.regularPrice > 0 && (
+
+<div
+  className="
+    absolute
+    left-5
+    bottom-24
+    grid
+    grid-cols-1
+    gap-1
+    max-w-[140px]
+    items-stretch
+  "
+>
+
+  {/* REGULAR PRICE ONLY */}
+
+  <div
+  className="
+    rounded-lg
+    bg-black/35
+    backdrop-blur-md
+    border
+    border-amber-500
+    p-1.5
+    text-center
+    flex
+    flex-col
+    justify-center
+  "
+>
+
+    <p
+      className="
+        text-xs
+        text-amber-300
+        mb-1
+      "
+    >
+      Price
+    </p>
+
+
+    <h3
+      className="
+  text-lg
+  md:text-xl
+  font-bold
+  text-amber-300
+"
+    >
+      ৳ {banner.regularPrice}
+    </h3>
+
+
+  </div>
+
+</div>
+
+    )
+
+  )
+}
+
             {/* BUTTONS */}
           
 <div
