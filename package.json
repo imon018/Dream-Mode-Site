@@ -11,7 +11,6 @@
   "dependencies": {
     "@capacitor/android": "^8.4.2",
     "@capacitor/core": "^8.4.2",
-    "@capgo/capacitor-updater": "^8.51.2",
     "@emailjs/browser": "^4.4.1",
     "chart.js": "^4.4.9",
     "cloudinary": "^2.7.0",

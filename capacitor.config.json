@@ -2,15 +2,14 @@
   "appId": "com.dreammode.app",
   "appName": "Dream Mode",
   "webDir": "dist",
+  "server": {
+    "url": "https://dream-mode.shop",
+    "cleartext": false
+  },
   "plugins": {
-    "CapacitorUpdater": {
-      "appId": "com.dreammode.app",
-      "version": "0.0.0",
-      "autoUpdate": "always",
-      "autoSplashscreen": true
-    },
     "SplashScreen": {
       "launchAutoHide": false
     }
   }
 }
+
