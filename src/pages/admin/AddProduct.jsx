@@ -977,7 +977,7 @@ space-y-4
         <label
           htmlFor="product-images"
           className="
-            h-44
+            h-24
             rounded-lg
             border-2
             border-dashed
