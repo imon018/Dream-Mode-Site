@@ -262,6 +262,83 @@ landing.price
 0;
 
 
+// এই ল্যান্ডিং পেজে যদি themeColor সেট করা না থাকে (পুরাতন ল্যান্ডিং পেজ)
+// তাহলে আগের ডিফল্ট বেগুনী (purple-700) কালারই ব্যবহার হবে,
+// যাতে বিদ্যমান পেজের UI ভেঙে না যায়।
+// themeMode === "gradient" হলে দুইটা কালার মিক্স করে gradient দেখানো হবে।
+
+const themeColor =
+  landing.themeColor || "#7e22ce";
+
+const isGradientTheme =
+  landing.themeMode === "gradient" &&
+  landing.themeColorTo;
+
+const gradientCSS =
+  isGradientTheme
+    ? `linear-gradient(${landing.themeGradientDirection || "to right"}, ${themeColor}, ${landing.themeColorTo})`
+    : null;
+
+// ব্যাকগ্রাউন্ড হিসেবে ব্যবহারের জন্য (যেমন ব্যানার, চেকমার্ক বৃত্ত, বাটন)
+
+const themeBgStyle =
+  isGradientTheme
+    ? { backgroundImage: gradientCSS }
+    : { backgroundColor: themeColor };
+
+// টেক্সট কালার হিসেবে ব্যবহারের জন্য (গ্রেডিয়েন্ট হলে gradient text)
+
+const themeTextStyle =
+  isGradientTheme
+    ? {
+        backgroundImage: gradientCSS,
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+        color: "transparent",
+      }
+    : { color: themeColor };
+
+// hex কালারকে rgba-তে রূপান্তর করার জন্য (হালকা টিন্ট ব্যাকগ্রাউন্ড/বর্ডার/ফোকাস রিং-এর জন্য)
+
+const themeAlpha = (alpha) => {
+
+  const hex =
+    themeColor.replace("#","");
+
+  const normalized =
+    hex.length === 3
+      ? hex.split("").map(c=>c+c).join("")
+      : hex;
+
+  const value =
+    parseInt(normalized, 16);
+
+  if (isNaN(value)) {
+    return `rgba(126, 34, 206, ${alpha})`;
+  }
+
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
+};
+
+const handleThemeFocus = (e) => {
+
+  e.target.style.borderColor = themeColor;
+  e.target.style.boxShadow =
+    `0 0 0 2px ${themeAlpha(0.3)}`;
+
+};
+
+const handleThemeBlur = (e) => {
+
+  e.target.style.borderColor = "";
+  e.target.style.boxShadow = "";
+
+};
 
 
 const handleChange = (e) => {
@@ -402,8 +479,8 @@ pt-0
 
 
 <div
+style={themeBgStyle}
 className="
-bg-purple-700
 text-white
 h-10
 px-3
@@ -494,11 +571,11 @@ shadow-none
 >
 
 <div className="py-2">
-<div className="text-lg font-black leading-none text-purple-700">
+<div style={themeTextStyle} className="text-lg font-black leading-none">
 {discount}%
 </div>
 
-<div className="text-[11px] font-bold mt-1 text-purple-700">
+<div style={themeTextStyle} className="text-[11px] font-bold mt-1">
 OFF
 </div>
 </div>
@@ -650,11 +727,11 @@ cursor-pointer
 
 
 <h2
+style={themeTextStyle}
 className="
 text-sm
 font-bold
 mt-2
-text-purple-700
 "
 >
 
@@ -715,11 +792,11 @@ mb-3
 >
 
 <div
+style={themeBgStyle}
 className="
 w-4
 h-4
 rounded-full
-bg-purple-700
 text-white
 flex
 items-center
@@ -771,10 +848,10 @@ landing.price > 0 && landing.offerPrice > 0 && landing.offerPrice < landing.pric
 <>
 
 <span
+style={themeTextStyle}
 className="
 text-2xl
 font-black
-text-purple-700
 "
 >
 ৳{landing.offerPrice}
@@ -827,10 +904,10 @@ landing.price > 0
 ?
 
 <span
+style={themeTextStyle}
 className="
 text-4xl
 font-black
-text-purple-700
 "
 >
 ৳{landing.price}
@@ -941,11 +1018,12 @@ text-xl
 
 onClick={()=>setQuantity(quantity+1)}
 
+style={themeBgStyle}
+
 className="
 w-6
 h-6
 rounded-lg
-bg-purple-700
 text-white
 font-bold
 "
@@ -1032,6 +1110,10 @@ value={formData.name}
 
 onChange={handleChange}
 
+onFocus={handleThemeFocus}
+
+onBlur={handleThemeBlur}
+
 placeholder="আপনার নাম"
   
 className="
@@ -1041,9 +1123,6 @@ pr-4
 py-3
 border
 rounded-lg
-focus:border-purple-700
-focus:ring-2
-focus:ring-purple-700/30
 focus:outline-none
 "
 />
@@ -1079,6 +1158,10 @@ value={formData.phone}
 
 onChange={handleChange}
 
+onFocus={handleThemeFocus}
+
+onBlur={handleThemeBlur}
+
 placeholder="ফোন নাম্বার"
   
 className="
@@ -1088,9 +1171,6 @@ pr-4
 py-3
 border
 rounded-lg
-focus:border-purple-700
-focus:ring-2
-focus:ring-purple-700/30
 focus:outline-none
 "
 />
@@ -1125,6 +1205,10 @@ value={formData.address}
 
 onChange={handleChange}
 
+onFocus={handleThemeFocus}
+
+onBlur={handleThemeBlur}
+
 placeholder="আপনার ঠিকানা"
   
 rows="3"
@@ -1136,9 +1220,6 @@ py-3
 border
 rounded-lg
 resize-none
-focus:border-purple-700
-focus:ring-2
-focus:ring-purple-700/30
 focus:outline-none
 "
 />
@@ -1178,6 +1259,10 @@ value={formData.thana}
 
 onChange={handleChange}
 
+onFocus={handleThemeFocus}
+
+onBlur={handleThemeBlur}
+
 placeholder="থানা"
   
 className="
@@ -1187,9 +1272,6 @@ pr-4
 py-3
 border
 rounded-lg
-focus:border-purple-700
-focus:ring-2
-focus:ring-purple-700/30
 focus:outline-none
 "
 />
@@ -1219,6 +1301,10 @@ value={formData.district}
 
 onChange={handleChange}
 
+onFocus={handleThemeFocus}
+
+onBlur={handleThemeBlur}
+
 placeholder="জেলা"
   
 className="
@@ -1228,9 +1314,6 @@ pr-4
 py-3
 border
 rounded-lg
-focus:border-purple-700
-focus:ring-2
-focus:ring-purple-700/30
 focus:outline-none
 "
 />
@@ -1268,6 +1351,10 @@ value={formData.notes}
 
 onChange={handleChange}
 
+onFocus={handleThemeFocus}
+
+onBlur={handleThemeBlur}
+
 placeholder="অতিরিক্ত নোট (যদি থাকে)"
   
 rows="3"
@@ -1279,9 +1366,6 @@ py-3
 border
 rounded-lg
 resize-none
-focus:border-purple-700
-focus:ring-2
-focus:ring-purple-700/30
 focus:outline-none
 "
 />
@@ -1512,12 +1596,12 @@ Delivery Charge
 <hr/>
 
 <div
+style={themeTextStyle}
 className="
 flex
 justify-between
 text-lg
 font-black
-text-purple-700
 "
 >
 
@@ -1543,12 +1627,14 @@ Total
 {/* OUR PROMISE */}
 
 <div
+style={{
+  backgroundColor: themeAlpha(0.15),
+  borderColor: themeAlpha(0.15),
+}}
 className="
 mx-5
-bg-purple-200
 backdrop-blur-xl
 border-t
-border-purple-200
 rounded-lg
 px-3
 py-1
@@ -1571,11 +1657,11 @@ gap-4
 <div className="flex gap-3">
 
 <div
+style={{ backgroundColor: themeAlpha(0.12) }}
 className="
 w-8
 h-8
 rounded-lg
-bg-purple-100
 flex
 items-center
 justify-center
@@ -1589,10 +1675,10 @@ text-sm
 <div className="flex-1">
 
 <h2
+style={themeTextStyle}
 className="
 text-base
 font-black
-text-purple-700
 whitespace-nowrap
 "
 >
@@ -1739,9 +1825,10 @@ navigate(`/landing/${slug}/success/${orderId}`);
 
 }}
 
+style={themeBgStyle}
+
 className="
 w-full
-bg-purple-700
 text-white
 py-2.5
 rounded-lg
