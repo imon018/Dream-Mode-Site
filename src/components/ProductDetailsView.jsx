@@ -342,7 +342,7 @@ whitespace-nowrap
         object-contain
         cursor-pointer
       	transition
-		duration-300
+				duration-300
       "
     />
 
@@ -563,7 +563,6 @@ whitespace-nowrap
                 justify-between
                 flex-wrap
                 gap-3
-                rounded-lg
 				border-t
                 p-2
               "
