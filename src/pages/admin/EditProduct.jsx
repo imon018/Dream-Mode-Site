@@ -1499,7 +1499,7 @@ relative
 
 className="
 w-full
-h-56
+h-30
 border-2
 border-dashed
 border-amber-400
