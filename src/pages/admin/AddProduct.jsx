@@ -47,6 +47,14 @@ export default function AddProduct() {
 
   const [heroBanner,setHeroBanner]=useState(false);
 
+  const [themeColor,setThemeColor]=useState("#7e22ce");
+
+  const [useGradient,setUseGradient]=useState(false);
+
+  const [themeColorTo,setThemeColorTo]=useState("#f59e0b");
+
+  const [gradientDirection,setGradientDirection]=useState("to right");
+
   const [images,setImages]=useState([]);
 
   const [previewImages,setPreviewImages]=useState([]);
@@ -196,6 +204,14 @@ export default function AddProduct() {
 
         heroBanner,
 
+        themeColor,
+
+        themeMode: useGradient ? "gradient" : "solid",
+
+        themeColorTo: useGradient ? themeColorTo : "",
+
+        themeGradientDirection: gradientDirection,
+
         image:uploaded[0].imageUrl,
 
         images:uploaded.map(
@@ -308,6 +324,14 @@ export default function AddProduct() {
       setStock("");
 
       setHeroBanner(false);
+
+      setThemeColor("#7e22ce");
+
+      setUseGradient(false);
+
+      setThemeColorTo("#f59e0b");
+
+      setGradientDirection("to right");
 
       setImages([]);
 
@@ -650,6 +674,295 @@ space-y-4
           </div>
 
         </label>
+
+      </div>
+
+        {/* THEME COLOR */}
+
+      <div
+        className="
+          bg-[#FFF9ED]
+          border
+          border-[#FDECC8]
+          rounded-lg
+          p-4
+        "
+      >
+
+        <h3 className="font-bold text-sm text-[#172033]">
+          Product Theme Color
+        </h3>
+
+        <p className="text-xs text-gray-500 mt-1 mb-3">
+          Product Details পেজে দাম, টাইটেল ও accent element এর কালার হিসেবে এটা ব্যবহার হবে। ইচ্ছেমতো যেকোনো কালার দিন, অথবা দুইটা কালার মিক্স (গ্রেডিয়েন্ট) করুন।
+        </p>
+
+        {/* LIVE PREVIEW */}
+
+        <div
+          style={
+            useGradient
+              ? {
+                  backgroundImage:
+                    `linear-gradient(${gradientDirection}, ${themeColor}, ${themeColorTo})`,
+                }
+              : { backgroundColor: themeColor }
+          }
+          className="
+            h-12
+            rounded-lg
+            mb-4
+            flex
+            items-center
+            justify-center
+            text-white
+            text-xs
+            font-bold
+          "
+        >
+          Preview
+        </div>
+
+        {/* COLOR 1 */}
+
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+          "
+        >
+
+          <input
+            type="color"
+            value={themeColor}
+            onChange={(e)=>setThemeColor(e.target.value)}
+            className="
+              w-12
+              h-12
+              rounded-lg
+              border
+              border-gray-200
+              cursor-pointer
+              bg-white
+              p-1
+              shrink-0
+            "
+          />
+
+          <input
+            type="text"
+            value={themeColor}
+            onChange={(e)=>setThemeColor(e.target.value)}
+            placeholder="#7e22ce (যেকোনো hex কোড)"
+            className="
+              flex-1
+              h-12
+              rounded-lg
+              border
+              border-gray-200
+              px-4
+              outline-none
+              focus:border-amber-400
+              font-mono
+              text-sm
+            "
+          />
+
+        </div>
+
+        {/* GRADIENT / MIX TOGGLE */}
+
+        <label
+          className="
+            flex
+            items-center
+            justify-between
+            mt-4
+            cursor-pointer
+          "
+        >
+
+          <span className="text-sm font-bold text-[#172033]">
+            দুইটা কালার মিক্স করুন (Gradient)
+          </span>
+
+          <input
+            type="checkbox"
+            className="hidden"
+            checked={useGradient}
+            onChange={(e)=>setUseGradient(e.target.checked)}
+          />
+
+          <div
+            className={`
+              w-12
+              h-6
+              rounded-full
+              transition
+              ${
+                useGradient
+                  ? "bg-amber-500"
+                  : "bg-gray-300"
+              }
+            `}
+          >
+
+            <div
+              className={`
+                w-5
+                h-5
+                bg-white
+                rounded-full
+                mt-[2px]
+                shadow
+                transition
+                ${
+                  useGradient
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                }
+              `}
+            />
+
+          </div>
+
+        </label>
+
+        {/* COLOR 2 + DIRECTION (শুধু Gradient অন থাকলে দেখাবে) */}
+
+        {
+          useGradient && (
+
+            <div className="mt-4 space-y-3">
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+
+                <input
+                  type="color"
+                  value={themeColorTo}
+                  onChange={(e)=>setThemeColorTo(e.target.value)}
+                  className="
+                    w-12
+                    h-12
+                    rounded-lg
+                    border
+                    border-gray-200
+                    cursor-pointer
+                    bg-white
+                    p-1
+                    shrink-0
+                  "
+                />
+
+                <input
+                  type="text"
+                  value={themeColorTo}
+                  onChange={(e)=>setThemeColorTo(e.target.value)}
+                  placeholder="#f59e0b (দ্বিতীয় কালার)"
+                  className="
+                    flex-1
+                    h-12
+                    rounded-lg
+                    border
+                    border-gray-200
+                    px-4
+                    outline-none
+                    focus:border-amber-400
+                    font-mono
+                    text-sm
+                  "
+                />
+
+              </div>
+
+              <select
+                value={gradientDirection}
+                onChange={(e)=>setGradientDirection(e.target.value)}
+                className="
+                  w-full
+                  h-12
+                  rounded-lg
+                  border
+                  border-gray-200
+                  px-4
+                  outline-none
+                  focus:border-amber-400
+                  text-sm
+                  bg-white
+                "
+              >
+
+                <option value="to right">বামে → ডানে</option>
+                <option value="to left">ডানে → বামে</option>
+                <option value="to bottom">উপরে → নিচে</option>
+                <option value="to top">নিচে → উপরে</option>
+                <option value="to bottom right">তির্যক (↘)</option>
+                <option value="to bottom left">তির্যক (↙)</option>
+
+              </select>
+
+            </div>
+
+          )
+        }
+
+        {/* QUICK PICKS (ঐচ্ছিক শর্টকাট, চাইলে উপরের ফিল্ডে ইচ্ছেমতো যেকোনো কালারও বসাতে পারবেন) */}
+
+        <p className="text-xs text-gray-500 mt-4 mb-2">
+          দ্রুত বেছে নিতে (ঐচ্ছিক):
+        </p>
+
+        <div
+          className="
+            flex
+            items-center
+            gap-2
+            flex-wrap
+          "
+        >
+
+          {[
+            "#7e22ce",
+            "#f59e0b",
+            "#111827",
+            "#1d4ed8",
+            "#e11d48",
+            "#059669",
+            "#db2777",
+            "#0891b2",
+            "#ea580c",
+            "#4338ca",
+          ].map((color)=>(
+
+            <button
+              key={color}
+              type="button"
+              onClick={()=>setThemeColor(color)}
+              style={{ backgroundColor: color }}
+              className={`
+                w-8
+                h-8
+                rounded-full
+                border-2
+                transition
+                ${
+                  themeColor.toLowerCase()===color
+                    ? "border-[#172033] scale-110"
+                    : "border-white"
+                }
+              `}
+            />
+
+          ))}
+
+        </div>
 
       </div>
 
