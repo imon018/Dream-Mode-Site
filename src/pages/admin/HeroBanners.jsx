@@ -7,12 +7,14 @@ import {
 import {
   FiImage,
   FiType,
+  FiAlignLeft,
   FiPackage,
   FiPhone,
   FiDollarSign,
   FiTag,
   FiTrash2,
   FiUploadCloud,
+  FiSearch,
 } from "react-icons/fi";
 
 
@@ -70,6 +72,10 @@ const [subtitle,setSubtitle]=useState("");
 const [productId,setProductId]=useState("");
 
 const [productName,setProductName]=useState("");
+
+const [productSearch,setProductSearch]=useState("");
+
+const [showProductList,setShowProductList]=useState(false);
 
 const [deleteId,setDeleteId]=useState(null);
 
@@ -152,31 +158,38 @@ console.log(error);
 
 
 
-const handleProductChange=(e)=>{
-
-
-const id=e.target.value;
-
-
-setProductId(id);
-
-
-
-const product =
-products.find(
-item=>item.id===id
+const filteredProducts =
+products.filter(
+item=>
+item.name
+.toLowerCase()
+.includes(
+productSearch.toLowerCase()
+)
 );
 
 
 
-if(product){
+
+const selectProduct=(product)=>{
+
+
+setProductId(
+product.id
+);
+
 
 setProductName(
 product.name
 );
 
-}
 
+setProductSearch(
+product.name
+);
+
+
+setShowProductList(false);
 
 
 };
@@ -197,6 +210,10 @@ setSubtitle("");
 setProductId("");
 
 setProductName("");
+
+setProductSearch("");
+
+setShowProductList(false);
 
 setOfferPrice("");
 
@@ -243,8 +260,6 @@ e.preventDefault();
 
 
 if(
-!title ||
-!subtitle ||
 !productId ||
 !image
 ){
@@ -645,12 +660,6 @@ mb-2
 
 Banner Title
 
-<span className="text-amber-500 ml-1">
-
-*
-
-</span>
-
 </label>
 
 
@@ -745,39 +754,52 @@ mb-2
 
 Subtitle
 
-<span className="text-amber-500 ml-1">
-
-*
-
-</span>
-
 </label>
 
+
+<div className="relative">
+
+
+<div
+
+className="
+
+absolute
+
+left-3
+
+top-1/2
+
+-translate-y-1/2
+
+w-7
+
+h-7
+
+rounded-md
+
+bg-[#FFF7E8]
+
+flex
+
+items-center
+
+justify-center
+
+text-amber-500
+
+"
+
+>
+
+<FiAlignLeft size={15}/>
+
+</div>
 
 
 <input
 
-className="
-
-w-full
-
-h-12
-
-px-3
-
-rounded-lg
-
-border
-
-border-gray-200
-
-outline-none
-
-text-sm
-
-focus:border-amber-400
-
-"
+className={inputClass}
 
 placeholder="Enter subtitle"
 
@@ -791,6 +813,8 @@ e.target.value
 
 />
 
+
+</div>
 
 </div>
 
@@ -874,68 +898,160 @@ text-amber-500
 </div>
 
 
-<select
+<input
 
-value={productId}
+type="text"
 
-onChange={handleProductChange}
+autoComplete="off"
 
 className="
-
 w-full
-
 h-12
-
 pl-12
-
-pr-3
-
+pr-9
 rounded-lg
-
 border
-
 border-gray-200
-
 outline-none
-
 text-sm
-
+text-gray-700
+placeholder:text-gray-400
 focus:border-amber-400
-
 "
 
+placeholder="Search product..."
+
+value={productSearch}
+
+onFocus={
+()=>setShowProductList(true)
+}
+
+onChange={(e)=>{
+
+setProductSearch(
+e.target.value
+);
+
+setShowProductList(true);
+
+if(!e.target.value){
+
+setProductId("");
+
+setProductName("");
+
+}
+
+}}
+
+onBlur={()=>{
+
+setTimeout(
+()=>setShowProductList(false),
+150
+);
+
+}}
+
+/>
+
+
+<div
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
 >
 
+<FiSearch size={15}/>
 
-<option value="">
+</div>
 
-Select Product
-
-</option>
 
 
 {
+showProductList && (
 
-products.map(product=>(
+<div
+className="
+absolute
+z-20
+mt-1
+w-full
+max-h-56
+overflow-y-auto
+bg-white
+border
+border-gray-200
+rounded-lg
+shadow-lg
+"
+>
 
-<option
+{
+filteredProducts.length > 0
+
+?
+
+filteredProducts.map(product=>(
+
+<div
 
 key={product.id}
 
-value={product.id}
+onMouseDown={(e)=>{
+
+e.preventDefault();
+
+selectProduct(product);
+
+}}
+
+className="
+px-4
+py-3
+text-sm
+text-gray-700
+hover:bg-amber-50
+cursor-pointer
+border-b
+border-gray-50
+last:border-0
+"
 
 >
 
 {product.name}
 
-</option>
+</div>
 
 ))
 
+:
+
+<div
+className="
+px-4
+py-3
+text-sm
+text-gray-400
+"
+>
+
+No products found
+
+</div>
+
 }
 
+</div>
 
-</select>
+)
+}
 
 
 </div>
@@ -1169,29 +1285,50 @@ Regular Price
 </label>
 
 
-<input
+<div className="relative">
+
+
+<div
 
 className="
 
-w-full
+absolute
 
-h-12
+left-3
 
-px-3
+top-1/2
 
-rounded-lg
+-translate-y-1/2
 
-border
+w-7
 
-border-gray-200
+h-7
 
-outline-none
+rounded-md
 
-text-sm
+bg-[#FFF7E8]
 
-focus:border-amber-400
+flex
+
+items-center
+
+justify-center
+
+text-amber-500
 
 "
+
+>
+
+৳
+
+</div>
+
+
+
+<input
+
+className={inputClass}
 
 placeholder="Regular price"
 
@@ -1204,6 +1341,9 @@ e.target.value
 }
 
 />
+
+
+</div>
 
 
 </div>
