@@ -13,7 +13,7 @@ android {
 
 signingConfigs {
     release {
-        storeFile file(keystoreProperties['storeFile'])
+        storeFile file("dream-mode-release.keystore")
         storePassword keystoreProperties['storePassword']
         keyAlias keystoreProperties['keyAlias']
         keyPassword keystoreProperties['keyPassword']
