@@ -26,7 +26,7 @@ import {
 
 
 import MaintenanceGuard from "./components/MaintenanceGuard";
-
+import NoInternet from "./components/NoInternet";
 
 import {
   Toaster,
@@ -44,7 +44,15 @@ import {
 import ScrollToTop from "./components/ScrollToTop";
 
 
-import { useLocation } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import { App as CapacitorApp } from "@capacitor/app";
+import { Capacitor } from "@capacitor/core";
+import { useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 
 import SEO from "./seo/SEO";
 
@@ -66,6 +74,8 @@ function AppContent(){
 
 
   const location = useLocation();
+const navigate = useNavigate();
+const lastBackPress = useRef(0);
 
 const seo = routeSEO[location.pathname] || {};
 
@@ -74,6 +84,39 @@ const seo = routeSEO[location.pathname] || {};
 const {
   settings,
 } = useSettings();
+
+
+
+useEffect(() => {
+  if (!Capacitor.isNativePlatform()) return;
+
+  let lastBackTime = 0;
+
+  const listener = CapacitorApp.addListener("backButton", () => {
+    const isHome = location.pathname === "/";
+
+    if (!isHome) {
+      navigate(-1);
+      return;
+    }
+
+    const now = Date.now();
+
+    if (now - lastBackTime < 2000) {
+      CapacitorApp.exitApp();
+    } else {
+      lastBackTime = now;
+      toast("আবার Back চাপুন App বন্ধ করতে", {
+        duration: 2000,
+        icon: "⚠️",
+      });
+    }
+  });
+
+  return () => {
+    listener.then((h) => h.remove());
+  };
+}, [location.pathname, navigate]);
 
 
 
@@ -162,6 +205,8 @@ const {
   return (
 
   <>
+
+<NoInternet />
 
     <SEO
       title={seo.title}

@@ -5,6 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { SettingsProvider } from "./context/SettingsContext";
 import { runUpdateManager } from "./utils/updateManager";
 import { Capacitor } from "@capacitor/core";
+import { App as CapacitorApp } from "@capacitor/app";
 
 import App from "./App";
 import "./index.css";
@@ -38,6 +39,31 @@ async function initApp() {
 }
 
 initApp();
+
+
+if (Capacitor.isNativePlatform()) {
+
+  CapacitorApp.addListener(
+    "resume",
+    async () => {
+
+      const updatePath =
+        await runUpdateManager();
+
+      if (updatePath) {
+
+        window.location.replace(
+          updatePath
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

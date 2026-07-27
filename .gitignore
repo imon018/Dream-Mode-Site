@@ -7,3 +7,6 @@ android/.gradle
 android/app/build
 android/build
 
+# Android signing files
+android/keystore.properties
+android/app/*.keystore
