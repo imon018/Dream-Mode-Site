@@ -7,6 +7,7 @@ on:
 
   workflow_dispatch:
 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,6 +36,7 @@ jobs:
 
       GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
       GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+
 
     steps:
 
@@ -75,10 +77,18 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/dream-mode-release.keystore
 
-          echo "storeFile=dream-mode-release.keystore" > android/keystore.properties
-          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/keystore.properties
-          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/keystore.properties
-          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/keystore.properties
+          echo "storeFile=dream-mode-release.keystore" > android/app/keystore.properties
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/app/keystore.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/app/keystore.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/app/keystore.properties
+          echo "storeType=PKCS12" >> android/app/keystore.properties
+
+
+      - name: Verify Keystore
+        run: |
+          keytool -list \
+          -keystore android/app/dream-mode-release.keystore \
+          -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
 
 
       - name: Sync Capacitor
