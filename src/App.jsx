@@ -17,6 +17,9 @@ import {
 import CartProvider from "./context/CartContext";
 
 
+import AnalyticsTracker from "./components/AnalyticsTracker";
+
+
 import WishlistProvider from "./context/WishlistContext";
 
 
@@ -206,7 +209,9 @@ useEffect(() => {
 
   <>
 
-<NoInternet />
+		<NoInternet />
+
+    <AnalyticsTracker />
 
     <SEO
       title={seo.title}
