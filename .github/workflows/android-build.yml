@@ -37,22 +37,28 @@ jobs:
       GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
 
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
+
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+
       - name: Install Dependencies
         run: npm install
+
 
       - name: Generate Capacitor App Icons
         run: npx capacitor-assets generate
 
+
       - name: Build Vite
         run: npm run build
+
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -60,24 +66,40 @@ jobs:
           distribution: temurin
           java-version: 21
 
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+
+      - name: Setup Android Signing
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/dream-mode-release.keystore
+
+          echo "storeFile=dream-mode-release.keystore" > android/keystore.properties
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/keystore.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/keystore.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/keystore.properties
+
 
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Grant Permission
+
+      - name: Grant Gradle Permission
         run: chmod +x android/gradlew
+
 
       - name: Build Debug APK
         run: |
           cd android
           ./gradlew assembleDebug
 
+
       - name: Build Release AAB
         run: |
           cd android
           ./gradlew bundleRelease
+
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -85,8 +107,9 @@ jobs:
           name: DreamMode-Debug-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Upload Release AAB
+
+      - name: Upload Signed Release AAB
         uses: actions/upload-artifact@v4
         with:
-          name: DreamMode-AAB
+          name: DreamMode-Release-AAB
           path: android/app/build/outputs/bundle/release/*.aab
