@@ -26,6 +26,7 @@ import {
 
 import Button from "../../components/ui/Button";
 
+import { getCategories } from "../../services/categoryService";
 
 import {
   getProductById,
@@ -85,6 +86,12 @@ const [
 category,
 setCategory
 ]=useState("");
+
+
+const [
+categories,
+setCategories
+]=useState([]);
 
 
 
@@ -178,6 +185,21 @@ loadProduct();
 
 
 
+
+  useEffect(()=>{
+
+async function loadCategories(){
+
+const data = await getCategories();
+
+setCategories(data);
+
+}
+
+loadCategories();
+
+},[]);
+  
 
 
 
@@ -903,6 +925,13 @@ Category
 
 
 <input
+<select
+
+value={category}
+
+onChange={(e)=>
+setCategory(e.target.value)
+}
 
 className="
 w-full
@@ -915,17 +944,33 @@ outline-none
 text-sm
 text-gray-700
 focus:border-amber-400
+bg-white
 "
 
-placeholder="Category"
+>
 
-value={category}
+<option value="">
+Select Category
+</option>
 
-onChange={(e)=>
-setCategory(e.target.value)
+
+{
+categories.map((item)=>(
+
+<option
+key={item.id}
+value={item.name}
+>
+
+{item.name}
+
+</option>
+
+))
 }
 
-/>
+
+</select>
 
 
 </div>
