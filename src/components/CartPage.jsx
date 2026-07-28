@@ -1,5 +1,6 @@
 import useCart from "../hooks/useCart";
 import useAuth from "../hooks/useAuth";
+import { getEffectivePrice } from "../utils/helpers";
 
 import {
   useNavigate,
@@ -54,7 +55,7 @@ export default function CartPage() {
 
       sum +
 
-      item.price *
+      getEffectivePrice(item) *
 
       item.quantity,
 
@@ -403,7 +404,7 @@ export default function CartPage() {
                           "
                         >
 
-                          ৳ {item.price}
+                          ৳ {getEffectivePrice(item)}
 
                         </p>
 
