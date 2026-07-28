@@ -331,48 +331,55 @@ const filterProducts = (category) => {
 
         {/* SEARCH */}
 
-        <div
-          className="
-            mt-3
-            mb-10
-          "
-        >
+<div
+  className="
+    mt-3
+    mb-5
+  "
+>
 
-          <div
-            className="
-              bg-white/90
-              backdrop-blur
-              p-3
-              rounded-3xl
-              shadow-lg
-            "
-          >
+  <div
+    className="
+      bg-white
+      rounded-3xl
+      shadow-lg
+      p-3
+    "
+  >
 
-            <SearchBar
-              onSearch={
-                handleSearch
-              }
-            />
+    <SearchBar
+      onSearch={handleSearch}
+    />
 
-
-            <div className="mt-6">
-
-<CategoryBar
-
-selectedCategory={selectedCategory}
-
-onSelectCategory={filterProducts}
-
-/>
+  </div>
 
 </div>
 
+{/* CATEGORY */}
 
-          </div>
+<div
+  className="
+    mb-10
+  "
+>
 
+  <div
+    className="
+      bg-white
+      rounded-3xl
+      shadow-lg
+      p-5
+    "
+  >
 
-        </div>
+    <CategoryBar
+      selectedCategory={selectedCategory}
+      onSelectCategory={filterProducts}
+    />
 
+  </div>
+
+</div>
 
 
 
