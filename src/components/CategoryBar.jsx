@@ -17,16 +17,19 @@ export default function CategoryBar({
   }, []);
 
   return (
+
+    
     <div
-      className="
-        flex
-        gap-4
-        overflow-x-auto
-        py-2
-        px-1
-        scrollbar-hide
-      "
-    >
+    className="
+    flex
+    gap-4
+    overflow-x-auto
+    scrollbar-hide
+    px-1
+  "
+>
+
+      
       {/* All */}
       <button
         onClick={() => onSelectCategory("")}
