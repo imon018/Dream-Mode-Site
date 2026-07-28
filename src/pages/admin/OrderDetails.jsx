@@ -707,6 +707,29 @@ border-gray-100
           {order.phone}
         </p>
 
+        {
+          (order.orderSource==="Messenger" || order.orderSource==="WhatsApp") && (
+
+            <p
+              className="
+              text-xs
+              font-bold
+              text-amber-600
+              mt-1
+            "
+            >
+              {
+                order.orderSource==="Messenger"
+                ?
+                "Messenger Order"
+                :
+                "WhatsApp Order"
+              }
+            </p>
+
+          )
+        }
+
       </div>
 
     </div>
