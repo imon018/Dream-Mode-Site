@@ -37,6 +37,8 @@ import {
   uploadImages
 } from "../../services/uploadService";
 
+import { getEffectivePrice } from "../../utils/helpers";
+
 
 export default function ReturnOrder(){
 
@@ -1103,7 +1105,7 @@ mt-1
 
 >
 
-৳ {item.price}
+৳ {getEffectivePrice(item)}
 
 </p>
 
@@ -1209,7 +1211,7 @@ text-sm
 
 {
 
-item.price *
+getEffectivePrice(item) *
 
 item.returnQuantity
 
@@ -2755,7 +2757,7 @@ name:item.name,
 
 image:item.image,
 
-price:item.price,
+price:getEffectivePrice(item),
 
 quantity:item.returnQuantity
 
