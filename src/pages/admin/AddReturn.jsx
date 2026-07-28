@@ -29,7 +29,12 @@ import {
 
 import {
   addReturnByAdmin,
+  getUserOrders,
 } from "../../services/orderService";
+
+import {
+  getUsers,
+} from "../../services/adminService";
 
 import {
   successToast,
@@ -48,6 +53,20 @@ export default function AddReturn() {
   const [email,setEmail]=useState("");
 
   const navigate = useNavigate();
+
+  // Where this return request is coming from
+  const [orderSource,setOrderSource]=useState("Messenger");
+
+  // User Order search/select state
+  const [userSearch,setUserSearch]=useState("");
+
+  const [userResults,setUserResults]=useState([]);
+
+  const [searchingUsers,setSearchingUsers]=useState(false);
+
+  const [selectedUser,setSelectedUser]=useState(null);
+
+  const [selectedUserOrders,setSelectedUserOrders]=useState([]);
 
   const [products,setProducts]=useState([]);
 
@@ -139,6 +158,152 @@ export default function AddReturn() {
 
 
 
+  // ==============================
+  // USER ORDER: search users by
+  // name or phone (debounced)
+  // ==============================
+
+  useEffect(()=>{
+
+    if(orderSource!=="User"){
+
+      setUserResults([]);
+
+      return;
+
+    }
+
+    if(!userSearch.trim()){
+
+      setUserResults([]);
+
+      return;
+
+    }
+
+    const timeout =
+    setTimeout(async()=>{
+
+      try{
+
+        setSearchingUsers(true);
+
+        const data =
+        await getUsers(userSearch);
+
+        setUserResults(data);
+
+      }
+
+      catch(error){
+
+        console.log(error);
+
+      }
+
+      finally{
+
+        setSearchingUsers(false);
+
+      }
+
+    },400);
+
+    return ()=>
+    clearTimeout(timeout);
+
+  },[
+
+    userSearch,
+
+    orderSource,
+
+  ]);
+
+
+
+  function handleOrderSourceChange(source){
+
+    setOrderSource(source);
+
+
+
+    // Reset user-order specific state
+    // when switching away from it
+
+    setUserSearch("");
+
+    setUserResults([]);
+
+    setSelectedUser(null);
+
+    setSelectedUserOrders([]);
+
+  }
+
+
+
+  async function selectUser(user){
+
+    setSelectedUser(user);
+
+    setUserResults([]);
+
+    setUserSearch(
+
+      user.name ||
+      user.email ||
+      ""
+
+    );
+
+
+
+    // Autofill basic customer info
+    // from the user's profile
+
+    setCustomerName(user.name || "");
+
+    setPhone(user.phone || "");
+
+    setEmail(user.email || "");
+
+    setPickupAddress(
+      user.address || ""
+    );
+
+
+
+    // Load this user's past orders so
+    // that selecting a product below
+    // can autofill the exact details
+    // given at the time of that order
+
+    if(user.email){
+
+      try{
+
+        const orders =
+        await getUserOrders(
+          user.email
+        );
+
+        setSelectedUserOrders(orders);
+
+      }
+
+      catch(error){
+
+        console.log(error);
+
+        setSelectedUserOrders([]);
+
+      }
+
+    }
+
+  }
+
 
 
   function addProduct(product){
@@ -180,6 +345,57 @@ export default function AddReturn() {
       }
 
     ]));
+
+
+
+    // In User Order mode, try to find the
+    // exact order this product was bought in
+    // and autofill the details given then
+
+    if(
+
+      orderSource==="User" &&
+      selectedUserOrders.length>0
+
+    ){
+
+      const matchingOrder =
+
+      selectedUserOrders.find(order=>
+
+        order.items?.some(
+          item=>item.id===product.id
+        )
+
+      );
+
+
+
+      if(matchingOrder){
+
+        setCustomerName(
+          matchingOrder.customerName ||
+          customerName
+        );
+
+        setPhone(
+          matchingOrder.phone ||
+          phone
+        );
+
+        setEmail(
+          matchingOrder.email ||
+          email
+        );
+
+        setPickupAddress(
+          matchingOrder.address ||
+          pickupAddress
+        );
+
+      }
+
+    }
 
 
 
@@ -423,6 +639,13 @@ export default function AddReturn() {
 
 
 
+        orderSource,
+
+        userId:
+        selectedUser?.id || null,
+
+
+
         returnRequested:true,
 
 
@@ -496,6 +719,18 @@ export default function AddReturn() {
       setPhone("");
 
       setEmail("");
+
+
+
+      setOrderSource("Messenger");
+
+      setUserSearch("");
+
+      setUserResults([]);
+
+      setSelectedUser(null);
+
+      setSelectedUserOrders([]);
 
 
 
@@ -654,6 +889,275 @@ space-y-5
 "
 
 >
+
+
+{/* =========================
+    ORDER SOURCE
+========================= */}
+
+<div
+className="
+border
+rounded-lg
+p-5
+space-y-4
+"
+>
+
+<h2
+className="
+font-black
+text-lg
+"
+>
+Order Source
+</h2>
+
+<div
+className="
+grid
+grid-cols-3
+gap-3
+"
+>
+
+<button
+
+type="button"
+
+onClick={()=>
+handleOrderSourceChange("Messenger")
+}
+
+className={
+
+  orderSource==="Messenger"
+
+  ?
+
+  "h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+
+  :
+
+  "h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+
+}
+
+>
+Messenger Order
+</button>
+
+<button
+
+type="button"
+
+onClick={()=>
+handleOrderSourceChange("WhatsApp")
+}
+
+className={
+
+  orderSource==="WhatsApp"
+
+  ?
+
+  "h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+
+  :
+
+  "h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+
+}
+
+>
+WhatsApp Order
+</button>
+
+<button
+
+type="button"
+
+onClick={()=>
+handleOrderSourceChange("User")
+}
+
+className={
+
+  orderSource==="User"
+
+  ?
+
+  "h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+
+  :
+
+  "h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+
+}
+
+>
+User Order
+</button>
+
+</div>
+
+
+
+{
+
+orderSource==="User" && (
+
+<div className="relative">
+
+<label
+className="
+block
+font-semibold
+text-sm
+mb-2
+"
+>
+Search User (name or phone)
+</label>
+
+<input
+
+type="text"
+
+value={userSearch}
+
+onChange={(e)=>{
+
+setUserSearch(e.target.value);
+
+setSelectedUser(null);
+
+}}
+
+placeholder="Type name or phone number..."
+
+className="
+w-full
+h-12
+border
+rounded-lg
+px-4
+outline-none
+focus:border-amber-400
+"
+
+/>
+
+{
+
+searchingUsers && (
+
+<p
+className="
+text-xs
+text-gray-400
+mt-2
+"
+>
+Searching...
+</p>
+
+)
+
+}
+
+{
+
+userResults.length>0 && (
+
+<div
+className="
+absolute
+z-10
+left-0
+right-0
+mt-1
+bg-white
+border
+rounded-lg
+shadow-md
+max-h-64
+overflow-y-auto
+"
+>
+
+{
+
+userResults.map(user=>(
+
+<button
+
+key={user.id}
+
+type="button"
+
+onClick={()=>
+selectUser(user)
+}
+
+className="
+w-full
+text-left
+p-3
+border-b
+hover:bg-gray-50
+"
+
+>
+
+<p className="font-bold text-sm">
+{user.name || "No Name"}
+</p>
+
+<p className="text-xs text-gray-500">
+{user.phone || user.email || ""}
+</p>
+
+</button>
+
+))
+
+}
+
+</div>
+
+)
+
+}
+
+{
+
+selectedUser && (
+
+<p
+className="
+text-xs
+text-green-600
+font-semibold
+mt-2
+"
+>
+Selected: {selectedUser.name || selectedUser.email} (details autofilled below)
+</p>
+
+)
+
+}
+
+</div>
+
+)
+
+}
+
+</div>
+
+
 
 
 
@@ -920,7 +1424,21 @@ hover:bg-gray-50
 
 ৳ {getEffectivePrice(product)}
 
+</p>
 
+</div>
+
+</button>
+
+))
+
+}
+
+</div>
+
+)
+
+}
 
 <h2
 className="
