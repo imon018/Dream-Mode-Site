@@ -69,9 +69,17 @@ public class UpdateLoaderPlugin extends Plugin {
             );
 
 
-            if (!outputFolder.exists()) {
-                outputFolder.mkdirs();
+            // Wipe any previously extracted package before unzipping the
+            // new one. Vite gives every build's JS/CSS files new hashed
+            // names, so old files were never being overwritten - they
+            // just piled up release after release. Starting from a clean
+            // folder each time guarantees the app never mixes files from
+            // two different versions.
+            if (outputFolder.exists()) {
+                deleteRecursive(outputFolder);
             }
+
+            outputFolder.mkdirs();
 
 
             ZipInputStream zis =
@@ -164,5 +172,22 @@ public class UpdateLoaderPlugin extends Plugin {
             );
 
         }
+    }
+
+
+    private void deleteRecursive(File file) {
+
+        if (file.isDirectory()) {
+
+            File[] children = file.listFiles();
+
+            if (children != null) {
+                for (File child : children) {
+                    deleteRecursive(child);
+                }
+            }
+        }
+
+        file.delete();
     }
 }
