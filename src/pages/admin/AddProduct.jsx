@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "../../components/ui/Button";
 
@@ -10,6 +10,8 @@ import {
 import {
   addProductToDB,
 } from "../../services/firestoreProductService";
+
+import { getCategories } from "../../services/categoryService";
 
 import {
   uploadImages,
@@ -45,6 +47,10 @@ export default function AddProduct() {
 
   const [stock,setStock]=useState("");
 
+  const [category, setCategory] = useState("");
+  
+  const [categories, setCategories] = useState([]);
+
   const [heroBanner,setHeroBanner]=useState(false);
 
   const [themeColor,setThemeColor]=useState("#7e22ce");
@@ -62,12 +68,19 @@ export default function AddProduct() {
   const [loading,setLoading]=useState(false);
 
 
+	useEffect(() => {
+  async function loadCategories() {
+    const data = await getCategories();
+    setCategories(data);
+  }
 
+  loadCategories();
+}, []);
 
 
   const handleImageChange=(e)=>{
 
-    const files=Array.from(e.target.files);
+  const files=Array.from(e.target.files);
 
     setImages((prev)=>[
 
@@ -151,6 +164,8 @@ export default function AddProduct() {
 
       !name ||
 
+      !category ||
+
       !description ||
 
       !price ||
@@ -190,6 +205,8 @@ export default function AddProduct() {
         name,
 
         title: productTitle,
+
+        category,
 
         description,
 
@@ -314,6 +331,8 @@ export default function AddProduct() {
       setName("");
 
       setProductTitle("");
+
+      setCategory("");
 
       setDescription("");
 
@@ -481,6 +500,49 @@ space-y-4
 
 
 
+
+  {/* CATEGORY */}
+
+<div>
+
+  <label className="block font-bold text-sm mb-2 text-[#172033]">
+    Category
+  </label>
+
+  <select
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    className="
+      w-full
+      h-12
+      rounded-lg
+      border
+      border-gray-200
+      px-4
+      outline-none
+      focus:border-amber-400
+      bg-white
+    "
+  >
+
+    <option value="">
+      Select Category
+    </option>
+
+    {categories.map((item) => (
+      <option
+        key={item.id}
+        value={item.name}
+      >
+        {item.name}
+      </option>
+    ))}
+
+  </select>
+
+</div>
+
+  
 
 
       {/* DESCRIPTION */}
