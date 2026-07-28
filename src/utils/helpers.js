@@ -18,3 +18,4 @@ export function getEffectivePrice(item) {
 
   return offerPrice > 0 && offerPrice < price ? offerPrice : price;
 }
+
