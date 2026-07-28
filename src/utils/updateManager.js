@@ -1,8 +1,8 @@
 import { Capacitor } from "@capacitor/core";
 
-import { APP_VERSION } from "./appVersion";
 import { checkForUpdate } from "./updateChecker";
 import { downloadUpdate } from "./updateDownloader";
+import { setAppliedVersion } from "./appliedVersion";
 
 import UpdateLoader from "../plugins/UpdateLoader";
 import LocalServer from "../plugins/LocalServer";
@@ -17,7 +17,7 @@ export async function runUpdateManager() {
     }
 
 
-    const hasUpdate =
+    const { hasUpdate, version } =
       await checkForUpdate();
 
 
@@ -72,6 +72,11 @@ export async function runUpdateManager() {
 
 
     if(server.available) {
+
+
+      if (version) {
+        await setAppliedVersion(version);
+      }
 
 
       console.log(
