@@ -924,7 +924,7 @@ Category
 </label>
 
 
-<input
+
 <select
 
 value={category}
