@@ -37,7 +37,7 @@ export default function RelatedProducts({
             item =>
               item.id !== currentId
           )
-          .slice(0,4);
+          .slice(0,8);
 
 
 
