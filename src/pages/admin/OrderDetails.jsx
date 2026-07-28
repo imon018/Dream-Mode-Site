@@ -38,6 +38,8 @@ import {
   errorToast,
 } from "../../components/ui/Toast";
 
+import { getEffectivePrice } from "../../utils/helpers";
+
 
 
 
@@ -1035,7 +1037,7 @@ text-right
   text-sm
   "
   >
-    ৳ {item.price * item.quantity}
+    ৳ {getEffectivePrice(item) * item.quantity}
   </p>
 
 </div>
