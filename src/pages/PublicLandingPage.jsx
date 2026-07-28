@@ -30,6 +30,8 @@ import {
 
 import { createOrder } from "../services/orderService";
 
+import RelatedProducts from "../components/RelatedProducts";
+
 
 export default function PublicLandingPage(){
 
@@ -1841,6 +1843,34 @@ text-center
 {ordering ? "অর্ডার হচ্ছে..." : "অর্ডার করুন"}
 
 </button>
+
+</div>
+
+
+{/* RELATED PRODUCTS */}
+
+<div
+className="
+mt-6
+bg-gray-50
+rounded-lg
+p-5
+"
+>
+
+<h3
+className="
+text-lg
+font-black
+mb-4
+"
+>
+সম্পর্কিত প্রোডাক্ট
+</h3>
+
+<RelatedProducts
+currentId={landing.productId}
+/>
 
 </div>
 
