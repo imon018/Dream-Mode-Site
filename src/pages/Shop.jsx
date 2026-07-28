@@ -355,6 +355,9 @@ const filterProducts = (category) => {
 
 </div>
 
+
+        
+
 {/* CATEGORY */}
 
 <div
@@ -363,24 +366,12 @@ const filterProducts = (category) => {
   "
 >
 
-  <div
-    className="
-      bg-white
-      rounded-3xl
-      shadow-lg
-      p-5
-    "
-  >
-
-    <CategoryBar
-      selectedCategory={selectedCategory}
-      onSelectCategory={filterProducts}
-    />
-
-  </div>
+  <CategoryBar
+    selectedCategory={selectedCategory}
+    onSelectCategory={filterProducts}
+  />
 
 </div>
-
 
 
 
