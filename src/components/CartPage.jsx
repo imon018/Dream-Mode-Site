@@ -46,7 +46,6 @@ export default function CartPage() {
 
 
 
-
   const total =
 
     cart.reduce(
