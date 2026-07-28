@@ -36,6 +36,8 @@ import {
   errorToast,
 } from "../../components/ui/Toast";
 
+import { getEffectivePrice } from "../../utils/helpers";
+
 export default function AddReturn() {
 
 
@@ -169,7 +171,7 @@ export default function AddReturn() {
 
         name:product.name,
 
-        price:product.price,
+        price:getEffectivePrice(product),
 
         image:product.image,
 
@@ -916,23 +918,7 @@ hover:bg-gray-50
 
 <p className="text-sm text-gray-500">
 
-৳ {product.price}
-
-</p>
-
-</div>
-
-</button>
-
-))
-
-}
-
-</div>
-
-)
-
-}
+৳ {getEffectivePrice(product)}
 
 
 
