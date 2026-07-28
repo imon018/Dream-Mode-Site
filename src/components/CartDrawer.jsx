@@ -1,5 +1,6 @@
 import useCart from "../hooks/useCart";
 import Button from "./ui/Button";
+import { getEffectivePrice } from "../utils/helpers";
 
 export default function CartDrawer() {
   const { cart, removeFromCart, clearCart } = useCart();
@@ -21,7 +22,7 @@ export default function CartDrawer() {
               <p>{item.name}</p>
 
               <p className="text-primary">
-                ৳ {item.price}
+                ৳ {getEffectivePrice(item)}
               </p>
 
               <button
