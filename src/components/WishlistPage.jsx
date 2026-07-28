@@ -17,6 +17,8 @@ import {
   successToast,
 } from "./ui/Toast";
 
+import { getEffectivePrice } from "../utils/helpers";
+
 
 
 export default function WishlistPage() {
@@ -67,9 +69,7 @@ export default function WishlistPage() {
 
       sum +
 
-      Number(
-        item.product.price || 0
-      ),
+      getEffectivePrice(item.product),
 
     0
 
@@ -498,7 +498,7 @@ text-amber-600
 
 >
 
-৳ {item.product.price}
+৳ {getEffectivePrice(item.product)}
 
 </p>
 
