@@ -813,7 +813,9 @@ whitespace-nowrap
 
               <a
 
-                href={`https://wa.me/${settings.whatsapp?.replace(/\D/g,"")}?text=I'm interested in ${product.name}`}
+                href={`https://wa.me/${settings.whatsapp?.replace(/\D/g,"")}?text=${encodeURIComponent(
+                  `আমি এই প্রোডাক্টটি নিতে চাই।\n${window.location.origin}/product/${product.id}\n\nনামঃ \nমোবাইলঃ \nঠিকানাঃ \nথানাঃ \nজেলাঃ `
+                )}`}
 
                 target="_blank"
 
