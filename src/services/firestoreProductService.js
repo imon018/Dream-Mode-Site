@@ -437,6 +437,45 @@ async()=>{
 
 
 
+// =========================
+// Products By Category
+// =========================
+
+export const getProductsByCategory =
+async(category)=>{
+
+  const snapshot =
+  await getDocs(
+    productRef
+  );
+
+
+  const products =
+  snapshot.docs.map(
+
+    (doc)=>(
+
+      {
+        id: doc.id,
+        ...doc.data(),
+      }
+
+    )
+
+  );
+
+
+  return products
+
+  .filter(
+    (product)=>
+      product.category === category
+  )
+
+  .slice(0,8);
+
+};
+
 
 
 
