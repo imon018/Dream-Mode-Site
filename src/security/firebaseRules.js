@@ -194,7 +194,21 @@ match /products/{id} {
 
 
 
+  
 
+match /categories/{id} {
+
+  allow read:
+    if true;
+
+  allow create, update, delete:
+    if isAdmin();
+
+}
+
+
+
+  
 
 
 
