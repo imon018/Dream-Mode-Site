@@ -47,6 +47,8 @@ export default function OrderSuccess(){
 
   const [loading,setLoading] = useState(true);
 
+  const [currentImages,setCurrentImages] = useState({});
+
   const { settings } = useSettings();
 
 
@@ -136,6 +138,50 @@ export default function OrderSuccess(){
     }
 
   }, [orderId]);
+
+
+
+
+  useEffect(()=>{
+
+    if(!order?.items?.length) return;
+
+    const hasMultipleImages =
+      order.items.some(
+        item=>(item.images?.length || 0) > 1
+      );
+
+    if(!hasMultipleImages) return;
+
+    const interval = setInterval(()=>{
+
+      setCurrentImages(prev=>{
+
+        const next = { ...prev };
+
+        order.items.forEach((item,index)=>{
+
+          const total =
+            item.images?.length || 0;
+
+          if(total > 1){
+
+            next[index] =
+              ((prev[index] || 0) + 1) % total;
+
+          }
+
+        });
+
+        return next;
+
+      });
+
+    },3000);
+
+    return ()=>clearInterval(interval);
+
+  },[order]);
 
 
 
@@ -712,7 +758,9 @@ export default function OrderSuccess(){
                   const productImage =
                     item.images?.length
                     ?
-                    item.images[0]
+                    item.images[
+                      currentImages[index] || 0
+                    ]
                     :
                     item.image ||
                     "https://via.placeholder.com/600";
@@ -751,6 +799,8 @@ export default function OrderSuccess(){
                             w-full
                             h-full
                             object-cover
+                            transition-opacity
+                            duration-500
                           "
                         />
 
