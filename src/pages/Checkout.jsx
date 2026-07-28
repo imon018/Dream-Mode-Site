@@ -9,6 +9,7 @@ import {
 
 import useCart from "../hooks/useCart";
 import useAuth from "../hooks/useAuth";
+import { getEffectivePrice } from "../utils/helpers";
 
 import Button from "../components/ui/Button";
 
@@ -106,7 +107,7 @@ export default function Checkout(){
     cart.reduce(
       (sum,item)=>
       sum +
-      item.price *
+      getEffectivePrice(item) *
       (item.quantity || 1),
       0
     );
@@ -645,7 +646,7 @@ font-black
 mt-1
 "
 >
-৳ {item.price * item.quantity}
+৳ {getEffectivePrice(item) * item.quantity}
 </p>
 
 
