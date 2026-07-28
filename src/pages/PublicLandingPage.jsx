@@ -1861,6 +1861,7 @@ p-5
 <h3
 className="
 text-lg
+text-center
 font-black
 mb-4
 "
