@@ -55,6 +55,7 @@ import LandingOrderSuccessPreview from "../pages/admin/LandingOrderSuccessPrevie
 import PublicLandingPage from "../pages/PublicLandingPage";
 import LandingOrderSuccess from "../pages/LandingOrderSuccess";
 import LandingEdit from "../pages/admin/LandingEdit";
+import Categories from "../pages/admin/Categories";
 
 
 /* =========================
@@ -472,6 +473,11 @@ element={<ReturnOrder />}
          <Route
   path="landing/edit/:id"
   element={<LandingEdit />}
+/>
+
+         <Route
+  path="categories"
+  element={<Categories />}
 />
 
 
