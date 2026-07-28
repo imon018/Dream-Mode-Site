@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
 
 
 @CapacitorPlugin(name = "LocalServer")
@@ -22,7 +23,11 @@ public class LocalServerPlugin extends Plugin {
 
     private ServerSocket serverSocket;
     private Thread serverThread;
-    private int port = 8765;
+    private final int port = 8765;
+
+    // True only once the ServerSocket has actually bound to the port
+    // and is ready to accept connections.
+    private volatile boolean serverReady = false;
 
 
     @PluginMethod
@@ -56,17 +61,54 @@ public class LocalServerPlugin extends Plugin {
             }
 
 
+            // Already up and confirmed listening - just hand back the URL.
+            if (serverReady && serverSocket != null && !serverSocket.isClosed()) {
+
+                JSObject result = new JSObject();
+
+                result.put("available", true);
+
+                result.put(
+                        "url",
+                        "http://127.0.0.1:" + port + "/index.html"
+                );
+
+                call.resolve(result);
+
+                return;
+            }
+
+
+            // A previous attempt exists but its thread already died
+            // (e.g. bind failed) - clear it out so we can retry cleanly
+            // instead of getting stuck thinking a server is starting
+            // when it never will.
+            if (serverThread != null && !serverThread.isAlive()) {
+                serverThread = null;
+                serverReady = false;
+            }
+
+
             if (serverThread == null) {
 
+                final CountDownLatch bindLatch = new CountDownLatch(1);
 
                 serverThread = new Thread(() -> {
 
-
                     try {
-
 
                         serverSocket =
                                 new ServerSocket(port);
+
+                        serverReady = true;
+
+                        // Unblock startServer() only once the socket is
+                        // actually bound - previously the plugin resolved
+                        // immediately after starting the thread, so the
+                        // WebView could navigate to the local URL before
+                        // anything was listening on it, which showed up
+                        // as a blank white screen.
+                        bindLatch.countDown();
 
 
                         while (!serverSocket.isClosed()) {
@@ -84,7 +126,10 @@ public class LocalServerPlugin extends Plugin {
                         }
 
 
-                    } catch(Exception ignored) {
+                    } catch (Exception e) {
+
+                        serverReady = false;
+                        bindLatch.countDown();
 
                     }
 
@@ -94,6 +139,23 @@ public class LocalServerPlugin extends Plugin {
 
                 serverThread.start();
 
+
+                try {
+                    bindLatch.await();
+                } catch (InterruptedException ignored) {
+                }
+
+
+                if (!serverReady) {
+
+                    JSObject result = new JSObject();
+
+                    result.put("available", false);
+
+                    call.resolve(result);
+
+                    return;
+                }
             }
 
 
