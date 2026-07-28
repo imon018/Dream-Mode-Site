@@ -40,6 +40,8 @@ export default function AddOrder(){
 
 const [customerName,setCustomerName]=useState("");
 
+const [orderSource,setOrderSource]=useState("Messenger");
+
 const [email,setEmail]=useState("");
 
 const [phone,setPhone]=useState("");
@@ -95,6 +97,8 @@ userId: user?.uid || "",
 
 customerName,
 
+orderSource,
+
 email,
 
 phone,
@@ -138,6 +142,8 @@ successToast(
 
 
 setCustomerName("");
+
+setOrderSource("Messenger");
 
 setEmail("");
 
@@ -368,6 +374,94 @@ space-y-4
 "
 
 >
+
+
+{/* ORDER SOURCE */}
+
+<div>
+
+
+<label
+
+className="
+
+block
+
+font-bold
+
+text-sm
+
+text-[#172033]
+
+mb-2
+
+"
+
+>
+
+Order Source
+
+</label>
+
+
+<div className="grid grid-cols-2 gap-3">
+
+<button
+
+type="button"
+
+onClick={()=>setOrderSource("Messenger")}
+
+className={
+
+orderSource==="Messenger"
+
+?
+
+"h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+
+:
+
+"h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+
+}
+
+>
+
+Messenger Order
+
+</button>
+
+<button
+
+type="button"
+
+onClick={()=>setOrderSource("WhatsApp")}
+
+className={
+
+orderSource==="WhatsApp"
+
+?
+
+"h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+
+:
+
+"h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+
+}
+
+>
+
+WhatsApp Order
+
+</button>
+
+</div>
+
+
+</div>
 
 
 {/* CUSTOMER NAME */}
