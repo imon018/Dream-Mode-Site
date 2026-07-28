@@ -15,6 +15,7 @@ import {
   FiUser,
   FiUsers,
   FiBox,
+  FiTag,
   FiLayout,
   FiShoppingCart,
   FiSend,
@@ -267,6 +268,44 @@ Products
 
 
 
+
+  {/* CATEGORIES */}
+
+<NavLink
+
+to="/admin/categories"
+
+onClick={closeDrawer}
+
+className={({isActive})=>
+
+menuItem +
+
+(isActive
+
+?
+
+" bg-[#071F57] text-white"
+
+:
+
+" text-slate-700 hover:bg-[#FFF7E8]"
+
+)
+
+}
+
+>
+
+<FiTag size={20}/>
+
+Categories
+
+</NavLink>
+
+
+
+  
 
 {/* LANDING PAGES */}
 
