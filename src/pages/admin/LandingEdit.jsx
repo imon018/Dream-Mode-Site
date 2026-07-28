@@ -11,7 +11,6 @@ import {
   FiPackage,
   FiEdit3,
   FiImage,
-  FiSettings,
   FiEye,
   FiXCircle,
   FiSearch,
@@ -89,10 +88,6 @@ const [status,setStatus]=
 useState("published");
 
 const [showCancelModal,setShowCancelModal]=useState(false);
-
-const [facebookPixel,setFacebookPixel]=useState("");
-
-const [googleAnalytics,setGoogleAnalytics]=useState("");
 
 const [collectName,setCollectName]=useState(true);
 
@@ -266,14 +261,6 @@ async function loadLanding() {
 
     setStatus(
       landing.status || "draft"
-    );
-
-    setFacebookPixel(
-      landing.facebookPixel || ""
-    );
-
-    setGoogleAnalytics(
-      landing.googleAnalytics || ""
     );
 
     setCollectName(
@@ -565,10 +552,6 @@ orders:0,
 
 revenue:0,
 
-facebookPixel,
-
-googleAnalytics,
-
 orderForm:{
 
 collectName,
@@ -613,10 +596,6 @@ themeColorTo,
 gradientDirection,
 
 status,
-
-facebookPixel,
-
-googleAnalytics,
 
 collectName,
 
@@ -2332,179 +2311,6 @@ peer-checked:after:translate-x-5
 
 </div>
 
-{/* =========================
-ADDITIONAL SETTINGS
-========================= */}
-
-<div
-className="
-bg-white
-rounded-xl
-border
-border-amber-200
-shadow-sm
-overflow-hidden
-"
->
-
-<div
-className="
-px-5
-py-4
-bg-amber-50
-border-b
-border-amber-100
-flex
-items-center
-gap-3
-"
->
-
-<div
-className="
-w-10
-h-10
-rounded-lg
-bg-amber-500
-text-white
-flex
-items-center
-justify-center
-"
->
-
-<FiSettings/>
-
-</div>
-
-<div>
-
-<h2
-className="
-text-lg
-font-bold
-"
->
-
-Additional Settings
-
-</h2>
-
-<p
-className="
-text-xs
-text-gray-500
-"
->
-
-Tracking & Custom Settings
-
-</p>
-
-</div>
-
-</div>
-
-<div
-className="
-p-5
-space-y-5
-"
->
-
-<div>
-
-<label
-className="
-block
-font-semibold
-mb-2
-"
->
-
-Facebook Pixel ID
-
-</label>
-
-<input
-
-value={facebookPixel}
-
-onChange={(e)=>
-
-setFacebookPixel(
-e.target.value
-)
-
-}
-
-placeholder="123456789012345"
-
-className="
-w-full
-h-12
-rounded-lg
-border
-border-amber-200
-px-4
-outline-none
-focus:border-amber-500
-focus:ring-4
-focus:ring-amber-100
-"
-
-/>
-
-</div>
-
-<div>
-
-<label
-className="
-block
-font-semibold
-mb-2
-"
->
-
-Google Analytics ID
-
-</label>
-
-<input
-
-value={googleAnalytics}
-
-onChange={(e)=>
-
-setGoogleAnalytics(
-e.target.value
-)
-
-}
-
-placeholder="G-XXXXXXXXXX"
-
-className="
-w-full
-h-12
-rounded-lg
-border
-border-amber-200
-px-4
-outline-none
-focus:border-amber-500
-focus:ring-4
-focus:ring-amber-100
-"
-
-/>
-
-</div>
-
-</div>
-
-</div>
 
 
 
