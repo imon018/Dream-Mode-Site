@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'public/updates/**'
 
   workflow_dispatch:
 
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -58,8 +62,23 @@ jobs:
         run: npx capacitor-assets generate
 
 
-      - name: Build Vite
-        run: npm run build
+      - name: Create OTA Update Package
+        run: npm run create:update
+
+
+      - name: Commit & Push OTA Update Package
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add public/updates
+
+          if git diff --cached --quiet; then
+            echo "No OTA update changes to commit"
+          else
+            git commit -m "chore: update OTA package [skip ci]"
+            git push
+          fi
 
 
       - name: Setup Java
