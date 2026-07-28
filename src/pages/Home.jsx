@@ -6,6 +6,7 @@ import TrustBanner from "../components/TrustBanner";
 import AnimatedWrapper from "../components/ui/AnimatedWrapper";
 import PremiumHighlights from "../components/PremiumHighlights";
 import Newsletter from "../components/Newsletter";
+import CategoryProducts from "../components/CategoryProducts";
 
 export default function Home() {
   
@@ -18,6 +19,8 @@ export default function Home() {
       <PremiumHighlights />
 
       <FeaturedProducts />
+
+      <CategoryProducts />
 
       <WhyChooseUs />
 
