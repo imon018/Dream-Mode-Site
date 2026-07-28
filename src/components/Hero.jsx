@@ -705,7 +705,9 @@ shadow-[0_0_20px_rgba(245,158,11,.18)]
   {/* WHATSAPP */}
 
   <a
-    href={`https://wa.me/${settings.whatsapp}`}
+    href={`https://wa.me/${settings.whatsapp?.replace(/\D/g,"")}?text=${encodeURIComponent(
+      `আমি এই প্রোডাক্টটি নিতে চাই।\n${window.location.origin}${banner?.productId ? `/product/${banner.productId}` : ""}\n\nনামঃ \nমোবাইলঃ \nঠিকানাঃ \nথানাঃ \nজেলাঃ `
+    )}`}
     target="_blank"
     rel="noreferrer"
     className="w-full"
