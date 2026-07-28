@@ -21,7 +21,6 @@ import {
 
 
 
-
 const productRef =
 collection(
   db,
