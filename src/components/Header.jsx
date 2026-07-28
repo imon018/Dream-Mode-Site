@@ -14,10 +14,10 @@ import {
 import {
   FiMenu,
   FiShoppingBag,
-  FiUser,
+  FiShoppingCart,
+  FiHeart,
   FiSearch,
   FiBell,
-  FiLogOut,
   FiHome,
   FiLogIn,
   FiUserPlus,
@@ -28,6 +28,7 @@ import {
 
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
+import useWishlist from "../hooks/useWishlist";
 
 
 import {
@@ -73,6 +74,29 @@ const {
 const {
   cartCount
 }=useCart();
+
+
+
+
+const {
+  wishlist
+}=useWishlist();
+
+
+const wishlistCount =
+wishlist?.length || 0;
+
+
+
+
+const firstName =
+user
+?
+(user.name || user.displayName || "User")
+.trim()
+.split(" ")[0]
+:
+"";
 
 
 
@@ -366,7 +390,7 @@ relative
 
 
 <button
-className="lg:hidden"
+className="md:hidden"
 onClick={()=>setMobileOpen(true)}
 >
 
@@ -467,7 +491,7 @@ Live Your Style
 <nav
 className="
 hidden
-lg:flex
+md:flex
 items-center
 gap-8
 font-medium
@@ -482,6 +506,94 @@ Home
 
 <Link to="/shop">
 Shop
+</Link>
+
+
+<Link
+to="/cart"
+className="
+relative
+flex
+items-center
+gap-2
+"
+>
+
+<FiShoppingCart size={20}/>
+
+Cart
+
+{
+cartCount > 0 && (
+
+<span
+className="
+absolute
+-top-2
+-right-3
+bg-[#071F57]
+text-white
+text-[10px]
+h-[18px]
+min-w-[18px]
+rounded-full
+flex
+items-center
+justify-center
+"
+>
+
+{cartCount}
+
+</span>
+
+)
+}
+
+</Link>
+
+
+<Link
+to="/profile/wishlist"
+className="
+relative
+flex
+items-center
+gap-2
+"
+>
+
+<FiHeart size={20}/>
+
+Wishlist
+
+{
+wishlistCount > 0 && (
+
+<span
+className="
+absolute
+-top-2
+-right-3
+bg-[#071F57]
+text-white
+text-[10px]
+h-[18px]
+min-w-[18px]
+rounded-full
+flex
+items-center
+justify-center
+"
+>
+
+{wishlistCount}
+
+</span>
+
+)
+}
+
 </Link>
 
 
@@ -758,7 +870,8 @@ notificationPath={isAdmin ? "/admin/notifications" : "/profile/notifications"}
 <div
 className="
 hidden
-lg:flex
+md:flex
+items-center
 gap-3
 "
 >
@@ -767,6 +880,9 @@ gap-3
 <Link
 to="/login"
 className="
+flex
+items-center
+gap-2
 px-5
 py-2.5
 rounded-full
@@ -776,6 +892,8 @@ text-[#071F57]
 "
 >
 
+<FiLogIn size={18}/>
+
 Login
 
 </Link>
@@ -784,6 +902,9 @@ Login
 <Link
 to="/register"
 className="
+flex
+items-center
+gap-2
 px-6
 py-2.5
 rounded-full
@@ -791,6 +912,8 @@ bg-[#071F57]
 text-white
 "
 >
+
+<FiUserPlus size={18}/>
 
 Register Now
 
@@ -808,7 +931,7 @@ Register Now
 <div
 className="
 hidden
-lg:flex
+md:flex
 items-center
 gap-4
 "
@@ -840,41 +963,73 @@ isAdmin
 }
 className="
 flex
+flex-col
 items-center
-gap-2
+gap-1
 "
 >
-
-<FiUser size={20}/>
 
 {
-isAdmin
+user?.photoURL
+
 ?
-"Admin"
-:
-"Profile"
-}
 
-</Link>
+<img
 
+src={user.photoURL}
 
-
-
-<button
-onClick={handleLogout}
 className="
+w-9
+h-9
+rounded-full
+object-cover
+border
+border-[#071F57]/30
+"
+
+/>
+
+:
+
+<div
+className="
+w-9
+h-9
+rounded-full
+bg-[#071F57]
+text-white
 flex
 items-center
-gap-2
-text-red-600
+justify-center
+text-sm
+font-bold
 "
 >
 
-<FiLogOut size={18}/>
+{
+(firstName || "U")
+.charAt(0)
+.toUpperCase()
+}
 
-Logout
+</div>
 
-</button>
+}
+
+<span
+className="
+text-xs
+font-semibold
+text-[#071F57]
+leading-none
+"
+>
+
+{firstName}
+
+</span>
+
+</Link>
 
 
 </div>
