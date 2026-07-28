@@ -58,16 +58,28 @@ export async function getUsers(search = "") {
 
   if(search.trim()) {
 
+    const term =
+      search
+      .toLowerCase()
+      .trim();
+
     users =
       users.filter(
         (user)=>
 
           user.email
           ?.toLowerCase()
-          .includes(
-            search
-            .toLowerCase()
+          .includes(term) ||
+
+          user.name
+          ?.toLowerCase()
+          .includes(term) ||
+
+          String(
+            user.phone || ""
           )
+          .toLowerCase()
+          .includes(term)
 
       );
 
