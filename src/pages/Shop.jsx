@@ -17,6 +17,7 @@ import ProductCard from "../components/ProductCard";
 import Spinner from "../components/Spinner";
 import SearchBar from "../components/ui/SearchBar";
 import ShopHero from "../components/ShopHero";
+import CategoryBar from "../components/CategoryBar";
 
 
 export default function Shop() {
@@ -35,6 +36,10 @@ export default function Shop() {
 
   const [loading,setLoading] =
     useState(true);
+
+
+  const [selectedCategory, setSelectedCategory] =
+  useState("");
 
 
 
@@ -227,7 +232,34 @@ location.search
 
 
 
+  
 
+const filterProducts = (category) => {
+
+  setSelectedCategory(category);
+
+  setCurrentPage(1);
+
+  if (!category) {
+
+    setFilteredProducts(products);
+
+    return;
+
+  }
+
+  const filtered = products.filter(
+    (product) =>
+      product.category === category
+  );
+
+  setFilteredProducts(filtered);
+
+};
+
+
+
+  
 
 
   if(loading)
@@ -321,6 +353,19 @@ location.search
                 handleSearch
               }
             />
+
+
+            <div className="mt-6">
+
+<CategoryBar
+
+selectedCategory={selectedCategory}
+
+onSelectCategory={filterProducts}
+
+/>
+
+</div>
 
 
           </div>
