@@ -12,58 +12,40 @@ import "./index.css";
 import "swiper/css";
 import "swiper/css/pagination";
 
-async function initApp() {
+// Guards against the launch check and a "resume" event firing the
+// update flow at the same time (e.g. user switches away and back
+// while the initial check is still running). Without this, two
+// downloads/extractions could race each other and stomp on the same
+// files, which is one of the ways the white-screen glitch happened.
+let updateInProgress = false;
 
-  if (Capacitor.isNativePlatform()) {
+async function applyUpdateIfAvailable() {
+  if (updateInProgress) return;
+  updateInProgress = true;
 
-    const updatePath =
-      await runUpdateManager();
-
+  try {
+    const updatePath = await runUpdateManager();
 
     if (updatePath) {
-
-      console.log(
-        "Loading updated frontend:",
-        updatePath
-      );
-
-
-      window.location.replace(
-        updatePath
-      );
-
-      return;
+      console.log("Loading updated frontend:", updatePath);
+      window.location.replace(updatePath);
     }
+  } finally {
+    updateInProgress = false;
   }
-
 }
-
-initApp();
-
 
 if (Capacitor.isNativePlatform()) {
+  // Fire-and-forget: check for an update in the background. The
+  // bundled UI below renders immediately regardless, so a slow or
+  // failed network check can no longer hang the first screen - it
+  // will only ever redirect if an update actually applies.
+  applyUpdateIfAvailable();
 
-  CapacitorApp.addListener(
-    "resume",
-    async () => {
-
-      const updatePath =
-        await runUpdateManager();
-
-      if (updatePath) {
-
-        window.location.replace(
-          updatePath
-        );
-
-      }
-
-    }
-  );
-
+  CapacitorApp.addListener("resume", () => {
+    applyUpdateIfAvailable();
+  });
 }
-
-
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -76,4 +58,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </HelmetProvider>
   </React.StrictMode>
 );
-
