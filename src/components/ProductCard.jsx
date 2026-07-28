@@ -76,6 +76,32 @@ export default function ProductCard({
 
 
 
+  // ProductDetailsView.jsx এর মতোই অফার প্রাইজ ও ডিসকাউন্ট % হিসাব করা হচ্ছে,
+  // যাতে কার্ডেও একই লজিকে দেখায়। অফার প্রাইজ না থাকলে/অবৈধ হলে
+  // hasOffer false থাকবে আর regular price আগের মতোই দেখাবে।
+
+  const hasOffer =
+    product.price > 0 &&
+    product.offerPrice > 0 &&
+    product.offerPrice < product.price;
+
+  const discount =
+    hasOffer
+    ?
+    Math.round(
+      (
+        (product.price - product.offerPrice)
+        /
+        product.price
+      )
+      * 100
+    )
+    :
+    0;
+
+
+
+
 
   return (
 
@@ -321,20 +347,117 @@ export default function ProductCard({
 
 
 
-        <p
+        {
 
-          className="
-            mt-1
-            text-sm
-            font-bold
-            text-amber-600
-          "
+          hasOffer
 
-        >
+          ?
 
-          ৳ {product.price}
+          <div
 
-        </p>
+            className={`
+              mt-1
+              flex
+              items-center
+              flex-wrap
+              ${
+                compact
+                ?
+                "gap-1"
+                :
+                "gap-2"
+              }
+            `}
+
+          >
+
+            <span
+
+              className={`
+                font-bold
+                text-amber-600
+                ${
+                  compact
+                  ?
+                  "text-sm"
+                  :
+                  "text-lg"
+                }
+              `}
+
+            >
+
+              ৳ {product.offerPrice}
+
+            </span>
+
+            <span
+
+              className={`
+                text-gray-400
+                font-medium
+                line-through
+                ${
+                  compact
+                  ?
+                  "text-[10px]"
+                  :
+                  "text-xs"
+                }
+              `}
+
+            >
+
+              ৳ {product.price}
+
+            </span>
+
+            {
+              discount > 0 && (
+
+                <span
+
+                  className={`
+                    text-red-600
+                    font-bold
+                    ${
+                      compact
+                      ?
+                      "text-[9px]"
+                      :
+                      "text-[11px]"
+                    }
+                  `}
+
+                >
+
+                  {discount}% OFF
+
+                </span>
+
+              )
+            }
+
+          </div>
+
+          :
+
+          <p
+
+            className="
+              mt-1
+              text-sm
+              font-bold
+              text-amber-600
+            "
+
+          >
+
+            ৳ {product.price}
+
+          </p>
+
+        }
 
 
 
