@@ -935,11 +935,11 @@ className={
 
   ?
 
-  "h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+  "min-h-[52px] px-2 py-2 rounded-lg font-bold text-xs sm:text-sm bg-amber-500 text-white flex items-center justify-center text-center leading-tight"
 
   :
 
-  "h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+  "min-h-[52px] px-2 py-2 rounded-lg font-bold text-xs sm:text-sm bg-gray-100 text-gray-600 flex items-center justify-center text-center leading-tight"
 
 }
 
@@ -961,11 +961,11 @@ className={
 
   ?
 
-  "h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+  "min-h-[52px] px-2 py-2 rounded-lg font-bold text-xs sm:text-sm bg-amber-500 text-white flex items-center justify-center text-center leading-tight"
 
   :
 
-  "h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+  "min-h-[52px] px-2 py-2 rounded-lg font-bold text-xs sm:text-sm bg-gray-100 text-gray-600 flex items-center justify-center text-center leading-tight"
 
 }
 
@@ -987,11 +987,11 @@ className={
 
   ?
 
-  "h-11 rounded-lg font-bold text-sm bg-amber-500 text-white"
+  "min-h-[52px] px-2 py-2 rounded-lg font-bold text-xs sm:text-sm bg-amber-500 text-white flex items-center justify-center text-center leading-tight"
 
   :
 
-  "h-11 rounded-lg font-bold text-sm bg-gray-100 text-gray-600"
+  "min-h-[52px] px-2 py-2 rounded-lg font-bold text-xs sm:text-sm bg-gray-100 text-gray-600 flex items-center justify-center text-center leading-tight"
 
 }
 
