@@ -178,7 +178,7 @@ public class LocalServerPlugin extends Plugin {
         output.write(
                 (
                 "HTTP/1.1 200 OK\r\n" +
-                "Content-Type: text/html\r\n" +
+                "Content-Type: " + getMimeType(file.getName()) + "\r\n" +
                 "Connection: close\r\n\r\n"
                 ).getBytes()
         );
@@ -213,5 +213,25 @@ public class LocalServerPlugin extends Plugin {
         output.close();
 
         socket.close();
+    }
+
+
+    private String getMimeType(String fileName) {
+
+        String lower = fileName.toLowerCase();
+
+        if (lower.endsWith(".html")) return "text/html";
+        if (lower.endsWith(".js") || lower.endsWith(".mjs")) return "application/javascript";
+        if (lower.endsWith(".css")) return "text/css";
+        if (lower.endsWith(".json")) return "application/json";
+        if (lower.endsWith(".png")) return "image/png";
+        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+        if (lower.endsWith(".svg")) return "image/svg+xml";
+        if (lower.endsWith(".ico")) return "image/x-icon";
+        if (lower.endsWith(".webmanifest")) return "application/manifest+json";
+        if (lower.endsWith(".woff2")) return "font/woff2";
+        if (lower.endsWith(".woff")) return "font/woff";
+
+        return "application/octet-stream";
     }
 }
