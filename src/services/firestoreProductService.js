@@ -471,6 +471,15 @@ async(category)=>{
       product.category === category
   )
 
+  .sort(
+
+    (a,b)=>
+
+    (b.createdAt?.seconds || 0) -
+    (a.createdAt?.seconds || 0)
+
+  )
+
   .slice(0,8);
 
 };
