@@ -210,7 +210,7 @@ return (
     relative
     overflow-hidden
     rounded-b-[30px]
-    h-[70vh]
+    h-[360px]
     md:h-auto
   "
 >
@@ -220,12 +220,17 @@ return (
   src={banner.image}
   alt={banner.title}
   className="
+    absolute
+    inset-0
     w-full
     h-full
+    object-contain
+    bg-black
+
+    md:static
     md:h-auto
-    object-cover
     md:object-fill
-    block
+    md:bg-transparent
   "
 />
 
