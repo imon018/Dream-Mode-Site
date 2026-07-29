@@ -1220,3 +1220,46 @@ new Date().toISOString()
 
 
 };
+
+
+
+
+// =================================
+// CHECK IF USER HAS A DELIVERED ORDER
+// FOR A SPECIFIC PRODUCT (used to allow reviews)
+// =================================
+
+
+export const hasDeliveredOrderForProduct =
+async(email, productId)=>{
+
+
+  if(!email || !productId){
+
+    return false;
+
+  }
+
+
+  const orders =
+    await getUserOrders(email);
+
+
+  return orders.some(
+
+    (order)=>
+
+      order.status === "Delivered" &&
+
+      order.items?.some(
+
+        (item)=>
+
+          (item.productId || item.id) === productId
+
+      )
+
+  );
+
+
+};
