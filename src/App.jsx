@@ -1,4 +1,5 @@
 import AppRoutes from "./routes/AppRoutes";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 
 import AuthProvider from "./context/AuthContext";
@@ -212,6 +213,8 @@ useEffect(() => {
 		<NoInternet />
 
     <AnalyticsTracker />
+
+    <SpeedInsights />
 
     <SEO
       title={seo.title}
