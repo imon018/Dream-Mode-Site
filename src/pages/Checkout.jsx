@@ -1708,7 +1708,9 @@ w-full
 mt-6
 h-14
 rounded-2xl
-bg-amber-500
+bg-black
+active:bg-amber-500
+transition-colors
 border
 border-amber-500
 text-white
