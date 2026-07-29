@@ -72,7 +72,7 @@ useEffect(() => {
 
         const data =
           await getUserOrders(
-            user.email
+            user.uid
           );
 
         const sorted =
