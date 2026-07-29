@@ -114,6 +114,8 @@ export default function Checkout(){
     setLoading
   ] = useState(false);
 
+  const [orderClicked, setOrderClicked] = useState(false);
+
 
 
 
@@ -161,6 +163,8 @@ export default function Checkout(){
     if(loading)
       return;
 
+
+    setOrderClicked(true);
 
 
     if(!user){
@@ -273,6 +277,13 @@ export default function Checkout(){
         total,
 
         paymentMethod,
+
+        paymentStatus:
+        (paymentMethod === "bKash" || paymentMethod === "Nagad")
+        ?
+        "Paid"
+        :
+        "Pending",
 
         paymentDetails:
         paymentMethod === "bKash"
@@ -1703,20 +1714,19 @@ onClick={handleOrder}
 
 disabled={loading}
 
-className="
+className={`
 w-full
 mt-6
 h-14
 rounded-2xl
-bg-black
-active:bg-amber-500
+${orderClicked ? "bg-green-600" : "bg-black"}
 transition-colors
 border
 border-amber-500
 text-white
 text-lg
 font-bold
-"
+`}
 
 >
 
