@@ -48,6 +48,12 @@ export default function StatsSection(){
   ] = useState(true);
 
 
+  const [
+    selectedImage,
+    setSelectedImage,
+  ] = useState(null);
+
+
 
 
 
@@ -108,6 +114,8 @@ export default function StatsSection(){
 
 
   return (
+
+    <>
 
     <section className="
       py-14
@@ -482,7 +490,6 @@ export default function StatsSection(){
                       mt-6
                       text-gray-600
                       leading-7
-                      min-h-[100px]
                     ">
 
 
@@ -506,7 +513,7 @@ export default function StatsSection(){
                           flex
                           flex-wrap
                           gap-2
-                          mt-4
+                          mt-2
                         ">
 
                           {
@@ -520,13 +527,20 @@ export default function StatsSection(){
 
                                 alt="review"
 
+                                onClick={()=>
+                                  setSelectedImage(img.imageUrl)
+                                }
+
                                 className="
-                                  w-14
-                                  h-14
+                                  w-24
+                                  h-24
                                   rounded-lg
                                   object-cover
                                   border
                                   border-slate-200
+                                  cursor-pointer
+                                  hover:scale-105
+                                  transition
                                 "
 
                               />
@@ -625,6 +639,68 @@ export default function StatsSection(){
 
 
     </section>
+
+
+    {
+      selectedImage && (
+
+        <div
+          onClick={() =>
+            setSelectedImage(null)
+          }
+          className="
+            fixed
+            inset-0
+            bg-black/80
+            z-[9999]
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+        >
+
+          <img
+            src={selectedImage}
+            alt=""
+            onClick={(e)=>
+              e.stopPropagation()
+            }
+            className="
+              max-w-full
+              max-h-[90vh]
+              rounded-2xl
+              shadow-2xl
+            "
+          />
+
+          <button
+            onClick={() =>
+              setSelectedImage(null)
+            }
+            className="
+              absolute
+              top-5
+              right-5
+              w-10
+              h-10
+              rounded-full
+              bg-white
+              text-black
+              font-bold
+              text-xl
+            "
+          >
+            ✕
+          </button>
+
+        </div>
+
+      )
+    }
+
+
+    </>
 
   );
 
