@@ -23,6 +23,24 @@ import {
   FiUserPlus,
   FiX,
   FiDownload,
+  FiChevronDown,
+  FiGrid,
+  FiUser,
+  FiUsers,
+  FiBox,
+  FiTag,
+  FiLayout,
+  FiSend,
+  FiPlusCircle,
+  FiImage,
+  FiSettings,
+  FiKey,
+  FiRotateCcw,
+  FiLogOut,
+  FiActivity,
+  FiRefreshCw,
+  FiLock,
+  FiTrash2,
 } from "react-icons/fi";
 
 
@@ -167,6 +185,22 @@ const notifRef = useRef(null);
 
 
 const [
+ adminMenuOpen,
+ setAdminMenuOpen
+]=useState(false);
+
+const adminMenuRef = useRef(null);
+
+
+const [
+ profileMenuOpen,
+ setProfileMenuOpen
+]=useState(false);
+
+const profileMenuRef = useRef(null);
+
+
+const [
  search,
  setSearch
 ]=useState("");
@@ -186,6 +220,10 @@ const handleLogout = async()=>{
 
 
  setMobileOpen(false);
+
+ setAdminMenuOpen(false);
+
+ setProfileMenuOpen(false);
 
 
 };
@@ -265,6 +303,26 @@ notifRef.current &&
 ){
 
 setNotifOpen(false);
+
+}
+
+
+if(
+adminMenuRef.current &&
+!adminMenuRef.current.contains(e.target)
+){
+
+setAdminMenuOpen(false);
+
+}
+
+
+if(
+profileMenuRef.current &&
+!profileMenuRef.current.contains(e.target)
+){
+
+setProfileMenuOpen(false);
 
 }
 
@@ -949,26 +1007,174 @@ gap-4
 {
 isAdmin &&
 
+<div
+ref={adminMenuRef}
+className="
+relative
+flex
+items-center
+"
+>
+
 <Link
+
 to="/admin"
+
+className="
+flex
+items-center
+gap-1
+"
+
 >
 
 Dashboard
 
 </Link>
 
-}
+<button
+
+onClick={()=>setAdminMenuOpen(prev=>!prev)}
+
+aria-label="Toggle admin menu"
+
+className="
+p-1
+"
+
+>
+
+<FiChevronDown
+size={16}
+className={`
+transition-transform
+${adminMenuOpen ? "rotate-180" : ""}
+`}
+/>
+
+</button>
 
 
+
+
+
+{
+adminMenuOpen && (
+
+<div
+
+className="
+absolute
+right-0
+top-full
+mt-3
+w-72
+max-h-[70vh]
+overflow-y-auto
+bg-white
+rounded-2xl
+shadow-2xl
+border
+border-slate-100
+py-3
+z-50
+"
+
+>
+
+{[
+{ to:"/admin", label:"Dashboard", icon:FiGrid, end:true },
+{ to:"/admin/profile", label:"Admin Profile", icon:FiUser },
+{ to:"/admin/users", label:"Users Panel", icon:FiUsers },
+{ to:"/admin/products", label:"Products", icon:FiBox },
+{ to:"/admin/categories", label:"Categories", icon:FiTag },
+{ to:"/admin/landing", label:"Landing Pages", icon:FiLayout },
+{ to:"/admin/orders", label:"Orders", icon:FiShoppingCart },
+{ to:"/admin/return-orders", label:"Return Orders", icon:FiRotateCcw },
+{ to:"/admin/send-notification", label:"Send Notification", icon:FiSend },
+{ to:"/admin/add-product", label:"Add Product", icon:FiPlusCircle },
+{ to:"/admin/add-order", label:"Add Order", icon:FiPlusCircle },
+{ to:"/admin/banners", label:"Hero Banners", icon:FiImage },
+{ to:"/admin/shop-hero", label:"Shop Hero", icon:FiImage },
+{ to:"/admin/subscribers", label:"Subscribers", icon:FiUsers },
+{ to:"/admin/settings", label:"Website Settings", icon:FiSettings },
+{ to:"/admin/change-password", label:"Change Password", icon:FiKey },
+].map((item)=>(
 
 <Link
-to={
-isAdmin
-?
-"/admin/profile"
-:
-"/profile"
+
+key={item.to}
+
+to={item.to}
+
+onClick={()=>setAdminMenuOpen(false)}
+
+className="
+flex
+items-center
+gap-3
+px-5
+py-2.5
+text-sm
+text-slate-700
+hover:bg-[#FFF7E8]
+hover:text-[#071F57]
+"
+
+>
+
+<item.icon size={17}/>
+
+{item.label}
+
+</Link>
+
+))}
+
+<div className="border-t border-slate-100 mt-2 pt-2">
+
+<button
+
+onClick={handleLogout}
+
+className="
+w-full
+flex
+items-center
+gap-3
+px-5
+py-2.5
+text-sm
+text-red-600
+hover:bg-red-50
+"
+
+>
+
+<FiLogOut size={17}/>
+
+Logout
+
+</button>
+
+</div>
+
+</div>
+
+)
 }
+
+</div>
+
+}
+
+
+
+{
+isAdmin ? (
+
+<Link
+to="/admin/profile"
 className="
 flex
 flex-col
@@ -1038,6 +1244,206 @@ leading-none
 </span>
 
 </Link>
+
+) : (
+
+<div
+ref={profileMenuRef}
+className="relative"
+>
+
+<button
+
+onClick={()=>setProfileMenuOpen(prev=>!prev)}
+
+className="
+flex
+flex-col
+items-center
+gap-1
+"
+
+>
+
+{
+user?.photoURL
+
+?
+
+<img
+
+src={user.photoURL}
+
+className="
+w-9
+h-9
+rounded-full
+object-cover
+border
+border-[#071F57]/30
+"
+
+/>
+
+:
+
+<div
+className="
+w-9
+h-9
+rounded-full
+bg-[#071F57]
+text-white
+flex
+items-center
+justify-center
+text-sm
+font-bold
+"
+>
+
+{
+(firstName || "U")
+.charAt(0)
+.toUpperCase()
+}
+
+</div>
+
+}
+
+<span
+className="
+flex
+items-center
+gap-0.5
+text-xs
+font-semibold
+text-[#071F57]
+leading-none
+"
+>
+
+{firstName}
+
+<FiChevronDown
+size={12}
+className={`
+transition-transform
+${profileMenuOpen ? "rotate-180" : ""}
+`}
+/>
+
+</span>
+
+</button>
+
+
+
+
+{
+profileMenuOpen && (
+
+<div
+
+className="
+absolute
+right-0
+top-full
+mt-3
+w-64
+max-h-[70vh]
+overflow-y-auto
+bg-white
+rounded-2xl
+shadow-2xl
+border
+border-slate-100
+py-3
+z-50
+"
+
+>
+
+{[
+{ to:"/profile", label:"My Profile", icon:FiUser },
+{ to:"/profile/account", label:"Account Information", icon:FiUser },
+{ to:"/profile/activity", label:"Recent Activities", icon:FiActivity },
+{ to:"/profile/orders", label:"My Orders", icon:FiShoppingBag },
+{ to:"/profile/returns", label:"My Returns", icon:FiRefreshCw },
+{ to:"/profile/wishlist", label:"Wishlist", icon:FiHeart },
+{ to:"/profile/notifications", label:"Notifications", icon:FiBell },
+{ to:"/profile/security/password", label:"Change Password", icon:FiLock },
+{ to:"/profile/security/delete", label:"Delete Account", icon:FiTrash2 },
+].map((item)=>(
+
+<Link
+
+key={item.to}
+
+to={item.to}
+
+onClick={()=>setProfileMenuOpen(false)}
+
+className="
+flex
+items-center
+gap-3
+px-5
+py-2.5
+text-sm
+text-slate-700
+hover:bg-[#FFF7E8]
+hover:text-[#071F57]
+"
+
+>
+
+<item.icon size={17}/>
+
+{item.label}
+
+</Link>
+
+))}
+
+<div className="border-t border-slate-100 mt-2 pt-2">
+
+<button
+
+onClick={handleLogout}
+
+className="
+w-full
+flex
+items-center
+gap-3
+px-5
+py-2.5
+text-sm
+text-red-600
+hover:bg-red-50
+"
+
+>
+
+<FiLogOut size={17}/>
+
+Logout
+
+</button>
+
+</div>
+
+</div>
+
+)
+}
+
+</div>
+
+)
+}
 
 
 </div>
