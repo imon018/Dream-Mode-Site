@@ -511,17 +511,15 @@ Shop
 
 <Link
 to="/cart"
+aria-label="Cart"
 className="
 relative
 flex
 items-center
-gap-2
 "
 >
 
-<FiShoppingCart size={20}/>
-
-Cart
+<FiShoppingCart size={22}/>
 
 {
 cartCount > 0 && (
@@ -555,17 +553,15 @@ justify-center
 
 <Link
 to="/profile/wishlist"
+aria-label="Wishlist"
 className="
 relative
 flex
 items-center
-gap-2
 "
 >
 
-<FiHeart size={20}/>
-
-Wishlist
+<FiHeart size={22}/>
 
 {
 wishlistCount > 0 && (
@@ -915,7 +911,7 @@ text-white
 
 <FiUserPlus size={18}/>
 
-Register Now
+Register
 
 </Link>
 
