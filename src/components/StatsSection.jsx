@@ -499,6 +499,49 @@ export default function StatsSection(){
 
 
 
+                    {
+                      review.images?.length > 0 && (
+
+                        <div className="
+                          flex
+                          flex-wrap
+                          gap-2
+                          mt-4
+                        ">
+
+                          {
+                            review.images.map((img,index)=>(
+
+                              <img
+
+                                key={index}
+
+                                src={img.imageUrl}
+
+                                alt="review"
+
+                                className="
+                                  w-14
+                                  h-14
+                                  rounded-lg
+                                  object-cover
+                                  border
+                                  border-slate-200
+                                "
+
+                              />
+
+                            ))
+                          }
+
+                        </div>
+
+                      )
+                    }
+
+
+
+
 
 
 
