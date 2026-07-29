@@ -12,7 +12,7 @@ export default function OrderHistory() {
     const fetchOrders = async () => {
       if (!user) return;
 
-      const data = await getUserOrders(user.email);
+      const data = await getUserOrders(user.uid);
       setOrders(data);
       setLoading(false);
     };
