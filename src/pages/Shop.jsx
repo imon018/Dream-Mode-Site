@@ -132,6 +132,19 @@ export default function Shop() {
         params.get("search");
 
 
+      const categoryParam =
+        params.get("category");
+
+
+      if(categoryParam){
+
+        setSelectedCategory(
+          categoryParam
+        );
+
+      }
+
+
 
       if(keyword){
 
@@ -154,6 +167,23 @@ export default function Shop() {
               keyword.toLowerCase()
             )
 
+        );
+
+
+        setFilteredProducts(
+          filtered
+        );
+
+
+      }
+
+      else if(categoryParam){
+
+
+        const filtered =
+        data.filter(
+          (product)=>
+            product.category === categoryParam
         );
 
 
