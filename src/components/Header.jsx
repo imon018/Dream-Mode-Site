@@ -551,6 +551,9 @@ justify-center
 </Link>
 
 
+{
+user && (
+
 <Link
 to="/profile/wishlist"
 aria-label="Wishlist"
@@ -591,6 +594,9 @@ justify-center
 }
 
 </Link>
+
+)
+}
 
 
 </nav>
@@ -768,6 +774,9 @@ className="text-[#071F57]"
 {/* NOTIFICATION */}
 
 
+{
+user && (
+
 <div
 ref={notifRef}
 className="relative"
@@ -854,6 +863,9 @@ notificationPath={isAdmin ? "/admin/notifications" : "/profile/notifications"}
 }
 
 </div>
+
+)
+}
 
 
 
