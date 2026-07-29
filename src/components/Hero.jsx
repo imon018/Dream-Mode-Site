@@ -225,8 +225,7 @@ return (
     inset-0
     w-full
     h-full
-    object-contain
-    bg-black
+    object-cover
   "
 />
 
