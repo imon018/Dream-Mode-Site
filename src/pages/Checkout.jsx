@@ -18,8 +18,6 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiTruck,
-  FiDollarSign,
-  FiStar,
 } from "react-icons/fi";
 
 import useCart from "../hooks/useCart";
@@ -398,7 +396,7 @@ shadow-sm
 "
 >
 
-🔒 Secure Checkout
+Checkout
 
 </div>
 
@@ -432,20 +430,6 @@ Premium shopping experience
 </div>
 
 
-
-
-
-
-<div
-className="
-bg-white
-rounded-2xl
-border
-border-gray-200
-shadow-xl
-overflow-hidden
-"
->
 
 
 
@@ -1202,7 +1186,7 @@ text-gray-600
 flex-shrink-0
 "
 >
-<FiDollarSign size={20} />
+<FiTruck size={20} />
 </span>
 
 
@@ -1637,87 +1621,65 @@ py-5
 
 <div
 className="
-bg-white
-border
-border-gray-200
+bg-amber-50
+border-t
+border-amber-100
 rounded-lg
-p-5
+px-3
+py-3
 "
 >
 
+<div
+className="
+flex
+items-start
+gap-4
+"
+>
+
+<div className="flex gap-3">
+
+<div
+className="
+w-8
+h-8
+rounded-lg
+bg-amber-100
+flex
+items-center
+justify-center
+shrink-0
+text-sm
+"
+>
+🛡️
+</div>
+
+<div className="flex-1">
+
 <h2
 className="
-text-xl
-font-bold
-mb-4
+text-base
+font-black
+text-amber-600
+whitespace-nowrap
 "
 >
 Our Promise
 </h2>
 
-
-<div
+<p
 className="
-space-y-3
+mt-1
+text-sm
+text-gray-600
+leading-5
 "
 >
-
-
-<div
-className="
-flex
-items-center
-gap-3
-p-4
-rounded-lg
-bg-gray-50
-border
-border-gray-200
-font-semibold
-"
->
-<FiTruck className="text-amber-600" size={20} />
-Fast Delivery
-</div>
-
-
-
-<div
-className="
-flex
-items-center
-gap-3
-p-4
-rounded-lg
-bg-gray-50
-border
-border-gray-200
-font-semibold
-"
->
-<FiDollarSign className="text-amber-600" size={20} />
-Cash On Delivery
-</div>
-
-
-
-<div
-className="
-flex
-items-center
-gap-3
-p-4
-rounded-lg
-bg-gray-50
-border
-border-gray-200
-font-semibold
-"
->
-<FiStar className="text-amber-600" size={20} />
-Premium Quality
-</div>
-
+We guarantee original products and fast delivery.
+Your satisfaction is our top priority.
+</p>
 
 </div>
 
@@ -1725,6 +1687,7 @@ Premium Quality
 
 </div>
 
+</div>
 
 </div>
 
@@ -1745,7 +1708,7 @@ w-full
 mt-6
 h-14
 rounded-2xl
-bg-black
+bg-amber-500
 border
 border-amber-500
 text-white
