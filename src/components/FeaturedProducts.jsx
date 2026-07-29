@@ -72,7 +72,7 @@ export default function FeaturedProducts() {
 
 
         setProducts(
-          data.slice(0,8)
+          data.slice(0,12)
         );
 
 
@@ -94,13 +94,13 @@ export default function FeaturedProducts() {
   for(
     let i = 0;
     i < products.length;
-    i += 4
+    i += 6
   ){
 
     slides.push(
       products.slice(
         i,
-        i + 4
+        i + 6
       )
     );
 
@@ -298,7 +298,7 @@ export default function FeaturedProducts() {
                       grid-cols-2
                       gap-4
 
-                      lg:grid-cols-4
+                      lg:grid-cols-3
                     "
                   >
 
