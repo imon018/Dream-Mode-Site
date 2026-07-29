@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../seo/SEO";
 
 import {
@@ -30,6 +30,8 @@ export default function ProductDetailsView() {
 
 
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
 
   const {
@@ -281,6 +283,17 @@ export default function ProductDetailsView() {
           color: "transparent",
         }
       : { color: themeColor };
+
+
+  // Buy Now বাটনে ক্লিক করলে প্রোডাক্টটি কার্টে যোগ হয়ে সরাসরি কার্ট পেজে নিয়ে যাবে
+
+  const handleBuyNow = () => {
+
+    addToCart(product);
+
+    navigate("/cart");
+
+  };
 
 
 
@@ -768,98 +781,118 @@ whitespace-nowrap
 
             <div
               className="
-                grid
-                grid-cols-2
-                gap-3
                 mt-8
               "
             >
 
-
-
-
-              <Button
-
-                onClick={()=>
-                  addToCart(product)
-                }
-
+              <div
                 className="
-                  h-12
-                  rounded-xl
-                  bg-black
-                  border
-                  border-amber-500
-                  text-white
-                  font-bold
-                  hover:bg-amber-500
-                  hover:text-black
-                  transition
+                  grid
+                  grid-cols-2
+                  gap-3
                 "
-
               >
 
-                🛒 Add To Cart
+                <Button
 
+                  onClick={()=>
+                    addToCart(product)
+                  }
 
-              </Button>
+                  className="
+                    h-12
+                    rounded-xl
+                    bg-black
+                    border
+                    border-amber-500
+                    text-white
+                    font-bold
+                    hover:bg-amber-500
+                    hover:text-black
+                    transition
+                  "
 
+                >
 
+                  🛒 Add To Cart
 
+                </Button>
 
+                <button
 
+                  type="button"
 
+                  onClick={handleBuyNow}
 
+                  style={themeBgStyle}
 
-              <a
+                  className="
+                    h-12
+                    rounded-xl
+                    border
+                    border-amber-500
+                    text-white
+                    font-bold
+                    flex
+                    items-center
+                    justify-center
+                    transition
+                    hover:opacity-90
+                  "
 
-                href={`https://wa.me/${settings.whatsapp?.replace(/\D/g,"")}?text=${encodeURIComponent(
-                  `আমি এই প্রোডাক্টটি নিতে চাই।\n${window.location.origin}/product/${product.id}\n\nনামঃ \nমোবাইলঃ \nঠিকানাঃ \nথানাঃ \nজেলাঃ `
-                )}`}
+                >
 
-                target="_blank"
+                  ⚡ Buy Now
 
-                rel="noreferrer"
+                </button>
 
+              </div>
+
+              <div
                 className="
-                  h-12
-                  rounded-xl
-                  bg-green-600
-				  border
-                  border-amber-500
-                  font-bold
                   flex
-                  items-center
                   justify-center
-                  hover:bg-green-700
-                  transition
+                  mt-3
                 "
-
               >
 
-                <FaWhatsapp className="text-xl" />
-<span>WhatsApp Order</span>
+                <a
 
+                  href={`https://wa.me/${settings.whatsapp?.replace(/\D/g,"")}?text=${encodeURIComponent(
+                    `আমি এই প্রোডাক্টটি নিতে চাই।\n${window.location.origin}/product/${product.id}\n\nনামঃ \nমোবাইলঃ \nঠিকানাঃ \nথানাঃ \nজেলাঃ `
+                  )}`}
 
-              </a>
+                  target="_blank"
 
+                  rel="noreferrer"
 
+                  className="
+                    h-12
+                    w-1/2
+                    rounded-xl
+                    bg-green-600
+                    border
+                    border-amber-500
+                    font-bold
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    text-white
+                    hover:bg-green-700
+                    transition
+                  "
 
+                >
+
+                  <FaWhatsapp className="text-xl" />
+                  <span>WhatsApp Order</span>
+
+                </a>
+
+              </div>
 
             </div>
-
-			  
-
-	
-
-		
-	
-
-
-
-
-
-
 
 
 
