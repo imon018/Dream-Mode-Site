@@ -15,6 +15,10 @@ import {
 } from "../../services/reviewService";
 
 import {
+  hasDeliveredOrderForProduct,
+} from "../../services/orderService";
+
+import {
   successToast,
   errorToast,
 } from "../ui/Toast";
@@ -82,6 +86,18 @@ export default function ProductReviews({
   ] = useState(false);
 
 
+  const [
+    canReview,
+    setCanReview,
+  ] = useState(false);
+
+
+  const [
+    checkingEligibility,
+    setCheckingEligibility,
+  ] = useState(true);
+
+
 
 
 
@@ -138,6 +154,55 @@ export default function ProductReviews({
 
 
 
+  const checkEligibility =
+  async()=>{
+
+
+    if(!user){
+
+      setCanReview(false);
+
+      setCheckingEligibility(false);
+
+      return;
+
+    }
+
+
+    try{
+
+      setCheckingEligibility(true);
+
+
+      const delivered =
+        await hasDeliveredOrderForProduct(
+          user.email,
+          productId
+        );
+
+
+      setCanReview(delivered);
+
+
+    }catch(error){
+
+      console.log(error);
+
+      setCanReview(false);
+
+    }
+    finally{
+
+      setCheckingEligibility(false);
+
+    }
+
+
+  };
+
+
+
+
 
 
 
@@ -146,6 +211,8 @@ export default function ProductReviews({
     loadReviews();
 
     checkReviewed();
+
+    checkEligibility();
 
   },[
     productId,
@@ -203,6 +270,19 @@ export default function ProductReviews({
 
       errorToast(
         "You already reviewed this product"
+      );
+
+      return;
+
+    }
+
+
+
+
+    if(!canReview){
+
+      errorToast(
+        "You can review this product only after it has been delivered"
       );
 
       return;
@@ -654,7 +734,9 @@ photoURL:
 
           disabled={
             loading ||
-            reviewed
+            reviewed ||
+            checkingEligibility ||
+            !canReview
           }
 
           className="
@@ -686,11 +768,49 @@ photoURL:
             "Already Reviewed ✓"
 
             :
+
+            checkingEligibility
+            ?
+            "Checking..."
+
+            :
+
+            !canReview
+            ?
+            "Available After Delivery"
+
+            :
+
             "Submit Review ⭐"
           }
 
 
         </button>
+
+
+        {
+          !checkingEligibility &&
+          !reviewed &&
+          !canReview && (
+
+            <p className="
+              mt-3
+              text-sm
+              text-amber-700
+              bg-amber-50
+              border
+              border-amber-200
+              rounded-lg
+              px-4
+              py-2.5
+            ">
+
+              আপনি এই প্রোডাক্টটি অর্ডার করে থাকলে, ডেলিভারি সম্পন্ন হওয়ার পরই রিভিউ দিতে পারবেন।
+
+            </p>
+
+          )
+        }
 
 
 
