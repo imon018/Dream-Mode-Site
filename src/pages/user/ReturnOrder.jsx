@@ -241,7 +241,7 @@ return;
 
 const orders =
 await getUserOrders(
-user.email
+user.uid
 );
 
 
