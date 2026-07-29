@@ -657,7 +657,7 @@ export default function OrderSuccess(){
                   font-medium
                 "
               >
-                Cash on Delivery
+                {order.paymentMethod || "Cash on Delivery"}
               </p>
 
             </div>
