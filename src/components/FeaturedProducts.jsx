@@ -298,7 +298,8 @@ export default function FeaturedProducts() {
                       grid-cols-2
                       gap-4
 
-                      lg:grid-cols-3
+                      sm:grid-cols-3
+                      lg:grid-cols-6
                     "
                   >
 
