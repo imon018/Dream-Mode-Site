@@ -1,7 +1,12 @@
 import {
   useEffect,
+  useRef,
   useState,
 } from "react";
+
+import {
+  useNavigate,
+} from "react-router-dom";
 
 import {
   Swiper,
@@ -10,6 +15,7 @@ import {
 
 import {
   Pagination,
+  Autoplay,
 } from "swiper/modules";
 
 import "swiper/css";
@@ -32,6 +38,9 @@ import {
 export default function CategoryProducts(){
 
 
+  const navigate = useNavigate();
+
+
   const [
     categories,
     setCategories,
@@ -43,6 +52,11 @@ export default function CategoryProducts(){
     categoryProducts,
     setCategoryProducts,
   ] = useState({});
+
+
+  // tracks whether the current slide change came from
+  // a real user swipe/drag, per category
+  const manualSlideRef = useRef({});
 
 
 
@@ -109,7 +123,20 @@ export default function CategoryProducts(){
 
       {
         categories.map(
-          (category)=>(
+          (category)=>{
+
+
+          const totalSlides =
+            Math.ceil(
+              (
+                categoryProducts[
+                  category.name
+                ] || []
+              ).length / 4
+            );
+
+
+          return (
 
 
           <div
@@ -155,11 +182,20 @@ export default function CategoryProducts(){
             <Swiper
 
               modules={[
-                Pagination
+                Pagination,
+                Autoplay,
               ]}
 
               pagination={{
                 clickable:true
+              }}
+
+              loop={totalSlides > 1}
+
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
               }}
 
               spaceBetween={20}
@@ -168,20 +204,69 @@ export default function CategoryProducts(){
 
               className="pb-12"
 
+              onTouchStart={()=>{
+
+                manualSlideRef.current[
+                  category.name
+                ] = true;
+
+              }}
+
+              onSliderMove={()=>{
+
+                manualSlideRef.current[
+                  category.name
+                ] = true;
+
+              }}
+
+              onSlideChange={(swiper)=>{
+
+                const wasManual =
+                  manualSlideRef.current[
+                    category.name
+                  ];
+
+
+                // reset immediately so autoplay-driven
+                // changes are never treated as manual
+                manualSlideRef.current[
+                  category.name
+                ] = false;
+
+
+                if(
+                  !wasManual ||
+                  totalSlides <= 1
+                ){
+
+                  return;
+
+                }
+
+
+                if(
+                  swiper.realIndex ===
+                  totalSlides - 1
+                ){
+
+                  navigate(
+                    `/shop?category=${encodeURIComponent(
+                      category.name
+                    )}`
+                  );
+
+                }
+
+              }}
+
             >
 
 
               {
                 Array.from(
                   {
-                    length:
-                    Math.ceil(
-                      (
-                        categoryProducts[
-                          category.name
-                        ] || []
-                      ).length / 4
-                    )
+                    length: totalSlides
                   }
                 ).map(
                   (_,index)=>{
@@ -259,7 +344,9 @@ export default function CategoryProducts(){
           </div>
 
 
-          )
+          );
+
+          }
 
         )
       }
