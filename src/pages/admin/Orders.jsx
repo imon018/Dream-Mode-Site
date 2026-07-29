@@ -319,6 +319,14 @@ true
 
 :
 
+paymentFilter==="Cash on Delivery"
+
+?
+
+order.paymentMethod==="COD"
+
+:
+
 order.paymentMethod===paymentFilter;
 
 
