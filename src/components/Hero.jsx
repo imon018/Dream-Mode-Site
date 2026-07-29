@@ -208,9 +208,6 @@ return (
 <section
   className="
     relative
-    h-[360px]
-    md:h-[430px]
-    lg:h-[520px]
     overflow-hidden
     rounded-b-[30px]
   "
@@ -221,11 +218,9 @@ return (
   src={banner.image}
   alt={banner.title}
   className="
-    absolute
-    inset-0
     w-full
-    h-full
-    object-cover
+    h-auto
+    block
   "
 />
 
@@ -256,9 +251,9 @@ return (
 
       <div
         className="
-        relative
+        absolute
+        inset-0
         z-10
-        h-full
         container-box
         flex
         items-start
