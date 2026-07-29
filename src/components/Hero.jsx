@@ -210,6 +210,8 @@ return (
     relative
     overflow-hidden
     rounded-b-[30px]
+    h-[70vh]
+    md:h-auto
   "
 >
       {/* BACKGROUND IMAGE */}
@@ -219,7 +221,10 @@ return (
   alt={banner.title}
   className="
     w-full
-    h-auto
+    h-full
+    md:h-auto
+    object-cover
+    md:object-fill
     block
   "
 />
