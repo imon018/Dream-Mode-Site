@@ -1007,53 +1007,111 @@ gap-4
 {
 isAdmin &&
 
-<div
-ref={adminMenuRef}
-className="
-relative
-flex
-items-center
-"
->
-
 <Link
-
 to="/admin"
-
-className="
-flex
-items-center
-gap-1
-"
-
 >
 
 Dashboard
 
 </Link>
 
+}
+
+
+
+{
+isAdmin ? (
+
+<div
+ref={adminMenuRef}
+className="relative"
+>
+
 <button
 
 onClick={()=>setAdminMenuOpen(prev=>!prev)}
 
-aria-label="Toggle admin menu"
-
 className="
-p-1
+flex
+flex-col
+items-center
+gap-1
 "
 
 >
 
+{
+user?.photoURL
+
+?
+
+<img
+
+src={user.photoURL}
+
+className="
+w-9
+h-9
+rounded-full
+object-cover
+border
+border-[#071F57]/30
+"
+
+/>
+
+:
+
+<div
+className="
+w-9
+h-9
+rounded-full
+bg-[#071F57]
+text-white
+flex
+items-center
+justify-center
+text-sm
+font-bold
+"
+>
+
+{
+(firstName || "U")
+.charAt(0)
+.toUpperCase()
+}
+
+</div>
+
+}
+
+<span
+className="
+flex
+items-center
+gap-0.5
+text-xs
+font-semibold
+text-[#071F57]
+leading-none
+"
+>
+
+{firstName}
+
 <FiChevronDown
-size={16}
+size={12}
 className={`
 transition-transform
 ${adminMenuOpen ? "rotate-180" : ""}
 `}
 />
 
-</button>
+</span>
 
+</button>
 
 
 
@@ -1083,7 +1141,6 @@ z-50
 >
 
 {[
-{ to:"/admin", label:"Dashboard", icon:FiGrid, end:true },
 { to:"/admin/profile", label:"Admin Profile", icon:FiUser },
 { to:"/admin/users", label:"Users Panel", icon:FiUsers },
 { to:"/admin/products", label:"Products", icon:FiBox },
@@ -1165,85 +1222,6 @@ Logout
 }
 
 </div>
-
-}
-
-
-
-{
-isAdmin ? (
-
-<Link
-to="/admin/profile"
-className="
-flex
-flex-col
-items-center
-gap-1
-"
->
-
-{
-user?.photoURL
-
-?
-
-<img
-
-src={user.photoURL}
-
-className="
-w-9
-h-9
-rounded-full
-object-cover
-border
-border-[#071F57]/30
-"
-
-/>
-
-:
-
-<div
-className="
-w-9
-h-9
-rounded-full
-bg-[#071F57]
-text-white
-flex
-items-center
-justify-center
-text-sm
-font-bold
-"
->
-
-{
-(firstName || "U")
-.charAt(0)
-.toUpperCase()
-}
-
-</div>
-
-}
-
-<span
-className="
-text-xs
-font-semibold
-text-[#071F57]
-leading-none
-"
->
-
-{firstName}
-
-</span>
-
-</Link>
 
 ) : (
 
