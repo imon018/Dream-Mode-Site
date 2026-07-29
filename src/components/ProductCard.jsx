@@ -173,22 +173,14 @@ export default function ProductCard({
     className={`
       w-full
 
+      aspect-[3/4]
+
       object-cover
 
       transition-all
       duration-700
 
       group-hover:scale-110
-
-
-      ${
-        compact
-        ?
-        "h-36 md:h-44"
-        :
-        "h-64 sm:h-72 md:h-80"
-      }
-
     `}
 
   />
