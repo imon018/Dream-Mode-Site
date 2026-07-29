@@ -14,6 +14,7 @@ import {
 
 import {
   Pagination,
+  Autoplay,
 } from "swiper/modules";
 
 import "swiper/css";
@@ -84,27 +85,6 @@ export default function FeaturedProducts() {
       }
 
     };
-
-
-
-
-
-  const slides = [];
-
-  for(
-    let i = 0;
-    i < products.length;
-    i += 6
-  ){
-
-    slides.push(
-      products.slice(
-        i,
-        i + 6
-      )
-    );
-
-  }
 
 
 
@@ -251,20 +231,49 @@ export default function FeaturedProducts() {
           <Swiper
 
   modules={[
-    Pagination
+    Pagination,
+    Autoplay
   ]}
 
   pagination={{
     clickable:true
   }}
 
-  spaceBetween={20}
+  spaceBetween={16}
 
-  slidesPerView={1}
+  slidesPerGroup={1}
+
+  autoplay={{
+    delay:2000,
+    disableOnInteraction:false,
+    pauseOnMouseEnter:true
+  }}
+
+  loop={
+    products.length > 6
+  }
+
+  speed={600}
+
+  breakpoints={{
+
+    0:{
+      slidesPerView:2
+    },
+
+    640:{
+      slidesPerView:3
+    },
+
+    1024:{
+      slidesPerView:6
+    }
+
+  }}
 
   onTouchEnd={(swiper)=>{
     if(
-      swiper.isEnd &&
+      swiper.realIndex === products.length - 1 &&
       swiper.touches.diff < -50
     ){
       navigate("/shop");
@@ -280,62 +289,30 @@ export default function FeaturedProducts() {
 
 
             {
-              slides.map(
-                (
-                  slide,
-                  index
-                )=>(
-
+              products.map(
+                product=>(
 
                 <SwiperSlide
-                  key={index}
+                  key={
+                    product.id
+                  }
                 >
 
 
-                  <div
-                    className="
-                      grid
-                      grid-cols-2
-                      gap-4
+                  <ProductCard
 
-                      sm:grid-cols-3
-                      lg:grid-cols-6
-                    "
-                  >
-
-
-                    {
-                      slide.map(
-                        product=>(
-
-                          <ProductCard
-
-                            key={
-                              product.id
-                            }
-
-                            product={
-                              product
-                            }
-
-                            compact={
-                              true
-                            }
-
-                          />
-
-                        )
-
-                      )
+                    product={
+                      product
                     }
 
+                    compact={
+                      true
+                    }
 
-                  </div>
-
+                  />
 
 
                 </SwiperSlide>
-
 
                 )
 
