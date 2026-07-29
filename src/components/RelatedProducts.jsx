@@ -4,11 +4,13 @@ import ProductCard from "./ProductCard";
 
 import {
   getProductsFromDB,
+  getLatestProducts,
 } from "../services/firestoreProductService";
 
 
 export default function RelatedProducts({
   currentId,
+  category,
 }) {
 
 
@@ -26,8 +28,35 @@ export default function RelatedProducts({
       try{
 
 
-        const data =
-          await getProductsFromDB();
+        let data;
+
+
+        if(category){
+
+
+          const allProducts =
+            await getProductsFromDB();
+
+
+          data =
+            allProducts.filter(
+              (item)=>
+                item.category === category
+            );
+
+
+        }
+
+        else{
+
+
+          // product has no category,
+          // fall back to recent products
+          data =
+            await getLatestProducts();
+
+
+        }
 
 
 
@@ -59,7 +88,7 @@ export default function RelatedProducts({
     loadProducts();
 
 
-  },[currentId]);
+  },[currentId,category]);
 
 
 
