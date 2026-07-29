@@ -103,6 +103,17 @@ export default function MobileBottomNav() {
         {navItems.map((item) => {
           const Icon = item.icon;
 
+          const isAccountItem = item.key === "account";
+
+          const initial = (
+            user?.name ||
+            user?.displayName ||
+            "U"
+          )
+            .trim()
+            .charAt(0)
+            .toUpperCase();
+
           return (
             <Link
               key={item.key}
@@ -159,7 +170,42 @@ export default function MobileBottomNav() {
                   }
                   `}
                 >
-                  <Icon size={20} />
+                  {isAccountItem && user ? (
+                    user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt={initial}
+                        className="
+                        w-full
+                        h-full
+                        rounded-full
+                        object-cover
+                        "
+                      />
+                    ) : (
+                      <span
+                        className="
+                        flex
+                        items-center
+                        justify-center
+                        w-full
+                        h-full
+                        rounded-full
+                        bg-[#071F57]
+                        text-white
+                        font-bold
+                        "
+                        style={{
+                          fontSize:
+                            item.active ? "16px" : "11px",
+                        }}
+                      >
+                        {initial}
+                      </span>
+                    )
+                  ) : (
+                    <Icon size={20} />
+                  )}
                 </span>
 
                 {item.badge && (
