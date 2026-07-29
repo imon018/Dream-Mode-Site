@@ -1127,6 +1127,7 @@ Order
 
           <RelatedProducts
             currentId={product.id}
+            category={product.category}
           />
 
 
