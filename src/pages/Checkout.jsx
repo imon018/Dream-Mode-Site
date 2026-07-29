@@ -18,6 +18,8 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiTruck,
+  FiPlus,
+  FiMinus,
 } from "react-icons/fi";
 
 import useCart from "../hooks/useCart";
@@ -48,6 +50,7 @@ export default function Checkout(){
   const {
     cart,
     clearCart,
+    updateQuantity,
   } = useCart();
 
 
@@ -920,14 +923,100 @@ text-sm
 </h3>
 
 
-<p
+<div
+className="
+flex
+items-center
+gap-2
+mt-1
+"
+>
+
+<span
 className="
 text-sm
 text-gray-500
 "
 >
-Qty: {item.quantity}
-</p>
+Quantity:
+</span>
+
+<button
+
+type="button"
+
+onClick={()=>
+updateQuantity(
+item.id,
+Math.max(1, (item.quantity || 1) - 1)
+)
+}
+
+disabled={(item.quantity || 1) <= 1}
+
+className="
+w-7
+h-7
+flex
+items-center
+justify-center
+rounded-md
+border
+border-gray-300
+text-gray-600
+disabled:opacity-40
+disabled:cursor-not-allowed
+hover:border-amber-500
+hover:text-amber-600
+transition
+"
+
+>
+<FiMinus size={12} />
+</button>
+
+<span
+className="
+w-6
+text-center
+text-sm
+font-bold
+"
+>
+{item.quantity}
+</span>
+
+<button
+
+type="button"
+
+onClick={()=>
+updateQuantity(
+item.id,
+(item.quantity || 1) + 1
+)
+}
+
+className="
+w-7
+h-7
+flex
+items-center
+justify-center
+rounded-md
+border
+border-gray-300
+text-gray-600
+hover:border-amber-500
+hover:text-amber-600
+transition
+"
+
+>
+<FiPlus size={12} />
+</button>
+
+</div>
 
 
 </div>
