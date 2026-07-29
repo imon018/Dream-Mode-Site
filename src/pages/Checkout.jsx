@@ -7,6 +7,21 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import {
+  FiUser,
+  FiPhone,
+  FiHome,
+  FiMap,
+  FiMapPin,
+  FiFileText,
+  FiCreditCard,
+  FiChevronDown,
+  FiChevronUp,
+  FiTruck,
+  FiDollarSign,
+  FiStar,
+} from "react-icons/fi";
+
 import useCart from "../hooks/useCart";
 import useAuth from "../hooks/useAuth";
 import { getEffectivePrice } from "../utils/helpers";
@@ -21,6 +36,11 @@ import {
   successToast,
   errorToast,
 } from "../components/ui/Toast";
+
+
+
+const BKASH_NUMBER = "01628464209";
+const NAGAD_NUMBER = "01628464209";
 
 
 
@@ -45,22 +65,49 @@ export default function Checkout(){
 
 
 
-  const [name,setName] =
-    useState("");
+  // ---------- ORDER FORM ----------
 
-  const [email,setEmail] =
-    useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    thana: "",
+    district: "",
+    notes: "",
+  });
 
-  const [phone,setPhone] =
-    useState("");
 
-  const [address,setAddress] =
-    useState("");
 
-  const [
-    deliveryArea,
-    setDeliveryArea
-  ] = useState("");
+  const handleChange = (e) => {
+
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+  };
+
+
+
+  // ---------- DELIVERY CHARGE ----------
+
+  const [deliveryCharge, setDeliveryCharge] = useState(80);
+
+
+
+  // ---------- PAYMENT METHOD ----------
+
+  const [paymentOpen, setPaymentOpen] = useState(true);
+
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+
+  const [bkashNumber, setBkashNumber] = useState("");
+  const [bkashTransactionId, setBkashTransactionId] = useState("");
+
+  const [nagadNumber, setNagadNumber] = useState("");
+  const [nagadTransactionId, setNagadTransactionId] = useState("");
 
 
 
@@ -77,27 +124,16 @@ export default function Checkout(){
 
     if(user){
 
-      setName(
-        user.name || ""
-      );
-
-      setEmail(
-        user.email || ""
-      );
-
-      setPhone(
-        user.phone || ""
-      );
-
-      setAddress(
-        user.address || ""
-      );
+      setFormData(prev=>({
+        ...prev,
+        name: user.name || "",
+        phone: user.phone || "",
+        address: user.address || "",
+      }));
 
     }
 
   },[user]);
-
-
 
 
 
@@ -114,38 +150,8 @@ export default function Checkout(){
 
 
 
-
-
-  const deliveryCharge =
-    deliveryArea === "Dhaka City"
-    ?
-    80
-
-    :
-
-    deliveryArea === "Dhaka Sub Area"
-    ?
-    100
-
-    :
-
-    deliveryArea === "Outside Dhaka"
-    ?
-    120
-
-    :
-
-    0;
-
-
-
-
-
   const total =
     subtotal + deliveryCharge;
-
-
-
 
 
 
@@ -189,9 +195,9 @@ export default function Checkout(){
 
 
     if(
-      !name ||
-      !phone ||
-      !address
+      !formData.name ||
+      !formData.phone ||
+      !formData.address
     ){
 
       errorToast(
@@ -205,11 +211,28 @@ export default function Checkout(){
 
 
 
-
-    if(!deliveryArea){
+    if(
+      paymentMethod === "bKash" &&
+      (!bkashNumber || !bkashTransactionId)
+    ){
 
       errorToast(
-        "Select delivery area"
+        "Please provide your bKash number and transaction ID"
+      );
+
+      return;
+
+    }
+
+
+
+    if(
+      paymentMethod === "Nagad" &&
+      (!nagadNumber || !nagadTransactionId)
+    ){
+
+      errorToast(
+        "Please provide your Nagad number and transaction ID"
       );
 
       return;
@@ -231,16 +254,17 @@ export default function Checkout(){
 
         userId:user.uid,
 
-        customerName:name,
+        customerName:formData.name,
 
-        email:
-        email || "",
+        phone:formData.phone,
 
-        phone,
+        address:formData.address,
 
-        address,
+        thana:formData.thana,
 
-        deliveryArea,
+        district:formData.district,
+
+        notes:formData.notes,
 
         deliveryCharge,
 
@@ -250,6 +274,25 @@ export default function Checkout(){
 
         total,
 
+        paymentMethod,
+
+        paymentDetails:
+        paymentMethod === "bKash"
+        ?
+        {
+          accountNumber: bkashNumber,
+          transactionId: bkashTransactionId,
+        }
+        :
+        paymentMethod === "Nagad"
+        ?
+        {
+          accountNumber: nagadNumber,
+          transactionId: nagadTransactionId,
+        }
+        :
+        null,
+
         status:"Pending",
 
         createdAt:
@@ -257,7 +300,6 @@ export default function Checkout(){
         .toISOString(),
 
       });
-
 
 
 
@@ -306,8 +348,6 @@ export default function Checkout(){
 
 
 
-
-
   return (
 
 <div
@@ -324,7 +364,7 @@ py-12
 
 <div
 className="
-max-w-7xl
+max-w-3xl
 mx-auto
 "
 >
@@ -338,7 +378,7 @@ mx-auto
 <div
 className="
 text-center
-mb-12
+mb-10
 "
 >
 
@@ -396,33 +436,29 @@ Premium shopping experience
 
 
 
-
-
 <div
 className="
-grid
-lg:grid-cols-2
-gap-8
+bg-white
+rounded-2xl
+border
+border-gray-200
+shadow-xl
+overflow-hidden
 "
 >
 
 
 
 
-
-{/* CUSTOMER INFO */}
-
+{/* ORDER FORM */}
 
 
 <div
 className="
-bg-white
-rounded-[32px]
-border
-border-amber-500/20
-shadow-xl
-p-6
-md:p-8
+bg-gray-50
+px-5
+pt-5
+pb-5
 "
 >
 
@@ -431,141 +467,400 @@ md:p-8
 className="
 text-2xl
 font-black
-mb-6
+text-center
+mb-5
 "
 >
-Customer Information
+Order Information
 </h2>
 
 
 
 
-<input
+<div className="relative mb-3">
+
+<FiUser
 className="
-checkout-input
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
 "
+/>
+
+<input
+
+name="name"
+
+value={formData.name}
+
+onChange={handleChange}
+
 placeholder="Full Name *"
-value={name}
-onChange={
-e=>setName(e.target.value)
-}
-/>
 
-
-
-<input
 className="
-checkout-input
+w-full
+pl-10
+pr-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+focus:ring-2
+focus:ring-amber-500/20
+bg-white
 "
-placeholder="Email (Optional)"
-value={email}
-onChange={
-e=>setEmail(e.target.value)
-}
 />
-
-
-
-
-<input
-className="
-checkout-input
-"
-placeholder="Phone Number *"
-value={phone}
-onChange={
-e=>setPhone(e.target.value)
-}
-/>
-
-
-
-
-<textarea
-className="
-checkout-input
-h-32
-"
-placeholder="Shipping Address *"
-value={address}
-onChange={
-e=>setAddress(e.target.value)
-}
-/>
-
-
-
-
-
-<select
-className="
-checkout-input
-"
-value={deliveryArea}
-onChange={
-e=>setDeliveryArea(e.target.value)
-}
->
-
-
-<option value="">
-Select Delivery Area
-</option>
-
-
-<option value="Dhaka City">
-Dhaka City - ৳80
-</option>
-
-
-<option value="Dhaka Sub Area">
-Dhaka Sub Area - ৳100
-</option>
-
-
-<option value="Outside Dhaka">
-Outside Dhaka - ৳120
-</option>
-
-
-</select>
-
-
-
 
 </div>
 
 
 
 
+<div className="relative mb-3">
+
+<FiPhone
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
+<input
+
+name="phone"
+
+value={formData.phone}
+
+onChange={handleChange}
+
+placeholder="Phone Number *"
+
+className="
+w-full
+pl-10
+pr-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+focus:ring-2
+focus:ring-amber-500/20
+bg-white
+"
+/>
+
+</div>
 
 
 
 
+<div className="relative mb-3">
 
-{/* SUMMARY */}
+<FiHome
+className="
+absolute
+left-3
+top-4
+text-gray-400
+"
+/>
 
+<textarea
+
+name="address"
+
+value={formData.address}
+
+onChange={handleChange}
+
+placeholder="Shipping Address *"
+
+rows="3"
+
+className="
+w-full
+pl-10
+pr-4
+py-3
+border
+border-gray-300
+rounded-lg
+resize-none
+focus:outline-none
+focus:border-amber-500
+focus:ring-2
+focus:ring-amber-500/20
+bg-white
+"
+/>
+
+</div>
+
+
+
+
+<div className="relative mb-3">
+
+<FiMap
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
+<input
+
+name="thana"
+
+value={formData.thana}
+
+onChange={handleChange}
+
+placeholder="Thana / Upazila"
+
+className="
+w-full
+pl-10
+pr-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+focus:ring-2
+focus:ring-amber-500/20
+bg-white
+"
+/>
+
+</div>
+
+
+
+
+<div className="relative mb-3">
+
+<FiMapPin
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
+<input
+
+name="district"
+
+value={formData.district}
+
+onChange={handleChange}
+
+placeholder="District"
+
+className="
+w-full
+pl-10
+pr-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+focus:ring-2
+focus:ring-amber-500/20
+bg-white
+"
+/>
+
+</div>
+
+
+
+
+<div className="relative">
+
+<FiFileText
+className="
+absolute
+left-3
+top-4
+text-gray-400
+"
+/>
+
+<textarea
+
+name="notes"
+
+value={formData.notes}
+
+onChange={handleChange}
+
+placeholder="Additional Notes (optional)"
+
+rows="3"
+
+className="
+w-full
+pl-10
+pr-4
+py-3
+border
+border-gray-300
+rounded-lg
+resize-none
+focus:outline-none
+focus:border-amber-500
+focus:ring-2
+focus:ring-amber-500/20
+bg-white
+"
+/>
+
+</div>
+
+
+</div>
 
 
 
 <div
 className="
-bg-white
-rounded-[32px]
-border
-border-amber-500/20
-shadow-xl
-p-6
-md:p-8
+border-t
+border-gray-200
+"
+></div>
+
+
+
+
+{/* DELIVERY CHARGE */}
+
+
+<div
+className="
+bg-gray-50
+px-5
+py-5
 "
 >
 
+<div
+className="
+bg-white
+border
+border-gray-200
+rounded-lg
+p-5
+"
+>
 
 <h2
 className="
-text-2xl
-font-black
-mb-6
+text-xl
+font-bold
+mb-4
+"
+>
+Delivery Charge
+</h2>
+
+<select
+
+value={deliveryCharge}
+
+onChange={(e)=>
+setDeliveryCharge(
+Number(e.target.value)
+)
+}
+
+className="
+w-full
+border
+border-gray-300
+rounded-lg
+px-4
+py-3
+outline-none
+focus:border-amber-500
+"
+
+>
+
+<option value={80}>
+Dhaka City - ৳80
+</option>
+
+<option value={100}>
+Dhaka Sub Area - ৳100
+</option>
+
+<option value={120}>
+Outside Dhaka - ৳120
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+
+<div
+className="
+border-t
+border-gray-200
+"
+></div>
+
+
+
+
+{/* ORDER SUMMARY */}
+
+
+<div
+className="
+bg-gray-50
+px-5
+py-5
+"
+>
+
+<div
+className="
+bg-white
+border
+border-gray-200
+rounded-lg
+p-5
+"
+>
+
+<h2
+className="
+text-xl
+font-bold
+mb-4
 "
 >
 
@@ -575,11 +870,9 @@ Order Summary
 
 
 
-
-
 <div
 className="
-space-y-5
+space-y-4
 "
 >
 
@@ -595,6 +888,7 @@ flex
 gap-4
 items-center
 border-b
+border-gray-100
 pb-4
 "
 >
@@ -605,9 +899,9 @@ pb-4
 src={item.image}
 
 className="
-w-20
-h-20
-rounded-2xl
+w-16
+h-16
+rounded-lg
 object-cover
 "
 
@@ -624,6 +918,7 @@ flex-1
 <h3
 className="
 font-bold
+text-sm
 "
 >
 {item.name}
@@ -640,17 +935,16 @@ Qty: {item.quantity}
 </p>
 
 
+</div>
+
+
 <p
 className="
 font-black
-mt-1
 "
 >
-৳ {getEffectivePrice(item) * item.quantity}
+৳{getEffectivePrice(item) * item.quantity}
 </p>
-
-
-</div>
 
 
 </div>
@@ -660,20 +954,15 @@ mt-1
 }
 
 
-
-
 </div>
-
-
-
 
 
 
 
 <div
 className="
-mt-8
-space-y-4
+mt-5
+space-y-3
 "
 >
 
@@ -686,12 +975,12 @@ justify-between
 >
 
 <span>
-Subtotal
+Sub Total
 </span>
 
-<b>
-৳ {subtotal}
-</b>
+<span>
+৳{subtotal}
+</span>
 
 
 </div>
@@ -707,27 +996,27 @@ justify-between
 >
 
 <span>
-Delivery
+Delivery Charge
 </span>
 
-<b>
-৳ {deliveryCharge}
-</b>
+<span>
+৳{deliveryCharge}
+</span>
 
 
 </div>
 
 
 
+<hr className="border-gray-200" />
+
 
 
 <div
 className="
-border-t
-pt-5
 flex
 justify-between
-text-xl
+text-lg
 font-black
 "
 >
@@ -742,7 +1031,7 @@ className="
 text-amber-600
 "
 >
-৳ {total}
+৳{total}
 </span>
 
 
@@ -752,13 +1041,623 @@ text-amber-600
 </div>
 
 
+</div>
 
+</div>
 
 
 
 <div
 className="
-mt-8
+border-t
+border-gray-200
+"
+></div>
+
+
+
+
+{/* PAYMENT METHOD */}
+
+
+<div
+className="
+bg-gray-50
+px-5
+py-5
+"
+>
+
+<div
+className="
+bg-white
+border
+border-gray-200
+rounded-lg
+p-5
+"
+>
+
+
+<button
+
+type="button"
+
+onClick={()=>setPaymentOpen(!paymentOpen)}
+
+className="
+w-full
+flex
+items-center
+justify-between
+"
+>
+
+<span
+className="
+flex
+items-center
+gap-2
+text-xl
+font-bold
+"
+>
+
+<FiCreditCard />
+Payment Method
+
+</span>
+
+
+{
+paymentOpen
+?
+<FiChevronUp className="text-gray-500" />
+:
+<FiChevronDown className="text-gray-500" />
+}
+
+
+</button>
+
+
+
+
+{
+paymentOpen && (
+
+<div
+className="
+mt-4
+space-y-3
+"
+>
+
+
+{/* COD */}
+
+<div
+
+onClick={()=>setPaymentMethod("COD")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "COD"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "COD"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "COD" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+bg-gray-100
+flex
+items-center
+justify-center
+text-gray-600
+flex-shrink-0
+"
+>
+<FiDollarSign size={20} />
+</span>
+
+
+<div>
+
+<p className="font-bold">
+Cash on Delivery (COD)
+</p>
+
+<p className="text-sm text-gray-500">
+Pay when you receive
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{/* BKASH */}
+
+<div
+
+onClick={()=>setPaymentMethod("bKash")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "bKash"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "bKash"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "bKash" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+overflow-hidden
+flex-shrink-0
+bg-white
+border
+border-gray-100
+"
+>
+<img
+src="/payments/bkash-logo.png"
+alt="bKash"
+className="w-full h-full object-contain"
+/>
+</span>
+
+
+<div>
+
+<p className="font-bold">
+bKash Payment
+</p>
+
+<p className="text-sm text-gray-500">
+Pay securely using bKash
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{
+paymentMethod === "bKash" && (
+
+<div
+className="
+p-5
+rounded-lg
+bg-gray-50
+border
+border-gray-200
+"
+>
+
+<p
+className="
+font-bold
+text-green-600
+mb-4
+"
+>
+You need to send us ৳ {total}
+</p>
+
+
+<p className="text-sm text-gray-600 mb-1">
+Account Type: <span className="font-semibold text-gray-800">Personal</span>
+</p>
+
+<p className="text-sm text-gray-600 mb-4">
+Account Number: <span className="font-semibold text-gray-800">{BKASH_NUMBER}</span>
+</p>
+
+
+<hr className="border-gray-200 mb-4" />
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your bKash Account Number
+</label>
+
+<input
+
+value={bkashNumber}
+
+onChange={e=>setBkashNumber(e.target.value)}
+
+placeholder="01XXXXXXXXX"
+
+className="
+w-full
+mb-4
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your bKash Transaction ID
+</label>
+
+<input
+
+value={bkashTransactionId}
+
+onChange={e=>setBkashTransactionId(e.target.value)}
+
+placeholder="Ex: 2M7A5"
+
+className="
+w-full
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+</div>
+
+)
+}
+
+
+
+
+{/* NAGAD */}
+
+<div
+
+onClick={()=>setPaymentMethod("Nagad")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "Nagad"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "Nagad"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "Nagad" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+overflow-hidden
+flex-shrink-0
+bg-white
+border
+border-gray-100
+"
+>
+<img
+src="/payments/nagad-logo.png"
+alt="Nagad"
+className="w-full h-full object-contain"
+/>
+</span>
+
+
+<div>
+
+<p className="font-bold">
+Nagad Payment
+</p>
+
+<p className="text-sm text-gray-500">
+Pay securely using Nagad
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{
+paymentMethod === "Nagad" && (
+
+<div
+className="
+p-5
+rounded-lg
+bg-gray-50
+border
+border-gray-200
+"
+>
+
+<p
+className="
+font-bold
+text-green-600
+mb-4
+"
+>
+You need to send us ৳ {total}
+</p>
+
+
+<p className="text-sm text-gray-600 mb-1">
+Account Type: <span className="font-semibold text-gray-800">Personal</span>
+</p>
+
+<p className="text-sm text-gray-600 mb-4">
+Account Number: <span className="font-semibold text-gray-800">{NAGAD_NUMBER}</span>
+</p>
+
+
+<hr className="border-gray-200 mb-4" />
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your Nagad Account Number
+</label>
+
+<input
+
+value={nagadNumber}
+
+onChange={e=>setNagadNumber(e.target.value)}
+
+placeholder="01XXXXXXXXX"
+
+className="
+w-full
+mb-4
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your Nagad Transaction ID
+</label>
+
+<input
+
+value={nagadTransactionId}
+
+onChange={e=>setNagadTransactionId(e.target.value)}
+
+placeholder="Ex: 2M7A5"
+
+className="
+w-full
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+</div>
+
+)
+}
+
+
+</div>
+
+)
+}
+
+
+</div>
+
+</div>
+
+
+
+<div
+className="
+border-t
+border-gray-200
+"
+></div>
+
+
+
+
+{/* OUR PROMISE */}
+
+
+<div
+className="
+bg-gray-50
+px-5
+py-5
+"
+>
+
+<div
+className="
+bg-white
+border
+border-gray-200
+rounded-lg
+p-5
+"
+>
+
+<h2
+className="
+text-xl
+font-bold
+mb-4
+"
+>
+Our Promise
+</h2>
+
+
+<div
+className="
 space-y-3
 "
 >
@@ -766,54 +1665,73 @@ space-y-3
 
 <div
 className="
+flex
+items-center
+gap-3
 p-4
-rounded-2xl
-bg-[#FCFAF5]
+rounded-lg
+bg-gray-50
 border
-border-amber-500/20
+border-gray-200
 font-semibold
 "
 >
-🚚 Fast Delivery
+<FiTruck className="text-amber-600" size={20} />
+Fast Delivery
 </div>
 
 
 
 <div
 className="
+flex
+items-center
+gap-3
 p-4
-rounded-2xl
-bg-[#FCFAF5]
+rounded-lg
+bg-gray-50
 border
-border-amber-500/20
+border-gray-200
 font-semibold
 "
 >
-💵 Cash On Delivery
+<FiDollarSign className="text-amber-600" size={20} />
+Cash On Delivery
 </div>
 
 
 
 <div
 className="
+flex
+items-center
+gap-3
 p-4
-rounded-2xl
-bg-[#FCFAF5]
+rounded-lg
+bg-gray-50
 border
-border-amber-500/20
+border-gray-200
 font-semibold
 "
 >
-✨ Premium Quality
+<FiStar className="text-amber-600" size={20} />
+Premium Quality
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
 </div>
 
 
 
-</div>
 
-
-
-
+{/* COMPLETE ORDER BUTTON */}
 
 
 <Button
@@ -824,7 +1742,7 @@ disabled={loading}
 
 className="
 w-full
-mt-8
+mt-6
 h-14
 rounded-2xl
 bg-black
@@ -842,22 +1760,12 @@ loading
 ?
 "Processing..."
 :
-"Complete Order 🚀"
+"Complete Order"
 }
 
 
 </Button>
 
-
-
-</div>
-
-
-
-
-
-
-</div>
 
 
 
@@ -869,4 +1777,3 @@ loading
   );
 
 }
-
