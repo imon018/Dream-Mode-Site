@@ -62,7 +62,10 @@ import SEO from "./seo/SEO";
 import { routeSEO } from "./seo/routeSEO";
 
 
-
+import {
+  initFacebookPixel,
+  trackPageView,
+} from "./utils/facebookPixel";
 
 
 
@@ -87,6 +90,16 @@ const seo = routeSEO[location.pathname] || {};
 const {
   settings,
 } = useSettings();
+
+
+
+	useEffect(() => {
+  initFacebookPixel();
+}, []);
+
+useEffect(() => {
+  trackPageView();
+}, [location.pathname]);
 
 
 
