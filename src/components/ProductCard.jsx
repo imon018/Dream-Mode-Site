@@ -12,7 +12,6 @@ import {
 } from "./ui/Toast";
 
 import {
-  FiEye,
   FiShoppingCart,
 } from "react-icons/fi";
 
@@ -51,13 +50,28 @@ export default function ProductCard({
 
 
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+
+    e.stopPropagation();
 
     addToCart(product);
 
     successToast(
       "Added to cart successfully"
     );
+
+  };
+
+
+
+
+  const handleBuyNow = (e) => {
+
+    e.stopPropagation();
+
+    addToCart(product);
+
+    navigate("/cart");
 
   };
 
@@ -107,6 +121,12 @@ export default function ProductCard({
 
     <div
 
+      onClick={() =>
+        navigate(
+          `/product/${product.id}`
+        )
+      }
+
       className={`
         group
         bg-white
@@ -114,6 +134,8 @@ export default function ProductCard({
 
         border
         border-amber-500/20
+
+        cursor-pointer
 
         transition-all
         duration-500
@@ -192,9 +214,10 @@ export default function ProductCard({
 
   <button
 
-    onClick={()=>
-      toggleWishlist(product)
-    }
+    onClick={(e)=>{
+      e.stopPropagation();
+      toggleWishlist(product);
+    }}
 
     className="
       absolute
@@ -491,7 +514,7 @@ export default function ProductCard({
   className="
     flex
     items-center
-    gap-0.5
+    gap-2
     mt-4
     w-full
   "
@@ -503,7 +526,7 @@ export default function ProductCard({
 <Button
   onClick={handleAdd}
   className="
-  w-[75%]
+  w-1/2
   h-8
   rounded-lg
   bg-black
@@ -541,36 +564,31 @@ Add To Cart
 
 
 
-{/* VIEW DETAIL */}
+{/* BUY NOW */}
 
 <button
 
-  onClick={() =>
-    navigate(
-      `/product/${product.id}`
-    )
-  }
+  onClick={handleBuyNow}
 
   className="
-    flex-[0.65]
+    w-1/2
     h-8
     rounded-lg
-    bg-white
+    bg-amber-500
     border
-    border-amber-500/50
-    text-amber-500
+    border-amber-500
+    text-black
     text-[10px]
     font-semibold
     flex
     items-center
     justify-center
-    px-2.5
-    ml-1
+    px-2
   "
 
 >
 
-  <FiEye size={14}/>
+  Buy Now
 
 </button>
 
