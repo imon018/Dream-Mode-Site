@@ -1727,96 +1727,6 @@ space-y-3
 >
 
 
-{/* COD */}
-
-<div
-
-onClick={()=>setPaymentMethod("COD")}
-
-className={`
-flex
-items-center
-gap-3
-p-4
-rounded-lg
-border
-cursor-pointer
-transition
-${
-paymentMethod === "COD"
-?
-"border-amber-500 bg-amber-50"
-:
-"border-gray-200 bg-white hover:border-gray-300"
-}
-`}
-
->
-
-<span
-className={`
-w-5
-h-5
-rounded-full
-border-2
-flex-shrink-0
-flex
-items-center
-justify-center
-${
-paymentMethod === "COD"
-?
-"border-amber-500"
-:
-"border-gray-300"
-}
-`}
->
-
-{
-paymentMethod === "COD" && (
-<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-)
-}
-
-</span>
-
-
-<span
-className="
-w-10
-h-10
-rounded-lg
-bg-gray-100
-flex
-items-center
-justify-center
-text-gray-600
-flex-shrink-0
-"
->
-<FiTruck size={20} />
-</span>
-
-
-<div>
-
-<p className="font-bold">
-Cash on Delivery (COD)
-</p>
-
-<p className="text-sm text-gray-500">
-Pay when you receive
-</p>
-
-</div>
-
-
-</div>
-
-
-
-
 {/* BKASH */}
 
 <div
@@ -2193,6 +2103,96 @@ bg-white
 
 )
 }
+
+
+
+
+{/* COD */}
+
+<div
+
+onClick={()=>setPaymentMethod("COD")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "COD"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "COD"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "COD" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+bg-gray-100
+flex
+items-center
+justify-center
+text-amber-500
+flex-shrink-0
+"
+>
+<FiTruck size={20} />
+</span>
+
+
+<div>
+
+<p className="font-bold">
+Cash on Delivery (COD)
+</p>
+
+<p className="text-sm text-gray-500">
+Pay when you receive
+</p>
+
+</div>
+
+
+</div>
 
 
 </div>
