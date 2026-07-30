@@ -449,17 +449,6 @@ if (images.length > 0) {
       ">
 
 
-        <h3 className="
-          text-xl
-          font-black
-          text-blue-900
-          mb-5
-        ">
-          Share Your Experience
-        </h3>
-
-
-
         {
           !user && (
 
@@ -493,6 +482,17 @@ if (images.length > 0) {
 
           )
         }
+
+
+
+        <h3 className="
+          text-xl
+          font-black
+          text-blue-900
+          mb-5
+        ">
+          Share Your Experience
+        </h3>
 
 
 
