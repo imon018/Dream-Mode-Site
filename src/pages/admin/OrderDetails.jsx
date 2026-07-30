@@ -857,6 +857,76 @@ text-gray-500
 
 
 
+{/* PAYMENT DETAILS */}
+
+{
+  order.paymentDetails &&
+  (order.paymentMethod === "bKash" || order.paymentMethod === "Nagad") &&
+
+  <div className="
+  bg-white
+  border
+  border-gray-100
+  rounded-lg
+  p-4
+  shadow-sm
+  ">
+
+
+  <h3 className="
+  font-bold
+  text-sm
+  mb-3
+  ">
+
+  Payment Details
+
+  </h3>
+
+
+
+  <div className="
+  flex
+  gap-3
+  text-sm
+  text-gray-700
+  ">
+
+
+  <FiCreditCard
+  className="
+  mt-1
+  text-gray-500
+  "
+  />
+
+
+
+  <div className="space-y-2 text-sm text-gray-700">
+
+    <p>
+      <strong>Payment with:</strong> {order.paymentMethod}
+    </p>
+
+    <p>
+      <strong>{order.paymentMethod} Number:</strong> {order.paymentDetails.accountNumber || "-"}
+    </p>
+
+    <p>
+      <strong>Transaction ID:</strong> {order.paymentDetails.transactionId || "-"}
+    </p>
+
+  </div>
+
+
+  </div>
+
+
+  </div>
+}
+
+
+
 {/* PRODUCTS */}
 
 
