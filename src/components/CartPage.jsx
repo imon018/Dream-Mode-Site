@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 
 import {
-  FiShoppingCart,
   FiTrash2,
   FiMinus,
   FiPlus,
@@ -191,25 +190,17 @@ export default function CartPage() {
 
                   mx-auto
 
-                  rounded-full
-
-                  bg-[#071F57]
-
-                  border
-                  border-amber-500
-
                   flex
                   items-center
                   justify-center
                 "
               >
 
-                <FiShoppingCart
-                  size={56}
-                  className="
-                    text-white
-                  "
-                />
+                <span
+                  style={{ fontSize: "72px" }}
+                >
+                  🛒
+                </span>
 
               </div>
 
