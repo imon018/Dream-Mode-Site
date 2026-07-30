@@ -13,6 +13,7 @@ import {
 
 import {
   FiShoppingCart,
+  FiShoppingBag,
 } from "react-icons/fi";
 
 
@@ -554,7 +555,7 @@ export default function ProductCard({
 
 <FiShoppingCart size={12}/>
 
-Add To Cart
+Add Cart
 
 </span>
 
@@ -574,10 +575,11 @@ Add To Cart
     w-1/2
     h-8
     rounded-lg
-    bg-amber-500
+    bg-white/10
+    backdrop-blur-md
     border
     border-amber-500
-    text-black
+    text-amber-600
     text-[10px]
     font-semibold
     flex
@@ -588,7 +590,21 @@ Add To Cart
 
 >
 
-  Buy Now
+<span
+ className="
+ flex
+ items-center
+ justify-center
+ gap-1
+ whitespace-nowrap
+ "
+>
+
+<FiShoppingBag size={12}/>
+
+Buy Now
+
+</span>
 
 </button>
 
