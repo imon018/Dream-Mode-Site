@@ -73,7 +73,6 @@ import {
 function AppContent(){
 
 
-
   const {
     loading,
   } = useAuth();
