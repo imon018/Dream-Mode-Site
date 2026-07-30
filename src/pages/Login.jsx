@@ -38,6 +38,8 @@ import {
 
 import Button from "../components/ui/Button";
 
+import SocialLoginButtons from "../components/auth/SocialLoginButtons";
+
 
 
 
@@ -451,6 +453,104 @@ error.message
 
 
 };
+
+
+
+// =========================
+// SOCIAL LOGIN (GOOGLE)
+// =========================
+
+const handleSocialAuthenticated =
+(result)=>{
+
+
+successToast(
+result.isNewUser
+? "Account created successfully."
+: "Login Successful"
+);
+
+
+
+const redirect =
+
+new URLSearchParams(
+location.search
+)
+
+.get(
+"redirect"
+);
+
+
+
+
+// New social accounts (or ones without a
+// password yet) go set a password first.
+
+if(!result.hasPassword){
+
+
+navigate(
+"/set-password",
+{
+  state: {
+    redirect,
+    role: result.role,
+  },
+}
+);
+
+
+return;
+
+
+}
+
+
+
+
+if(redirect){
+
+
+navigate(
+`/${redirect}`
+);
+
+
+return;
+
+
+}
+
+
+
+
+if(
+result.role === "admin"
+){
+
+
+navigate(
+"/admin"
+);
+
+
+}
+
+else{
+
+
+navigate(
+"/profile"
+);
+
+
+}
+
+
+};
+
 
 
 
@@ -1010,6 +1110,29 @@ Resend Verification Email
 
 
 </div>
+
+
+{/* SOCIAL LOGIN */}
+
+<div
+
+className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+"
+
+>
+
+<SocialLoginButtons
+  onAuthenticated={handleSocialAuthenticated}
+/>
+
+</div>
+
 
 
 
