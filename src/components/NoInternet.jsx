@@ -452,13 +452,11 @@ export default function NoInternet() {
           <div
             className="
               flex
-              flex-wrap
               items-center
               justify-between
               gap-4
             "
           >
-
 
             <div
               className="
@@ -497,189 +495,137 @@ export default function NoInternet() {
             </div>
 
 
-
-
             <div
               className="
                 flex
-                flex-col
-                items-start
-                gap-2
+                items-center
+                gap-3
               "
             >
 
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-3
-                "
-              >
+              {
+                settings.facebook && (
 
-                {
-                  settings.facebook && (
+                  <a
 
-                    <a
+                    href={settings.facebook}
 
-                      href={settings.facebook}
+                    target="_blank"
 
-                      target="_blank"
+                    rel="noreferrer"
 
-                      rel="noreferrer"
+                    className="
+                      w-9
+                      h-9
+                      rounded-full
+                      bg-gray-100
+                      flex
+                      items-center
+                      justify-center
+                      text-gray-600
+                    "
 
-                      className="
-                        w-9
-                        h-9
-                        rounded-full
-                        bg-gray-100
-                        flex
-                        items-center
-                        justify-center
-                        text-gray-600
-                      "
+                  >
 
-                    >
+                    <FiFacebook size={16}/>
 
-                      <FiFacebook size={16}/>
+                  </a>
 
-                    </a>
-
-                  )
-                }
-
-
-                {
-                  settings.instagram && (
-
-                    <a
-
-                      href={settings.instagram}
-
-                      target="_blank"
-
-                      rel="noreferrer"
-
-                      className="
-                        w-9
-                        h-9
-                        rounded-full
-                        bg-gray-100
-                        flex
-                        items-center
-                        justify-center
-                        text-gray-600
-                      "
-
-                    >
-
-                      <FiInstagram size={16}/>
-
-                    </a>
-
-                  )
-                }
-
-
-                {
-                  settings.youtube && (
-
-                    <a
-
-                      href={settings.youtube}
-
-                      target="_blank"
-
-                      rel="noreferrer"
-
-                      className="
-                        w-9
-                        h-9
-                        rounded-full
-                        bg-gray-100
-                        flex
-                        items-center
-                        justify-center
-                        text-gray-600
-                      "
-
-                    >
-
-                      <FiYoutube size={16}/>
-
-                    </a>
-
-                  )
-                }
-
-
-                {
-                  settings.whatsapp && (
-
-                    <a
-
-                      href={`https://wa.me/${settings.whatsapp.replace(/\D/g,"")}`}
-
-                      target="_blank"
-
-                      rel="noreferrer"
-
-                      className="
-                        w-9
-                        h-9
-                        rounded-full
-                        bg-gray-100
-                        flex
-                        items-center
-                        justify-center
-                        text-gray-600
-                      "
-
-                    >
-
-                      <FaWhatsapp size={16}/>
-
-                    </a>
-
-                  )
-                }
-
-              </div>
+                )
+              }
 
 
               {
-                settings.phone && (
+                settings.instagram && (
 
-                  <div>
+                  <a
 
-                    <p
-                      className="
-                        text-sm
-                        font-semibold
-                        text-[#071F57]
-                      "
-                    >
+                    href={settings.instagram}
 
-                      Contact Us
+                    target="_blank"
 
-                    </p>
+                    rel="noreferrer"
 
-                    <p
-                      className="
-                        text-sm
-                        text-gray-500
-                        flex
-                        items-center
-                        gap-1
-                      "
-                    >
+                    className="
+                      w-9
+                      h-9
+                      rounded-full
+                      bg-gray-100
+                      flex
+                      items-center
+                      justify-center
+                      text-gray-600
+                    "
 
-                      <FiPhone size={13}/>
+                  >
 
-                      {settings.phone}
+                    <FiInstagram size={16}/>
 
-                    </p>
+                  </a>
 
-                  </div>
+                )
+              }
+
+
+              {
+                settings.youtube && (
+
+                  <a
+
+                    href={settings.youtube}
+
+                    target="_blank"
+
+                    rel="noreferrer"
+
+                    className="
+                      w-9
+                      h-9
+                      rounded-full
+                      bg-gray-100
+                      flex
+                      items-center
+                      justify-center
+                      text-gray-600
+                    "
+
+                  >
+
+                    <FiYoutube size={16}/>
+
+                  </a>
+
+                )
+              }
+
+
+              {
+                settings.whatsapp && (
+
+                  <a
+
+                    href={`https://wa.me/${settings.whatsapp.replace(/\D/g,"")}`}
+
+                    target="_blank"
+
+                    rel="noreferrer"
+
+                    className="
+                      w-9
+                      h-9
+                      rounded-full
+                      bg-gray-100
+                      flex
+                      items-center
+                      justify-center
+                      text-gray-600
+                    "
+
+                  >
+
+                    <FaWhatsapp size={16}/>
+
+                  </a>
 
                 )
               }
@@ -687,6 +633,55 @@ export default function NoInternet() {
             </div>
 
           </div>
+
+
+
+
+          {
+            settings.phone && (
+
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                  mt-2
+                "
+              >
+
+                <p
+                  className="
+                    text-sm
+                    font-semibold
+                    text-[#071F57]
+                  "
+                >
+
+                  Contact Us
+
+                </p>
+
+                <p
+                  className="
+                    text-sm
+                    text-gray-500
+                    flex
+                    items-center
+                    gap-1
+                  "
+                >
+
+                  <FiPhone size={13}/>
+
+                  {settings.phone}
+
+                </p>
+
+              </div>
+
+            )
+          }
 
 
 
@@ -710,7 +705,6 @@ export default function NoInternet() {
       </div>
 
 
-      
     </div>
 
   );
