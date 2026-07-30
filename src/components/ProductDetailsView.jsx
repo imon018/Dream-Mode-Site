@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../seo/SEO";
+import { trackEvent } from "../utils/facebookPixel";
 
 import {
   FiShield,
@@ -150,6 +151,24 @@ export default function ProductDetailsView() {
 
 
   },[id]);
+
+
+
+
+
+	
+	useEffect(() => {
+  if (!product) return;
+
+  trackEvent("ViewContent", {
+    content_ids: [product.id],
+    content_name: product.name,
+    content_category: product.category || "",
+    content_type: "product",
+    value: Number(product.offerPrice || product.price || 0),
+    currency: "BDT",
+  });
+}, [product]);
 
 
 
