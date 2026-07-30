@@ -1,12 +1,7 @@
 import {
   useEffect,
-  useRef,
   useState,
 } from "react";
-
-import {
-  useNavigate,
-} from "react-router-dom";
 
 import {
   Swiper,
@@ -38,9 +33,6 @@ import {
 export default function CategoryProducts(){
 
 
-  const navigate = useNavigate();
-
-
   const [
     categories,
     setCategories,
@@ -52,11 +44,6 @@ export default function CategoryProducts(){
     categoryProducts,
     setCategoryProducts,
   ] = useState({});
-
-
-  // tracks whether the current slide change came from
-  // a real user swipe/drag, per category
-  const manualSlideRef = useRef({});
 
 
 
@@ -203,62 +190,6 @@ export default function CategoryProducts(){
               slidesPerView={1}
 
               className="pb-12"
-
-              onTouchStart={()=>{
-
-                manualSlideRef.current[
-                  category.name
-                ] = true;
-
-              }}
-
-              onSliderMove={()=>{
-
-                manualSlideRef.current[
-                  category.name
-                ] = true;
-
-              }}
-
-              onSlideChange={(swiper)=>{
-
-                const wasManual =
-                  manualSlideRef.current[
-                    category.name
-                  ];
-
-
-                // reset immediately so autoplay-driven
-                // changes are never treated as manual
-                manualSlideRef.current[
-                  category.name
-                ] = false;
-
-
-                if(
-                  !wasManual ||
-                  totalSlides <= 1
-                ){
-
-                  return;
-
-                }
-
-
-                if(
-                  swiper.realIndex ===
-                  totalSlides - 1
-                ){
-
-                  navigate(
-                    `/shop?category=${encodeURIComponent(
-                      category.name
-                    )}`
-                  );
-
-                }
-
-              }}
 
             >
 
