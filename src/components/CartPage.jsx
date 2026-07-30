@@ -169,7 +169,7 @@ export default function CartPage() {
               className="
                 bg-white
 
-                rounded-[32px]
+                rounded-lg
 
                 shadow-xl
 
@@ -330,7 +330,7 @@ export default function CartPage() {
                       className="
                         bg-white
 
-                        rounded-[30px]
+                        rounded-lg
 
                         border
                         border-amber-500/20
@@ -544,7 +544,7 @@ export default function CartPage() {
                 className="
                   bg-white
 
-                  rounded-[32px]
+                  rounded-lg
 
                   border
                   border-amber-500/20
