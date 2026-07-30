@@ -12,7 +12,6 @@ import {
 } from "../context/SettingsContext";
 
 import {
-  FiShoppingBag,
   FiEye,
 } from "react-icons/fi";
 
@@ -661,7 +660,6 @@ md:text-lg
     >
       
       <span className="flex items-center justify-center gap-2">
-    <FiShoppingBag className="text-base" />
     Shop Now
   </span>
       
