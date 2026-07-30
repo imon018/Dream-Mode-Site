@@ -1,5 +1,4 @@
 import useCart from "../hooks/useCart";
-import useAuth from "../hooks/useAuth";
 import { getEffectivePrice } from "../utils/helpers";
 
 import {
@@ -28,13 +27,6 @@ export default function CartPage() {
     clearCart,
 
   } = useCart();
-
-
-
-
-  const {
-    user
-  } = useAuth();
 
 
 
@@ -68,20 +60,7 @@ export default function CartPage() {
 
   const handleCheckout = ()=>{
 
-
-    if(!user){
-
-      navigate(
-        "/login?redirect=checkout"
-      );
-
-      return;
-
-    }
-
-
     navigate("/checkout");
-
 
   };
 
