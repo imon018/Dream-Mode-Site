@@ -170,19 +170,6 @@ export default function Checkout(){
     setOrderClicked(true);
 
 
-    if(!user){
-
-      errorToast(
-        "Login required"
-      );
-
-      navigate("/login");
-
-      return;
-
-    }
-
-
 
 
     if(cart.length === 0){
@@ -257,7 +244,7 @@ export default function Checkout(){
       const orderId =
       await createOrder({
 
-        userId:user.uid,
+        ...(user ? { userId:user.uid } : {}),
 
         customerName:formData.name,
 
