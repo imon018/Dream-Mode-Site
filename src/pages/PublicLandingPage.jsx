@@ -18,6 +18,10 @@ import {
   FiPhone,
   FiX,
   FiGift,
+  FiCreditCard,
+  FiChevronDown,
+  FiChevronUp,
+  FiTruck,
 } from "react-icons/fi";
 
 
@@ -30,7 +34,15 @@ import {
 
 import { createOrder } from "../services/orderService";
 
+import {
+  errorToast,
+} from "../components/ui/Toast";
+
 import RelatedProducts from "../components/RelatedProducts";
+
+
+const BKASH_NUMBER = "01628464209";
+const NAGAD_NUMBER = "01628464209";
 
 
 export default function PublicLandingPage(){
@@ -50,6 +62,18 @@ const [ordering, setOrdering] = useState(false);
 const [quantity,setQuantity] = useState(1);
 
 const [deliveryCharge, setDeliveryCharge] = useState(80);
+
+// ---------- PAYMENT METHOD ----------
+
+const [paymentOpen, setPaymentOpen] = useState(true);
+
+const [paymentMethod, setPaymentMethod] = useState("COD");
+
+const [bkashNumber, setBkashNumber] = useState("");
+const [bkashTransactionId, setBkashTransactionId] = useState("");
+
+const [nagadNumber, setNagadNumber] = useState("");
+const [nagadTransactionId, setNagadTransactionId] = useState("");
 
 const [activeImage,setActiveImage] = useState(null);
 
@@ -1626,6 +1650,564 @@ Total
   
 
 
+{/* PAYMENT METHOD */}
+
+
+<div
+className="
+bg-gray-50
+px-5
+pb-5
+"
+>
+
+<div
+className="
+bg-white
+border
+border-gray-200
+rounded-lg
+p-5
+"
+>
+
+
+<button
+
+type="button"
+
+onClick={()=>setPaymentOpen(!paymentOpen)}
+
+className="
+w-full
+flex
+items-center
+justify-between
+"
+>
+
+<span
+className="
+flex
+items-center
+gap-2
+text-xl
+font-bold
+"
+>
+
+<FiCreditCard />
+Payment Method
+
+</span>
+
+
+{
+paymentOpen
+?
+<FiChevronUp className="text-gray-500" />
+:
+<FiChevronDown className="text-gray-500" />
+}
+
+
+</button>
+
+
+
+
+{
+paymentOpen && (
+
+<div
+className="
+mt-4
+space-y-3
+"
+>
+
+
+{/* COD */}
+
+<div
+
+onClick={()=>setPaymentMethod("COD")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "COD"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "COD"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "COD" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+bg-gray-100
+flex
+items-center
+justify-center
+text-gray-600
+flex-shrink-0
+"
+>
+<FiTruck size={20} />
+</span>
+
+
+<div>
+
+<p className="font-bold">
+Cash on Delivery (COD)
+</p>
+
+<p className="text-sm text-gray-500">
+Pay when you receive
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{/* BKASH */}
+
+<div
+
+onClick={()=>setPaymentMethod("bKash")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "bKash"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "bKash"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "bKash" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+overflow-hidden
+flex-shrink-0
+bg-white
+border
+border-gray-100
+"
+>
+<img
+src="/payments/bkash-logo.png"
+alt="bKash"
+className="w-full h-full object-contain"
+/>
+</span>
+
+
+<div>
+
+<p className="font-bold">
+bKash Payment
+</p>
+
+<p className="text-sm text-gray-500">
+Pay securely using bKash
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{
+paymentMethod === "bKash" && (
+
+<div
+className="
+p-5
+rounded-lg
+bg-gray-50
+border
+border-gray-200
+"
+>
+
+<p
+className="
+font-bold
+text-green-600
+mb-4
+"
+>
+You need to send us ৳ {total}
+</p>
+
+
+<p className="text-sm text-gray-600 mb-1">
+Account Type: <span className="font-semibold text-gray-800">Personal</span>
+</p>
+
+<p className="text-sm text-gray-600 mb-4">
+Account Number: <span className="font-semibold text-gray-800">{BKASH_NUMBER}</span>
+</p>
+
+
+<hr className="border-gray-200 mb-4" />
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your bKash Account Number
+</label>
+
+<input
+
+value={bkashNumber}
+
+onChange={e=>setBkashNumber(e.target.value)}
+
+placeholder="01XXXXXXXXX"
+
+className="
+w-full
+mb-4
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your bKash Transaction ID
+</label>
+
+<input
+
+value={bkashTransactionId}
+
+onChange={e=>setBkashTransactionId(e.target.value)}
+
+placeholder="Ex: 2M7A5"
+
+className="
+w-full
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+</div>
+
+)
+}
+
+
+
+
+{/* NAGAD */}
+
+<div
+
+onClick={()=>setPaymentMethod("Nagad")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "Nagad"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "Nagad"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "Nagad" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+overflow-hidden
+flex-shrink-0
+bg-white
+border
+border-gray-100
+"
+>
+<img
+src="/payments/nagad-logo.png"
+alt="Nagad"
+className="w-full h-full object-contain"
+/>
+</span>
+
+
+<div>
+
+<p className="font-bold">
+Nagad Payment
+</p>
+
+<p className="text-sm text-gray-500">
+Pay securely using Nagad
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{
+paymentMethod === "Nagad" && (
+
+<div
+className="
+p-5
+rounded-lg
+bg-gray-50
+border
+border-gray-200
+"
+>
+
+<p
+className="
+font-bold
+text-green-600
+mb-4
+"
+>
+You need to send us ৳ {total}
+</p>
+
+
+<p className="text-sm text-gray-600 mb-1">
+Account Type: <span className="font-semibold text-gray-800">Personal</span>
+</p>
+
+<p className="text-sm text-gray-600 mb-4">
+Account Number: <span className="font-semibold text-gray-800">{NAGAD_NUMBER}</span>
+</p>
+
+
+<hr className="border-gray-200 mb-4" />
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your Nagad Account Number
+</label>
+
+<input
+
+value={nagadNumber}
+
+onChange={e=>setNagadNumber(e.target.value)}
+
+placeholder="01XXXXXXXXX"
+
+className="
+w-full
+mb-4
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+<label className="block text-sm text-gray-600 mb-1">
+Your Nagad Transaction ID
+</label>
+
+<input
+
+value={nagadTransactionId}
+
+onChange={e=>setNagadTransactionId(e.target.value)}
+
+placeholder="Ex: 2M7A5"
+
+className="
+w-full
+px-4
+py-3
+border
+border-gray-300
+rounded-lg
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+</div>
+
+)
+}
+
+
+</div>
+
+)
+}
+
+
+</div>
+
+</div>
+
+
+  
+
 {/* OUR PROMISE */}
 
 <div
@@ -1722,6 +2304,32 @@ leading-5
 disabled={ordering}
 onClick={async()=>{
 
+if(
+  paymentMethod === "bKash" &&
+  (!bkashNumber || !bkashTransactionId)
+){
+
+  errorToast(
+    "Please provide your bKash number and transaction ID"
+  );
+
+  return;
+
+}
+
+if(
+  paymentMethod === "Nagad" &&
+  (!nagadNumber || !nagadTransactionId)
+){
+
+  errorToast(
+    "Please provide your Nagad number and transaction ID"
+  );
+
+  return;
+
+}
+
 setOrdering(true);
 
 try {
@@ -1799,7 +2407,32 @@ total: total,
   total: orderData.total,
 
   status: "Pending",
-  paymentStatus: "Pending",
+
+  paymentMethod,
+
+  paymentStatus:
+  (paymentMethod === "bKash" || paymentMethod === "Nagad")
+  ?
+  "Paid"
+  :
+  "Pending",
+
+  paymentDetails:
+  paymentMethod === "bKash"
+  ?
+  {
+    accountNumber: bkashNumber,
+    transactionId: bkashTransactionId,
+  }
+  :
+  paymentMethod === "Nagad"
+  ?
+  {
+    accountNumber: nagadNumber,
+    transactionId: nagadTransactionId,
+  }
+  :
+  null,
 
   createdAt: new Date().toISOString(),
 });
