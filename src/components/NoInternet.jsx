@@ -26,7 +26,6 @@ import {
   FiRefreshCw,
   FiHome,
   FiInfo,
-  FiShoppingBag,
   FiFacebook,
   FiInstagram,
   FiYoutube,
@@ -131,7 +130,7 @@ export default function NoInternet() {
             items-center
             justify-center
             gap-3
-            mb-8
+            mb-12
           "
         >
 
@@ -171,19 +170,20 @@ export default function NoInternet() {
         <div
           className="
             relative
+            w-64
+            h-64
+            mx-auto
             flex
-            flex-col
             items-center
             justify-center
-            mb-8
+            mb-10
           "
         >
 
           <div
             className="
               absolute
-              w-64
-              h-64
+              inset-0
               rounded-full
               bg-amber-100/70
             "
@@ -203,35 +203,12 @@ export default function NoInternet() {
               flex
               items-center
               justify-center
-              mb-4
             "
           >
 
             <FiWifiOff
               size={44}
               className="text-[#071F57]"
-            />
-
-          </div>
-
-
-          <div
-            className="
-              relative
-              w-16
-              h-16
-              rounded-2xl
-              bg-[#071F57]
-              shadow-lg
-              flex
-              items-center
-              justify-center
-            "
-          >
-
-            <FiShoppingBag
-              size={26}
-              className="text-amber-400"
             />
 
           </div>
@@ -525,185 +502,189 @@ export default function NoInternet() {
             <div
               className="
                 flex
-                items-center
-                gap-3
+                flex-col
+                items-start
+                gap-2
               "
             >
 
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+
+                {
+                  settings.facebook && (
+
+                    <a
+
+                      href={settings.facebook}
+
+                      target="_blank"
+
+                      rel="noreferrer"
+
+                      className="
+                        w-9
+                        h-9
+                        rounded-full
+                        bg-gray-100
+                        flex
+                        items-center
+                        justify-center
+                        text-gray-600
+                      "
+
+                    >
+
+                      <FiFacebook size={16}/>
+
+                    </a>
+
+                  )
+                }
+
+
+                {
+                  settings.instagram && (
+
+                    <a
+
+                      href={settings.instagram}
+
+                      target="_blank"
+
+                      rel="noreferrer"
+
+                      className="
+                        w-9
+                        h-9
+                        rounded-full
+                        bg-gray-100
+                        flex
+                        items-center
+                        justify-center
+                        text-gray-600
+                      "
+
+                    >
+
+                      <FiInstagram size={16}/>
+
+                    </a>
+
+                  )
+                }
+
+
+                {
+                  settings.youtube && (
+
+                    <a
+
+                      href={settings.youtube}
+
+                      target="_blank"
+
+                      rel="noreferrer"
+
+                      className="
+                        w-9
+                        h-9
+                        rounded-full
+                        bg-gray-100
+                        flex
+                        items-center
+                        justify-center
+                        text-gray-600
+                      "
+
+                    >
+
+                      <FiYoutube size={16}/>
+
+                    </a>
+
+                  )
+                }
+
+
+                {
+                  settings.whatsapp && (
+
+                    <a
+
+                      href={`https://wa.me/${settings.whatsapp.replace(/\D/g,"")}`}
+
+                      target="_blank"
+
+                      rel="noreferrer"
+
+                      className="
+                        w-9
+                        h-9
+                        rounded-full
+                        bg-gray-100
+                        flex
+                        items-center
+                        justify-center
+                        text-gray-600
+                      "
+
+                    >
+
+                      <FaWhatsapp size={16}/>
+
+                    </a>
+
+                  )
+                }
+
+              </div>
+
+
               {
-                settings.facebook && (
+                settings.phone && (
 
-                  <a
+                  <div>
 
-                    href={settings.facebook}
+                    <p
+                      className="
+                        text-sm
+                        font-semibold
+                        text-[#071F57]
+                      "
+                    >
 
-                    target="_blank"
+                      Contact Us
 
-                    rel="noreferrer"
+                    </p>
 
-                    className="
-                      w-9
-                      h-9
-                      rounded-full
-                      bg-gray-100
-                      flex
-                      items-center
-                      justify-center
-                      text-gray-600
-                    "
+                    <p
+                      className="
+                        text-sm
+                        text-gray-500
+                        flex
+                        items-center
+                        gap-1
+                      "
+                    >
 
-                  >
+                      <FiPhone size={13}/>
 
-                    <FiFacebook size={16}/>
+                      {settings.phone}
 
-                  </a>
+                    </p>
 
-                )
-              }
-
-
-              {
-                settings.instagram && (
-
-                  <a
-
-                    href={settings.instagram}
-
-                    target="_blank"
-
-                    rel="noreferrer"
-
-                    className="
-                      w-9
-                      h-9
-                      rounded-full
-                      bg-gray-100
-                      flex
-                      items-center
-                      justify-center
-                      text-gray-600
-                    "
-
-                  >
-
-                    <FiInstagram size={16}/>
-
-                  </a>
-
-                )
-              }
-
-
-              {
-                settings.youtube && (
-
-                  <a
-
-                    href={settings.youtube}
-
-                    target="_blank"
-
-                    rel="noreferrer"
-
-                    className="
-                      w-9
-                      h-9
-                      rounded-full
-                      bg-gray-100
-                      flex
-                      items-center
-                      justify-center
-                      text-gray-600
-                    "
-
-                  >
-
-                    <FiYoutube size={16}/>
-
-                  </a>
-
-                )
-              }
-
-
-              {
-                settings.whatsapp && (
-
-                  <a
-
-                    href={`https://wa.me/${settings.whatsapp.replace(/\D/g,"")}`}
-
-                    target="_blank"
-
-                    rel="noreferrer"
-
-                    className="
-                      w-9
-                      h-9
-                      rounded-full
-                      bg-gray-100
-                      flex
-                      items-center
-                      justify-center
-                      text-gray-600
-                    "
-
-                  >
-
-                    <FaWhatsapp size={16}/>
-
-                  </a>
+                  </div>
 
                 )
               }
 
             </div>
-
-
-
-
-            {
-              settings.phone && (
-
-                <div
-                  className="
-                    text-right
-                  "
-                >
-
-                  <p
-                    className="
-                      text-sm
-                      font-semibold
-                      text-[#071F57]
-                    "
-                  >
-
-                    Contact Us
-
-                  </p>
-
-                  <p
-                    className="
-                      text-sm
-                      text-gray-500
-                      flex
-                      items-center
-                      gap-1
-                      justify-end
-                    "
-                  >
-
-                    <FiPhone size={13}/>
-
-                    {settings.phone}
-
-                  </p>
-
-                </div>
-
-              )
-            }
 
           </div>
 
@@ -719,7 +700,7 @@ export default function NoInternet() {
             "
           >
 
-            © {new Date().getFullYear()} {settings.storeName || ""}. All rights reserved.
+            © {new Date().getFullYear()} All rights reserved by {settings.storeName || ""}
 
           </p>
 
