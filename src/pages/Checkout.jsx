@@ -8,6 +8,11 @@ import {
 } from "react-router-dom";
 
 import {
+  trackInitiateCheckout,
+  trackPurchase,
+} from "../utils/facebookPixel";
+
+import {
   FiUser,
   FiPhone,
   FiHome,
@@ -140,7 +145,13 @@ export default function Checkout(){
 
 
 
+useEffect(() => {
+  if (cart.length === 0) return;
 
+  trackInitiateCheckout(cart, total);
+}, [cart, total]);
+
+  
 
   const subtotal =
     cart.reduce(
@@ -307,7 +318,7 @@ export default function Checkout(){
         "Order placed successfully"
       );
 
-
+      trackPurchase(orderId, cart, total);
 
       clearCart();
 
