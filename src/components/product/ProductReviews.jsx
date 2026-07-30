@@ -15,10 +15,6 @@ import {
 } from "../../services/reviewService";
 
 import {
-  hasDeliveredOrderForProduct,
-} from "../../services/orderService";
-
-import {
   successToast,
   errorToast,
 } from "../ui/Toast";
@@ -87,15 +83,9 @@ export default function ProductReviews({
 
 
   const [
-    canReview,
-    setCanReview,
-  ] = useState(false);
-
-
-  const [
-    checkingEligibility,
-    setCheckingEligibility,
-  ] = useState(true);
+    guestName,
+    setGuestName,
+  ] = useState("");
 
 
 
@@ -154,53 +144,6 @@ export default function ProductReviews({
 
 
 
-  const checkEligibility =
-  async()=>{
-
-
-    if(!user){
-
-      setCanReview(false);
-
-      setCheckingEligibility(false);
-
-      return;
-
-    }
-
-
-    try{
-
-      setCheckingEligibility(true);
-
-
-      const delivered =
-        await hasDeliveredOrderForProduct(
-          user.email,
-          productId
-        );
-
-
-      setCanReview(delivered);
-
-
-    }catch(error){
-
-      console.log(error);
-
-      setCanReview(false);
-
-    }
-    finally{
-
-      setCheckingEligibility(false);
-
-    }
-
-
-  };
-
-
 
 
 
@@ -211,8 +154,6 @@ export default function ProductReviews({
     loadReviews();
 
     checkReviewed();
-
-    checkEligibility();
 
   },[
     productId,
@@ -253,20 +194,7 @@ export default function ProductReviews({
   async()=>{
 
 
-    if(!user){
-
-      errorToast(
-        "Please login first"
-      );
-
-      return;
-
-    }
-
-
-
-
-    if(reviewed){
+    if(user && reviewed){
 
       errorToast(
         "You already reviewed this product"
@@ -279,10 +207,10 @@ export default function ProductReviews({
 
 
 
-    if(!canReview){
+    if(!user && !guestName.trim()){
 
       errorToast(
-        "You can review this product only after it has been delivered"
+        "Please enter your name"
       );
 
       return;
@@ -322,39 +250,39 @@ if (images.length > 0) {
 
 
 
-      await addReview({
+      const reviewData = {
 
         productId,
 
-
-        userId:
-          user.uid,
-
-
-        userName:
-  user.name ||
-  "Customer",
-
-photoURL:
-  user.photoURL || "",
-
-
-        userEmail:
-          user.email,
-
-
         rating,
-
 
         comment:
           comment.trim(),
 
-
         verifiedBuyer:false,
         images: uploadedImages,
 
+      };
 
-      });
+
+      if(user){
+
+        reviewData.userId = user.uid;
+        reviewData.userName = user.name || "Customer";
+        reviewData.photoURL = user.photoURL || "";
+        reviewData.userEmail = user.email;
+
+      }else{
+
+        // Guest review — intentionally no "userId" key so
+        // Firestore rules can tell guest vs registered creates apart.
+        reviewData.userName = guestName.trim();
+        reviewData.photoURL = "";
+
+      }
+
+
+      await addReview(reviewData);
 
 
 
@@ -370,7 +298,13 @@ photoURL:
 
       setRating(5);
 
-      setReviewed(true);
+      setGuestName("");
+
+      if(user){
+
+        setReviewed(true);
+
+      }
 
 
       loadReviews();
@@ -525,6 +459,40 @@ photoURL:
         </h3>
 
 
+
+        {
+          !user && (
+
+            <input
+
+              type="text"
+
+              value={guestName}
+
+              onChange={(e)=>
+                setGuestName(
+                  e.target.value
+                )
+              }
+
+              placeholder="Your Name"
+
+              className="
+                w-full
+                rounded-lg
+                border
+                border-gray-200
+                p-3
+                mb-5
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
+
+            />
+
+          )
+        }
 
 
 
@@ -734,9 +702,7 @@ photoURL:
 
           disabled={
             loading ||
-            reviewed ||
-            checkingEligibility ||
-            !canReview
+            (user && reviewed)
           }
 
           className="
@@ -763,21 +729,9 @@ photoURL:
 
             :
 
-            reviewed
+            (user && reviewed)
             ?
             "Already Reviewed ✓"
-
-            :
-
-            checkingEligibility
-            ?
-            "Checking..."
-
-            :
-
-            !canReview
-            ?
-            "Available After Delivery"
 
             :
 
@@ -786,32 +740,6 @@ photoURL:
 
 
         </button>
-
-
-        {
-          !checkingEligibility &&
-          !reviewed &&
-          !canReview && (
-
-            <p className="
-              mt-3
-              text-sm
-              text-amber-700
-              bg-amber-50
-              border
-              border-amber-200
-              rounded-lg
-              px-4
-              py-2.5
-            ">
-
-              আপনি এই প্রোডাক্টটি অর্ডার করে থাকলে, ডেলিভারি সম্পন্ন হওয়ার পরই রিভিউ দিতে পারবেন।
-
-            </p>
-
-          )
-        }
-
 
 
       </div>
