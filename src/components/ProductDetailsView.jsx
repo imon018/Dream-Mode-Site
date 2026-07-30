@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../seo/SEO";
-import { trackViewContent } from "../utils/facebookPixel";
+
+import {
+  trackViewContent,
+  trackAddToCart,
+} from "../utils/facebookPixel";
 
 import {
   FiShield,
@@ -107,11 +111,15 @@ export default function ProductDetailsView() {
       try{
 
 
-        const data = await getProductById(id);
+        const data =
+          await getProductById(id);
 
-setProduct(data);
 
-trackViewContent(data);
+
+        setProduct(data);
+
+		  trackViewContent(data);
+
 
 
         if(data?.images?.length){
@@ -149,24 +157,6 @@ trackViewContent(data);
 
 
   },[id]);
-
-
-
-
-
-	
-	useEffect(() => {
-  if (!product) return;
-
-  trackEvent("ViewContent", {
-    content_ids: [product.id],
-    content_name: product.name,
-    content_category: product.category || "",
-    content_type: "product",
-    value: Number(product.offerPrice || product.price || 0),
-    currency: "BDT",
-  });
-}, [product]);
 
 
 
@@ -309,14 +299,7 @@ trackViewContent(data);
 
   addToCart(product);
 
-  trackEvent("AddToCart", {
-    content_ids: [product.id],
-    content_name: product.name,
-    content_category: product.category || "",
-    content_type: "product",
-    value: Number(product.offerPrice || product.price || 0),
-    currency: "BDT",
-  });
+  trackAddToCart(product);
 
   navigate("/cart");
 
@@ -325,16 +308,11 @@ trackViewContent(data);
 
 
 	const handleAddToCart = () => {
+
   addToCart(product);
 
-  trackEvent("AddToCart", {
-    content_ids: [product.id],
-    content_name: product.name,
-    content_category: product.category || "",
-    content_type: "product",
-    value: Number(product.offerPrice || product.price || 0),
-    currency: "BDT",
-  });
+  trackAddToCart(product);
+
 };
 
 
@@ -837,6 +815,7 @@ whitespace-nowrap
 
                 <Button
   onClick={handleAddToCart}
+
                   className="
                     h-12
                     rounded-xl
