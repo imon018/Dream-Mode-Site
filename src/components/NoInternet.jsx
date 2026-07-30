@@ -710,6 +710,7 @@ export default function NoInternet() {
       </div>
 
 
+      
     </div>
 
   );
