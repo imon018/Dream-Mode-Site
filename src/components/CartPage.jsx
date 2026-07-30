@@ -1,5 +1,6 @@
 import useCart from "../hooks/useCart";
 import { getEffectivePrice } from "../utils/helpers";
+import { trackInitiateCheckout } from "../utils/facebookPixel";
 
 import {
   useNavigate,
@@ -58,11 +59,13 @@ export default function CartPage() {
 
 
 
-  const handleCheckout = ()=>{
+  const handleCheckout = () => {
 
-    navigate("/checkout");
+  trackInitiateCheckout(total, cart);
 
-  };
+  navigate("/checkout");
+
+};
 
 
 
