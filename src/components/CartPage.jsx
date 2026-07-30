@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 import {
-  FiShoppingBag,
+  FiShoppingCart,
   FiTrash2,
   FiMinus,
   FiPlus,
@@ -62,6 +62,7 @@ export default function CartPage() {
       0
 
     );
+
 
 
 
@@ -203,8 +204,8 @@ export default function CartPage() {
                 "
               >
 
-                <FiShoppingBag
-                  size={45}
+                <FiShoppingCart
+                  size={64}
                   className="
                     text-white
                   "
@@ -757,6 +758,7 @@ export default function CartPage() {
 
 
                 </button>
+
 
 
 
