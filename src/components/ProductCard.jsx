@@ -574,7 +574,7 @@ Add Cart
   className="
     w-1/2
     h-8
-    rounded-lg
+    rounded-xl
     bg-white/10
     backdrop-blur-md
     border
