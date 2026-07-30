@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../seo/SEO";
-import { trackEvent } from "../utils/facebookPixel";
+import { trackViewContent } from "../utils/facebookPixel";
 
 import {
   FiShield,
@@ -107,13 +107,11 @@ export default function ProductDetailsView() {
       try{
 
 
-        const data =
-          await getProductById(id);
+        const data = await getProductById(id);
 
+setProduct(data);
 
-
-        setProduct(data);
-
+trackViewContent(data);
 
 
         if(data?.images?.length){
