@@ -1,6 +1,9 @@
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  getAdditionalUserInfo,
+  linkWithCredential,
   signOut,
   deleteUser,
   EmailAuthProvider,
@@ -35,7 +38,8 @@ import {
 
 
 import {
-  auth
+  auth,
+  googleProvider,
 } from "../firebase/auth";
 
 
@@ -190,6 +194,171 @@ role
 
 };
 
+
+}
+
+
+// =========================
+// SOCIAL LOGIN (GOOGLE)
+// =========================
+
+async function socialLogin(provider, providerName) {
+
+  const result =
+  await signInWithPopup(
+    auth,
+    provider
+  );
+
+
+  const user =
+  result.user;
+
+
+  const additionalInfo =
+  getAdditionalUserInfo(result);
+
+
+  const isNewUser =
+  additionalInfo?.isNewUser || false;
+
+
+  const userRef =
+  doc(
+    db,
+    "users",
+    user.uid
+  );
+
+
+  const userSnap =
+  await getDoc(userRef);
+
+
+  let role = "user";
+  let hasPassword = false;
+
+
+  if (!userSnap.exists()) {
+
+    // Brand new account created via Google sign-in.
+
+    await setDoc(userRef, {
+      name: user.displayName || "",
+      email: user.email || "",
+      phone: "",
+      address: "",
+      photoURL: user.photoURL || "",
+      role: "user",
+      // Social providers already verify the email address.
+      emailVerified: true,
+      authProvider: providerName,
+      hasPassword: false,
+      createdAt: serverTimestamp(),
+    });
+
+    await notifyUserRegistered({
+      uid: user.uid,
+      displayName: user.displayName || "",
+      email: user.email || "",
+      role: "user",
+    });
+
+    hasPassword = false;
+
+  } else {
+
+    const data = userSnap.data();
+
+    role = data.role || "user";
+
+    hasPassword = data.hasPassword === true;
+
+    await updateDoc(userRef, {
+      lastLogin: serverTimestamp(),
+    });
+
+    if (role === "admin") {
+      await notifyAdminLogin({
+        uid: user.uid,
+        displayName: data.name || user.displayName || "Admin",
+      });
+    } else {
+      await notifyUserLogin({
+        uid: user.uid,
+      });
+    }
+
+  }
+
+
+  return {
+    user,
+    role,
+    isNewUser,
+    hasPassword,
+  };
+
+}
+
+
+export async function loginWithGoogle() {
+
+  return socialLogin(
+    googleProvider,
+    "google"
+  );
+
+}
+
+
+// =========================
+// SET PASSWORD (FOR SOCIAL LOGIN USERS)
+// Lets a Google-signed-in user add an
+// email+password credential so they can
+// also log in normally next time.
+// =========================
+
+export async function setSocialUserPassword(password) {
+
+  const user =
+  auth.currentUser;
+
+  if (!user) {
+
+    throw new Error(
+      "User not found"
+    );
+
+  }
+
+  if (!user.email) {
+
+    throw new Error(
+      "No email available for this account."
+    );
+
+  }
+
+  const credential =
+  EmailAuthProvider.credential(
+    user.email,
+    password
+  );
+
+  await linkWithCredential(
+    user,
+    credential
+  );
+
+  await updateDoc(
+    doc(db, "users", user.uid),
+    {
+      hasPassword: true,
+    }
+  );
+
+  return true;
 
 }
 
