@@ -8,7 +8,8 @@ import {
   FiRefreshCw,
   FiLock,
   FiX,
-  FiGift
+  FiGift,
+  FiShoppingBag
 } from "react-icons/fi";
 
 import { FaWhatsapp } from "react-icons/fa6";
@@ -838,11 +839,13 @@ whitespace-nowrap
                     justify-center
                     transition
                     hover:opacity-90
+                    gap-2
                   "
 
                 >
 
-                  ⚡ Buy Now
+                  <FiShoppingBag size={18} />
+                  Buy Now
 
                 </button>
 
