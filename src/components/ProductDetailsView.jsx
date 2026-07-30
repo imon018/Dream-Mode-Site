@@ -309,11 +309,35 @@ export default function ProductDetailsView() {
 
   const handleBuyNow = () => {
 
-    addToCart(product);
+  addToCart(product);
 
-    navigate("/cart");
+  trackEvent("AddToCart", {
+    content_ids: [product.id],
+    content_name: product.name,
+    content_category: product.category || "",
+    content_type: "product",
+    value: Number(product.offerPrice || product.price || 0),
+    currency: "BDT",
+  });
 
-  };
+  navigate("/cart");
+
+};
+
+
+
+	const handleAddToCart = () => {
+  addToCart(product);
+
+  trackEvent("AddToCart", {
+    content_ids: [product.id],
+    content_name: product.name,
+    content_category: product.category || "",
+    content_type: "product",
+    value: Number(product.offerPrice || product.price || 0),
+    currency: "BDT",
+  });
+};
 
 
 
@@ -814,11 +838,7 @@ whitespace-nowrap
               >
 
                 <Button
-
-                  onClick={()=>
-                    addToCart(product)
-                  }
-
+  onClick={handleAddToCart}
                   className="
                     h-12
                     rounded-xl
