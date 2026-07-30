@@ -286,10 +286,29 @@ match /reviews/{id} {
 
 
 
-  allow create:  
-    if request.auth != null  
-    &&  
-    request.resource.data.userId == request.auth.uid;  
+  // Registered users: must write their own review with
+  // userId == their auth uid (kept exactly as before).
+  //
+  // Guest users (no auth): allowed to create a review too, but
+  // the document must NOT contain a "userId" field — this is how
+  // we tell guest vs registered creates apart, and it also stops
+  // a signed-out request from spoofing someone else's userId.
+  allow create:
+    if (
+      request.auth != null
+      &&
+      request.resource.data.userId == request.auth.uid
+    )
+    ||
+    (
+      request.auth == null
+      &&
+      !("userId" in request.resource.data)
+      &&
+      request.resource.data.userName is string
+      &&
+      request.resource.data.userName.size() > 0
+    );  
 
 
 }  
