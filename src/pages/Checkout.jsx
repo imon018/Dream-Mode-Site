@@ -927,14 +927,14 @@ text-sm
 className="
 flex
 items-center
-gap-2
+gap-1
 mt-1
 "
 >
 
 <span
 className="
-text-sm
+text-xs
 text-gray-500
 "
 >
@@ -955,8 +955,8 @@ Math.max(1, (item.quantity || 1) - 1)
 disabled={(item.quantity || 1) <= 1}
 
 className="
-w-7
-h-7
+w-5
+h-5
 flex
 items-center
 justify-center
@@ -972,14 +972,14 @@ transition
 "
 
 >
-<FiMinus size={12} />
+<FiMinus size={10} />
 </button>
 
 <span
 className="
-w-6
+w-5
 text-center
-text-sm
+text-xs
 font-bold
 "
 >
@@ -998,8 +998,8 @@ item.id,
 }
 
 className="
-w-7
-h-7
+w-5
+h-5
 flex
 items-center
 justify-center
@@ -1013,7 +1013,7 @@ transition
 "
 
 >
-<FiPlus size={12} />
+<FiPlus size={10} />
 </button>
 
 </div>
