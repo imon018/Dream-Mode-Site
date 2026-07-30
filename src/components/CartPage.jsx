@@ -205,7 +205,7 @@ export default function CartPage() {
               >
 
                 <FiShoppingCart
-                  size={64}
+                  size={56}
                   className="
                     text-white
                   "
