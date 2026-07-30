@@ -76,6 +76,7 @@ import OrderSuccess from "../pages/OrderSuccess";
 import VerifyEmail from "../pages/VerifyEmail";
 import Notifications from "../pages/common/Notifications";
 import ResetPassword from "../pages/ResetPassword";
+import SetPassword from "../pages/SetPassword";
 
 
 /* =========================
@@ -149,6 +150,11 @@ element={<ReturnOrder />}
         <Route path="/login" element={<Login />} />
 
         <Route path="/register" element={<Register />} />
+
+        <Route
+          path="/set-password"
+          element={<SetPassword />}
+        />
 
         <Route
           path="/forgot-password"
