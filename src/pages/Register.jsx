@@ -5,6 +5,7 @@ import {
 
 import {
   useNavigate,
+  useLocation,
   Link
 } from "react-router-dom";
 
@@ -34,6 +35,8 @@ import { useSettings } from "../context/SettingsContext";
 
 import Button from "../components/ui/Button";
 
+import SocialLoginButtons from "../components/auth/SocialLoginButtons";
+
 
 
 
@@ -42,6 +45,10 @@ export default function Register() {
 
 const navigate =
 useNavigate();
+
+
+const location =
+useLocation();
 
 
 
@@ -169,6 +176,101 @@ setLoading(false);
 }
 
 };
+
+
+
+// =========================
+// SOCIAL LOGIN (GOOGLE)
+// =========================
+
+const handleSocialAuthenticated =
+(result)=>{
+
+
+successToast(
+result.isNewUser
+? "Account created successfully."
+: "Login Successful"
+);
+
+
+
+const redirect =
+
+new URLSearchParams(
+location.search
+)
+
+.get(
+"redirect"
+);
+
+
+
+
+if(!result.hasPassword){
+
+
+navigate(
+"/set-password",
+{
+  state: {
+    redirect,
+    role: result.role,
+  },
+}
+);
+
+
+return;
+
+
+}
+
+
+
+
+if(redirect){
+
+
+navigate(
+`/${redirect}`
+);
+
+
+return;
+
+
+}
+
+
+
+
+if(
+result.role === "admin"
+){
+
+
+navigate(
+"/admin"
+);
+
+
+}
+
+else{
+
+
+navigate(
+"/profile"
+);
+
+
+}
+
+
+};
+
 
 
 
@@ -700,6 +802,29 @@ Login Now
 
 
 </div>
+
+
+{/* SOCIAL LOGIN */}
+
+<div
+
+className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+"
+
+>
+
+<SocialLoginButtons
+  onAuthenticated={handleSocialAuthenticated}
+/>
+
+</div>
+
 
 
 
