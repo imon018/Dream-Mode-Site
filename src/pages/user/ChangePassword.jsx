@@ -31,6 +31,14 @@ import {
 } from "../../services/passwordService";
 
 
+import {
+  setSocialUserPassword
+} from "../../services/authService";
+
+
+import { useAuth } from "../../context/AuthContext";
+
+
 
 
 // ১ মিনিট কুলডাউন (সেকেন্ডে)
@@ -45,6 +53,134 @@ export default function ChangePassword(){
 
 const user =
 auth.currentUser;
+
+
+const { user: profileUser, refreshUser } =
+useAuth();
+
+
+// Only Google accounts that never set a password yet should see
+// the simpler "Set Password" form. Normal email/password
+// accounts never get an authProvider/hasPassword field at all,
+// so they always fall through to the regular Change Password
+// flow below.
+const needsSetPassword =
+profileUser?.authProvider === "google"
+&&
+profileUser?.hasPassword !== true;
+
+
+
+
+const [
+newPassword,
+setNewPassword
+]=useState("");
+
+
+const [
+confirmNewPassword,
+setConfirmNewPassword
+]=useState("");
+
+
+const [
+showNewPassword,
+setShowNewPassword
+]=useState(false);
+
+
+const [
+showConfirmNewPassword,
+setShowConfirmNewPassword
+]=useState(false);
+
+
+const [
+settingPassword,
+setSettingPassword
+]=useState(false);
+
+
+
+
+const handleSetPassword =
+async()=>{
+
+
+if(settingPassword)
+return;
+
+
+if(!newPassword || !confirmNewPassword){
+
+errorToast(
+"Please fill all fields."
+);
+
+return;
+
+}
+
+
+if(newPassword.length < 6){
+
+errorToast(
+"Password must be at least 6 characters."
+);
+
+return;
+
+}
+
+
+if(newPassword !== confirmNewPassword){
+
+errorToast(
+"Passwords do not match."
+);
+
+return;
+
+}
+
+
+try{
+
+setSettingPassword(true);
+
+await setSocialUserPassword(
+newPassword
+);
+
+await refreshUser?.();
+
+setNewPassword("");
+setConfirmNewPassword("");
+
+successToast(
+"Password set successfully. You can now log in with email & password too."
+);
+
+}
+catch(error){
+
+console.log(error);
+
+errorToast(
+error.message ||
+"Password set করা যায়নি। আবার চেষ্টা করুন."
+);
+
+}
+finally{
+
+setSettingPassword(false);
+
+}
+
+
+};
 
 
 
@@ -386,6 +522,254 @@ setLoading(false);
 
 
 
+
+
+
+
+if(needsSetPassword){
+
+return (
+
+<div className="
+min-h-screen
+bg-[#FAF7F2]
+p-4
+text-gray-900
+space-y-3
+">
+
+
+<div className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+text-center
+">
+
+<h1 className="
+text-xl
+font-bold
+">
+
+Set Password
+
+</h1>
+
+<p className="
+text-xs
+text-gray-500
+mt-1
+">
+
+You signed up with Google, so no password is set yet.
+Set one below so you can also log in with email &amp; password.
+
+</p>
+
+</div>
+
+
+
+<div className="
+bg-white
+rounded-lg
+p-4
+border
+border-gray-100
+shadow-sm
+">
+
+
+<div className="
+relative
+">
+
+<FiLock
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
+<input
+type={
+showNewPassword
+?
+"text"
+:
+"password"
+}
+placeholder="New Password"
+value={newPassword}
+onChange={(e)=>
+setNewPassword(
+e.target.value
+)
+}
+className="
+w-full
+h-12
+bg-[#FAF7F2]
+rounded-lg
+border
+border-gray-100
+pl-10
+pr-10
+text-sm
+outline-none
+focus:border-amber-500
+"
+/>
+
+<button
+type="button"
+onClick={()=>
+setShowNewPassword(
+!showNewPassword
+)
+}
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+>
+{
+showNewPassword
+?
+<FiEyeOff/>
+:
+<FiEye/>
+}
+</button>
+
+</div>
+
+
+
+<div className="
+relative
+mt-3
+">
+
+<FiLock
+className="
+absolute
+left-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+/>
+
+<input
+type={
+showConfirmNewPassword
+?
+"text"
+:
+"password"
+}
+placeholder="Confirm Password"
+value={confirmNewPassword}
+onChange={(e)=>
+setConfirmNewPassword(
+e.target.value
+)
+}
+className="
+w-full
+h-12
+bg-[#FAF7F2]
+rounded-lg
+border
+border-gray-100
+pl-10
+pr-10
+text-sm
+outline-none
+focus:border-amber-500
+"
+/>
+
+<button
+type="button"
+onClick={()=>
+setShowConfirmNewPassword(
+!showConfirmNewPassword
+)
+}
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-gray-400
+"
+>
+{
+showConfirmNewPassword
+?
+<FiEyeOff/>
+:
+<FiEye/>
+}
+</button>
+
+</div>
+
+
+
+<p className="
+text-xs
+text-gray-500
+mt-3
+">
+
+✓ Password must contain minimum 6 characters.
+
+</p>
+
+
+
+<Button
+onClick={handleSetPassword}
+disabled={settingPassword}
+className="
+w-full
+h-12
+rounded-lg
+mt-4
+text-sm
+font-semibold
+"
+>
+{
+settingPassword
+?
+"Saving..."
+:
+"Save Password"
+}
+</Button>
+
+
+</div>
+
+
+</div>
+
+);
+
+}
 
 
 
