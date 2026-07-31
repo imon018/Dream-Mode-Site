@@ -79,6 +79,7 @@ export default function Invoice58mm({ order }) {
           <img
             src={settings.logoUrl}
             alt={settings.storeName}
+            crossOrigin="anonymous"
             className="w-11 h-11 object-contain shrink-0"
           />
         )}
