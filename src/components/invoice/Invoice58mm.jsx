@@ -3,16 +3,6 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { getSettings } from "../../services/settingsService";
 
-// Load a script/handwriting font for the "Thank You" line
-if (typeof document !== "undefined" && !document.getElementById("dm-thankyou-font")) {
-  const link = document.createElement("link");
-  link.id = "dm-thankyou-font";
-  link.rel = "stylesheet";
-  link.href =
-    "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap";
-  document.head.appendChild(link);
-}
-
 export default function Invoice58mm({ order }) {
 
   const [settings, setSettings] = useState({
@@ -60,6 +50,7 @@ export default function Invoice58mm({ order }) {
       mx-auto
       text-black
       p-2
+      overflow-hidden
       "
       style={{
         width: "58mm",
@@ -93,6 +84,8 @@ export default function Invoice58mm({ order }) {
             uppercase
             leading-tight
             whitespace-nowrap
+            overflow-hidden
+            text-ellipsis
             "
           >
             {settings.storeName}
