@@ -27,11 +27,13 @@ import {
   FiDownload,
 } from "react-icons/fi";
 
-// PRINT + PDF: react-to-print handles the native browser print dialog,
-// html2canvas + jsPDF turn the same invoice into a downloadable PDF.
+// PRINT + PDF: react-to-print handles the native browser print dialog.
+// PDF download uses the same shared, text-based generator that the
+// customer-facing invoice uses (src/utils/generateInvoicePdf.js) —
+// this used to be a separate html2canvas screenshot implementation,
+// which is why fixes to the other invoice screen never showed up here.
 import { useReactToPrint } from "react-to-print";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { downloadInvoicePdf } from "../../utils/generateInvoicePdf";
 
 
 import {
@@ -67,8 +69,9 @@ const navigate=useNavigate();
 
 const menuRef = useRef(null);
 
-// Ref to the visible invoice block below — both print and PDF
-// download read directly from this DOM node.
+// Ref to the visible invoice block below — used for Print (via
+// react-to-print). PDF download no longer reads from this DOM node;
+// it builds the PDF directly from the order data instead.
 const invoiceRef = useRef(null);
 
 const [searchParams, setSearchParams] = useSearchParams();
@@ -96,63 +99,17 @@ const handlePrint = useReactToPrint({
 
 const handleDownloadPDF = async () => {
 
-  const element = invoiceRef.current;
-
-  if (!element) return;
+  if (!order) return;
 
   try {
 
     setDownloading(true);
 
-    // IMPORTANT: html2canvas paints whatever the browser has rendered
-    // *at this exact moment*. If the custom web fonts (Playfair Display
-    // for headings, Dancing Script for "Thank You!") haven't finished
-    // downloading yet, it silently falls back to a system font — which
-    // is exactly why the downloaded PDF looked different from the
-    // invoice shown on screen. Waiting for document.fonts.ready makes
-    // sure every font is fully loaded and applied before we screenshot.
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-
-    // Fonts finishing download is not the same as the browser having
-    // finished RE-LAYING-OUT the page with them. Every heading swaps
-    // from a fallback font to Playfair Display at this point, which
-    // changes row heights — if we screenshot before that reflow settles,
-    // html2canvas grabs a mid-reflow snapshot, which is exactly what was
-    // making text look clipped from the bottom and rows look misaligned.
-    // Waiting two animation frames guarantees the browser has painted
-    // the final, settled layout before we measure/capture anything.
-    await new Promise((resolve) =>
-      requestAnimationFrame(() => requestAnimationFrame(resolve))
-    );
-
-    const canvas = await html2canvas(element, {
-      scale: 3,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      // Explicitly capture the element's full, final size instead of
-      // whatever size html2canvas guesses — guards against any row
-      // being short-measured and cut off.
-      width: element.scrollWidth,
-      height: element.scrollHeight,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight,
-    });
-
-    const img = canvas.toDataURL("image/png");
-
-    const pdfHeight = canvas.height * 58 / canvas.width;
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: [58, pdfHeight],
-    });
-
-    pdf.addImage(img, "PNG", 0, 0, 58, pdfHeight);
-
-    pdf.save(`Invoice-${order?.id || id || "Order"}.pdf`);
+    // Same shared, text-based jsPDF generator used by the customer-
+    // facing invoice — no screenshotting, so there's no font-timing
+    // or reflow race to get wrong, and no risk of clipped/misaligned
+    // text ever again.
+    await downloadInvoicePdf(order);
 
   } catch (error) {
 
