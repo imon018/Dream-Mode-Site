@@ -1,0 +1,427 @@
+import { FiPhone, FiMapPin, FiUser } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
+import { getSettings } from "../../services/settingsService";
+
+export default function Invoice58mm({ order }) {
+
+  const [settings, setSettings] = useState({
+    storeName: "Dream Mode",
+    logoUrl: "",
+    phone: "",
+    facebook: "",
+    websiteUrl: "",
+  });
+
+  const [qrCode, setQrCode] = useState("");
+
+  useEffect(() => {
+
+    async function load() {
+
+      const data = await getSettings();
+
+      setSettings(data || {});
+
+      const qrValue =
+        data?.websiteUrl ||
+        data?.facebook ||
+        window.location.origin;
+
+      const qr = await QRCode.toDataURL(qrValue);
+
+      setQrCode(qr);
+
+    }
+
+    load();
+
+  }, []);
+
+  if (!order) return null;
+
+
+  return (
+
+    <div
+      id="invoice58mm"
+      className="
+      bg-white
+      mx-auto
+      text-black
+      p-3
+      "
+      style={{
+        width: "58mm",
+        minWidth: "58mm",
+        maxWidth: "58mm",
+        fontSize: "11px",
+        lineHeight: 1.4,
+      }}
+    >
+
+
+            {/* LOGO */}
+
+      {settings.logoUrl && (
+        <div className="flex justify-center mb-2">
+          <img
+            src={settings.logoUrl}
+            alt={settings.storeName}
+            className="w-14 h-14 object-contain"
+          />
+        </div>
+      )}
+
+      {/* STORE */}
+
+      <div className="text-center">
+
+        <h1
+          className="
+          text-[18px]
+          font-black
+          tracking-wide
+          uppercase
+          "
+        >
+          {settings.storeName}
+        </h1>
+
+        <p
+          className="
+          text-[10px]
+          text-gray-600
+          "
+        >
+          Dress Your Dream, Live Your Style
+        </p>
+
+      </div>
+
+      {/* INVOICE TITLE */}
+
+      <div className="my-3 flex justify-center">
+
+        <div
+          className="
+          bg-black
+          text-white
+          px-4
+          py-1
+          text-[11px]
+          font-bold
+          tracking-wide
+          "
+        >
+          INVOICE / MEMO
+        </div>
+
+      </div>
+
+      {/* INFO */}
+
+      <div className="space-y-1 text-[11px]">
+
+        <div className="flex justify-between gap-2">
+          <span>Invoice No</span>
+          <span>
+            DM-
+            {String(order.id || "")
+              .slice(0,8)
+              .toUpperCase()}
+          </span>
+        </div>
+
+        <div className="flex justify-between gap-2">
+          <span>Date</span>
+
+          <span>
+            {new Date(
+              order.createdAt
+            ).toLocaleString()}
+          </span>
+        </div>
+
+        <div className="flex justify-between gap-2">
+          <span>Order ID</span>
+
+          <span>
+            #{String(order.id).slice(0,8)}
+          </span>
+        </div>
+
+        <div className="flex justify-between gap-2">
+
+          <span>Status</span>
+
+          <span
+            className={`
+            px-2
+            rounded-full
+            text-white
+            text-[10px]
+
+            ${
+              order.status==="Delivered"
+                ? "bg-green-500"
+                : order.status==="Processing"
+                ? "bg-blue-500"
+                : order.status==="Shipped"
+                ? "bg-purple-500"
+                : order.status==="Cancelled"
+                ? "bg-red-500"
+                : "bg-yellow-500"
+            }
+            `}
+          >
+            {order.status}
+          </span>
+
+        </div>
+
+      </div>
+
+      <hr className="my-3" />
+
+      {/* CUSTOMER */}
+
+      <h2 className="font-bold mb-2">
+        Customer
+      </h2>
+
+      <div className="space-y-2 text-[11px]">
+
+        <div className="flex gap-2 items-center">
+
+          <FiUser size={13}/>
+
+          <span>{order.customerName}</span>
+
+        </div>
+
+        <div className="flex gap-2 items-center">
+
+          <FiPhone size={13}/>
+
+          <span>{order.phone}</span>
+
+        </div>
+
+        <div className="flex gap-2 items-start">
+
+          <FiMapPin
+            size={13}
+            className="mt-0.5"
+          />
+
+          <span>
+            {order.address}
+          </span>
+
+        </div>
+
+      </div>
+
+      <hr className="my-3" />
+
+
+
+            {/* PRODUCTS */}
+
+      <h2 className="font-bold mb-2">
+        Products
+      </h2>
+
+      <table className="w-full text-[10px]">
+
+        <thead>
+
+          <tr className="border-b">
+
+            <th className="text-left py-1">
+              Item
+            </th>
+
+            <th className="text-center py-1">
+              Qty
+            </th>
+
+            <th className="text-right py-1">
+              Price
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {order.items?.map((item,index)=>(
+
+            <tr
+              key={item.id || index}
+              className="border-b"
+            >
+
+              <td className="py-1">
+
+                <div className="font-semibold">
+                  {item.name}
+                </div>
+
+                {(item.size || item.color) && (
+
+                  <div className="text-[9px] text-gray-500">
+
+                    {item.size || "-"}
+
+                    {item.color
+                      ? ` / ${item.color}`
+                      : ""}
+
+                  </div>
+
+                )}
+
+              </td>
+
+              <td className="text-center">
+                {item.quantity}
+              </td>
+
+              <td className="text-right">
+
+                ৳
+                {(item.offerPrice || item.price || 0) *
+                  item.quantity}
+
+              </td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
+
+      <hr className="my-3" />
+
+      {/* SUMMARY */}
+
+      <div className="space-y-1 text-[11px]">
+
+        <div className="flex justify-between">
+
+          <span>
+            Subtotal
+          </span>
+
+          <span>
+            ৳ {order.subtotal || order.total}
+          </span>
+
+        </div>
+
+        <div className="flex justify-between">
+
+          <span>
+            Delivery
+          </span>
+
+          <span>
+            ৳ {order.deliveryCharge || 0}
+          </span>
+
+        </div>
+
+        {(order.discount || 0) > 0 && (
+
+          <div className="flex justify-between">
+
+            <span>
+              Discount
+            </span>
+
+            <span>
+              - ৳ {order.discount}
+            </span>
+
+          </div>
+
+        )}
+
+      </div>
+
+      <hr className="my-3" />
+
+      <div className="flex justify-between font-black text-[14px]">
+
+        <span>
+          TOTAL
+        </span>
+
+        <span>
+          ৳ {order.total}
+        </span>
+
+      </div>
+
+      <hr className="my-3" />
+
+
+
+            {/* STORE CONTACT */}
+
+      <div className="text-center text-[10px] space-y-1">
+
+        {settings.phone && (
+          <p>
+            Phone: {settings.phone}
+          </p>
+        )}
+
+        {settings.facebook && (
+          <p className="break-all">
+            {settings.facebook}
+          </p>
+        )}
+
+      </div>
+
+      {/* QR */}
+
+      {qrCode && (
+
+        <div className="flex justify-center my-3">
+
+          <img
+            src={qrCode}
+            alt="QR"
+            className="w-20 h-20"
+          />
+
+        </div>
+
+      )}
+
+      {/* THANK YOU */}
+
+      <div className="text-center">
+
+        <p className="font-bold text-[11px]">
+          Thank You
+        </p>
+
+        <p className="text-[10px]">
+          Please Visit Again
+        </p>
+
+      </div>
+
+    </div>
+
+  );
+
+}
