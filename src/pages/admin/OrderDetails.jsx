@@ -104,6 +104,17 @@ const handleDownloadPDF = async () => {
 
     setDownloading(true);
 
+    // IMPORTANT: html2canvas paints whatever the browser has rendered
+    // *at this exact moment*. If the custom web fonts (Playfair Display
+    // for headings, Dancing Script for "Thank You!") haven't finished
+    // downloading yet, it silently falls back to a system font — which
+    // is exactly why the downloaded PDF looked different from the
+    // invoice shown on screen. Waiting for document.fonts.ready makes
+    // sure every font is fully loaded and applied before we screenshot.
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
     const canvas = await html2canvas(element, {
       scale: 3,
       backgroundColor: "#ffffff",
