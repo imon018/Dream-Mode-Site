@@ -87,50 +87,39 @@ function drawBadge(doc, text, rightX, y, color) {
 
 }
 
-// Builds the 58mm invoice as a real text-based jsPDF document (no
-// html2canvas screenshotting involved) so text is always crisp,
-// selectable, and never gets clipped or misaligned by font/layout
-// timing issues. Returns the jsPDF doc instance — callers decide
-// whether to .save() it or use it another way.
-export async function buildInvoicePdf(order) {
+const PAGE_WIDTH = 58;
+const MARGIN_X = 4;
+const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_X * 2;
+const RIGHT_X = PAGE_WIDTH - MARGIN_X;
 
-  const settings = (await getSettings()) || {};
-
-  const qrValue =
-    settings.websiteUrl ||
-    settings.facebook ||
-    window.location.origin;
-
-  const [qrCode, logoData] = await Promise.all([
-    QRCode.toDataURL(qrValue),
-    loadImageAsDataURL(settings.logoUrl),
-  ]);
-
-  const pageWidth = 58;
-  const marginX = 4;
-  const contentWidth = pageWidth - marginX * 2;
-  const rightX = pageWidth - marginX;
-
-  // Start with a generous height; the page gets trimmed to the
-  // actual content height right before saving.
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: [pageWidth, 400],
-  });
+// Draws the full invoice onto the given jsPDF doc (already created at
+// some page height) and returns the final y position content reached.
+//
+// IMPORTANT: jsPDF converts the y coordinate you pass into doc.text()
+// into an absolute PDF coordinate (measured from the BOTTOM of the
+// page) at the moment you call it, using whatever page height the
+// doc currently has. So the page's final height must already be
+// correct *before* any drawing happens — resizing the page afterward
+// (as the old code did) does not move already-drawn content, it just
+// shrinks the page around it, pushing everything above the visible
+// area. That was the actual cause of the fully blank PDF. That's why
+// this is called twice by buildInvoicePdf: once on a throwaway page
+// just to measure the required height, then again on a doc created
+// at that exact height.
+function drawInvoice(doc, order, settings, qrCode, logoData) {
 
   doc.setTextColor(0, 0, 0);
 
-  let y = marginX;
+  let y = MARGIN_X;
 
   // ---- LOGO + STORE NAME ----
 
-  const headerTextX = logoData ? marginX + 11 : pageWidth / 2;
+  const headerTextX = logoData ? MARGIN_X + 11 : PAGE_WIDTH / 2;
   const headerAlign = logoData ? "left" : "center";
 
   if (logoData) {
     try {
-      doc.addImage(logoData, "PNG", marginX, y, 9, 9);
+      doc.addImage(logoData, "PNG", MARGIN_X, y, 9, 9);
     } catch (e) {
       // ignore broken image data
     }
@@ -157,13 +146,13 @@ export async function buildInvoicePdf(order) {
   const barPaddingX = 3;
   const barWidth = doc.getTextWidth(barLabel) + barPaddingX * 2;
   const barHeight = 5;
-  const barX = pageWidth / 2 - barWidth / 2;
+  const barX = PAGE_WIDTH / 2 - barWidth / 2;
 
   doc.setFillColor(0, 0, 0);
   doc.rect(barX, y, barWidth, barHeight, "F");
 
   doc.setTextColor(255, 255, 255);
-  doc.text(barLabel, pageWidth / 2, y + barHeight / 2 + 1, { align: "center" });
+  doc.text(barLabel, PAGE_WIDTH / 2, y + barHeight / 2 + 1, { align: "center" });
   doc.setTextColor(0, 0, 0);
 
   y += barHeight + 3;
@@ -175,8 +164,8 @@ export async function buildInvoicePdf(order) {
 
   const infoRow = (label, value) => {
     doc.setFont("helvetica", "normal");
-    doc.text(label, marginX, y);
-    doc.text(String(value), rightX, y, { align: "right" });
+    doc.text(label, MARGIN_X, y);
+    doc.text(String(value), RIGHT_X, y, { align: "right" });
     y += 4.4;
   };
 
@@ -190,17 +179,17 @@ export async function buildInvoicePdf(order) {
     order.createdAt ? new Date(order.createdAt).toLocaleString() : "-"
   );
 
-  doc.text("Status", marginX, y);
-  drawBadge(doc, "Confirmed", rightX, y, [34, 197, 94]);
+  doc.text("Status", MARGIN_X, y);
+  drawBadge(doc, "Confirmed", RIGHT_X, y, [34, 197, 94]);
   y += 4.4;
 
   infoRow("Payment Method", order.paymentMethod || "Cash On Delivery");
 
-  doc.text("Payment Status", marginX, y);
+  doc.text("Payment Status", MARGIN_X, y);
   drawBadge(
     doc,
     order.paymentStatus || "Pending",
-    rightX,
+    RIGHT_X,
     y,
     order.paymentStatus === "Paid" ? [34, 197, 94] : [234, 179, 8]
   );
@@ -208,23 +197,23 @@ export async function buildInvoicePdf(order) {
 
   y += 1;
   doc.setDrawColor(210, 210, 210);
-  doc.line(marginX, y, rightX, y);
+  doc.line(MARGIN_X, y, RIGHT_X, y);
   y += 4;
 
   // ---- CUSTOMER ----
 
   doc.setFont("times", "bold");
   doc.setFontSize(9);
-  doc.text("Customer", marginX, y);
+  doc.text("Customer", MARGIN_X, y);
   y += 4.2;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
 
-  doc.text(order.customerName || "-", marginX, y);
+  doc.text(order.customerName || "-", MARGIN_X, y);
   y += 4.2;
 
-  doc.text(order.phone || "-", marginX, y);
+  doc.text(order.phone || "-", MARGIN_X, y);
   y += 4.2;
 
   const fullAddress = [
@@ -233,37 +222,37 @@ export async function buildInvoicePdf(order) {
     order.district,
   ].filter(Boolean).join(", ");
 
-  const addressLines = doc.splitTextToSize(fullAddress || "-", contentWidth);
+  const addressLines = doc.splitTextToSize(fullAddress || "-", CONTENT_WIDTH);
 
   addressLines.forEach((line) => {
-    doc.text(line, marginX, y);
+    doc.text(line, MARGIN_X, y);
     y += 4;
   });
 
   y += 1;
   doc.setDrawColor(210, 210, 210);
-  doc.line(marginX, y, rightX, y);
+  doc.line(MARGIN_X, y, RIGHT_X, y);
   y += 4;
 
   // ---- PRODUCTS ----
 
   doc.setFont("times", "bold");
   doc.setFontSize(9);
-  doc.text("Products", marginX, y);
+  doc.text("Products", MARGIN_X, y);
   y += 4.2;
 
-  const qtyX = marginX + 34;
-  const priceRightX = rightX;
+  const qtyX = MARGIN_X + 34;
+  const priceRightX = RIGHT_X;
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(7.5);
-  doc.text("Item", marginX, y);
+  doc.text("Item", MARGIN_X, y);
   doc.text("Qty", qtyX, y, { align: "center" });
   doc.text("Price", priceRightX, y, { align: "right" });
   y += 1.5;
 
   doc.setDrawColor(210, 210, 210);
-  doc.line(marginX, y, rightX, y);
+  doc.line(MARGIN_X, y, RIGHT_X, y);
   y += 3.6;
 
   (order.items || []).forEach((item) => {
@@ -273,11 +262,11 @@ export async function buildInvoicePdf(order) {
 
     const nameLines = doc.splitTextToSize(
       item.name || "-",
-      contentWidth - 22
+      CONTENT_WIDTH - 22
     );
 
     nameLines.forEach((line, idx) => {
-      doc.text(line, marginX, y + idx * 3.4);
+      doc.text(line, MARGIN_X, y + idx * 3.4);
     });
 
     const price =
@@ -296,7 +285,7 @@ export async function buildInvoicePdf(order) {
       doc.setTextColor(120, 120, 120);
 
       const sub = `${item.size || "-"}${item.color ? ` / ${item.color}` : ""}`;
-      doc.text(sub, marginX, y);
+      doc.text(sub, MARGIN_X, y);
 
       doc.setTextColor(0, 0, 0);
       y += 3.4;
@@ -305,7 +294,7 @@ export async function buildInvoicePdf(order) {
 
     y += 1.4;
     doc.setDrawColor(225, 225, 225);
-    doc.line(marginX, y, rightX, y);
+    doc.line(MARGIN_X, y, RIGHT_X, y);
     y += 3.2;
 
   });
@@ -324,19 +313,19 @@ export async function buildInvoicePdf(order) {
 
   y += 1;
   doc.setDrawColor(210, 210, 210);
-  doc.line(marginX, y, rightX, y);
+  doc.line(MARGIN_X, y, RIGHT_X, y);
   y += 5;
 
   // ---- TOTAL ----
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("TOTAL", marginX, y);
-  doc.text(`\u09F3 ${order.total ?? 0}`, rightX, y, { align: "right" });
+  doc.text("TOTAL", MARGIN_X, y);
+  doc.text(`\u09F3 ${order.total ?? 0}`, RIGHT_X, y, { align: "right" });
   y += 3;
 
   doc.setDrawColor(210, 210, 210);
-  doc.line(marginX, y, rightX, y);
+  doc.line(MARGIN_X, y, RIGHT_X, y);
   y += 5;
 
   // ---- STORE CONTACT ----
@@ -345,16 +334,16 @@ export async function buildInvoicePdf(order) {
   doc.setFontSize(7.5);
 
   if (settings.phone) {
-    doc.text(`Contact Us: ${settings.phone}`, pageWidth / 2, y, { align: "center" });
+    doc.text(`Contact Us: ${settings.phone}`, PAGE_WIDTH / 2, y, { align: "center" });
     y += 3.6;
   }
 
   if (settings.facebook) {
 
-    const fbLines = doc.splitTextToSize(settings.facebook, contentWidth);
+    const fbLines = doc.splitTextToSize(settings.facebook, CONTENT_WIDTH);
 
     fbLines.forEach((line) => {
-      doc.text(line, pageWidth / 2, y, { align: "center" });
+      doc.text(line, PAGE_WIDTH / 2, y, { align: "center" });
       y += 3.4;
     });
 
@@ -365,22 +354,22 @@ export async function buildInvoicePdf(order) {
   // ---- THANK YOU + QR ----
 
   const qrSize = 14;
-  const qrX = rightX - qrSize;
+  const qrX = RIGHT_X - qrSize;
   const qrY = y;
 
   doc.setFont("times", "bolditalic");
   doc.setFontSize(13);
-  doc.text("Thank You!", marginX, y + 5);
+  doc.text("Thank You!", MARGIN_X, y + 5);
 
   const thankWidth = doc.getTextWidth("Thank You! ");
-  drawHeart(doc, marginX + thankWidth + 1.5, y + 3.6, 3.2, [236, 72, 153]);
+  drawHeart(doc, MARGIN_X + thankWidth + 1.5, y + 3.6, 3.2, [236, 72, 153]);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(6.5);
   doc.setTextColor(90, 90, 90);
   doc.text(
     `for shopping with ${settings.storeName || "Dream Mode"}`,
-    marginX,
+    MARGIN_X,
     y + 9
   );
   doc.setTextColor(0, 0, 0);
@@ -394,13 +383,53 @@ export async function buildInvoicePdf(order) {
   }
 
   y = Math.max(y + 12, qrY + qrSize);
-  y += marginX;
+  y += MARGIN_X;
 
-  // Trim the page to the actual content height
-  doc.internal.pageSize.setHeight(y);
-  if (typeof doc.internal.pageSize.height !== "undefined") {
-    doc.internal.pageSize.height = y;
-  }
+  return y;
+
+}
+
+// Builds the 58mm invoice as a real text-based jsPDF document (no
+// html2canvas screenshotting involved) so text is always crisp,
+// selectable, and never gets clipped or misaligned by font/layout
+// timing issues. Returns the jsPDF doc instance — callers decide
+// whether to .save() it or use it another way.
+export async function buildInvoicePdf(order) {
+
+  const settings = (await getSettings()) || {};
+
+  const qrValue =
+    settings.websiteUrl ||
+    settings.facebook ||
+    window.location.origin;
+
+  const [qrCode, logoData] = await Promise.all([
+    QRCode.toDataURL(qrValue),
+    loadImageAsDataURL(settings.logoUrl),
+  ]);
+
+  // PASS 1 — measure only. Draw onto a generously tall throwaway page
+  // just to find out how tall the real content is. This doc is
+  // discarded; nothing from it is saved.
+  const measureDoc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [PAGE_WIDTH, 400],
+  });
+
+  const finalHeight = drawInvoice(measureDoc, order, settings, qrCode, logoData);
+
+  // PASS 2 — the real doc, created at the exact final height from the
+  // start. Every coordinate jsPDF bakes into the PDF this time is
+  // computed against the correct page height, so nothing ends up
+  // drawn outside the visible page.
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [PAGE_WIDTH, finalHeight],
+  });
+
+  drawInvoice(doc, order, settings, qrCode, logoData);
 
   return doc;
 
