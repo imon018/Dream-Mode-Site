@@ -21,12 +21,35 @@ export default function InvoiceActions({ order }) {
 
     if (!element) return;
 
+    // Make sure all images (logo, QR) and web fonts have
+    // fully finished loading before we snapshot the element,
+    // otherwise html2canvas can capture it mid-layout and
+    // produce overlapping/cut-off text.
+    const images = Array.from(element.querySelectorAll("img"));
+
+    await Promise.all(
+      images.map((img) =>
+        img.complete
+          ? Promise.resolve()
+          : new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            })
+      )
+    );
+
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+
+    // Two animation frames to let the browser finish a layout pass
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     const canvas = await html2canvas(element, {
       scale: 3,
       backgroundColor: "#ffffff",
       useCORS: true,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight,
     });
 
     const img = canvas.toDataURL("image/png");
@@ -144,11 +167,14 @@ export default function InvoiceActions({ order }) {
       </div>
 
       <div
+        aria-hidden="true"
         style={{
-          position: "fixed",
+          position: "absolute",
           top: 0,
-          left: "-9999px",
-          zIndex: -1,
+          left: 0,
+          overflow: "hidden",
+          width: 0,
+          height: 0,
         }}
       >
 
