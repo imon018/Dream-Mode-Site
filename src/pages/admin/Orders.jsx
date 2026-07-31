@@ -962,7 +962,6 @@ text-gray-500
 
 
 
-
 {/* PAYMENT DETAILS */}
 
 {
