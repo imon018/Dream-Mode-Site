@@ -14,7 +14,7 @@ export default function InvoiceActions({ order }) {
     documentTitle: `Invoice-${order?.id || "Order"}`,
   });
 
-  const handleDownload = () => generateInvoicePdf(order);
+  const handleDownload = () => generateInvoicePdf(order, invoiceRef.current);
 
   return (
 
@@ -107,12 +107,10 @@ export default function InvoiceActions({ order }) {
       <div
         aria-hidden="true"
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
-          left: 0,
-          overflow: "hidden",
-          width: 0,
-          height: 0,
+          left: "-9999px",
+          zIndex: -1,
         }}
       >
 
