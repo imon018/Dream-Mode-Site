@@ -71,41 +71,42 @@ export default function Invoice58mm({ order }) {
     >
 
 
-            {/* LOGO */}
+            {/* LOGO + STORE */}
 
-      {settings.logoUrl && (
-        <div className="flex justify-center mb-0">
+      <div className="flex items-center justify-center gap-2">
+
+        {settings.logoUrl && (
           <img
             src={settings.logoUrl}
             alt={settings.storeName}
-            className="w-12 h-12 object-contain"
+            className="w-12 h-12 object-contain shrink-0"
           />
+        )}
+
+        <div className="text-left">
+
+          <h1
+            className="
+            text-[18px]
+            font-black
+            tracking-wide
+            uppercase
+            leading-tight
+            "
+          >
+            {settings.storeName}
+          </h1>
+
+          <p
+            className="
+            text-[10px]
+            text-gray-600
+            "
+          >
+            Dress Your Dream, Live Your Style
+          </p>
+
         </div>
-      )}
-
-      {/* STORE */}
-
-      <div className="text-center">
-
-        <h1
-          className="
-          text-[18px]
-          font-black
-          tracking-wide
-          uppercase
-          "
-        >
-          {settings.storeName}
-        </h1>
-
-        <p
-          className="
-          text-[10px]
-          text-gray-600
-          "
-        >
-          Dress Your Dream, Live Your Style
-        </p>
 
       </div>
 
