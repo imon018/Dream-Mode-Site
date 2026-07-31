@@ -22,11 +22,12 @@ import {
 } from "../utils/notificationHelper";
 
 
-import axios from "axios";
+// =================================
+// STEADFAST API
+// =================================
 
-
-const STEADFAST_URL =
-  "https://portal.packzy.com/api/v1/create_order";
+const STEADFAST_API_URL =
+  "/api/steadfast/create-order";
 
 
 const orderRef =
@@ -1298,4 +1299,30 @@ async(email, productId)=>{
   );
 
 
+};
+
+
+
+
+
+// =================================
+// SEND ORDER TO STEADFAST
+// =================================
+
+export const sendToSteadfast = async (order) => {
+  const response = await fetch(STEADFAST_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(order),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Steadfast API Error");
+  }
+
+  return data;
 };
