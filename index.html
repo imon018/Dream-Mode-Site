@@ -45,17 +45,8 @@ content="width=device-width, initial-scale=1.0" />
 />
 
 
-  <!-- All web fonts used across the site (including the invoice/PDF)
-       are linked here directly, up front, in one request. Loading them
-       this way — instead of via @import inside a CSS file or a <link>
-       injected later by JS — means the fonts are already registered
-       and downloading as soon as the page opens, so by the time an
-       invoice is screenshotted into a PDF (html2canvas) the fonts are
-       reliably ready instead of silently falling back to a system font. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-  href="https://fonts.googleapis.com/css2?family=Lobster&family=Playfair+Display:wght@500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@600&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Lobster&display=swap"
   rel="stylesheet"
 />
 
