@@ -225,8 +225,9 @@ status
 
       successToast("Steadfast order created");
     } catch (err) {
-      errorToast(err.message);
-    }
+  console.error(err);
+  errorToast("Steadfast order failed");
+}
   }
 }
 
