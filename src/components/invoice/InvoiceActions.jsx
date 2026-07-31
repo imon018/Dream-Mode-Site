@@ -24,6 +24,9 @@ export default function InvoiceActions({ order }) {
     const canvas = await html2canvas(element, {
       scale: 3,
       backgroundColor: "#ffffff",
+      useCORS: true,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight,
     });
 
     const img = canvas.toDataURL("image/png");
@@ -140,7 +143,14 @@ export default function InvoiceActions({ order }) {
 
       </div>
 
-      <div className="hidden">
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: "-9999px",
+          zIndex: -1,
+        }}
+      >
 
         <div ref={invoiceRef}>
 
