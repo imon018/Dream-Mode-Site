@@ -115,10 +115,29 @@ const handleDownloadPDF = async () => {
       await document.fonts.ready;
     }
 
+    // Fonts finishing download is not the same as the browser having
+    // finished RE-LAYING-OUT the page with them. Every heading swaps
+    // from a fallback font to Playfair Display at this point, which
+    // changes row heights — if we screenshot before that reflow settles,
+    // html2canvas grabs a mid-reflow snapshot, which is exactly what was
+    // making text look clipped from the bottom and rows look misaligned.
+    // Waiting two animation frames guarantees the browser has painted
+    // the final, settled layout before we measure/capture anything.
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    );
+
     const canvas = await html2canvas(element, {
       scale: 3,
       backgroundColor: "#ffffff",
       useCORS: true,
+      // Explicitly capture the element's full, final size instead of
+      // whatever size html2canvas guesses — guards against any row
+      // being short-measured and cut off.
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight,
     });
 
     const img = canvas.toDataURL("image/png");
