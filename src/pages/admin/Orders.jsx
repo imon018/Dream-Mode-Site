@@ -18,6 +18,8 @@ import {
   FiCalendar,
   FiMoreVertical,
   FiEye,
+  FiPrinter,
+  FiDownload,
   FiTrash2
 } from "react-icons/fi";
 
@@ -111,6 +113,22 @@ useEffect(() => {
   paymentFilter,
   dateFilter
 ]);
+
+
+
+useEffect(() => {
+
+  const closeMenu = () => {
+    setMenuOpen(null);
+  };
+
+  document.addEventListener("mousedown", closeMenu);
+
+  return () => {
+    document.removeEventListener("mousedown", closeMenu);
+  };
+
+}, []);
 	
 
 
@@ -1122,21 +1140,33 @@ justify-center
 
 
 
-
-<div className="
+<div
+className="
 relative
-">
-
+"
+>
 
 <button
 
-onClick={()=>setMenuOpen(
+onClick={(e)=>{
+
+e.stopPropagation();
+
+setMenuOpen(
+
 menuOpen===order.id
+
 ?
+
 null
+
 :
+
 order.id
-)}
+
+);
+
+}}
 
 className="
 w-8
@@ -1154,22 +1184,18 @@ justify-center
 
 </button>
 
-
-
-
-
-
-
 {
-menuOpen===order.id &&
+menuOpen===order.id && (
 
 <div
+
+onClick={(e)=>e.stopPropagation()}
 
 className="
 absolute
 right-0
 bottom-10
-w-28
+min-w-[180px]
 bg-white
 border
 border-gray-100
@@ -1179,13 +1205,95 @@ overflow-hidden
 z-50
 "
 
-
 >
-
 
 <button
 
-onClick={()=>setDeleteId(order.id)}
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiEye size={14}/>
+
+<span>View</span>
+
+</button>
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}?action=print`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiPrinter size={14}/>
+
+<span>Print (58mm)</span>
+
+</button>
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}?action=pdf`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiDownload size={14}/>
+
+<span>Download PDF</span>
+
+</button>
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+setDeleteId(order.id);
+}}
 
 className="
 w-full
@@ -1195,22 +1303,25 @@ py-2
 text-xs
 text-red-600
 hover:bg-red-50
+flex
+items-center
+gap-2
 "
 
 >
 
-Delete
+<FiTrash2 size={14}/>
+
+<span>Delete</span>
 
 </button>
 
 </div>
 
-}
-
+)}
 
 </div>
-
-
+	
 
 </div>
 
@@ -1231,7 +1342,6 @@ Delete
 
 
 </div>
-
 
 
 
@@ -1626,12 +1736,13 @@ py-4
 ">
 
 
-<div className="
+<div
+className="
 flex
 gap-2
 relative
-">
-
+"
+>
 
 <button
 
@@ -1656,21 +1767,27 @@ justify-center
 
 </button>
 
-
-
-
-
-
-
 <button
 
-onClick={()=>setMenuOpen(
+onClick={(e)=>{
+
+e.stopPropagation();
+
+setMenuOpen(
+
 menuOpen===order.id
+
 ?
+
 null
+
 :
+
 order.id
-)}
+
+);
+
+}}
 
 className="
 w-8
@@ -1689,31 +1806,116 @@ justify-center
 
 </button>
 
-
-
-
-
 {
 
-menuOpen===order.id &&
+menuOpen===order.id && (
 
+<div
 
-<div className="
+onClick={(e)=>e.stopPropagation()}
+
+className="
 absolute
 right-0
 top-10
-w-28
+min-w-[180px]
 bg-white
 border
 rounded-lg
 shadow-lg
 z-50
-">
+overflow-hidden
+"
 
+>
 
 <button
 
-onClick={()=>setDeleteId(order.id)}
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiEye size={14}/>
+
+<span>View</span>
+
+</button>
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}?action=print`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiPrinter size={14}/>
+
+<span>Print (58mm)</span>
+
+</button>
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}?action=pdf`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiDownload size={14}/>
+
+<span>Download PDF</span>
+
+</button>
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+setDeleteId(order.id);
+}}
 
 className="
 w-full
@@ -1723,20 +1925,24 @@ py-2
 text-xs
 text-red-600
 hover:bg-red-50
+flex
+items-center
+gap-2
 "
 
 >
 
-Delete
+<FiTrash2 size={14}/>
+
+<span>Delete</span>
 
 </button>
 
 </div>
 
+)
 
 }
-
-
 
 </div>
 
