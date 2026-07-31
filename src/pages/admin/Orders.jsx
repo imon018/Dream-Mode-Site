@@ -1,7 +1,6 @@
 import {
   useEffect,
-  useState,
-  useRef
+  useState
 } from "react";
 
 import {
@@ -47,8 +46,6 @@ export default function Orders(){
 const navigate = useNavigate();
 
 const [deleteId,setDeleteId] = useState(null);
-
-const menuRef = useRef(null);
 
 const [page, setPage] = useState(1);
 
@@ -119,14 +116,25 @@ useEffect(() => {
 
 
 
+// FIX: previously this used a single shared `ref` for BOTH the
+// mobile card menu container AND the desktop table menu container.
+// Because both are always mounted in the DOM (just hidden with
+// CSS classes like `lg:hidden` / `hidden lg:block`), the ref ended
+// up pointing at whichever one rendered last — usually the desktop
+// version. So on mobile, `menuRef.current` did NOT point at the
+// menu that was actually open, `contains(e.target)` returned
+// false on every click (even clicks on the menu buttons), and
+// `setMenuOpen(null)` fired before the button's own onClick could
+// run. That's why View/Print/Download/Delete looked "dead".
+//
+// Fix: use a data-attribute + `closest()` check instead of a ref.
+// This works correctly no matter how many menu containers exist
+// in the DOM at once.
 useEffect(() => {
 
   const handleClickOutside = (e) => {
 
-    if (
-      menuRef.current &&
-      !menuRef.current.contains(e.target)
-    ) {
+    if (!e.target.closest("[data-menu-container]")) {
       setMenuOpen(null);
     }
 
@@ -1125,11 +1133,15 @@ Cancelled
 
 {/* ACTION */}
 
-<div className="
+<div
+data-menu-container
+className="
 flex
 items-center
 gap-1
-">
+relative
+"
+>
 
 
 <button
@@ -1159,7 +1171,6 @@ justify-center
 
 
 <div
-ref={menuOpen===order.id ? menuRef : null}
 className="
 relative
 "
@@ -1756,7 +1767,7 @@ py-4
 
 
 <div
-ref={menuOpen===order.id ? menuRef : null}
+data-menu-container
 className="
 flex
 gap-2
