@@ -3,6 +3,83 @@ import QRCode from "qrcode";
 
 import { getSettings } from "../../services/settingsService";
 
+const BENGALI_FONT_URL =
+  "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts/hinted/ttf/NotoSansBengali/NotoSansBengali-Regular.ttf";
+
+const BENGALI_RANGE = /[\u0980-\u09FF]/;
+
+// The Bengali font file is fetched once per page load and cached here,
+// so repeated PDF downloads don't re-download it every time.
+let bengaliFontBase64Promise = null;
+
+function arrayBufferToBase64(buffer) {
+
+  let binary = "";
+
+  const bytes = new Uint8Array(buffer);
+
+  const chunkSize = 0x8000;
+
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+
+    const chunk = bytes.subarray(i, i + chunkSize);
+
+    binary += String.fromCharCode.apply(null, chunk);
+
+  }
+
+  return btoa(binary);
+
+}
+
+// Registers the Bengali font on the given jsPDF doc instance.
+// Returns true if the font is available to use on this doc.
+async function ensureBengaliFont(doc) {
+
+  if (!bengaliFontBase64Promise) {
+
+    bengaliFontBase64Promise = fetch(BENGALI_FONT_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error("font fetch failed");
+        return res.arrayBuffer();
+      })
+      .then((buf) => arrayBufferToBase64(buf))
+      .catch(() => null);
+
+  }
+
+  const base64 = await bengaliFontBase64Promise;
+
+  if (!base64) return false;
+
+  try {
+
+    doc.addFileToVFS("NotoSansBengali.ttf", base64);
+    doc.addFont("NotoSansBengali.ttf", "NotoSansBengali", "normal");
+
+    return true;
+
+  } catch (e) {
+
+    return false;
+
+  }
+
+}
+
+// Picks the right font for a piece of text (Bengali script needs the
+// embedded Noto font since jsPDF's built-in fonts can't render it),
+// falling back to the requested Latin font/style otherwise.
+function setSmartFont(doc, text, bengaliLoaded, family, style) {
+
+  if (bengaliLoaded && BENGALI_RANGE.test(String(text))) {
+    doc.setFont("NotoSansBengali", "normal");
+  } else {
+    doc.setFont(family, style);
+  }
+
+}
+
 // Try to load a (possibly remote) image and convert it to a data URL
 // so it can be embedded into the PDF. Resolves to null on any failure
 // so a missing/blocked logo never breaks PDF generation.
@@ -87,36 +164,18 @@ function drawBadge(doc, text, rightX, y, color) {
 
 }
 
-// Builds the 58mm invoice PDF entirely by drawing text/shapes with jsPDF
-// (no DOM screenshot involved), and triggers the browser download.
-export async function generateInvoicePdf(order) {
-
-  if (!order) return;
-
-  const settings = (await getSettings()) || {};
-
-  const qrValue =
-    settings.websiteUrl ||
-    settings.facebook ||
-    window.location.origin;
-
-  const [qrCode, logoData] = await Promise.all([
-    QRCode.toDataURL(qrValue),
-    loadImageAsDataURL(settings.logoUrl),
-  ]);
+// Draws the entire invoice onto the given doc and returns the final Y
+// (mm) the content reached, so the caller knows how tall the page
+// needs to be. This same function is used both to *measure* (on a
+// throwaway doc) and to do the *real* render (on the correctly-sized
+// final doc) — it must be side-effect-free with respect to anything
+// other than the doc it's given.
+function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliLoaded }) {
 
   const pageWidth = 58;
   const marginX = 4;
   const contentWidth = pageWidth - marginX * 2;
   const rightX = pageWidth - marginX;
-
-  // Start with a generous height; the page gets trimmed to the
-  // actual content height right before saving.
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: [pageWidth, 400],
-  });
 
   doc.setTextColor(0, 0, 0);
 
@@ -135,9 +194,11 @@ export async function generateInvoicePdf(order) {
     }
   }
 
-  doc.setFont("times", "bold");
+  const storeName = settings.storeName || "Dream Mode";
+
+  setSmartFont(doc, storeName, bengaliLoaded, "times", "bold");
   doc.setFontSize(13);
-  doc.text(settings.storeName || "Dream Mode", headerTextX, y + 4.5, { align: headerAlign });
+  doc.text(storeName, headerTextX, y + 4.5, { align: headerAlign });
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(6.3);
@@ -217,12 +278,14 @@ export async function generateInvoicePdf(order) {
   doc.text("Customer", marginX, y);
   y += 4.2;
 
-  doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
 
-  doc.text(order.customerName || "-", marginX, y);
+  const customerName = order.customerName || "-";
+  setSmartFont(doc, customerName, bengaliLoaded, "helvetica", "normal");
+  doc.text(customerName, marginX, y);
   y += 4.2;
 
+  doc.setFont("helvetica", "normal");
   doc.text(order.phone || "-", marginX, y);
   y += 4.2;
 
@@ -230,11 +293,14 @@ export async function generateInvoicePdf(order) {
     order.address,
     order.thana,
     order.district,
-  ].filter(Boolean).join(", ");
+  ].filter(Boolean).join(", ") || "-";
 
-  const addressLines = doc.splitTextToSize(fullAddress || "-", contentWidth);
+  setSmartFont(doc, fullAddress, bengaliLoaded, "helvetica", "normal");
+
+  const addressLines = doc.splitTextToSize(fullAddress, contentWidth);
 
   addressLines.forEach((line) => {
+    setSmartFont(doc, line, bengaliLoaded, "helvetica", "normal");
     doc.text(line, marginX, y);
     y += 4;
   });
@@ -267,15 +333,15 @@ export async function generateInvoicePdf(order) {
 
   (order.items || []).forEach((item) => {
 
-    doc.setFont("helvetica", "bold");
+    const itemName = item.name || "-";
+
+    setSmartFont(doc, itemName, bengaliLoaded, "helvetica", "bold");
     doc.setFontSize(7.8);
 
-    const nameLines = doc.splitTextToSize(
-      item.name || "-",
-      contentWidth - 22
-    );
+    const nameLines = doc.splitTextToSize(itemName, contentWidth - 22);
 
     nameLines.forEach((line, idx) => {
+      setSmartFont(doc, line, bengaliLoaded, "helvetica", "bold");
       doc.text(line, marginX, y + idx * 3.4);
     });
 
@@ -290,11 +356,12 @@ export async function generateInvoicePdf(order) {
 
     if (item.size || item.color) {
 
-      doc.setFont("helvetica", "normal");
+      const sub = `${item.size || "-"}${item.color ? ` / ${item.color}` : ""}`;
+
+      setSmartFont(doc, sub, bengaliLoaded, "helvetica", "normal");
       doc.setFontSize(6.8);
       doc.setTextColor(120, 120, 120);
 
-      const sub = `${item.size || "-"}${item.color ? ` / ${item.color}` : ""}`;
       doc.text(sub, marginX, y);
 
       doc.setTextColor(0, 0, 0);
@@ -374,14 +441,12 @@ export async function generateInvoicePdf(order) {
   const thankWidth = doc.getTextWidth("Thank You! ");
   drawHeart(doc, marginX + thankWidth + 1.5, y + 3.6, 3.2, [236, 72, 153]);
 
-  doc.setFont("helvetica", "normal");
+  const forShoppingLine = `for shopping with ${storeName}`;
+
+  setSmartFont(doc, forShoppingLine, bengaliLoaded, "helvetica", "normal");
   doc.setFontSize(6.5);
   doc.setTextColor(90, 90, 90);
-  doc.text(
-    `for shopping with ${settings.storeName || "Dream Mode"}`,
-    marginX,
-    y + 9
-  );
+  doc.text(forShoppingLine, marginX, y + 9);
   doc.setTextColor(0, 0, 0);
 
   if (qrCode) {
@@ -395,11 +460,69 @@ export async function generateInvoicePdf(order) {
   y = Math.max(y + 12, qrY + qrSize);
   y += marginX;
 
-  // Trim the page to the actual content height
-  doc.internal.pageSize.setHeight(y);
-  if (typeof doc.internal.pageSize.height !== "undefined") {
-    doc.internal.pageSize.height = y;
+  return y;
+
+}
+
+// Builds the 58mm invoice PDF entirely by drawing text/shapes with jsPDF
+// (no DOM screenshot involved), and triggers the browser download.
+//
+// This renders in two passes: the first pass draws onto a throwaway
+// doc just to measure the total content height, then a second doc is
+// created at that exact height and the real content is drawn onto it.
+// (jsPDF resolves each element's Y position relative to the page
+// height *at the moment it's drawn*, so resizing a page after content
+// has already been added leaves everything positioned outside the new,
+// smaller page — this two-pass approach avoids that entirely.)
+export async function generateInvoicePdf(order) {
+
+  if (!order) return;
+
+  const settings = (await getSettings()) || {};
+
+  const qrValue =
+    settings.websiteUrl ||
+    settings.facebook ||
+    window.location.origin;
+
+  const [qrCode, logoData] = await Promise.all([
+    QRCode.toDataURL(qrValue),
+    loadImageAsDataURL(settings.logoUrl),
+  ]);
+
+  const measureDoc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [58, 400],
+  });
+
+  const bengaliLoaded = await ensureBengaliFont(measureDoc);
+
+  const finalHeight = renderInvoiceContent(measureDoc, {
+    order,
+    settings,
+    qrCode,
+    logoData,
+    bengaliLoaded,
+  });
+
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [58, finalHeight],
+  });
+
+  if (bengaliLoaded) {
+    await ensureBengaliFont(doc);
   }
+
+  renderInvoiceContent(doc, {
+    order,
+    settings,
+    qrCode,
+    logoData,
+    bengaliLoaded,
+  });
 
   doc.save(`Invoice-${order?.id || "Order"}.pdf`);
 
