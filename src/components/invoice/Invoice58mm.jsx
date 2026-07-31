@@ -3,6 +3,16 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { getSettings } from "../../services/settingsService";
 
+// Load a script/handwriting font for the "Thank You" line
+if (typeof document !== "undefined" && !document.getElementById("dm-thankyou-font")) {
+  const link = document.createElement("link");
+  link.id = "dm-thankyou-font";
+  link.rel = "stylesheet";
+  link.href =
+    "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap";
+  document.head.appendChild(link);
+}
+
 export default function Invoice58mm({ order }) {
 
   const [settings, setSettings] = useState({
@@ -49,7 +59,7 @@ export default function Invoice58mm({ order }) {
       bg-white
       mx-auto
       text-black
-      p-3
+      p-2
       "
       style={{
         width: "58mm",
@@ -64,11 +74,11 @@ export default function Invoice58mm({ order }) {
             {/* LOGO */}
 
       {settings.logoUrl && (
-        <div className="flex justify-center mb-2">
+        <div className="flex justify-center mb-0.5">
           <img
             src={settings.logoUrl}
             alt={settings.storeName}
-            className="w-14 h-14 object-contain"
+            className="w-12 h-12 object-contain"
           />
         </div>
       )}
@@ -101,14 +111,14 @@ export default function Invoice58mm({ order }) {
 
       {/* INVOICE TITLE */}
 
-      <div className="my-3 flex justify-center">
+      <div className="my-1.5 flex justify-center">
 
         <div
           className="
           bg-black
           text-white
           px-4
-          py-1
+          py-0.5
           text-[11px]
           font-bold
           tracking-wide
@@ -144,16 +154,33 @@ export default function Invoice58mm({ order }) {
         </div>
 
         <div className="flex justify-between gap-2">
-          <span>Order ID</span>
 
+          <span>Status</span>
+
+          <span
+            className="
+            px-2
+            rounded-full
+            text-white
+            text-[10px]
+            bg-green-500
+            "
+          >
+            Confirmed
+          </span>
+
+        </div>
+
+        <div className="flex justify-between gap-2">
+          <span>Payment Method</span>
           <span>
-            #{String(order.id).slice(0,8)}
+            {order.paymentMethod || "Cash On Delivery"}
           </span>
         </div>
 
         <div className="flex justify-between gap-2">
 
-          <span>Status</span>
+          <span>Payment Status</span>
 
           <span
             className={`
@@ -161,36 +188,29 @@ export default function Invoice58mm({ order }) {
             rounded-full
             text-white
             text-[10px]
-
             ${
-              order.status==="Delivered"
+              order.paymentStatus === "Paid"
                 ? "bg-green-500"
-                : order.status==="Processing"
-                ? "bg-blue-500"
-                : order.status==="Shipped"
-                ? "bg-purple-500"
-                : order.status==="Cancelled"
-                ? "bg-red-500"
                 : "bg-yellow-500"
             }
             `}
           >
-            {order.status}
+            {order.paymentStatus || "Pending"}
           </span>
 
         </div>
 
       </div>
 
-      <hr className="my-3" />
+      <hr className="my-1.5" />
 
       {/* CUSTOMER */}
 
-      <h2 className="font-bold mb-2">
+      <h2 className="font-bold mb-1">
         Customer
       </h2>
 
-      <div className="space-y-2 text-[11px]">
+      <div className="space-y-1 text-[11px]">
 
         <div className="flex gap-2 items-center">
 
@@ -223,13 +243,11 @@ export default function Invoice58mm({ order }) {
 
       </div>
 
-      <hr className="my-3" />
-
-
+      <hr className="my-1.5" />
 
             {/* PRODUCTS */}
 
-      <h2 className="font-bold mb-2">
+      <h2 className="font-bold mb-1">
         Products
       </h2>
 
@@ -306,7 +324,7 @@ export default function Invoice58mm({ order }) {
 
       </table>
 
-      <hr className="my-3" />
+      <hr className="my-1.5" />
 
       {/* SUMMARY */}
 
@@ -354,7 +372,7 @@ export default function Invoice58mm({ order }) {
 
       </div>
 
-      <hr className="my-3" />
+      <hr className="my-1.5" />
 
       <div className="flex justify-between font-black text-[14px]">
 
@@ -368,13 +386,11 @@ export default function Invoice58mm({ order }) {
 
       </div>
 
-      <hr className="my-3" />
-
-
+      <hr className="my-1.5" />
 
             {/* STORE CONTACT */}
 
-      <div className="text-center text-[10px] space-y-1">
+      <div className="text-center text-[10px] space-y-0.5">
 
         {settings.phone && (
           <p>
@@ -390,33 +406,30 @@ export default function Invoice58mm({ order }) {
 
       </div>
 
-      {/* QR */}
+      {/* THANK YOU + QR */}
 
-      {qrCode && (
+      <div className="flex items-center justify-between mt-2">
 
-        <div className="flex justify-center my-3">
+        <div>
+          <p
+            className="text-[16px]"
+            style={{ fontFamily: "'Dancing Script', cursive" }}
+          >
+            Thank You! <span className="text-pink-500">♥</span>
+          </p>
 
+          <p className="text-[9px] text-gray-600">
+            for shopping with {settings.storeName || "Dream Mode"}
+          </p>
+        </div>
+
+        {qrCode && (
           <img
             src={qrCode}
             alt="QR"
-            className="w-20 h-20"
+            className="w-14 h-14"
           />
-
-        </div>
-
-      )}
-
-      {/* THANK YOU */}
-
-      <div className="text-center">
-
-        <p className="font-bold text-[11px]">
-          Thank You
-        </p>
-
-        <p className="text-[10px]">
-          Please Visit Again
-        </p>
+        )}
 
       </div>
 
