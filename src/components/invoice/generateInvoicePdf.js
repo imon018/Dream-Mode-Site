@@ -128,18 +128,65 @@ async function ensureScriptFont(doc) {
 
 }
 
-// Picks the right font for a piece of text (Bengali script needs the
-// embedded Noto font since jsPDF's built-in fonts can't render it —
-// this also covers the Bengali Taka sign "৳", which lives in the same
-// Unicode block), falling back to the requested Latin font/style
-// otherwise.
-function setSmartFont(doc, text, bengaliLoaded, family, style) {
+// Splits text into consecutive runs of Bengali-script vs everything
+// else, preserving order — e.g. "Basabo, সবুজবাগ" becomes
+// ["Basabo, ", "সবুজবাগ"].
+function splitScriptRuns(text) {
 
-  if (bengaliLoaded && BENGALI_RANGE.test(String(text))) {
-    doc.setFont("NotoSansBengali", "normal");
-  } else {
-    doc.setFont(family, style);
-  }
+  const str = String(text);
+
+  const matches = str.match(/[\u0980-\u09FF]+|[^\u0980-\u09FF]+/g);
+
+  return matches || [""];
+
+}
+
+// Draws text that may mix Latin and Bengali characters by rendering
+// each script run in its own font, rather than picking a single font
+// for the whole string. This is what makes a line like
+// "Basabo, সবুজবাগ, ঢাকা" reliable: even if the Bengali font that
+// happened to load lacks Latin glyphs (or vice versa), each run still
+// gets a font that actually has it — nothing silently vanishes.
+// Caller must set the desired font size on `doc` beforehand.
+// Returns the total rendered width (mm).
+function drawSmartText(doc, text, x, y, opts = {}) {
+
+  const {
+    align = "left",
+    bengaliLoaded,
+    latinFamily = "helvetica",
+    latinStyle = "normal",
+  } = opts;
+
+  const setRunFont = (isBengali) => {
+    if (isBengali && bengaliLoaded) {
+      doc.setFont("NotoSansBengali", "normal");
+    } else {
+      doc.setFont(latinFamily, latinStyle);
+    }
+  };
+
+  const runs = splitScriptRuns(text).map((run) => {
+    const isBengali = BENGALI_RANGE.test(run);
+    setRunFont(isBengali);
+    return { run, isBengali, width: doc.getTextWidth(run) };
+  });
+
+  const totalWidth = runs.reduce((sum, r) => sum + r.width, 0);
+
+  let cursorX;
+
+  if (align === "right") cursorX = x - totalWidth;
+  else if (align === "center") cursorX = x - totalWidth / 2;
+  else cursorX = x;
+
+  runs.forEach(({ run, isBengali, width }) => {
+    setRunFont(isBengali);
+    doc.text(run, cursorX, y);
+    cursorX += width;
+  });
+
+  return totalWidth;
 
 }
 
@@ -259,9 +306,13 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
   const storeName = settings.storeName || "Dream Mode";
 
-  setSmartFont(doc, storeName, bengaliLoaded, "times", "bold");
   doc.setFontSize(13);
-  doc.text(storeName, headerTextX, y + 4.5, { align: headerAlign });
+  drawSmartText(doc, storeName, headerTextX, y + 4.5, {
+    align: headerAlign,
+    bengaliLoaded,
+    latinFamily: "times",
+    latinStyle: "bold",
+  });
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(6.3);
@@ -293,14 +344,18 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
   // ---- INFO ROWS ----
 
-  doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
 
   const infoRow = (label, value) => {
     doc.setFont("helvetica", "normal");
     doc.text(label, marginX, y);
-    setSmartFont(doc, value, bengaliLoaded, "helvetica", "normal");
-    doc.text(String(value), rightX, y, { align: "right" });
+    doc.setFontSize(8);
+    drawSmartText(doc, String(value), rightX, y, {
+      align: "right",
+      bengaliLoaded,
+      latinFamily: "helvetica",
+      latinStyle: "normal",
+    });
     y += 4.4;
   };
 
@@ -347,8 +402,12 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   doc.setFontSize(8);
 
   const customerName = order.customerName || "-";
-  setSmartFont(doc, customerName, bengaliLoaded, "helvetica", "normal");
-  doc.text(customerName, marginX, y);
+  drawSmartText(doc, customerName, marginX, y, {
+    align: "left",
+    bengaliLoaded,
+    latinFamily: "helvetica",
+    latinStyle: "normal",
+  });
   y += 4.2;
 
   doc.setFont("helvetica", "normal");
@@ -361,13 +420,20 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
     order.district,
   ].filter(Boolean).join(", ") || "-";
 
-  setSmartFont(doc, fullAddress, bengaliLoaded, "helvetica", "normal");
+  // Best-effort wrapping width: uses whichever single font is set at
+  // the time, which is fine for the (usually short, one-line) address.
+  doc.setFont(bengaliLoaded && BENGALI_RANGE.test(fullAddress) ? "NotoSansBengali" : "helvetica", "normal");
 
   const addressLines = doc.splitTextToSize(fullAddress, contentWidth);
 
   addressLines.forEach((line) => {
-    setSmartFont(doc, line, bengaliLoaded, "helvetica", "normal");
-    doc.text(line, marginX, y);
+    doc.setFontSize(8);
+    drawSmartText(doc, line, marginX, y, {
+      align: "left",
+      bengaliLoaded,
+      latinFamily: "helvetica",
+      latinStyle: "normal",
+    });
     y += 4;
   });
 
@@ -401,23 +467,33 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
     const itemName = item.name || "-";
 
-    setSmartFont(doc, itemName, bengaliLoaded, "helvetica", "bold");
+    doc.setFont(bengaliLoaded && BENGALI_RANGE.test(itemName) ? "NotoSansBengali" : "helvetica", "bold");
     doc.setFontSize(7.8);
 
     const nameLines = doc.splitTextToSize(itemName, contentWidth - 22);
 
     nameLines.forEach((line, idx) => {
-      setSmartFont(doc, line, bengaliLoaded, "helvetica", "bold");
-      doc.text(line, marginX, y + idx * 3.4);
+      doc.setFontSize(7.8);
+      drawSmartText(doc, line, marginX, y + idx * 3.4, {
+        align: "left",
+        bengaliLoaded,
+        latinFamily: "helvetica",
+        latinStyle: "bold",
+      });
     });
 
     const priceText = `\u09F3${(item.offerPrice || item.price || 0) * (item.quantity || 1)}`;
 
     doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.8);
     doc.text(String(item.quantity ?? "-"), qtyX, y, { align: "center" });
 
-    setSmartFont(doc, priceText, bengaliLoaded, "helvetica", "normal");
-    doc.text(priceText, priceRightX, y, { align: "right" });
+    drawSmartText(doc, priceText, priceRightX, y, {
+      align: "right",
+      bengaliLoaded,
+      latinFamily: "helvetica",
+      latinStyle: "normal",
+    });
 
     y += nameLines.length * 3.4;
 
@@ -425,11 +501,15 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
       const sub = `${item.size || "-"}${item.color ? ` / ${item.color}` : ""}`;
 
-      setSmartFont(doc, sub, bengaliLoaded, "helvetica", "normal");
       doc.setFontSize(6.8);
       doc.setTextColor(120, 120, 120);
 
-      doc.text(sub, marginX, y);
+      drawSmartText(doc, sub, marginX, y, {
+        align: "left",
+        bengaliLoaded,
+        latinFamily: "helvetica",
+        latinStyle: "normal",
+      });
 
       doc.setTextColor(0, 0, 0);
       y += 3.4;
@@ -467,9 +547,12 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   doc.setFontSize(12);
   doc.text("TOTAL", marginX, y);
 
-  setSmartFont(doc, totalText, bengaliLoaded, "helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text(totalText, rightX, y, { align: "right" });
+  drawSmartText(doc, totalText, rightX, y, {
+    align: "right",
+    bengaliLoaded,
+    latinFamily: "helvetica",
+    latinStyle: "bold",
+  });
   y += 3;
 
   doc.setDrawColor(210, 210, 210);
@@ -520,10 +603,14 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
   const forShoppingLine = `for shopping with ${storeName}`;
 
-  setSmartFont(doc, forShoppingLine, bengaliLoaded, "helvetica", "normal");
   doc.setFontSize(6.5);
   doc.setTextColor(90, 90, 90);
-  doc.text(forShoppingLine, marginX, y + 9);
+  drawSmartText(doc, forShoppingLine, marginX, y + 9, {
+    align: "left",
+    bengaliLoaded,
+    latinFamily: "helvetica",
+    latinStyle: "normal",
+  });
   doc.setTextColor(0, 0, 0);
 
   if (qrCode) {
