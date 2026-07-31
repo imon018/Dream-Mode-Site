@@ -50,7 +50,6 @@ export default function Invoice58mm({ order }) {
       mx-auto
       text-black
       p-2
-      overflow-hidden
       "
       style={{
         width: "58mm",
@@ -82,11 +81,11 @@ export default function Invoice58mm({ order }) {
             font-black
             tracking-wide
             uppercase
-            leading-tight
             whitespace-nowrap
             overflow-hidden
             text-ellipsis
             "
+            style={{ lineHeight: 1.5 }}
           >
             {settings.storeName}
           </h1>
