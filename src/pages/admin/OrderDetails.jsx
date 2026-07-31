@@ -97,23 +97,17 @@ const handlePrint = useReactToPrint({
 
 const handleDownloadPDF = async () => {
 
-  if (!order || !invoiceRef.current) {
-    errorToast("Invoice is not ready yet.");
-    return;
-  }
+  if (!order) return;
 
   try {
 
     setDownloading(true);
 
-    await generateInvoicePdf(
-      order,
-      invoiceRef.current
-    );
+    await generateInvoicePdf(order);
 
   } catch (error) {
 
-    console.error(error);
+    console.log(error);
 
     errorToast("PDF download failed");
 
