@@ -274,9 +274,20 @@ async function socialLogin(provider, providerName) {
 
     hasPassword = data.hasPassword === true;
 
-    await updateDoc(userRef, {
+    const updates = {
       lastLogin: serverTimestamp(),
-    });
+    };
+
+    // Google already verifies the email address on its end, so
+    // if this Firestore doc was created before this feature (or
+    // via a normal email/password signup that was never
+    // verified), self-heal it here instead of leaving it stuck
+    // as "Not Verified" forever.
+    if (data.emailVerified !== true) {
+      updates.emailVerified = true;
+    }
+
+    await updateDoc(userRef, updates);
 
     if (role === "admin") {
       await notifyAdminLogin({
