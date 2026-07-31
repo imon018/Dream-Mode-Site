@@ -39,6 +39,39 @@ function waitForImages(element) {
 // Not every WebView supports it, so if it throws (or produces a
 // tainted canvas that fails on toDataURL) we fall back to the
 // default renderer rather than breaking the download entirely.
+// foreignObjectRendering silently produces a fully blank canvas (every
+// pixel 0,0,0,0 -- the untouched default state of a <canvas>) on some
+// WebViews (notably Android/Capacitor) instead of throwing. No
+// exception means the try/catch below never sees a failure, so the
+// bad canvas would otherwise sail straight through to the PDF. Sample
+// pixels across the canvas and treat "nothing was ever drawn" as a
+// failure that should trigger the same fallback as a thrown error.
+function isCanvasBlank(canvas) {
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return true;
+
+  const { width, height } = canvas;
+  if (width === 0 || height === 0) return true;
+
+  // Sampling a grid instead of the full buffer keeps this cheap even
+  // at scale:3 on a tall receipt-style canvas.
+  const stepX = Math.max(1, Math.floor(width / 40));
+  const stepY = Math.max(1, Math.floor(height / 80));
+
+  for (let y = 0; y < height; y += stepY) {
+    const row = ctx.getImageData(0, y, width, 1).data;
+    for (let x = 0; x < row.length; x += 4 * stepX) {
+      if (row[x] !== 0 || row[x + 1] !== 0 || row[x + 2] !== 0 || row[x + 3] !== 0) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+
+}
+
 async function captureElement(element) {
 
   const baseOptions = {
@@ -59,6 +92,10 @@ async function captureElement(element) {
     // surface once you try to read pixel data back out -- trigger
     // that now so we can still fall back cleanly.
     canvas.toDataURL("image/png");
+
+    if (isCanvasBlank(canvas)) {
+      throw new Error("foreignObjectRendering produced a blank canvas");
+    }
 
     return canvas;
 
