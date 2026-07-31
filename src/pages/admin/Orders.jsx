@@ -1,178 +1,246 @@
 import {
   useEffect,
-  useState
+  useState,
+  useRef,
 } from "react";
 
+
 import {
-  useNavigate
+  useParams,
+  useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 
 
 import {
-  FiSearch,
-  FiShoppingBag,
-  FiClock,
-  FiTruck,
-  FiCheckCircle,
-  FiChevronDown,
-  FiCalendar,
+  FiArrowLeft,
   FiMoreVertical,
-  FiEye,
+  FiPhone,
+  FiMail,
+  FiMapPin,
+  FiTrash2,
+  FiPackage,
+  FiCreditCard,
+  FiChevronRight,
+  FiX,
   FiPrinter,
   FiDownload,
-  FiTrash2
 } from "react-icons/fi";
+
+// PRINT + PDF: react-to-print handles the native browser print dialog,
+// html2canvas + jsPDF turn the same invoice into a downloadable PDF.
+import { useReactToPrint } from "react-to-print";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 
 import {
   getAllOrders,
   updateOrderStatus,
-  deleteOrder
+  updatePaymentStatus,
+  deleteOrder,
 } from "../../services/orderService";
 
 
 import {
   successToast,
-  errorToast
+  errorToast,
 } from "../../components/ui/Toast";
 
+import { getEffectivePrice } from "../../utils/helpers";
+
+// This 58mm invoice component already existed in the project
+// (components/invoice/Invoice58mm.jsx) but was never actually
+// rendered anywhere — that's why nothing showed up before.
+import Invoice58mm from "../../components/invoice/Invoice58mm";
 
 
 
 
-export default function Orders(){
+
+export default function OrderDetails(){
 
 
-const navigate = useNavigate();
+const {id}=useParams();
 
-const [deleteId,setDeleteId] = useState(null);
+const navigate=useNavigate();
 
-const [page, setPage] = useState(1);
+const menuRef = useRef(null);
 
-const ordersPerPage = 10;
+// Ref to the visible invoice block below — both print and PDF
+// download read directly from this DOM node.
+const invoiceRef = useRef(null);
 
+const [searchParams, setSearchParams] = useSearchParams();
 
+const [order,setOrder]=useState(null);
 
-const [orders,setOrders] =
-useState([]);
+const [loading,setLoading]=useState(true);
 
+const [menuOpen,setMenuOpen]=useState(false);
 
+const [deleteModal,setDeleteModal]=useState(false);
 
-const [loading,setLoading] =
-useState(true);
+const [deleting, setDeleting] = useState(false);
 
+const [showProductsModal, setShowProductsModal] = useState(false);
 
-
-const [search,setSearch] =
-useState("");
-
-
-
-const [menuOpen,setMenuOpen] =
-useState(null);
+const [downloading, setDownloading] = useState(false);
 
 
-
-const [filterOpen,setFilterOpen] =
-useState("");
-
-
-
-const [statusFilter,setStatusFilter] =
-useState("All Status");
+const handlePrint = useReactToPrint({
+  contentRef: invoiceRef,
+  documentTitle: `Invoice-${id || "Order"}`,
+});
 
 
+const handleDownloadPDF = async () => {
 
-const [paymentFilter,setPaymentFilter] =
-useState("Payment");
+  const element = invoiceRef.current;
 
+  if (!element) return;
 
+  try {
 
-const [dateFilter,setDateFilter] =
-useState("");
+    setDownloading(true);
 
+    const canvas = await html2canvas(element, {
+      scale: 3,
+      backgroundColor: "#ffffff",
+      useCORS: true,
+    });
 
+    const img = canvas.toDataURL("image/png");
 
+    const pdfHeight = canvas.height * 58 / canvas.width;
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: [58, pdfHeight],
+    });
+
+    pdf.addImage(img, "PNG", 0, 0, 58, pdfHeight);
+
+    pdf.save(`Invoice-${order?.id || id || "Order"}.pdf`);
+
+  } catch (error) {
+
+    console.log(error);
+
+    errorToast("PDF download failed");
+
+  } finally {
+
+    setDownloading(false);
+
+  }
+
+};
 
 
 useEffect(()=>{
 
-loadOrders();
+loadOrder();
+
+},[id]);
+
+
+// AUTO-TRIGGER: when this page is opened from the Orders list menu
+// with ?action=print or ?action=pdf, fire the matching action once
+// the order (and the invoice it renders) is ready. The short delay
+// gives Invoice58mm time to finish loading store settings and the
+// QR code before we screenshot/print it.
+useEffect(()=>{
+
+if(!order) return;
+
+const action = searchParams.get("action");
+
+if(!action) return;
+
+const timer = setTimeout(()=>{
+
+if(action==="print"){
+handlePrint();
+}
+
+if(action==="pdf"){
+handleDownloadPDF();
+}
+
+setSearchParams({}, {replace:true});
+
+},900);
+
+return ()=>clearTimeout(timer);
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+},[order]);
+
+
+useEffect(()=>{
+
+function handleClickOutside(event){
+
+if(
+menuRef.current &&
+!menuRef.current.contains(event.target)
+){
+
+setMenuOpen(false);
+
+}
+
+}
+
+document.addEventListener(
+"mousedown",
+handleClickOutside
+);
+
+document.addEventListener(
+"touchstart",
+handleClickOutside
+);
+
+return ()=>{
+
+document.removeEventListener(
+"mousedown",
+handleClickOutside
+);
+
+document.removeEventListener(
+"touchstart",
+handleClickOutside
+);
+
+};
 
 },[]);
 
 
 
-
-useEffect(() => {
-  setPage(1);
-}, [
-  search,
-  statusFilter,
-  paymentFilter,
-  dateFilter
-]);
-
-
-
-
-// FIX: previously this used a single shared `ref` for BOTH the
-// mobile card menu container AND the desktop table menu container.
-// Because both are always mounted in the DOM (just hidden with
-// CSS classes like `lg:hidden` / `hidden lg:block`), the ref ended
-// up pointing at whichever one rendered last — usually the desktop
-// version. So on mobile, `menuRef.current` did NOT point at the
-// menu that was actually open, `contains(e.target)` returned
-// false on every click (even clicks on the menu buttons), and
-// `setMenuOpen(null)` fired before the button's own onClick could
-// run. That's why View/Print/Download/Delete looked "dead".
-//
-// Fix: use a data-attribute + `closest()` check instead of a ref.
-// This works correctly no matter how many menu containers exist
-// in the DOM at once.
-useEffect(() => {
-
-  const handleClickOutside = (e) => {
-
-    if (!e.target.closest("[data-menu-container]")) {
-      setMenuOpen(null);
-    }
-
-  };
-
-  document.addEventListener(
-    "mousedown",
-    handleClickOutside
-  );
-
-  return () => {
-
-    document.removeEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-
-  };
-
-}, []);
-	
-
-
-const loadOrders = async()=>{
-
+async function loadOrder(){
 
 try{
 
 
-const data =
-await getAllOrders();
+const data=await getAllOrders();
 
 
-setOrders(data || []);
+const found=data.find(
+(item)=>item.id===id
+);
 
 
+setOrder(found);
 
-}catch(error){
+
+}
+
+catch(error){
 
 console.log(error);
 
@@ -184,9 +252,7 @@ setLoading(false);
 
 }
 
-
-};
-
+}
 
 
 
@@ -194,9 +260,7 @@ setLoading(false);
 
 
 
-const changeStatus =
-async(id,status)=>{
-
+async function changeStatus(status){
 
 try{
 
@@ -208,249 +272,108 @@ status
 
 
 
-setOrders(prev=>
+setOrder(prev=>({
 
-prev.map(order=>
-
-order.id===id
-
-?
-
-{
-...order,
+...prev,
 status
-}
 
-:
-
-order
-
-)
-
-);
-
-
-
-}catch(error){
-
-console.log(error);
-
-}
-
-
-};
-
-
-
-
-
-
-
-
-
-const removeOrder = async()=>{
-
-
-try{
-
-
-await deleteOrder(deleteId);
-
-
-
-setOrders(prev=>
-
-prev.filter(
-order=>order.id!==deleteId
-)
-
-);
-
+}));
 
 
 successToast(
-"Order deleted successfully"
+"Status updated"
 );
-
-
-
-setDeleteId(null);
-
 
 
 }
 
 catch(error){
 
+console.log(error);
 
 errorToast(
-"Delete failed"
+"Update failed"
 );
 
 
 }
 
+}
 
-};
 
 
+async function changePaymentStatus(status){
 
+try{
 
 
-
-
-
-
-const filteredOrders =
-
-orders.filter(order=>{
-
-
-
-const searchText =
-search.toLowerCase();
-
-
-
-
-const searchMatch =
-
-order.customerName
-?.toLowerCase()
-.includes(searchText)
-
-||
-
-order.email
-?.toLowerCase()
-.includes(searchText)
-
-||
-
-order.id
-?.toLowerCase()
-.includes(searchText);
-
-
-	
-
-
-const statusMatch =
-
-statusFilter==="All Status"
-
-?
-
-true
-
-:
-
-order.status===statusFilter;
-
-
-
-
-
-
-
-const paymentMatch =
-
-paymentFilter==="Payment"
-
-?
-
-true
-
-:
-
-paymentFilter==="Cash on Delivery"
-
-?
-
-order.paymentMethod==="COD"
-
-:
-
-order.paymentMethod===paymentFilter;
-
-
-
-
-
-
-
-
-const dateMatch =
-
-dateFilter===""
-
-?
-
-true
-
-:
-
-new Date(order.createdAt)
-.toISOString()
-.slice(0,10)
-
-===dateFilter;
-
-
-
-
-return(
-
-searchMatch &&
-statusMatch &&
-paymentMatch &&
-dateMatch
-
+await updatePaymentStatus(
+id,
+status
 );
 
 
-});
+
+setOrder(prev=>({
+
+...prev,
+
+paymentStatus:
+status
+
+}));
 
 
-
-
-const totalPages = Math.max(
-  1,
-  Math.ceil(filteredOrders.length / ordersPerPage)
+successToast(
+"Payment status updated"
 );
 
-const currentOrders = filteredOrders.slice(
-  (page - 1) * ordersPerPage,
-  page * ordersPerPage
+
+}
+
+catch(error){
+
+console.log(error);
+
+errorToast(
+"Payment update failed"
 );
-	
+
+}
+
+}
 
 
 
+async function removeOrder(){
 
-const totalOrders =
-orders.length;
+setDeleting(true);
 
+try{
 
+await deleteOrder(id);
 
-const pendingOrders =
-orders.filter(
-order=>order.status==="Pending"
-).length;
+successToast("Order deleted");
 
+navigate("/admin/orders");
 
+}
 
-const processingOrders =
-orders.filter(
-order=>order.status==="Processing"
-).length;
+catch(error){
 
+console.log(error);
 
+errorToast("Delete failed");
 
-const deliveredOrders =
-orders.filter(
-order=>order.status==="Delivered"
-).length;
+}
+
+finally{
+
+setDeleting(false);
+
+}
+
+}
 
 
 
@@ -460,7 +383,6 @@ order=>order.status==="Delivered"
 
 if(loading){
 
-
 return(
 
 <div className="
@@ -469,553 +391,269 @@ flex
 items-center
 justify-center
 font-bold
-text-gray-600
 ">
 
-Loading Orders...
+Loading Order...
 
 </div>
 
 );
 
-
 }
+
+
+
+
+
+
+if(!order){
 
 return(
 
 <div className="
-space-y-4
+min-h-screen
+flex
+items-center
+justify-center
+flex-col
+gap-4
+">
+
+
+<h2 className="
+font-bold
+text-xl
+">
+
+Order Not Found
+
+</h2>
+
+
+<button
+
+onClick={()=>navigate(-1)}
+
+className="
+px-4
+py-2
+bg-black
+text-white
+rounded-lg
+"
+
+>
+
+Back
+
+</button>
+
+
+</div>
+
+);
+
+}
+
+
+
+
+
+
+
+return(
+
+<div className="
 bg-[#faf9f6]
 min-h-screen
-p-3
-lg:p-6
+p-4
+space-y-3
 ">
+
+
+
 
 
 {/* HEADER */}
 
 <div
 className="
+relative
 flex
 items-center
 justify-center
-mb-4
+mb-2
 "
 >
 
-<h1
-className="
-text-2xl
-font-black
-text-slate-900
-"
->
+<button
 
-Orders
-
-</h1>
-
-</div>
-
-
-
-
-
-{/* STATS */}
-
-<div className="
-grid
-grid-cols-2
-lg:grid-cols-4
-gap-2
-">
-
-
-<StatCard
-
-icon={<FiShoppingBag size={18}/>}
-
-title="Total Orders"
-
-value={totalOrders}
-
-color="orange"
-
-/>
-
-
-
-<StatCard
-
-icon={<FiClock size={18}/>}
-
-title="Pending"
-
-value={pendingOrders}
-
-color="yellow"
-
-/>
-
-
-
-<StatCard
-
-icon={<FiTruck size={18}/>}
-
-title="Processing"
-
-value={processingOrders}
-
-color="blue"
-
-/>
-
-
-
-<StatCard
-
-icon={<FiCheckCircle size={18}/>}
-
-title="Delivered"
-
-value={deliveredOrders}
-
-color="green"
-
-/>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* SEARCH */}
-
-
-<div className="
-relative
-">
-
-
-<FiSearch
+onClick={()=>navigate(-1)}
 
 className="
 absolute
-left-4
-top-1/2
--translate-y-1/2
-text-gray-400
-"
-
-/>
-
-
-<input
-
-value={search}
-
-onChange={(e)=>
-setSearch(e.target.value)
-}
-
-placeholder="Search order ID or customer..."
-
-className="
-w-full
-h-12
-bg-white
-border
-border-gray-200
-rounded-xl
-pl-11
-pr-4
-text-sm
-outline-none
-shadow-sm
-focus:ring-2
-focus:ring-blue-100
-"
-
-/>
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* FILTER */}
-
-<div className="
-grid
-grid-cols-3
-gap-2
-">
-
-
-
-<DropdownFilter
-
-title={statusFilter}
-
-open={
-filterOpen==="status"
-}
-
-onClick={()=>setFilterOpen(
-filterOpen==="status"
-?
-""
-:
-"status"
-)}
-
->
-
-{
-
-[
-"All Status",
-"Pending",
-"Processing",
-"Delivered",
-"Cancelled"
-
-].map(item=>(
-
-<button
-
-key={item}
-
-onClick={()=>{
-
-setStatusFilter(item);
-setFilterOpen("");
-
-}}
-
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
-"
-
->
-
-{item}
-
-</button>
-
-))
-
-}
-
-</DropdownFilter>
-
-
-
-
-
-
-
-<DropdownFilter
-
-title={paymentFilter}
-
-open={
-filterOpen==="payment"
-}
-
-onClick={()=>setFilterOpen(
-filterOpen==="payment"
-?
-""
-:
-"payment"
-)}
-
->
-
-{
-
-[
-"Payment",
-"bKash",
-"Nagad",
-"Bank",
-"Cash on Delivery"
-
-].map(item=>(
-
-<button
-
-key={item}
-
-onClick={()=>{
-
-setPaymentFilter(item);
-setFilterOpen("");
-
-}}
-
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
-"
-
->
-
-{item}
-
-</button>
-
-))
-
-}
-
-
-</DropdownFilter>
-
-
-
-
-
-
-
-
-<div className="
-h-11
-bg-white
-border
-border-gray-200
-rounded-xl
-flex
-items-center
-px-3
-gap-2
-">
-
-
-<FiCalendar size={15}/>
-
-
-<input
-
-type="date"
-
-value={dateFilter}
-
-onChange={(e)=>
-setDateFilter(e.target.value)
-}
-
-className="
-w-full
-outline-none
-text-xs
-"
-
-/>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-	{/* ==========================
-        MOBILE ORDER CARD
-========================== */}
-
-<div className="
-lg:hidden
-space-y-3
-">
-
-{
-currentOrders.map(order=>(
-
-<div
-key={order.id}
-className="
+left-0
+w-10
+h-10
+rounded-full
 bg-white
 border
 border-gray-100
-rounded-lg
-px-3
-py-3
 shadow-sm
-relative
+flex
+items-center
+justify-center
 "
+
 >
 
+<FiArrowLeft size={22}/>
 
-{/* TOP ROW */}
+</button>
 
-<div className="
-flex
-justify-between
-items-center
-">
-
-<p className="
+<h1
+className="
 font-bold
-text-sm
-text-slate-900
-">
+text-lg
+"
+>
+Order Details
+</h1>
 
-#{order.id?.slice(0,8)}
-
-</p>
-
-
-<p className="
-text-xs
-text-gray-500
-">
-
-{
-new Date(order.createdAt)
-.toLocaleDateString()
-}
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-{/* CUSTOMER ROW */}
-
-<div className="
-mt-2
-flex
-justify-between
-items-center
+<div
+ref={menuRef}
+className="
+absolute
+right-0
 ">
 
 
-<div className="
-flex
-items-center
-gap-2
-">
+<button
 
-
-<img
-
-src={
-order.customerPhoto ||
-`https://ui-avatars.com/api/?name=${encodeURIComponent(
-order.customerName || "User"
-)}`
-}
+onClick={()=>setMenuOpen(!menuOpen)}
 
 className="
 w-9
 h-9
-rounded-full
-object-cover
+rounded-lg
+flex
+items-center
+justify-center
 "
 
-/>
+>
+
+<FiMoreVertical/>
+
+</button>
+
+
+
+{
+menuOpen &&
+
+<div className="
+absolute
+right-0
+top-10
+w-32
+bg-white
+border
+border-gray-100
+rounded-lg
+shadow-lg
+z-50
+">
+
+
+<button
+
+onClick={()=>{
+setMenuOpen(false);
+setDeleteModal(true);
+}}
+
+className="
+w-full
+flex
+items-center
+gap-2
+px-3
+py-2
+text-sm
+text-red-600
+"
+
+>
+
+<FiTrash2/>
+
+Delete
+
+</button>
+
+
+</div>
+
+}
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+{/* ORDER CARD */}
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+<div className="
+flex
+justify-between
+items-start
+">
 
 
 <div>
 
 
-<p className="
-text-sm
-font-semibold
-text-slate-800
-">
-
-{
-order.customerName || "Customer"
-}
-
-</p>
-
-
-<p className="
-text-[11px]
-text-gray-500
-">
-
-{
-order.email
-}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div className="
-text-right
-">
-
-
-<p className="
-text-sm
+<h2 className="
+text-2xl
 font-black
 text-slate-900
 ">
 
-৳ {order.total}
+#{order.id?.slice(0,10)}
 
-</p>
+</h2>
 
 
 <p className="
-text-[11px]
+text-xs
 text-gray-500
+mt-1
 ">
 
 {
-order.items?.length || 0
+new Date(order.createdAt)
+.toLocaleString()
 }
- Items
 
 </p>
 
@@ -1023,50 +661,18 @@ order.items?.length || 0
 </div>
 
 
-</div>
 
 
 
 
 
+<span className={`
 
-
-
-{/* BOTTOM ROW */}
-
-<div className="
-mt-3
-flex
-justify-between
-items-center
-">
-
-
-{/* STATUS */}
-
-<select
-
-value={
-order.status || "Pending"
-}
-
-onChange={(e)=>
-changeStatus(
-order.id,
-e.target.value
-)
-}
-
-
-className={`
-
-text-[11px]
+text-xs
 font-bold
 px-3
-py-1
+py-1.5
 rounded-full
-outline-none
-border-none
 
 
 ${
@@ -1080,7 +686,6 @@ order.status==="Delivered"
 order.status==="Processing"
 
 ?
-
 "bg-blue-100 text-blue-700"
 
 :
@@ -1088,7 +693,6 @@ order.status==="Processing"
 order.status==="Cancelled"
 
 ?
-
 "bg-red-100 text-red-700"
 
 :
@@ -1097,33 +701,15 @@ order.status==="Cancelled"
 
 }
 
-`}
+`}>
 
->
+{order.status}
 
-
-<option>
-Pending
-</option>
-
-<option>
-Processing
-</option>
-
-<option>
-Shipped
-</option>
-
-<option>
-Delivered
-</option>
-
-<option>
-Cancelled
-</option>
+</span>
 
 
-</select>
+
+</div>
 
 
 
@@ -1131,230 +717,240 @@ Cancelled
 
 
 
-{/* ACTION */}
+<hr className="
+my-4
+border-gray-100
+"/>
+
+  </div>
+
+
+
+
+{/* =========================
+    CUSTOMER
+========================= */}
 
 <div
-data-menu-container
-className="
-flex
-items-center
-gap-1
-relative
+  className="
+  bg-white
+  border
+  border-gray-100
+  rounded-lg
+  p-4
+  shadow-sm
 "
 >
 
+  <h3
+    className="
+    font-bold
+    text-sm
+    mb-3
+  "
+  >
+    Customer
+  </h3>
 
-<button
+  <div
+    className="
+    flex
+    justify-between
+    items-center
+  "
+  >
 
-onClick={()=>navigate(
-`/admin/orders/${order.id}`
-)}
+    <div
+      className="
+      flex
+      items-center
+      gap-3
+    "
+    >
 
-className="
-w-8
-h-8
-rounded-md
-bg-blue-50
-text-blue-600
-flex
-items-center
-justify-center
-"
+      <img
+        src={
+          order.customerPhoto ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            order.customerName || "User"
+          )}`
+        }
+        className="
+        w-12
+        h-12
+        rounded-full
+        object-cover
+        "
+      />
 
->
+      <div>
 
-<FiEye size={15}/>
+        <p
+          className="
+          font-bold
+          text-sm
+        "
+        >
+          {order.customerName}
+        </p>
 
-</button>
+        <p
+          className="
+          text-xs
+          text-gray-500
+        "
+        >
+          {order.email}
+        </p>
+
+        <p
+          className="
+          text-xs
+          text-gray-500
+          mt-1
+        "
+        >
+          {order.phone}
+        </p>
+
+        {
+          (order.orderSource==="Messenger" || order.orderSource==="WhatsApp") && (
+
+            <p
+              className="
+              text-xs
+              font-bold
+              text-amber-600
+              mt-1
+            "
+            >
+              {
+                order.orderSource==="Messenger"
+                ?
+                "Messenger Order"
+                :
+                "WhatsApp Order"
+              }
+            </p>
+
+          )
+        }
+
+      </div>
+
+    </div>
+
+    <div
+      className="
+      flex
+      gap-2
+    "
+    >
+
+      <a
+        href={`tel:${order.phone}`}
+        className="
+        w-9
+        h-9
+        rounded-lg
+        border
+        border-gray-100
+        bg-gray-50
+        flex
+        items-center
+        justify-center
+        "
+      >
+        <FiPhone size={16}/>
+      </a>
+
+      <a
+        href={`mailto:${order.email}`}
+        className="
+        w-9
+        h-9
+        rounded-lg
+        border
+        border-gray-100
+        bg-gray-50
+        flex
+        items-center
+        justify-center
+        "
+      >
+        <FiMail size={16}/>
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
 
 
+  {/* SHIPPING ADDRESS */}
 
-
-<div
-className="
-relative
-"
->
-
-<button
-
-onClick={(e)=>{
-
-e.stopPropagation();
-
-setMenuOpen(
-
-menuOpen===order.id
-
-?
-
-null
-
-:
-
-order.id
-
-);
-
-}}
-
-className="
-w-8
-h-8
-rounded-md
-bg-gray-100
-flex
-items-center
-justify-center
-"
-
->
-
-<FiMoreVertical size={16}/>
-
-</button>
-
-{
-menuOpen===order.id && (
-
-<div
-
-onClick={(e)=>e.stopPropagation()}
-
-className="
-absolute
-right-0
-bottom-10
-min-w-[180px]
+<div className="
 bg-white
 border
 border-gray-100
-shadow-lg
-rounded-md
-overflow-hidden
-z-50
-"
+rounded-lg
+p-4
+shadow-sm
+">
 
->
 
-<button
+<h3 className="
+font-bold
+text-sm
+mb-3
+">
 
-onClick={()=>{
-setMenuOpen(null);
-navigate(`/admin/orders/${order.id}`);
-}}
+Shipping Address
 
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
+</h3>
+
+
+
+<div className="
 flex
-items-center
-gap-2
-"
+gap-3
+text-sm
+text-gray-700
+">
 
->
 
-<FiEye size={14}/>
-
-<span>View</span>
-
-</button>
-
-<button
-
-onClick={()=>{
-setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=print`);
-}}
-
+<FiMapPin
 className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
-flex
-items-center
-gap-2
+mt-1
+text-gray-500
 "
+/>
 
->
 
-<FiPrinter size={14}/>
 
-<span>Print</span>
+<div className="space-y-2 text-sm text-gray-700">
 
-</button>
+  <p>
+    <strong>Address:</strong> {order.address || "-"}
+  </p>
 
-<button
+  <p>
+    <strong>Thana:</strong> {order.thana || "-"}
+  </p>
 
-onClick={()=>{
-setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=pdf`);
-}}
+  <p>
+    <strong>District:</strong> {order.district || "-"}
+  </p>
 
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
-flex
-items-center
-gap-2
-"
-
->
-
-<FiDownload size={14}/>
-
-<span>Download PDF</span>
-
-</button>
-
-<button
-
-onClick={()=>{
-setMenuOpen(null);
-setDeleteId(order.id);
-}}
-
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-text-red-600
-hover:bg-red-50
-flex
-items-center
-gap-2
-"
-
->
-
-<FiTrash2 size={14}/>
-
-<span>Delete</span>
-
-</button>
+  <p>
+    <strong>Notes:</strong> {order.notes || "-"}
+  </p>
 
 </div>
 
-)}
 
 </div>
-	
-
-</div>
-
 
 
 </div>
@@ -1363,185 +959,189 @@ gap-2
 
 
 
-</div>
 
 
-))
 
+
+{/* PAYMENT DETAILS */}
+
+{
+  order.paymentDetails &&
+  (order.paymentMethod === "bKash" || order.paymentMethod === "Nagad") &&
+
+  <div className="
+  bg-white
+  border
+  border-gray-100
+  rounded-lg
+  p-4
+  shadow-sm
+  ">
+
+
+  <h3 className="
+  font-bold
+  text-sm
+  mb-3
+  ">
+
+  Payment Details
+
+  </h3>
+
+
+
+  <div className="
+  flex
+  gap-3
+  text-sm
+  text-gray-700
+  ">
+
+
+  <FiCreditCard
+  className="
+  mt-1
+  text-gray-500
+  "
+  />
+
+
+
+  <div className="space-y-2 text-sm text-gray-700">
+
+    <p>
+      <strong>Payment with:</strong> {order.paymentMethod}
+    </p>
+
+    <p>
+      <strong>{order.paymentMethod} Number:</strong> {order.paymentDetails.accountNumber || "-"}
+    </p>
+
+    <p>
+      <strong>Transaction ID:</strong> {order.paymentDetails.transactionId || "-"}
+    </p>
+
+  </div>
+
+
+  </div>
+
+
+  </div>
 }
 
 
+
+{/* PRODUCTS */}
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+
+<div
+className="
+flex
+items-center
+justify-between
+mb-4
+"
+>
+
+  <div
+  className="
+  flex
+  items-center
+  gap-2
+  "
+  >
+
+    <FiPackage className="text-blue-600"/>
+
+    <h3
+    className="
+    font-bold
+    text-sm
+    "
+    >
+      Products
+    </h3>
+
+  </div>
+
+  <button
+  onClick={() => {
+
+  if ((order.items?.length || 0) === 1) {
+
+    navigate(
+      `/product/${
+        order.items[0].productId || order.items[0].id
+      }`
+    );
+
+  } else {
+
+    setShowProductsModal(true);
+
+  }
+
+}}
+  className="
+    text-xs
+    font-bold
+    text-amber-600
+  "
+>
+  View &gt;
+</button>
+
 </div>
 
 
 
-	{/* DESKTOP TABLE */}
+
+
+
 
 <div className="
-hidden
-lg:block
-bg-white
-rounded-xl
-border
-border-gray-100
-overflow-hidden
+space-y-3
 ">
-
-
-<table className="
-w-full
-">
-
-
-<thead className="
-bg-gray-50
-">
-
-
-<tr>
-
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-text-gray-500
-">
-
-Order ID
-
-</th>
-
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-text-gray-500
-">
-
-Customer
-
-</th>
-
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-text-gray-500
-">
-
-Date
-
-</th>
-
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-text-gray-500
-">
-
-Items
-
-</th>
-
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-text-gray-500
-">
-
-Amount
-
-</th>
-
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-text-gray-500
-">
-
-Status
-
-</th>
-
-
-<th className="
-px-5
-py-3
-text-left
-text-xs
-text-gray-500
-">
-
-Action
-
-</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-
-
-
-<tbody>
 
 
 {
 
-currentOrders.map(order=>(
+order.items?.map(
+
+(item,index)=>(
 
 
-<tr
+<div
 
-key={order.id}
+key={
+item.id || index
+}
 
 className="
-border-t
-hover:bg-gray-50
+flex
+items-center
+justify-between
+border-b
+border-gray-100
+pb-3
 "
+
 
 >
 
-
-<td className="
-px-5
-py-4
-text-sm
-font-bold
-">
-
-#{order.id?.slice(0,8)}
-
-</td>
-
-
-
-
-
-
-<td className="
-px-5
-py-4
-">
 
 
 <div className="
@@ -1552,112 +1152,293 @@ gap-3
 
 
 <img
-  src={
-    order.customerPhoto ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      order.customerName || "User"
-    )}`
-  }
-  alt={order.customerName || "Customer"}
-  className="
-    w-8
-    h-8
-    rounded-full
-    object-cover
-  "
-  onError={(e) => {
-    e.currentTarget.src =
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        order.customerName || "User"
-      )}`;
-  }}
+
+src={
+item.image ||
+"https://via.placeholder.com/60"
+}
+
+className="
+w-14
+h-14
+rounded-lg
+object-cover
+bg-gray-50
+"
+
 />
+
+
 
 
 <div>
 
 
-<p className="
+<h4 className="
 text-sm
+font-bold
+">
+
+{item.name}
+
+</h4>
+
+
+
+<p className="
+text-xs
+text-gray-500
+mt-1
+">
+
+{
+item.size &&
+`Size: ${item.size}`
+}
+
+
+{
+item.color &&
+` / Color: ${item.color}`
+}
+
+
+</p>
+
+
+<p className="
+text-xs
+text-gray-500
+">
+
+Qty: {item.quantity}
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+<div
+className="
+text-right
+"
+>
+
+  <p
+  className="
+  font-bold
+  text-sm
+  "
+  >
+    ৳ {getEffectivePrice(item) * item.quantity}
+  </p>
+
+</div>
+
+
+
+</div>
+
+
+)
+
+)
+
+
+}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* ORDER SUMMARY */}
+
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+
+<h3 className="
+font-bold
+text-sm
+mb-4
+">
+
+Order Summary
+
+</h3>
+
+
+
+
+<div className="
+space-y-3
+text-sm
+">
+
+
+
+<div className="
+flex
+justify-between
+">
+
+<span className="
+text-gray-500
+">
+
+Subtotal
+
+</span>
+
+
+<span className="
 font-semibold
 ">
 
-{order.customerName}
+৳ {order.subtotal || order.total}
 
-</p>
-
-
-<p className="
-text-xs
-text-gray-500
-">
-
-{order.email}
-
-</p>
+</span>
 
 
 </div>
 
 
-</div>
-
-
-</td>
 
 
 
 
 
+<div className="
+flex
+justify-between
+">
 
 
-<td className="
-px-5
-py-4
-text-xs
+<span className="
 text-gray-500
 ">
 
-{
-new Date(order.createdAt)
-.toLocaleDateString()
-}
+Shipping
 
-</td>
+</span>
 
 
-
-
-
-
-
-<td className="
-px-5
-py-4
-text-sm
+<span className="
+font-semibold
 ">
 
-{
-order.items?.length || 0
-}
+৳ {order.deliveryCharge || 0}
 
-</td>
+</span>
 
 
-
+</div>
 
 
 
-<td className="
-px-5
-py-4
-font-bold
-text-blue-600
+
+
+
+
+<div className="
+flex
+justify-between
 ">
+
+
+<span className="
+text-gray-500
+">
+
+Discount
+
+</span>
+
+
+<span className="
+font-semibold
+text-red-500
+">
+
+-৳ {order.discount || 0}
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+<hr className="
+border-gray-100
+"/>
+
+
+
+
+
+
+<div className="
+flex
+justify-between
+font-black
+text-base
+">
+
+
+<span>
+
+Total Amount
+
+</span>
+
+
+<span>
 
 ৳ {order.total}
 
-</td>
+</span>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
 
 
 
@@ -1665,10 +1446,251 @@ text-blue-600
 
 
 
-<td className="
-px-5
-py-4
+
+{/* INVOICE */}
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
 ">
+
+<h3 className="
+font-bold
+text-sm
+mb-3
+">
+
+Invoice
+
+</h3>
+
+<div className="
+flex
+gap-2
+mb-4
+">
+
+<button
+
+onClick={handlePrint}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-amber-500
+text-white
+font-bold
+text-sm
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<FiPrinter size={15}/>
+
+Print
+
+</button>
+
+<button
+
+onClick={handleDownloadPDF}
+
+disabled={downloading}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-emerald-600
+text-white
+font-bold
+text-sm
+flex
+items-center
+justify-center
+gap-2
+disabled:opacity-60
+"
+
+>
+
+<FiDownload size={15}/>
+
+{downloading ? "Preparing..." : "Download PDF"}
+
+</button>
+
+</div>
+
+{/* The invoice is rendered visibly (not hidden) so the admin
+    can actually see it on the page. The same DOM node is what
+    gets printed and what gets screenshotted into the PDF. */}
+
+<div className="
+border
+border-dashed
+border-gray-200
+rounded-lg
+bg-gray-50
+overflow-x-auto
+py-4
+flex
+justify-center
+">
+
+<div ref={invoiceRef}>
+
+<Invoice58mm order={order}/>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+{/* PAYMENT METHOD */}
+
+<div
+className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-5
+shadow-sm
+"
+>
+
+<div
+className="
+flex
+items-center
+gap-2
+mb-4
+"
+>
+
+<FiCreditCard className="text-green-600" />
+
+<h3 className="font-bold">
+Payment Method
+</h3>
+
+</div>
+
+<div
+className="
+flex
+items-center
+justify-between
+"
+>
+
+<div>
+
+<p className="font-semibold text-sm">
+{order.paymentMethod || "Cash On Delivery"}
+</p>
+
+<p className="text-xs text-gray-500 mt-1">
+Payment Status
+</p>
+
+</div>
+
+<select
+
+value={
+order.paymentStatus || "Pending"
+}
+
+onChange={(e)=>
+changePaymentStatus(
+e.target.value
+)
+}
+
+className={`
+px-3
+py-1.5
+rounded-lg
+text-xs
+font-bold
+outline-none
+
+${
+order.paymentStatus === "Paid"
+
+?
+
+"bg-green-100 text-green-700"
+
+:
+
+"bg-yellow-100 text-yellow-700"
+
+}
+
+`}
+
+>
+
+
+<option>
+Pending
+</option>
+
+
+<option>
+Paid
+</option>
+
+
+</select>
+
+</div>
+
+</div>
+
+  
+  {/* =========================
+    UPDATE STATUS
+========================= */}
+
+
+
+<div className="
+bg-white
+border
+border-gray-100
+rounded-lg
+p-4
+shadow-sm
+">
+
+
+<h3 className="
+font-bold
+text-sm
+mb-3
+">
+
+Update Order Status
+
+</h3>
+
 
 
 <select
@@ -1679,19 +1701,19 @@ order.status || "Pending"
 
 onChange={(e)=>
 changeStatus(
-order.id,
 e.target.value
 )
 }
 
 className={`
-
-text-xs
-font-bold
+w-full
+h-11
 px-3
-py-2
 rounded-lg
+text-sm
+font-bold
 outline-none
+
 
 ${
 order.status==="Delivered"
@@ -1731,27 +1753,33 @@ order.status==="Cancelled"
 Pending
 </option>
 
+
 <option>
 Processing
 </option>
 
+
 <option>
 Shipped
 </option>
-	
+
+
 <option>
 Delivered
 </option>
+
 
 <option>
 Cancelled
 </option>
 
 
+
 </select>
 
 
-</td>
+
+</div>
 
 
 
@@ -1759,330 +1787,43 @@ Cancelled
 
 
 
-
-<td className="
-px-5
-py-4
-">
+{/* DELETE BUTTON */}
 
 
-<div
-data-menu-container
-className="
-flex
-gap-2
-relative
-"
->
 
 <button
 
-onClick={()=>navigate(
-`/admin/orders/${order.id}`
-)}
+onClick={()=>setDeleteModal(true)}
 
 className="
-w-8
-h-8
+w-full
+h-11
 rounded-lg
-bg-blue-50
-text-blue-600
+bg-red-500
+text-white
+font-bold
+text-sm
 flex
 items-center
 justify-center
-"
-
->
-
-<FiEye size={15}/>
-
-</button>
-
-<button
-
-onClick={(e)=>{
-
-e.stopPropagation();
-
-setMenuOpen(
-
-menuOpen===order.id
-
-?
-
-null
-
-:
-
-order.id
-
-);
-
-}}
-
-className="
-w-8
-h-8
-rounded-lg
-bg-gray-50
-border
-flex
-items-center
-justify-center
-"
-
->
-
-<FiMoreVertical size={15}/>
-
-</button>
-
-{
-
-menuOpen===order.id && (
-
-<div
-
-onClick={(e)=>e.stopPropagation()}
-
-className="
-absolute
-right-0
-top-10
-min-w-[180px]
-bg-white
-border
-rounded-lg
-shadow-lg
-z-50
-overflow-hidden
-"
-
->
-
-<button
-
-onClick={()=>{
-setMenuOpen(null);
-navigate(`/admin/orders/${order.id}`);
-}}
-
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
-flex
-items-center
 gap-2
 "
 
 >
 
-<FiEye size={14}/>
 
-<span>View</span>
+<FiTrash2/>
 
-</button>
-
-<button
-
-onClick={()=>{
-setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=print`);
-}}
-
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
-flex
-items-center
-gap-2
-"
-
->
-
-<FiPrinter size={14}/>
-
-<span>Print</span>
+Delete Order
 
 </button>
 
-<button
-
-onClick={()=>{
-setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=pdf`);
-}}
-
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-hover:bg-gray-50
-flex
-items-center
-gap-2
-"
-
->
-
-<FiDownload size={14}/>
-
-<span>Download PDF</span>
-
-</button>
-
-<button
-
-onClick={()=>{
-setMenuOpen(null);
-setDeleteId(order.id);
-}}
-
-className="
-w-full
-text-left
-px-3
-py-2
-text-xs
-text-red-600
-hover:bg-red-50
-flex
-items-center
-gap-2
-"
-
->
-
-<FiTrash2 size={14}/>
-
-<span>Delete</span>
-
-</button>
-
-</div>
-
-)
-
-}
-
-</div>
-
-
-</td>
-
-
-
-
-
-</tr>
-
-
-))
-
-
-}
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-
-
-
-
-
-
-	{totalPages > 1 && (
-
-<div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-
-<button
-disabled={page===1}
-onClick={()=>setPage(page-1)}
-className="px-4 py-2 rounded-lg border disabled:opacity-40"
->
-Previous
-</button>
-
-{[...Array(totalPages)].map((_, index) => {
-
-const pageNumber = index + 1;
-
-const showPage =
-pageNumber === 1 ||
-pageNumber === totalPages ||
-Math.abs(pageNumber - page) <= 1;
-
-const showDots =
-(pageNumber === 2 && page > 4) ||
-(pageNumber === totalPages - 1 && page < totalPages - 3);
-
-if (showDots) {
-return (
-<span key={pageNumber} className="px-2">
-...
-</span>
-);
-}
-
-if (!showPage) return null;
-
-return (
-<button
-key={pageNumber}
-onClick={() => setPage(pageNumber)}
-className={`w-10 h-10 rounded-lg font-bold ${
-page === pageNumber
-? "bg-amber-500 text-white"
-: "bg-white border border-gray-200"
-}`}
->
-{pageNumber}
-</button>
-);
-
-})}
-
-<button
-disabled={page===totalPages}
-onClick={()=>setPage(page+1)}
-className="px-4 py-2 rounded-lg border disabled:opacity-40"
->
-Next
-</button>
-
-</div>
-
-)}
-
-
-
-
-
-	
 
 
 {
-deleteId && (
+deleteModal && (
 
 <div
-
 className="
 fixed
 inset-0
@@ -2090,317 +1831,188 @@ bg-black/40
 flex
 items-center
 justify-center
-z-[100]
+z-[999]
 "
-
 >
 
-
 <div
-
 className="
 bg-white
 rounded-xl
-p-5
-w-[300px]
+p-6
+w-[90%]
+max-w-sm
 shadow-xl
 "
-
 >
 
-
-<h3
-
+<h2
 className="
-font-black
 text-lg
-text-slate-900
+font-bold
+text-center
 "
-
 >
-Delete Order?
-</h3>
-
-
+Delete Order
+</h2>
 
 <p
-
 className="
 text-sm
 text-gray-500
-mt-2
+text-center
+mt-3
 "
-
 >
-Are you sure you want to delete?
+Are you sure you want to delete this order?
 </p>
 
-
-
-
 <div
-
 className="
 flex
 gap-3
-mt-5
+mt-6
 "
-
 >
-
 
 <button
 
-onClick={()=>setDeleteId(null)}
+onClick={()=>setDeleteModal(false)}
 
 className="
 flex-1
-h-10
+h-11
 rounded-lg
-bg-gray-200
-font-bold
-text-sm
+border
+border-gray-300
+font-semibold
 "
-
 >
+
 No
+
 </button>
-
-
-
-
 
 <button
 
-onClick={removeOrder}
+disabled={deleting}
+
+onClick={async()=>{
+
+setDeleteModal(false);
+
+await removeOrder();
+
+}}
 
 className="
 flex-1
-h-10
+h-11
 rounded-lg
-bg-red-500
+bg-red-600
 text-white
-font-bold
-text-sm
+font-semibold
+disabled:opacity-50
 "
 
 >
-Yes
+
+{deleting ? "Deleting..." : "Yes"}
+
 </button>
 
-
-
 </div>
 
-
 </div>
-
 
 </div>
 
 )
 }
 
+
+
+
+  {showProductsModal && (
+  <div className="fixed inset-0 z-[999] bg-black/40 flex items-end">
+    <div className="bg-white w-full rounded-t-3xl max-h-[80vh] flex flex-col">
+      
+      <div
+  className="
+    flex-1
+    overflow-y-auto
+    p-5
+    pb-[calc(8rem+env(safe-area-inset-bottom))]
+  "
+>
+
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-lg font-bold">
+            Order Products
+          </h2>
+
+          <button
+            onClick={() => setShowProductsModal(false)}
+          >
+            <FiX size={22}/>
+          </button>
+        </div>
+
+        <div className="space-y-3">
+
+          {order.items?.map((item,index)=>(
+
+            <button
+              key={item.id || index}
+              onClick={()=>{
+                setShowProductsModal(false);
+                navigate(`/product/${item.id}`);
+              }}
+              className="w-full flex items-center justify-between border rounded-xl p-3"
+            >
+
+              <div className="flex items-center gap-3">
+
+                <img
+                  src={item.image}
+                  className="w-14 h-14 rounded-lg object-cover"
+                />
+
+                <div className="text-left">
+
+                  <p className="font-bold">
+                    {item.name}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    Qty : {item.quantity}
+                  </p>
+
+                </div>
+
+              </div>
+
+              <FiChevronRight/>
+
+            </button>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
+
+
+  
 
 </div>
 
 );
 
-
-}
-
-
-
-
-
-
-
-
-// ======================
-// STAT CARD
-// ======================
-
-
-function StatCard({
-icon,
-title,
-value,
-color
-}){
-
-
-const colors={
-
-orange:
-"bg-orange-50 text-orange-500",
-
-yellow:
-"bg-yellow-50 text-yellow-500",
-
-blue:
-"bg-blue-50 text-blue-500",
-
-green:
-"bg-green-50 text-green-500"
-
-};
-
-
-
-return(
-
-<div className="
-bg-white
-border
-border-gray-100
-rounded-xl
-px-3
-py-3
-flex
-items-center
-gap-3
-">
-
-
-<div className={`
-w-9
-h-9
-rounded-lg
-flex
-items-center
-justify-center
-${colors[color]}
-`}>
-
-{icon}
-
-</div>
-
-
-
-<div>
-
-<p className="
-text-[11px]
-text-gray-500
-">
-
-{title}
-
-</p>
-
-
-<h2 className="
-text-lg
-font-black
-text-slate-900
-">
-
-{value}
-
-</h2>
-
-
-</div>
-
-
-</div>
-
-
-)
-
-}
-
-
-
-
-
-
-
-// ======================
-// DROPDOWN FILTER
-// ======================
-
-
-function DropdownFilter({
-title,
-open,
-onClick,
-children
-}){
-
-
-return(
-
-<div className="
-relative
-">
-
-
-<button
-
-onClick={onClick}
-
-className="
-w-full
-h-11
-bg-white
-border
-border-gray-200
-rounded-xl
-px-3
-flex
-items-center
-justify-between
-text-xs
-font-semibold
-text-slate-700
-"
-
->
-
-{title}
-
-<FiChevronDown size={14}/>
-
-
-</button>
-
-
-
-
-
-{
-
-open &&
-
-
-<div className="
-absolute
-top-12
-left-0
-right-0
-bg-white
-border
-rounded-xl
-shadow-lg
-z-50
-overflow-hidden
-">
-
-{children}
-
-</div>
-
-
-}
-
-
-	
-
-</div>
-
-
-)
 
 }
