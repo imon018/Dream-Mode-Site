@@ -27,11 +27,12 @@ import {
   FiDownload,
 } from "react-icons/fi";
 
-// PRINT + PDF: react-to-print handles the native browser print dialog,
-// html2canvas + jsPDF turn the same invoice into a downloadable PDF.
+// PRINT + PDF: react-to-print handles the native browser print dialog.
+// The PDF itself is drawn directly (no DOM screenshot) by the shared
+// generateInvoicePdf helper, so it can never come out with
+// overlapping/cut-off text the way an html2canvas screenshot could.
 import { useReactToPrint } from "react-to-print";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { generateInvoicePdf } from "../../components/invoice/generateInvoicePdf";
 
 
 import {
@@ -96,44 +97,13 @@ const handlePrint = useReactToPrint({
 
 const handleDownloadPDF = async () => {
 
-  const element = invoiceRef.current;
-
-  if (!element) return;
+  if (!order) return;
 
   try {
 
     setDownloading(true);
 
-    // IMPORTANT: html2canvas paints whatever the browser has rendered
-    // *at this exact moment*. If the custom web fonts (Playfair Display
-    // for headings, Dancing Script for "Thank You!") haven't finished
-    // downloading yet, it silently falls back to a system font — which
-    // is exactly why the downloaded PDF looked different from the
-    // invoice shown on screen. Waiting for document.fonts.ready makes
-    // sure every font is fully loaded and applied before we screenshot.
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-
-    const canvas = await html2canvas(element, {
-      scale: 3,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-    });
-
-    const img = canvas.toDataURL("image/png");
-
-    const pdfHeight = canvas.height * 58 / canvas.width;
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: [58, pdfHeight],
-    });
-
-    pdf.addImage(img, "PNG", 0, 0, 58, pdfHeight);
-
-    pdf.save(`Invoice-${order?.id || id || "Order"}.pdf`);
+    await generateInvoicePdf(order);
 
   } catch (error) {
 
