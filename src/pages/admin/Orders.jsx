@@ -27,7 +27,8 @@ import {
 import {
   getAllOrders,
   updateOrderStatus,
-  deleteOrder
+  deleteOrder,
+  sendToSteadfast
 } from "../../services/orderService";
 
 
@@ -205,6 +206,32 @@ await updateOrderStatus(
 id,
 status
 );
+
+
+
+	if (status === "Processing") {
+  const order = orders.find((o) => o.id === id);
+
+  if (order) {
+    try {
+      await sendToSteadfast({
+        invoice: order.id,
+        recipient_name: order.customerName,
+        recipient_phone: order.phone,
+        recipient_address: `${order.address}, ${order.thana}, ${order.district}`,
+        cod_amount: order.total,
+        note: order.notes || "",
+      });
+
+      successToast("Steadfast order created");
+    } catch (err) {
+      errorToast(err.message);
+    }
+  }
+}
+
+
+	
 
 
 
