@@ -22,7 +22,11 @@ import {
 } from "../utils/notificationHelper";
 
 
+import axios from "axios";
 
+
+const STEADFAST_URL =
+  "https://portal.packzy.com/api/v1/create_order";
 
 
 const orderRef =
@@ -53,6 +57,38 @@ async(order)=>{
     orderRef,
     order
   );
+
+
+  try {
+
+  await axios.post(
+    STEADFAST_URL,
+    {
+      invoice: docRef.id,
+      recipient_name: order.customerName,
+      recipient_phone: order.phone,
+      recipient_address:
+        `${order.address}, ${order.thana}, ${order.district}`,
+      cod_amount: order.total,
+      note: order.notes || "",
+    },
+    {
+      headers: {
+        "Api-Key": import.meta.env.VITE_STEADFAST_API_KEY,
+        "Secret-Key": import.meta.env.VITE_STEADFAST_SECRET_KEY,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+} catch (err) {
+
+  console.error(
+    "Steadfast Order Failed:",
+    err.response?.data || err.message
+  );
+
+}
 
 
 
