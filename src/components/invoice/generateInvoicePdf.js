@@ -3,14 +3,25 @@ import QRCode from "qrcode";
 
 import { getSettings } from "../../services/settingsService";
 
-const BENGALI_FONT_URL =
-  "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts/hinted/ttf/NotoSansBengali/NotoSansBengali-Regular.ttf";
+// A few mirrors for each font, tried in order until one works. Having
+// more than one source matters: a single wrong/unreachable URL should
+// never silently take down Bengali text or the Thank You script font.
+const BENGALI_FONT_URLS = [
+  "https://raw.githubusercontent.com/openmaptiles/fonts/master/noto-sans/NotoSansBengali-Regular.ttf",
+  "https://cdn.jsdelivr.net/gh/openmaptiles/fonts@master/noto-sans/NotoSansBengali-Regular.ttf",
+];
+
+const SCRIPT_FONT_URLS = [
+  "https://raw.githubusercontent.com/tetsuo55/external-google-fonts-dancing-script-/master/DancingScript-Bold.ttf",
+  "https://cdn.jsdelivr.net/gh/tetsuo55/external-google-fonts-dancing-script-@master/DancingScript-Bold.ttf",
+];
 
 const BENGALI_RANGE = /[\u0980-\u09FF]/;
 
-// The Bengali font file is fetched once per page load and cached here,
-// so repeated PDF downloads don't re-download it every time.
+// Each font's fetched bytes are cached (per page load) so repeated
+// PDF downloads don't re-fetch every time.
 let bengaliFontBase64Promise = null;
+let scriptFontBase64Promise = null;
 
 function arrayBufferToBase64(buffer) {
 
@@ -32,20 +43,42 @@ function arrayBufferToBase64(buffer) {
 
 }
 
+// Tries each URL in order and resolves with the first successful
+// font's base64 bytes, or null if every mirror fails.
+async function fetchFirstAvailableFont(urls) {
+
+  for (const url of urls) {
+
+    try {
+
+      const res = await fetch(url);
+
+      if (!res.ok) continue;
+
+      const buf = await res.arrayBuffer();
+
+      if (!buf || buf.byteLength < 1000) continue; // sanity check
+
+      return arrayBufferToBase64(buf);
+
+    } catch (e) {
+
+      // try the next mirror
+
+    }
+
+  }
+
+  return null;
+
+}
+
 // Registers the Bengali font on the given jsPDF doc instance.
 // Returns true if the font is available to use on this doc.
 async function ensureBengaliFont(doc) {
 
   if (!bengaliFontBase64Promise) {
-
-    bengaliFontBase64Promise = fetch(BENGALI_FONT_URL)
-      .then((res) => {
-        if (!res.ok) throw new Error("font fetch failed");
-        return res.arrayBuffer();
-      })
-      .then((buf) => arrayBufferToBase64(buf))
-      .catch(() => null);
-
+    bengaliFontBase64Promise = fetchFirstAvailableFont(BENGALI_FONT_URLS);
   }
 
   const base64 = await bengaliFontBase64Promise;
@@ -67,9 +100,38 @@ async function ensureBengaliFont(doc) {
 
 }
 
+// Registers the Dancing Script font (used for the "Thank You!" line)
+// on the given jsPDF doc instance. Returns true if available.
+async function ensureScriptFont(doc) {
+
+  if (!scriptFontBase64Promise) {
+    scriptFontBase64Promise = fetchFirstAvailableFont(SCRIPT_FONT_URLS);
+  }
+
+  const base64 = await scriptFontBase64Promise;
+
+  if (!base64) return false;
+
+  try {
+
+    doc.addFileToVFS("DancingScript-Bold.ttf", base64);
+    doc.addFont("DancingScript-Bold.ttf", "DancingScript", "bold");
+
+    return true;
+
+  } catch (e) {
+
+    return false;
+
+  }
+
+}
+
 // Picks the right font for a piece of text (Bengali script needs the
-// embedded Noto font since jsPDF's built-in fonts can't render it),
-// falling back to the requested Latin font/style otherwise.
+// embedded Noto font since jsPDF's built-in fonts can't render it —
+// this also covers the Bengali Taka sign "৳", which lives in the same
+// Unicode block), falling back to the requested Latin font/style
+// otherwise.
 function setSmartFont(doc, text, bengaliLoaded, family, style) {
 
   if (bengaliLoaded && BENGALI_RANGE.test(String(text))) {
@@ -170,7 +232,7 @@ function drawBadge(doc, text, rightX, y, color) {
 // throwaway doc) and to do the *real* render (on the correctly-sized
 // final doc) — it must be side-effect-free with respect to anything
 // other than the doc it's given.
-function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliLoaded }) {
+function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliLoaded, scriptLoaded }) {
 
   const pageWidth = 58;
   const marginX = 4;
@@ -206,7 +268,7 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   doc.text("Dress Your Dream, Live Your Style", headerTextX, y + 8, { align: headerAlign });
   doc.setTextColor(0, 0, 0);
 
-  y += 13;
+  y += 10.5;
 
   // ---- INVOICE / MEMO BAR ----
 
@@ -234,7 +296,7 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   doc.setFontSize(8);
 
   const infoRow = (label, value) => {
-    doc.setFont("helvetica", "normal");
+    setSmartFont(doc, value, bengaliLoaded, "helvetica", "normal");
     doc.text(label, marginX, y);
     doc.text(String(value), rightX, y, { align: "right" });
     y += 4.4;
@@ -250,12 +312,14 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
     order.createdAt ? new Date(order.createdAt).toLocaleString() : "-"
   );
 
+  doc.setFont("helvetica", "normal");
   doc.text("Status", marginX, y);
   drawBadge(doc, "Confirmed", rightX, y, [34, 197, 94]);
   y += 4.4;
 
   infoRow("Payment Method", order.paymentMethod || "Cash On Delivery");
 
+  doc.setFont("helvetica", "normal");
   doc.text("Payment Status", marginX, y);
   drawBadge(
     doc,
@@ -345,12 +409,13 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
       doc.text(line, marginX, y + idx * 3.4);
     });
 
-    const price =
-      (item.offerPrice || item.price || 0) * (item.quantity || 1);
+    const priceText = `\u09F3${(item.offerPrice || item.price || 0) * (item.quantity || 1)}`;
 
     doc.setFont("helvetica", "normal");
     doc.text(String(item.quantity ?? "-"), qtyX, y, { align: "center" });
-    doc.text(`\u09F3${price}`, priceRightX, y, { align: "right" });
+
+    setSmartFont(doc, priceText, bengaliLoaded, "helvetica", "normal");
+    doc.text(priceText, priceRightX, y, { align: "right" });
 
     y += nameLines.length * 3.4;
 
@@ -378,7 +443,6 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
   // ---- SUMMARY ----
 
-  doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
 
   infoRow("Subtotal", `\u09F3 ${order.subtotal || order.total || 0}`);
@@ -395,10 +459,15 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
   // ---- TOTAL ----
 
+  const totalText = `\u09F3 ${order.total ?? 0}`;
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.text("TOTAL", marginX, y);
-  doc.text(`\u09F3 ${order.total ?? 0}`, rightX, y, { align: "right" });
+
+  setSmartFont(doc, totalText, bengaliLoaded, "helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text(totalText, rightX, y, { align: "right" });
   y += 3;
 
   doc.setDrawColor(210, 210, 210);
@@ -434,8 +503,14 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   const qrX = rightX - qrSize;
   const qrY = y;
 
-  doc.setFont("times", "bolditalic");
-  doc.setFontSize(13);
+  if (scriptLoaded) {
+    doc.setFont("DancingScript", "bold");
+    doc.setFontSize(17);
+  } else {
+    doc.setFont("times", "bolditalic");
+    doc.setFontSize(13);
+  }
+
   doc.text("Thank You!", marginX, y + 5);
 
   const thankWidth = doc.getTextWidth("Thank You! ");
@@ -496,7 +571,10 @@ export async function generateInvoicePdf(order) {
     format: [58, 400],
   });
 
-  const bengaliLoaded = await ensureBengaliFont(measureDoc);
+  const [bengaliLoaded, scriptLoaded] = await Promise.all([
+    ensureBengaliFont(measureDoc),
+    ensureScriptFont(measureDoc),
+  ]);
 
   const finalHeight = renderInvoiceContent(measureDoc, {
     order,
@@ -504,6 +582,7 @@ export async function generateInvoicePdf(order) {
     qrCode,
     logoData,
     bengaliLoaded,
+    scriptLoaded,
   });
 
   const doc = new jsPDF({
@@ -516,12 +595,17 @@ export async function generateInvoicePdf(order) {
     await ensureBengaliFont(doc);
   }
 
+  if (scriptLoaded) {
+    await ensureScriptFont(doc);
+  }
+
   renderInvoiceContent(doc, {
     order,
     settings,
     qrCode,
     logoData,
     bengaliLoaded,
+    scriptLoaded,
   });
 
   doc.save(`Invoice-${order?.id || "Order"}.pdf`);
