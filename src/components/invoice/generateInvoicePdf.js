@@ -7,8 +7,9 @@ import { getSettings } from "../../services/settingsService";
 // more than one source matters: a single wrong/unreachable URL should
 // never silently take down Bengali text or the Thank You script font.
 const BENGALI_FONT_URLS = [
+  "https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansBengali/NotoSansBengali-Regular.ttf",
+  "https://cdn.jsdelivr.net/gh/notofonts/noto-fonts@main/hinted/ttf/NotoSansBengali/NotoSansBengali-Regular.ttf",
   "https://raw.githubusercontent.com/openmaptiles/fonts/master/noto-sans/NotoSansBengali-Regular.ttf",
-  "https://cdn.jsdelivr.net/gh/openmaptiles/fonts@master/noto-sans/NotoSansBengali-Regular.ttf",
 ];
 
 const SCRIPT_FONT_URLS = [
@@ -296,8 +297,9 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   doc.setFontSize(8);
 
   const infoRow = (label, value) => {
-    setSmartFont(doc, value, bengaliLoaded, "helvetica", "normal");
+    doc.setFont("helvetica", "normal");
     doc.text(label, marginX, y);
+    setSmartFont(doc, value, bengaliLoaded, "helvetica", "normal");
     doc.text(String(value), rightX, y, { align: "right" });
     y += 4.4;
   };
