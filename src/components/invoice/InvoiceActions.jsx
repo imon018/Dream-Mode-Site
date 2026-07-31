@@ -109,7 +109,10 @@ export default function InvoiceActions({ order }) {
         style={{
           position: "fixed",
           top: 0,
-          left: "-9999px",
+          left: 0,
+          width: 0,
+          height: 0,
+          overflow: "hidden",
           zIndex: -1,
         }}
       >
