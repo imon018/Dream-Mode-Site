@@ -7,17 +7,28 @@ export default async function handler(req, res) {
   }
 
   try {
+    // ✅ Test Mode
+    console.log("Steadfast Payload:", req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "Test Successful",
+    });
+
+    /*
+    // ===========================
+    // Production Mode
+    // ===========================
+
     const response = await fetch(
       "https://portal.packzy.com/api/v1/create_order",
       {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
           "Api-Key": process.env.STEADFAST_API_KEY,
           "Secret-Key": process.env.STEADFAST_SECRET_KEY,
         },
-
         body: JSON.stringify(req.body),
       }
     );
@@ -25,6 +36,8 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     return res.status(200).json(data);
+    */
+
   } catch (err) {
     return res.status(500).json({
       success: false,
