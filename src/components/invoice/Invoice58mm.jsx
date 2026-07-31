@@ -16,7 +16,7 @@ if (typeof document !== "undefined" && !document.getElementById("dm-thankyou-fon
 export default function Invoice58mm({ order }) {
 
   const [settings, setSettings] = useState({
-    storeName: "Dream Mode",
+    storeName: "",
     logoUrl: "",
     phone: "",
     facebook: "",
@@ -74,7 +74,7 @@ export default function Invoice58mm({ order }) {
             {/* LOGO */}
 
       {settings.logoUrl && (
-        <div className="flex justify-center mb-0.5">
+        <div className="flex justify-center mb-0">
           <img
             src={settings.logoUrl}
             alt={settings.storeName}
