@@ -73,25 +73,26 @@ export default function Invoice58mm({ order }) {
 
             {/* LOGO + STORE */}
 
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-1.5">
 
         {settings.logoUrl && (
           <img
             src={settings.logoUrl}
             alt={settings.storeName}
-            className="w-12 h-12 object-contain shrink-0"
+            className="w-11 h-11 object-contain shrink-0"
           />
         )}
 
-        <div className="text-left">
+        <div className="text-left min-w-0 flex-1">
 
           <h1
             className="
-            text-[18px]
+            text-[17px]
             font-black
             tracking-wide
             uppercase
             leading-tight
+            whitespace-nowrap
             "
           >
             {settings.storeName}
@@ -99,8 +100,11 @@ export default function Invoice58mm({ order }) {
 
           <p
             className="
-            text-[10px]
+            text-[8px]
             text-gray-600
+            whitespace-nowrap
+            overflow-hidden
+            text-ellipsis
             "
           >
             Dress Your Dream, Live Your Style
@@ -238,6 +242,8 @@ export default function Invoice58mm({ order }) {
 
           <span>
             {order.address}
+            {order.thana ? `, ${order.thana}` : ""}
+            {order.district ? `, ${order.district}` : ""}
           </span>
 
         </div>
@@ -395,7 +401,7 @@ export default function Invoice58mm({ order }) {
 
         {settings.phone && (
           <p>
-            Phone: {settings.phone}
+            Contact Us: {settings.phone}
           </p>
         )}
 
