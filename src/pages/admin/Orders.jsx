@@ -1,6 +1,7 @@
 import {
   useEffect,
-  useState
+  useState,
+  useRef
 } from "react";
 
 import {
@@ -47,6 +48,7 @@ const navigate = useNavigate();
 
 const [deleteId,setDeleteId] = useState(null);
 
+const menuRef = useRef(null);
 
 const [page, setPage] = useState(1);
 
@@ -116,16 +118,32 @@ useEffect(() => {
 
 
 
+
 useEffect(() => {
 
-  const closeMenu = () => {
-    setMenuOpen(null);
+  const handleClickOutside = (e) => {
+
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(e.target)
+    ) {
+      setMenuOpen(null);
+    }
+
   };
 
-  document.addEventListener("mousedown", closeMenu);
+  document.addEventListener(
+    "mousedown",
+    handleClickOutside
+  );
 
   return () => {
-    document.removeEventListener("mousedown", closeMenu);
+
+    document.removeEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
   };
 
 }, []);
@@ -1141,6 +1159,7 @@ justify-center
 
 
 <div
+ref={menuOpen===order.id ? menuRef : null}
 className="
 relative
 "
@@ -1257,7 +1276,7 @@ gap-2
 
 <FiPrinter size={14}/>
 
-<span>Print (58mm)</span>
+<span>Print</span>
 
 </button>
 
@@ -1737,6 +1756,7 @@ py-4
 
 
 <div
+ref={menuOpen===order.id ? menuRef : null}
 className="
 flex
 gap-2
@@ -1879,7 +1899,7 @@ gap-2
 
 <FiPrinter size={14}/>
 
-<span>Print (58mm)</span>
+<span>Print</span>
 
 </button>
 
