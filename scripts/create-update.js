@@ -75,3 +75,4 @@ execSync(
 );
 
 console.log("Update package ready:", appVersion);
+
