@@ -1,12 +1,15 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
 import { APP_VERSION } from "./appVersion";
+import { pushDebugLog } from "./debugOverlay";
 
 
 const VERSION_FILE = "updates/applied-version.json";
 
 
 export async function getAppliedVersion() {
+
+  pushDebugLog("getAppliedVersion: APP_VERSION (baked in APK)=" + APP_VERSION);
 
   try {
 
@@ -19,6 +22,7 @@ export async function getAppliedVersion() {
     const parsed = JSON.parse(result.data);
 
     if (parsed && parsed.version) {
+      pushDebugLog("getAppliedVersion: found applied-version.json=" + parsed.version);
       return parsed.version;
     }
 
@@ -28,6 +32,7 @@ export async function getAppliedVersion() {
 
     // No applied-update record yet, this is the version baked
     // into the installed APK itself.
+    pushDebugLog("getAppliedVersion: no applied-version.json, using APP_VERSION");
     return APP_VERSION;
   }
 }
