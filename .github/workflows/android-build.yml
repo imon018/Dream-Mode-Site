@@ -110,6 +110,20 @@ jobs:
           -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
 
 
+      - name: Strip Unnecessary Assets Before Android Sync
+        run: |
+          # public/downloads (direct-download APK) and public/updates (OTA package)
+          # get copied verbatim into dist/ by Vite, and then npx cap sync copies all
+          # of dist/ into the Android app's assets. Embedding an already-compressed
+          # ~19MB APK plus the OTA zip inside the outer APK barely compresses further,
+          # so it was inflating every build by that same amount. Neither folder is
+          # needed inside the app itself (the website serves them separately, and OTA
+          # updates are fetched over the network at runtime), so we drop them here,
+          # after the build/OTA-package steps and before Capacitor syncs the assets.
+          rm -rf dist/downloads
+          rm -rf dist/updates
+
+
       - name: Sync Capacitor
         run: npx cap sync android
 
