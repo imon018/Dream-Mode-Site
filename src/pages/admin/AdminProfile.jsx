@@ -11,7 +11,8 @@ import {
 } from "react-router-dom";
 
 import {
-  uploadImages
+  uploadImages,
+  deleteImageFromCloudinary
 } from "../../services/uploadService";
 
 import {
@@ -88,6 +89,10 @@ export default function AdminProfile(){
 
 
 
+      const oldPhotoPublicId =
+      user?.photoPublicId;
+
+
       const uploaded =
       await uploadImages([
         file
@@ -97,6 +102,9 @@ export default function AdminProfile(){
 
       const photoURL =
       uploaded[0].imageUrl;
+
+      const photoPublicId =
+      uploaded[0].publicId;
 
 
 
@@ -109,10 +117,31 @@ export default function AdminProfile(){
         ),
 
         {
-          photoURL
+          photoURL,
+          photoPublicId
         }
 
       );
+
+
+      if(oldPhotoPublicId){
+
+        try{
+
+          await deleteImageFromCloudinary(
+            oldPhotoPublicId
+          );
+
+        }catch(err){
+
+          console.log(
+            "Old photo delete failed",
+            err
+          );
+
+        }
+
+      }
 
 
 
