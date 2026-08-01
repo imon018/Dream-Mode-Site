@@ -10,6 +10,7 @@ import {
 
 import {
   uploadSingleImage,
+  deleteImageFromCloudinary,
 } from "../../services/uploadService";
 
 import {
@@ -100,6 +101,8 @@ export default function Categories() {
 
       let imageUrl="";
 
+      let imagePublicId="";
+
       if(image){
 
         const uploaded=
@@ -108,9 +111,17 @@ export default function Categories() {
         imageUrl=
         uploaded.imageUrl;
 
+        imagePublicId=
+        uploaded.publicId;
+
       }
 
       if(editingId){
+
+        const oldCategory =
+        categories.find(
+          c=>c.id===editingId
+        );
 
         await updateCategory(
 
@@ -121,12 +132,35 @@ export default function Categories() {
             name,
 
             ...(imageUrl && {
-              imageUrl
+              imageUrl,
+              imagePublicId,
             }),
 
           }
 
         );
+
+        if(
+          imageUrl &&
+          oldCategory?.imagePublicId
+        ){
+
+          try{
+
+            await deleteImageFromCloudinary(
+              oldCategory.imagePublicId
+            );
+
+          }catch(err){
+
+            console.log(
+              "Old category image delete failed",
+              err
+            );
+
+          }
+
+        }
 
         successToast(
           "Category updated."
@@ -141,6 +175,8 @@ export default function Categories() {
           name,
 
           imageUrl,
+
+          imagePublicId,
 
         });
 
@@ -448,6 +484,25 @@ export default function Categories() {
                       await deleteCategory(
                         category.id
                       );
+
+                      if(category.imagePublicId){
+
+                        try{
+
+                          await deleteImageFromCloudinary(
+                            category.imagePublicId
+                          );
+
+                        }catch(err){
+
+                          console.log(
+                            "Category image delete failed",
+                            err
+                          );
+
+                        }
+
+                      }
 
                       successToast(
                         "Deleted."
