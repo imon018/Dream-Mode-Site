@@ -252,6 +252,58 @@ function drawHeart(doc, cx, cy, size, color) {
 
 }
 
+// Small line-style icons used next to the Customer section rows.
+// `baseY` is the text baseline they should sit next to; `size` is
+// the icon's rough height in mm.
+
+function drawPersonIcon(doc, x, baseY, size, color) {
+
+  doc.setFillColor(...color);
+
+  const cx = x + size * 0.34;
+  const headR = size * 0.2;
+
+  doc.circle(cx, baseY - size * 0.68, headR, "F");
+  doc.roundedRect(
+    x, baseY - size * 0.4,
+    size * 0.68, size * 0.42,
+    size * 0.14, size * 0.14,
+    "F"
+  );
+
+}
+
+function drawPhoneIcon(doc, x, baseY, size, color) {
+
+  doc.setFillColor(...color);
+
+  doc.roundedRect(
+    x + size * 0.15, baseY - size * 0.85,
+    size * 0.4, size * 0.85,
+    size * 0.12, size * 0.12,
+    "F"
+  );
+
+}
+
+function drawPinIcon(doc, x, baseY, size, color) {
+
+  doc.setFillColor(...color);
+
+  const r = size * 0.26;
+  const cx = x + size * 0.3;
+  const topY = baseY - size * 0.78;
+
+  doc.circle(cx, topY, r, "F");
+  doc.triangle(
+    cx - r * 0.75, topY + r * 0.45,
+    cx + r * 0.75, topY + r * 0.45,
+    cx, baseY,
+    "F"
+  );
+
+}
+
 // Draws a small pill/badge with centered white text, right-aligned to rightX.
 function drawBadge(doc, text, rightX, y, color) {
 
@@ -401,8 +453,14 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
   doc.setFontSize(8);
 
+  const iconColor = [80, 80, 80];
+  const iconSize = 3;
+  const textX = marginX + 4.2;
+  const textWidth = contentWidth - 4.2;
+
   const customerName = order.customerName || "-";
-  drawSmartText(doc, customerName, marginX, y, {
+  drawPersonIcon(doc, marginX, y, iconSize, iconColor);
+  drawSmartText(doc, customerName, textX, y, {
     align: "left",
     bengaliLoaded,
     latinFamily: "helvetica",
@@ -411,7 +469,8 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   y += 4.2;
 
   doc.setFont("helvetica", "normal");
-  doc.text(order.phone || "-", marginX, y);
+  drawPhoneIcon(doc, marginX, y, iconSize, iconColor);
+  doc.text(order.phone || "-", textX, y);
   y += 4.2;
 
   const fullAddress = [
@@ -424,11 +483,14 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   // the time, which is fine for the (usually short, one-line) address.
   doc.setFont(bengaliLoaded && BENGALI_RANGE.test(fullAddress) ? "NotoSansBengali" : "helvetica", "normal");
 
-  const addressLines = doc.splitTextToSize(fullAddress, contentWidth);
+  const addressLines = doc.splitTextToSize(fullAddress, textWidth);
 
-  addressLines.forEach((line) => {
+  addressLines.forEach((line, idx) => {
     doc.setFontSize(8);
-    drawSmartText(doc, line, marginX, y, {
+    if (idx === 0) {
+      drawPinIcon(doc, marginX, y, iconSize, iconColor);
+    }
+    drawSmartText(doc, line, textX, y, {
       align: "left",
       bengaliLoaded,
       latinFamily: "helvetica",
