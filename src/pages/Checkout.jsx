@@ -809,12 +809,12 @@ focus:border-amber-500
 Dhaka City - ৳80
 </option>
 
-<option value={100}>
-Dhaka Sub Area - ৳100
+<option value={120}>
+Dhaka Sub Area - ৳120
 </option>
 
-<option value={120}>
-Outside Dhaka - ৳120
+<option value={150}>
+Outside Dhaka - ৳150
 </option>
 
 </select>
