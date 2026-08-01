@@ -74,5 +74,10 @@ execSync(
   { stdio: "inherit" }
 );
 
-console.log("Update package ready:", appVersion);
+// package/ was only ever needed as the source to zip from - nothing
+// live fetches this unzipped folder (the app only ever downloads
+// app.zip), so shipping it too just doubles the size of every deploy
+// for no reason. Delete it now that app.zip has been built.
+fs.rmSync(packageDir, { recursive: true, force: true });
 
+console.log("Update package ready:", appVersion);
