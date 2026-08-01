@@ -50,3 +50,4 @@ export async function generateInvoicePdfFromElement(element, order) {
   doc.save(`Invoice-${order?.id || "Order"}.pdf`);
 
 }
+
