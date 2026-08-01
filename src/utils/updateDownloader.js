@@ -1,4 +1,5 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
+import { pushDebugLog } from "./debugOverlay";
 
 
 const UPDATE_URL =
@@ -10,14 +11,19 @@ export async function downloadUpdate() {
   try {
 
     console.log("Downloading update...");
+    pushDebugLog("downloadUpdate: fetching app.zip...");
 
 
     const response = await fetch(
       UPDATE_URL + "?t=" + Date.now()
     );
 
+    pushDebugLog("downloadUpdate: fetch status=" + response.status);
+
 
     const blob = await response.blob();
+
+    pushDebugLog("downloadUpdate: blob size=" + blob.size + " bytes, type=" + blob.type);
 
 
     const reader = new FileReader();
@@ -56,6 +62,8 @@ export async function downloadUpdate() {
       "Update downloaded"
     );
 
+    pushDebugLog("downloadUpdate: written to Filesystem OK");
+
 
     return true;
 
@@ -66,6 +74,8 @@ export async function downloadUpdate() {
       "Download failed",
       error
     );
+
+    pushDebugLog("downloadUpdate: ERROR " + (error && error.message ? error.message : String(error)));
 
     return false;
   }
