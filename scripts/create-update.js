@@ -34,6 +34,17 @@ if (fs.existsSync(nested)) {
   fs.rmSync(nested, { recursive: true, force: true });
 }
 
+// The APK(s) under public/downloads exist only for the direct-download
+// link on the live site - the OTA-served web content never needs to
+// serve them itself. Without this, every APK sitting in public/ gets
+// copied into package/ AND zipped into app.zip on top of that, so a
+// 19MB APK turned into ~57MB of dead weight duplicated three times
+// across the OTA package alone.
+const downloads = path.join(packageDir, "downloads");
+if (fs.existsSync(downloads)) {
+  fs.rmSync(downloads, { recursive: true, force: true });
+}
+
 const packageVersion = {
   version: appVersion,
   buildTime: new Date().toISOString(),
