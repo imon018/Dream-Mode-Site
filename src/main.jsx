@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { SettingsProvider } from "./context/SettingsContext";
 import { runUpdateManager } from "./utils/updateManager";
+import { pushDebugLog } from "./utils/debugOverlay";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
 
@@ -28,6 +29,7 @@ async function applyUpdateIfAvailable() {
 
     if (updatePath) {
       console.log("Loading updated frontend:", updatePath);
+      pushDebugLog("main.jsx: navigating to " + updatePath + " ...");
       window.location.replace(updatePath);
     }
   } finally {
