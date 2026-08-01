@@ -521,7 +521,7 @@ export default function OrderSuccess(){
             <div
               className="
                 flex
-                items-center
+                items-start
                 justify-between
                 px-5
                 py-4
