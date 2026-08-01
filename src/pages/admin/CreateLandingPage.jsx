@@ -30,6 +30,7 @@ import {
 
 import {
   uploadImages,
+  deleteImageFromCloudinary,
 } from "../../services/uploadService";
 
 import useSettings from "../../hooks/useSettings";
@@ -77,6 +78,9 @@ const [themeColorTo,setThemeColorTo]=useState("#f59e0b");
 const [gradientDirection,setGradientDirection]=useState("to right");
 
 const [heroImages,setHeroImages]=
+useState([]);
+
+const [heroImagePublicIds,setHeroImagePublicIds]=
 useState([]);
 
 const [uploading,setUploading]=useState(false);
@@ -285,6 +289,10 @@ images.push(img);
 
 setHeroImages(images);
 
+setHeroImagePublicIds(
+images.map(()=>null)
+);
+
 }
 
 async function handleImageUpload(e){
@@ -312,6 +320,18 @@ setHeroImages(prev=>[
 ...uploaded.map(
 
 item=>item.imageUrl
+
+)
+
+]);
+
+setHeroImagePublicIds(prev=>[
+
+...prev,
+
+...uploaded.map(
+
+item=>item.publicId
 
 )
 
@@ -345,7 +365,10 @@ setUploading(false);
 
 }
 
-function removeHeroImage(index){
+async function removeHeroImage(index){
+
+const removedPublicId =
+heroImagePublicIds[index];
 
 setHeroImages(
 
@@ -358,6 +381,37 @@ prev.filter(
 )
 
 );
+
+setHeroImagePublicIds(
+
+prev=>
+
+prev.filter(
+
+(_,i)=>i!==index
+
+)
+
+);
+
+if(removedPublicId){
+
+try{
+
+await deleteImageFromCloudinary(
+removedPublicId
+);
+
+}catch(err){
+
+console.log(
+"Hero image delete failed",
+err
+);
+
+}
+
+}
 
 }
 
@@ -380,6 +434,8 @@ heroTitle,
 heroDescription,
 
 heroImages,
+
+heroImagePublicIds,
 
 price:
 price
@@ -440,6 +496,8 @@ heroDescription,
 
 heroImages,
 
+heroImagePublicIds,
+
 price,
 
 offerPrice,
@@ -483,6 +541,8 @@ heroTitle,
 heroDescription,
 
 heroImages,
+
+heroImagePublicIds,
 
 price:
 price
