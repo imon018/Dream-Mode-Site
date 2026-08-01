@@ -2,6 +2,8 @@ import {
   useEffect,
   useState,
   useRef,
+  lazy,
+  Suspense,
 } from "react";
 
 import {
@@ -48,8 +50,10 @@ import {
 
 import { getEffectivePrice } from "../../utils/helpers";
 
-import Invoice58mm from "../../components/invoice/Invoice58mm";
-import { generateInvoicePdf } from "../../components/invoice/generateInvoicePdf";
+const Invoice58mm = lazy(() => import("../../components/invoice/Invoice58mm"));
+const generateInvoicePdf = (order) =>
+  import("../../components/invoice/generateInvoicePdf")
+    .then((mod) => mod.generateInvoicePdf(order));
 
 
 
@@ -790,11 +794,10 @@ gap-2
 onClick={()=>setShowInvoicePreview(true)}
 
 className="
-w-8
-h-8
+w-7
+h-7
 rounded-lg
-bg-slate-700
-text-white
+text-slate-700
 flex
 items-center
 justify-center
@@ -802,7 +805,7 @@ justify-center
 
 >
 
-<FiEye size={14}/>
+<FiEye size={13}/>
 
 </button>
 
@@ -811,11 +814,10 @@ justify-center
 onClick={handlePrint}
 
 className="
-w-8
-h-8
+w-7
+h-7
 rounded-lg
-bg-amber-500
-text-white
+text-amber-500
 flex
 items-center
 justify-center
@@ -823,7 +825,7 @@ justify-center
 
 >
 
-<FiPrinter size={14}/>
+<FiPrinter size={13}/>
 
 </button>
 
@@ -832,11 +834,10 @@ justify-center
 onClick={()=>generateInvoicePdf(order)}
 
 className="
-w-8
-h-8
+w-7
+h-7
 rounded-lg
-bg-emerald-600
-text-white
+text-emerald-600
 flex
 items-center
 justify-center
@@ -844,7 +845,7 @@ justify-center
 
 >
 
-<FiDownload size={14}/>
+<FiDownload size={13}/>
 
 </button>
 
@@ -1886,7 +1887,9 @@ height: 0,
 <div ref={printRef}>
 
 {order && (
+<Suspense fallback={null}>
 <Invoice58mm order={order}/>
+</Suspense>
 )}
 
 </div>
@@ -1958,7 +1961,9 @@ z-10
 
 <div className="clear-both">
 
+<Suspense fallback={<div className="p-6 text-sm text-gray-400">Loading…</div>}>
 <Invoice58mm order={order}/>
+</Suspense>
 
 </div>
 
