@@ -1,12 +1,17 @@
 import {
   useEffect,
   useState,
+  useRef,
 } from "react";
 
 import {
   useParams,
   useNavigate,
 } from "react-router-dom";
+
+import {
+  useReactToPrint,
+} from "react-to-print";
 
 
 import {
@@ -20,6 +25,9 @@ import {
   FiCheck,
   FiChevronRight,
   FiX,
+  FiEye,
+  FiPrinter,
+  FiDownload,
 } from "react-icons/fi";
 
 
@@ -39,6 +47,9 @@ import {
 } from "../../components/ui/Toast";
 
 import { getEffectivePrice } from "../../utils/helpers";
+
+import Invoice58mm from "../../components/invoice/Invoice58mm";
+import { generateInvoicePdf } from "../../components/invoice/generateInvoicePdf";
 
 
 
@@ -65,6 +76,15 @@ const [showCancelModal,setShowCancelModal]=useState(false);
 
 
 const [showProductsModal, setShowProductsModal] = useState(false);
+
+const [showInvoicePreview, setShowInvoicePreview] = useState(false);
+
+const printRef = useRef(null);
+
+const handlePrint = useReactToPrint({
+  contentRef: printRef,
+  documentTitle: `Invoice-${id || "Order"}`,
+});
 
 
 
@@ -737,16 +757,101 @@ shadow-sm
 >
 
 
+<div
+className="
+flex
+items-center
+justify-between
+mb-8
+"
+>
+
 <h3
 className="
 font-bold
-mb-8
 "
 >
 
 Order Tracking
 
 </h3>
+
+
+<div
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<button
+
+onClick={()=>setShowInvoicePreview(true)}
+
+className="
+w-8
+h-8
+rounded-lg
+bg-slate-700
+text-white
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiEye size={14}/>
+
+</button>
+
+<button
+
+onClick={handlePrint}
+
+className="
+w-8
+h-8
+rounded-lg
+bg-amber-500
+text-white
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiPrinter size={14}/>
+
+</button>
+
+<button
+
+onClick={()=>generateInvoicePdf(order)}
+
+className="
+w-8
+h-8
+rounded-lg
+bg-emerald-600
+text-white
+flex
+items-center
+justify-center
+"
+
+>
+
+<FiDownload size={14}/>
+
+</button>
+
+</div>
+
+
+</div>
 
 
 
@@ -1763,8 +1868,175 @@ Buy Again
 )}
 
 
+{/* Hidden node used only to feed react-to-print — never shown
+    on screen. */}
 
-  
+<div
+aria-hidden="true"
+style={{
+position: "absolute",
+top: 0,
+left: 0,
+overflow: "hidden",
+width: 0,
+height: 0,
+}}
+>
+
+<div ref={printRef}>
+
+{order && (
+<Invoice58mm order={order}/>
+)}
+
+</div>
+
+</div>
+
+
+{/* View: invoice preview modal */}
+
+{
+showInvoicePreview && order && (
+
+<div
+
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[100]
+p-4
+"
+
+>
+
+
+<div
+
+className="
+bg-white
+rounded-xl
+shadow-xl
+max-h-[90vh]
+overflow-y-auto
+relative
+"
+
+>
+
+<button
+
+onClick={()=>setShowInvoicePreview(false)}
+
+className="
+sticky
+top-2
+float-right
+mr-2
+w-8
+h-8
+rounded-full
+bg-white
+border
+border-gray-200
+shadow
+flex
+items-center
+justify-center
+z-10
+"
+
+>
+
+<FiX size={16}/>
+
+</button>
+
+<div className="clear-both">
+
+<Invoice58mm order={order}/>
+
+</div>
+
+<div
+
+className="
+flex
+gap-2
+p-3
+border-t
+"
+
+>
+
+<button
+
+onClick={()=>{
+setShowInvoicePreview(false);
+handlePrint();
+}}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-amber-500
+text-white
+font-bold
+text-sm
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<FiPrinter size={14}/>
+
+Print
+
+</button>
+
+<button
+
+onClick={()=>generateInvoicePdf(order)}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-emerald-600
+text-white
+font-bold
+text-sm
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<FiDownload size={14}/>
+
+PDF
+
+</button>
+
+</div>
+
+</div>
+
+
+</div>
+
+)
+}
 
 
 </div>
