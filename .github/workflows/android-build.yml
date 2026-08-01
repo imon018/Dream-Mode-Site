@@ -118,12 +118,6 @@ jobs:
         run: chmod +x android/gradlew
 
 
-      - name: Build Debug APK
-        run: |
-          cd android
-          ./gradlew assembleDebug
-
-
       - name: Build Signed Release APK
         run: |
           cd android
@@ -134,13 +128,6 @@ jobs:
         run: |
           cd android
           ./gradlew bundleRelease
-
-
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: DreamMode-Debug-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
 
 
       - name: Upload Signed Release APK
