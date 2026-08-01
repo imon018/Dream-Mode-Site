@@ -10,7 +10,7 @@ export default function TrustBanner() {
     {
       icon: "🚚",
       title: "Outside Dhaka",
-      value: "৳120",
+      value: "৳150",
     },
 
     {
