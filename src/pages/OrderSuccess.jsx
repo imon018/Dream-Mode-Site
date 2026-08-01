@@ -1,6 +1,7 @@
 import {
   useEffect,
   useState,
+  useRef,
 } from "react";
 
 import {
@@ -12,6 +13,11 @@ import {
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebase/firestore";
 
+import { useReactToPrint } from "react-to-print";
+
+import Invoice58mm from "../components/invoice/Invoice58mm";
+import { generateInvoicePdf } from "../components/invoice/generateInvoicePdf";
+
 
 import {
   FiCheckCircle,
@@ -22,6 +28,10 @@ import {
   FiShoppingBag,
   FiHeadphones,
   FiHome,
+  FiEye,
+  FiPrinter,
+  FiDownload,
+  FiX,
 } from "react-icons/fi";
 
 
@@ -50,6 +60,15 @@ export default function OrderSuccess(){
   const [currentImages,setCurrentImages] = useState({});
 
   const { settings } = useSettings();
+
+  const [showInvoicePreview, setShowInvoicePreview] = useState(false);
+
+  const invoicePrintRef = useRef(null);
+
+  const handlePrintInvoice = useReactToPrint({
+    contentRef: invoicePrintRef,
+    documentTitle: `Invoice-${order?.id || "Order"}`,
+  });
 
 
   const confetti = [
@@ -317,6 +336,8 @@ export default function OrderSuccess(){
 
   return (
 
+    <>
+
     <div
 
       className="
@@ -545,6 +566,58 @@ export default function OrderSuccess(){
                   </p>
 
                 </div>
+
+              </div>
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+
+                <button
+                  type="button"
+                  onClick={() => setShowInvoicePreview(true)}
+                  aria-label="View Invoice"
+                  title="View Invoice"
+                  className="
+                    text-gray-500
+                    hover:text-green-700
+                    transition-colors
+                  "
+                >
+                  <FiEye size={20} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePrintInvoice}
+                  aria-label="Print Invoice"
+                  title="Print Invoice"
+                  className="
+                    text-gray-500
+                    hover:text-green-700
+                    transition-colors
+                  "
+                >
+                  <FiPrinter size={20} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => generateInvoicePdf(order)}
+                  aria-label="Download Invoice"
+                  title="Download Invoice"
+                  className="
+                    text-gray-500
+                    hover:text-green-700
+                    transition-colors
+                  "
+                >
+                  <FiDownload size={20} />
+                </button>
 
               </div>
 
@@ -1225,6 +1298,83 @@ export default function OrderSuccess(){
 
 
     </div>
+
+
+    {/* Hidden invoice used only for printing */}
+    <div
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        overflow: "hidden",
+        width: 0,
+        height: 0,
+      }}
+    >
+
+      <div ref={invoicePrintRef}>
+
+        <Invoice58mm order={order} />
+
+      </div>
+
+    </div>
+
+
+    {/* View Invoice modal */}
+    {showInvoicePreview && (
+
+      <div
+        className="
+          fixed
+          inset-0
+          z-50
+          bg-black/50
+          flex
+          items-center
+          justify-center
+          p-4
+        "
+        onClick={() => setShowInvoicePreview(false)}
+      >
+
+        <div
+          className="
+            bg-white
+            rounded-2xl
+            max-h-[90vh]
+            overflow-y-auto
+            p-4
+            relative
+          "
+          onClick={(e) => e.stopPropagation()}
+        >
+
+          <button
+            type="button"
+            onClick={() => setShowInvoicePreview(false)}
+            aria-label="Close"
+            className="
+              absolute
+              top-3
+              right-3
+              text-gray-500
+              hover:text-gray-800
+            "
+          >
+            <FiX size={22} />
+          </button>
+
+          <Invoice58mm order={order} />
+
+        </div>
+
+      </div>
+
+    )}
+
+    </>
 
   );
 
