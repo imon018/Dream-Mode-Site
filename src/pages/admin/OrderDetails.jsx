@@ -8,7 +8,6 @@ import {
 import {
   useParams,
   useNavigate,
-  useSearchParams,
 } from "react-router-dom";
 
 
@@ -23,16 +22,7 @@ import {
   FiCreditCard,
   FiChevronRight,
   FiX,
-  FiPrinter,
-  FiDownload,
 } from "react-icons/fi";
-
-// PRINT + PDF: react-to-print handles the native browser print dialog.
-// The PDF itself is drawn directly (no DOM screenshot) by the shared
-// generateInvoicePdf helper, so it can never come out with
-// overlapping/cut-off text the way an html2canvas screenshot could.
-import { useReactToPrint } from "react-to-print";
-import { generateInvoicePdf } from "../../components/invoice/generateInvoicePdf";
 
 
 import {
@@ -50,11 +40,6 @@ import {
 
 import { getEffectivePrice } from "../../utils/helpers";
 
-// This 58mm invoice component already existed in the project
-// (components/invoice/Invoice58mm.jsx) but was never actually
-// rendered anywhere — that's why nothing showed up before.
-import Invoice58mm from "../../components/invoice/Invoice58mm";
-
 
 
 
@@ -68,12 +53,6 @@ const navigate=useNavigate();
 
 const menuRef = useRef(null);
 
-// Ref to the visible invoice block below — both print and PDF
-// download read directly from this DOM node.
-const invoiceRef = useRef(null);
-
-const [searchParams, setSearchParams] = useSearchParams();
-
 const [order,setOrder]=useState(null);
 
 const [loading,setLoading]=useState(true);
@@ -86,78 +65,12 @@ const [deleting, setDeleting] = useState(false);
 
 const [showProductsModal, setShowProductsModal] = useState(false);
 
-const [downloading, setDownloading] = useState(false);
-
-
-const handlePrint = useReactToPrint({
-  contentRef: invoiceRef,
-  documentTitle: `Invoice-${id || "Order"}`,
-});
-
-
-const handleDownloadPDF = async () => {
-
-  if (!order) return;
-
-  try {
-
-    setDownloading(true);
-
-    await generateInvoicePdf(order);
-
-  } catch (error) {
-
-    console.log(error);
-
-    errorToast("PDF download failed");
-
-  } finally {
-
-    setDownloading(false);
-
-  }
-
-};
-
 
 useEffect(()=>{
 
 loadOrder();
 
 },[id]);
-
-
-// AUTO-TRIGGER: when this page is opened from the Orders list menu
-// with ?action=print or ?action=pdf, fire the matching action once
-// the order (and the invoice it renders) is ready. The short delay
-// gives Invoice58mm time to finish loading store settings and the
-// QR code before we screenshot/print it.
-useEffect(()=>{
-
-if(!order) return;
-
-const action = searchParams.get("action");
-
-if(!action) return;
-
-const timer = setTimeout(()=>{
-
-if(action==="print"){
-handlePrint();
-}
-
-if(action==="pdf"){
-handleDownloadPDF();
-}
-
-setSearchParams({}, {replace:true});
-
-},900);
-
-return ()=>clearTimeout(timer);
-
-// eslint-disable-next-line react-hooks/exhaustive-deps
-},[order]);
 
 
 useEffect(()=>{
@@ -1423,119 +1336,6 @@ Total Amount
 
 
 
-
-
-
-
-{/* INVOICE */}
-
-<div className="
-bg-white
-border
-border-gray-100
-rounded-lg
-p-4
-shadow-sm
-">
-
-<h3 className="
-font-bold
-text-sm
-mb-3
-">
-
-Invoice
-
-</h3>
-
-<div className="
-flex
-gap-2
-mb-4
-">
-
-<button
-
-onClick={handlePrint}
-
-className="
-flex-1
-h-10
-rounded-lg
-bg-amber-500
-text-white
-font-bold
-text-sm
-flex
-items-center
-justify-center
-gap-2
-"
-
->
-
-<FiPrinter size={15}/>
-
-Print
-
-</button>
-
-<button
-
-onClick={handleDownloadPDF}
-
-disabled={downloading}
-
-className="
-flex-1
-h-10
-rounded-lg
-bg-emerald-600
-text-white
-font-bold
-text-sm
-flex
-items-center
-justify-center
-gap-2
-disabled:opacity-60
-"
-
->
-
-<FiDownload size={15}/>
-
-{downloading ? "Preparing..." : "Download PDF"}
-
-</button>
-
-</div>
-
-{/* The invoice is rendered visibly (not hidden) so the admin
-    can actually see it on the page. The same DOM node is what
-    gets printed and what gets screenshotted into the PDF. */}
-
-<div className="
-border
-border-dashed
-border-gray-200
-rounded-lg
-bg-gray-50
-overflow-x-auto
-py-4
-flex
-justify-center
-">
-
-<div ref={invoiceRef}>
-
-<Invoice58mm order={order}/>
-
-</div>
-
-</div>
-
-</div>
 
 
 
