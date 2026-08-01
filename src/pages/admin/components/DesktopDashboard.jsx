@@ -93,42 +93,65 @@ icon:<FiBox/>
 
 
 
+const today = new Date();
+
+const currentYear = today.getFullYear();
+const currentMonthIndex = today.getMonth();
+
+const daysInCurrentMonth =
+  new Date(currentYear, currentMonthIndex + 1, 0).getDate();
+
+const currentMonthName =
+  today.toLocaleString("en-US", { month: "long" });
+
+
+const dailyRevenueTotals =
+  new Array(daysInCurrentMonth).fill(0);
+
+orders.forEach((order) => {
+
+  if (order.status !== "Delivered") return;
+
+  if (!order.createdAt) return;
+
+  const orderDate = new Date(
+    order.createdAt.seconds
+      ? order.createdAt.seconds * 1000
+      : order.createdAt
+  );
+
+  if (
+    orderDate.getFullYear() === currentYear &&
+    orderDate.getMonth() === currentMonthIndex
+  ) {
+
+    const dayIndex = orderDate.getDate() - 1;
+
+    dailyRevenueTotals[dayIndex] +=
+      Number(order.total || 0);
+
+  }
+
+});
+
+
 const revenueData={
 
 
-labels:[
-
-"Jan",
-"Feb",
-"Mar",
-"Apr",
-"May",
-"Jun"
-
-],
+labels:
+  Array.from(
+    { length: daysInCurrentMonth },
+    (_, i) => String(i + 1)
+  ),
 
 
 datasets:[
 
 {
 
-label:"Revenue",
+label:`Revenue - ${currentMonthName} ${currentYear}`,
 
-data:[
-
-stats.revenue*.2,
-
-stats.revenue*.35,
-
-stats.revenue*.5,
-
-stats.revenue*.65,
-
-stats.revenue*.8,
-
-stats.revenue
-
-],
+data: dailyRevenueTotals,
 
 
 borderColor:"#F59E0B",
@@ -610,8 +633,6 @@ text-xl
 
 font-bold
 
-mb-6
-
 "
 
 >
@@ -620,10 +641,48 @@ Revenue Overview
 
 </h2>
 
+<p
+className="
+text-sm
+text-gray-500
+mb-6
+"
+>
+Daily revenue (Delivered orders) - {currentMonthName} {currentYear}
+</p>
+
 
 <Line
 
 data={revenueData}
+
+options={{
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      ticks: {
+        autoSkip: true,
+        maxRotation: 0,
+      },
+      title: {
+        display: true,
+        text: "Day of Month",
+      },
+    },
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: "Revenue (৳)",
+      },
+    },
+  },
+}}
 
 />
 
