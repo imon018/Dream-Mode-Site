@@ -1,11 +1,16 @@
 import {
   useEffect,
-  useState
+  useState,
+  useRef
 } from "react";
 
 import {
   useNavigate
 } from "react-router-dom";
+
+import {
+  useReactToPrint
+} from "react-to-print";
 
 
 import {
@@ -20,7 +25,8 @@ import {
   FiEye,
   FiPrinter,
   FiDownload,
-  FiTrash2
+  FiTrash2,
+  FiX
 } from "react-icons/fi";
 
 
@@ -36,6 +42,9 @@ import {
   successToast,
   errorToast
 } from "../../components/ui/Toast";
+
+import Invoice58mm from "../../components/invoice/Invoice58mm";
+import { generateInvoicePdf } from "../../components/invoice/generateInvoicePdf";
 
 
 
@@ -71,6 +80,39 @@ useState("");
 
 const [menuOpen,setMenuOpen] =
 useState(null);
+
+
+
+// Invoice preview (View) and direct Print, triggered right from the
+// three-dot menu — no navigation to OrderDetails.jsx needed for
+// either. Download PDF needs no state at all since generateInvoicePdf
+// is fully self-contained (draws the PDF directly, no DOM involved).
+
+const [viewOrder,setViewOrder] = useState(null);
+
+const [printOrder,setPrintOrder] = useState(null);
+
+const printRef = useRef(null);
+
+const triggerPrint = useReactToPrint({
+  contentRef: printRef,
+  documentTitle: `Invoice-${printOrder?.id || "Order"}`,
+  onAfterPrint: () => setPrintOrder(null),
+});
+
+useEffect(() => {
+
+  if (!printOrder) return;
+
+  // Wait one tick so the hidden Invoice58mm below has actually
+  // rendered with the newly-set printOrder before printing it.
+  const t = setTimeout(() => {
+    triggerPrint();
+  }, 100);
+
+  return () => clearTimeout(t);
+
+}, [printOrder]);
 
 
 
@@ -1269,7 +1311,7 @@ z-50
 
 onClick={()=>{
 setMenuOpen(null);
-navigate(`/admin/orders/${order.id}`);
+setViewOrder(order);
 }}
 
 className="
@@ -1296,7 +1338,7 @@ gap-2
 
 onClick={()=>{
 setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=print`);
+setPrintOrder(order);
 }}
 
 className="
@@ -1323,7 +1365,7 @@ gap-2
 
 onClick={()=>{
 setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=pdf`);
+generateInvoicePdf(order);
 }}
 
 className="
@@ -1892,7 +1934,7 @@ overflow-hidden
 
 onClick={()=>{
 setMenuOpen(null);
-navigate(`/admin/orders/${order.id}`);
+setViewOrder(order);
 }}
 
 className="
@@ -1919,7 +1961,7 @@ gap-2
 
 onClick={()=>{
 setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=print`);
+setPrintOrder(order);
 }}
 
 className="
@@ -1946,7 +1988,7 @@ gap-2
 
 onClick={()=>{
 setMenuOpen(null);
-navigate(`/admin/orders/${order.id}?action=pdf`);
+generateInvoicePdf(order);
 }}
 
 className="
@@ -2220,6 +2262,180 @@ Yes
 
 </div>
 
+
+</div>
+
+
+</div>
+
+)
+}
+
+
+{/* Hidden node used only to feed react-to-print when Print is
+    clicked from the three-dot menu — never shown on screen. */}
+
+<div
+aria-hidden="true"
+style={{
+position: "absolute",
+top: 0,
+left: 0,
+overflow: "hidden",
+width: 0,
+height: 0,
+}}
+>
+
+<div ref={printRef}>
+
+{printOrder && (
+<Invoice58mm order={printOrder}/>
+)}
+
+</div>
+
+</div>
+
+
+{/* View: invoice preview modal, opened directly from the
+    three-dot menu — no navigation to OrderDetails.jsx. */}
+
+{
+viewOrder && (
+
+<div
+
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[100]
+p-4
+"
+
+>
+
+
+<div
+
+className="
+bg-white
+rounded-xl
+shadow-xl
+max-h-[90vh]
+overflow-y-auto
+relative
+"
+
+>
+
+<button
+
+onClick={()=>setViewOrder(null)}
+
+className="
+sticky
+top-2
+float-right
+mr-2
+w-8
+h-8
+rounded-full
+bg-white
+border
+border-gray-200
+shadow
+flex
+items-center
+justify-center
+z-10
+"
+
+>
+
+<FiX size={16}/>
+
+</button>
+
+<div className="clear-both">
+
+<Invoice58mm order={viewOrder}/>
+
+</div>
+
+<div
+
+className="
+flex
+gap-2
+p-3
+border-t
+"
+
+>
+
+<button
+
+onClick={()=>{
+setViewOrder(null);
+setPrintOrder(viewOrder);
+}}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-amber-500
+text-white
+font-bold
+text-sm
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<FiPrinter size={14}/>
+
+Print
+
+</button>
+
+<button
+
+onClick={()=>{
+generateInvoicePdf(viewOrder);
+}}
+
+className="
+flex-1
+h-10
+rounded-lg
+bg-emerald-600
+text-white
+font-bold
+text-sm
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<FiDownload size={14}/>
+
+PDF
+
+</button>
+
+</div>
 
 </div>
 
