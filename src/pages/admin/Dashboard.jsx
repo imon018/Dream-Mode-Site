@@ -119,7 +119,9 @@ user=>user.role==="admin"
 
 
 const revenue =
-orders.reduce(
+orders
+.filter(order=>order.status==="Delivered")
+.reduce(
 (sum,order)=>
 sum + Number(order.total || 0),
 0
