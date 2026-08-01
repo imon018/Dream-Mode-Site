@@ -27,6 +27,7 @@ import {
 
 import {
   uploadImages,
+  deleteImageFromCloudinary,
 } from "../../services/uploadService";
 
 
@@ -210,6 +211,10 @@ try{
 let logoData={};
 
 
+const oldLogoPublicId =
+settings.logoPublicId;
+
+
 
 if(logoFile){
 
@@ -243,6 +248,27 @@ await saveSettings({
 ...logoData
 
 });
+
+
+
+if(logoFile && oldLogoPublicId){
+
+try{
+
+await deleteImageFromCloudinary(
+oldLogoPublicId
+);
+
+}catch(err){
+
+console.log(
+"Old logo delete failed",
+err
+);
+
+}
+
+}
 
 
 
