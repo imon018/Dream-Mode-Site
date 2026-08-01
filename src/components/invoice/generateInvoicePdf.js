@@ -18,10 +18,11 @@ const SCRIPT_FONT_URLS = [
 ];
 
 const BENGALI_RANGE = /[\u0980-\u09FF]/;
+const BENGALI_CANVAS_FONT = "NotoSansBengaliCanvas";
 
-// Each font's fetched bytes are cached (per page load) so repeated
-// PDF downloads don't re-fetch every time.
-let bengaliFontBase64Promise = null;
+// Each font's fetch is cached (per page load) so repeated PDF
+// downloads don't re-fetch every time.
+let bengaliFontFacePromise = null;
 let scriptFontBase64Promise = null;
 
 function arrayBufferToBase64(buffer) {
@@ -45,8 +46,8 @@ function arrayBufferToBase64(buffer) {
 }
 
 // Tries each URL in order and resolves with the first successful
-// font's base64 bytes, or null if every mirror fails.
-async function fetchFirstAvailableFont(urls) {
+// font's raw bytes, or null if every mirror fails.
+async function fetchFirstAvailableFontBuffer(urls) {
 
   for (const url of urls) {
 
@@ -60,7 +61,7 @@ async function fetchFirstAvailableFont(urls) {
 
       if (!buf || buf.byteLength < 1000) continue; // sanity check
 
-      return arrayBufferToBase64(buf);
+      return buf;
 
     } catch (e) {
 
@@ -74,39 +75,59 @@ async function fetchFirstAvailableFont(urls) {
 
 }
 
-// Registers the Bengali font on the given jsPDF doc instance.
-// Returns true if the font is available to use on this doc.
-async function ensureBengaliFont(doc) {
+// Registers a real, browser-usable Bengali font (via the FontFace API)
+// so <canvas> text rendering can use it. This is what makes correct
+// Bengali shaping possible at all: jsPDF's own text() call has no
+// complex-script shaping engine — it just draws one glyph per Unicode
+// codepoint in source order, which is wrong for Bengali (pre-base
+// vowel signs need to move before the consonant, conjuncts need to
+// merge, etc). A <canvas> goes through the browser's real text
+// shaping stack, so ctx.fillText() renders Bengali correctly; we
+// then capture that as a small image and place it into the PDF.
+// Returns true once the font is loaded and ready to use.
+async function ensureBengaliFont() {
 
-  if (!bengaliFontBase64Promise) {
-    bengaliFontBase64Promise = fetchFirstAvailableFont(BENGALI_FONT_URLS);
+  if (!bengaliFontFacePromise) {
+
+    bengaliFontFacePromise = (async () => {
+
+      const buf = await fetchFirstAvailableFontBuffer(BENGALI_FONT_URLS);
+
+      if (!buf) return false;
+
+      try {
+
+        const fontFace = new FontFace(BENGALI_CANVAS_FONT, buf);
+
+        await fontFace.load();
+
+        document.fonts.add(fontFace);
+
+        return true;
+
+      } catch (e) {
+
+        return false;
+
+      }
+
+    })();
+
   }
 
-  const base64 = await bengaliFontBase64Promise;
-
-  if (!base64) return false;
-
-  try {
-
-    doc.addFileToVFS("NotoSansBengali.ttf", base64);
-    doc.addFont("NotoSansBengali.ttf", "NotoSansBengali", "normal");
-
-    return true;
-
-  } catch (e) {
-
-    return false;
-
-  }
+  return bengaliFontFacePromise;
 
 }
 
 // Registers the Dancing Script font (used for the "Thank You!" line)
-// on the given jsPDF doc instance. Returns true if available.
+// on the given jsPDF doc instance. Dancing Script is Latin/cursive,
+// which jsPDF renders fine as vector text — no shaping issue there,
+// so this one stays a normal jsPDF-embedded font.
 async function ensureScriptFont(doc) {
 
   if (!scriptFontBase64Promise) {
-    scriptFontBase64Promise = fetchFirstAvailableFont(SCRIPT_FONT_URLS);
+    scriptFontBase64Promise = fetchFirstAvailableFontBuffer(SCRIPT_FONT_URLS)
+      .then((buf) => (buf ? arrayBufferToBase64(buf) : null));
   }
 
   const base64 = await scriptFontBase64Promise;
@@ -141,36 +162,155 @@ function splitScriptRuns(text) {
 
 }
 
-// Draws text that may mix Latin and Bengali characters by rendering
-// each script run in its own font, rather than picking a single font
-// for the whole string. This is what makes a line like
-// "Basabo, সবুজবাগ, ঢাকা" reliable: even if the Bengali font that
-// happened to load lacks Latin glyphs (or vice versa), each run still
-// gets a font that actually has it — nothing silently vanishes.
-// Caller must set the desired font size on `doc` beforehand.
-// Returns the total rendered width (mm).
-function drawSmartText(doc, text, x, y, opts = {}) {
+// Renders one Bengali run to a small PNG (via an offscreen canvas,
+// so the browser's real text shaping applies) and caches the result,
+// since the same words/prices often repeat across a document.
+const bengaliImageCache = new Map();
+
+const CSS_PX_PER_MM = 96 / 25.4;
+const CANVAS_SUPERSAMPLE = 4;
+const BENGALI_PX_PER_MM = CSS_PX_PER_MM * CANVAS_SUPERSAMPLE;
+
+function renderBengaliRunToImage(text, fontSizeMm, color) {
+
+  const key = `${text}|${fontSizeMm.toFixed(2)}|${color.join(",")}`;
+
+  if (bengaliImageCache.has(key)) {
+    return bengaliImageCache.get(key);
+  }
+
+  const fontPx = fontSizeMm * BENGALI_PX_PER_MM;
+  const fontSpec = `${fontPx}px "${BENGALI_CANVAS_FONT}", sans-serif`;
+
+  const measureCanvas = document.createElement("canvas");
+  const measureCtx = measureCanvas.getContext("2d");
+
+  measureCtx.font = fontSpec;
+
+  const metrics = measureCtx.measureText(text);
+
+  const ascent = metrics.actualBoundingBoxAscent || fontPx * 0.85;
+  const descent = metrics.actualBoundingBoxDescent || fontPx * 0.3;
+
+  const width = Math.max(1, Math.ceil(metrics.width) + 4);
+  const height = Math.max(1, Math.ceil(ascent + descent) + 4);
+
+  const canvas = document.createElement("canvas");
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.font = fontSpec;
+  ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText(text, 2, ascent + 2);
+
+  const result = {
+    dataUrl: canvas.toDataURL("image/png"),
+    widthMm: width / BENGALI_PX_PER_MM,
+    heightMm: height / BENGALI_PX_PER_MM,
+    ascentMm: (ascent + 2) / BENGALI_PX_PER_MM,
+  };
+
+  bengaliImageCache.set(key, result);
+
+  return result;
+
+}
+
+// Builds the measured runs for a mixed Latin/Bengali string: Bengali
+// runs are measured via the canvas image path (correct shaping),
+// Latin runs via jsPDF's own font metrics. Shared by drawSmartText
+// (which also draws) and measureMixedWidth (which only measures, used
+// for word-wrapping).
+function buildRuns(doc, text, opts) {
 
   const {
-    align = "left",
     bengaliLoaded,
+    color = [0, 0, 0],
     latinFamily = "helvetica",
     latinStyle = "normal",
   } = opts;
 
-  const setRunFont = (isBengali) => {
-    if (isBengali && bengaliLoaded) {
-      doc.setFont("NotoSansBengali", "normal");
-    } else {
-      doc.setFont(latinFamily, latinStyle);
-    }
-  };
+  return splitScriptRuns(text).map((run) => {
 
-  const runs = splitScriptRuns(text).map((run) => {
     const isBengali = BENGALI_RANGE.test(run);
-    setRunFont(isBengali);
-    return { run, isBengali, width: doc.getTextWidth(run) };
+
+    if (isBengali && bengaliLoaded) {
+
+      const fontSizeMm = doc.getFontSize() * 0.352778;
+      const img = renderBengaliRunToImage(run, fontSizeMm, color);
+
+      return { run, isBengali, width: img.widthMm, img };
+
+    }
+
+    if (isBengali && !bengaliLoaded) {
+      // Can't shape it correctly and won't draw it wrong either —
+      // skip rather than show broken/reordered glyphs.
+      return { run, isBengali, width: 0, img: null, skip: true };
+    }
+
+    doc.setFont(latinFamily, latinStyle);
+
+    return { run, isBengali, width: doc.getTextWidth(run), img: null };
+
   });
+
+}
+
+function measureMixedWidth(doc, text, opts) {
+
+  return buildRuns(doc, text, opts).reduce((sum, r) => sum + r.width, 0);
+
+}
+
+// Word-wraps mixed Latin/Bengali text to fit maxWidthMm, measuring
+// with the same run-based logic used to draw it (jsPDF's own
+// splitTextToSize can't be used here since it doesn't know about the
+// image-based Bengali runs).
+function wrapMixedText(doc, text, maxWidthMm, opts) {
+
+  const words = String(text).split(/(\s+)/).filter((w) => w !== "");
+
+  const lines = [];
+  let current = "";
+
+  words.forEach((word) => {
+
+    const candidate = current + word;
+    const w = measureMixedWidth(doc, candidate, opts);
+
+    if (w > maxWidthMm && current.trim()) {
+      lines.push(current.trim());
+      current = word.replace(/^\s+/, "");
+    } else {
+      current = candidate;
+    }
+
+  });
+
+  if (current.trim()) lines.push(current.trim());
+
+  return lines.length ? lines : [""];
+
+}
+
+// Draws text that may mix Latin and Bengali characters, rendering
+// each script run appropriately (Bengali via a shaped canvas image,
+// Latin as normal jsPDF vector text). Caller must set the desired
+// font size on `doc` beforehand. Returns the total rendered width (mm).
+function drawSmartText(doc, text, x, y, opts = {}) {
+
+  const {
+    align = "left",
+    latinFamily = "helvetica",
+    latinStyle = "normal",
+  } = opts;
+
+  const runs = buildRuns(doc, text, opts);
 
   const totalWidth = runs.reduce((sum, r) => sum + r.width, 0);
 
@@ -180,10 +320,30 @@ function drawSmartText(doc, text, x, y, opts = {}) {
   else if (align === "center") cursorX = x - totalWidth / 2;
   else cursorX = x;
 
-  runs.forEach(({ run, isBengali, width }) => {
-    setRunFont(isBengali);
-    doc.text(run, cursorX, y);
+  runs.forEach(({ run, isBengali, width, img, skip }) => {
+
+    if (skip) {
+      cursorX += width;
+      return;
+    }
+
+    if (isBengali && img) {
+
+      try {
+        doc.addImage(img.dataUrl, "PNG", cursorX, y - img.ascentMm, img.widthMm, img.heightMm);
+      } catch (e) {
+        // ignore
+      }
+
+    } else {
+
+      doc.setFont(latinFamily, latinStyle);
+      doc.text(run, cursorX, y);
+
+    }
+
     cursorX += width;
+
   });
 
   return totalWidth;
@@ -485,11 +645,14 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
     order.district,
   ].filter(Boolean).join(", ") || "-";
 
-  // Best-effort wrapping width: uses whichever single font is set at
-  // the time, which is fine for the (usually short, one-line) address.
-  doc.setFont(bengaliLoaded && BENGALI_RANGE.test(fullAddress) ? "NotoSansBengali" : "helvetica", "normal");
+  const addressOpts = {
+    bengaliLoaded,
+    color: [0, 0, 0],
+    latinFamily: "helvetica",
+    latinStyle: "normal",
+  };
 
-  const addressLines = doc.splitTextToSize(fullAddress, textWidth);
+  const addressLines = wrapMixedText(doc, fullAddress, textWidth, addressOpts);
 
   addressLines.forEach((line, idx) => {
     doc.setFontSize(8);
@@ -498,9 +661,7 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
     }
     drawSmartText(doc, line, textX, y, {
       align: "left",
-      bengaliLoaded,
-      latinFamily: "helvetica",
-      latinStyle: "normal",
+      ...addressOpts,
     });
     y += 4;
   });
@@ -535,18 +696,22 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
 
     const itemName = item.name || "-";
 
-    doc.setFont(bengaliLoaded && BENGALI_RANGE.test(itemName) ? "NotoSansBengali" : "helvetica", "bold");
     doc.setFontSize(7.8);
 
-    const nameLines = doc.splitTextToSize(itemName, contentWidth - 22);
+    const nameOpts = {
+      bengaliLoaded,
+      color: [0, 0, 0],
+      latinFamily: "helvetica",
+      latinStyle: "bold",
+    };
+
+    const nameLines = wrapMixedText(doc, itemName, contentWidth - 22, nameOpts);
 
     nameLines.forEach((line, idx) => {
       doc.setFontSize(7.8);
       drawSmartText(doc, line, marginX, y + idx * 3.4, {
         align: "left",
-        bengaliLoaded,
-        latinFamily: "helvetica",
-        latinStyle: "bold",
+        ...nameOpts,
       });
     });
 
@@ -575,6 +740,7 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
       drawSmartText(doc, sub, marginX, y, {
         align: "left",
         bengaliLoaded,
+        color: [120, 120, 120],
         latinFamily: "helvetica",
         latinStyle: "normal",
       });
@@ -676,6 +842,7 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   drawSmartText(doc, forShoppingLine, marginX, y + 9, {
     align: "left",
     bengaliLoaded,
+    color: [90, 90, 90],
     latinFamily: "helvetica",
     latinStyle: "normal",
   });
@@ -717,9 +884,10 @@ export async function generateInvoicePdf(order) {
     settings.facebook ||
     window.location.origin;
 
-  const [qrCode, logoData] = await Promise.all([
+  const [qrCode, logoData, bengaliLoaded] = await Promise.all([
     QRCode.toDataURL(qrValue),
     loadImageAsDataURL(settings.logoUrl),
+    ensureBengaliFont(),
   ]);
 
   const measureDoc = new jsPDF({
@@ -728,10 +896,7 @@ export async function generateInvoicePdf(order) {
     format: [58, 400],
   });
 
-  const [bengaliLoaded, scriptLoaded] = await Promise.all([
-    ensureBengaliFont(measureDoc),
-    ensureScriptFont(measureDoc),
-  ]);
+  const scriptLoaded = await ensureScriptFont(measureDoc);
 
   const finalHeight = renderInvoiceContent(measureDoc, {
     order,
@@ -747,10 +912,6 @@ export async function generateInvoicePdf(order) {
     unit: "mm",
     format: [58, finalHeight],
   });
-
-  if (bengaliLoaded) {
-    await ensureBengaliFont(doc);
-  }
 
   if (scriptLoaded) {
     await ensureScriptFont(doc);
