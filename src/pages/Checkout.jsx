@@ -145,14 +145,6 @@ export default function Checkout(){
 
 
 
-useEffect(() => {
-  if (cart.length === 0) return;
-
-  trackInitiateCheckout(cart, total);
-}, [cart, total]);
-
-  
-
   const subtotal =
     cart.reduce(
       (sum,item)=>
@@ -166,6 +158,14 @@ useEffect(() => {
 
   const total =
     subtotal + deliveryCharge;
+
+
+
+useEffect(() => {
+  if (cart.length === 0) return;
+
+  trackInitiateCheckout(cart, total);
+}, [cart, total]);
 
 
 
