@@ -1,7 +1,9 @@
 import {
   useEffect,
   useState,
-  useRef
+  useRef,
+  lazy,
+  Suspense
 } from "react";
 
 import {
@@ -43,8 +45,10 @@ import {
   errorToast
 } from "../../components/ui/Toast";
 
-import Invoice58mm from "../../components/invoice/Invoice58mm";
-import { generateInvoicePdf } from "../../components/invoice/generateInvoicePdf";
+const Invoice58mm = lazy(() => import("../../components/invoice/Invoice58mm"));
+const generateInvoicePdf = (order) =>
+  import("../../components/invoice/generateInvoicePdf")
+    .then((mod) => mod.generateInvoicePdf(order));
 
 
 
@@ -2290,7 +2294,9 @@ height: 0,
 <div ref={printRef}>
 
 {printOrder && (
+<Suspense fallback={null}>
 <Invoice58mm order={printOrder}/>
+</Suspense>
 )}
 
 </div>
@@ -2363,7 +2369,9 @@ z-10
 
 <div className="clear-both">
 
+<Suspense fallback={<div className="p-6 text-sm text-gray-400">Loading…</div>}>
 <Invoice58mm order={viewOrder}/>
+</Suspense>
 
 </div>
 
