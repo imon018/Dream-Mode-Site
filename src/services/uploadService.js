@@ -38,3 +38,25 @@ export const uploadImages = async (files) => {
 
   return uploadedImages;
 };
+
+// Permanently deletes an already-uploaded image from Cloudinary.
+// publicId comes from the object returned by uploadSingleImage/uploadImages.
+// Safe to call even if publicId is missing/null (older images saved before
+// publicId tracking existed) - it just resolves without doing anything.
+export const deleteImageFromCloudinary = async (publicId) => {
+  if (!publicId) return null;
+
+  const response = await fetch("/api/delete-cloudinary-image", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ publicId }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Cloudinary delete failed");
+  }
+
+  return response.json();
+};
