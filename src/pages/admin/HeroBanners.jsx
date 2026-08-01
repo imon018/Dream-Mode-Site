@@ -23,6 +23,7 @@ import Button from "../../components/ui/Button";
 
 import {
   uploadSingleImage,
+  deleteImageFromCloudinary,
 } from "../../services/uploadService";
 
 import {
@@ -324,6 +325,10 @@ image:
 uploaded.imageUrl,
 
 
+imagePublicId:
+uploaded.publicId,
+
+
 productId,
 
 
@@ -401,7 +406,31 @@ const removeBanner=async()=>{
 
 try{
 
+const target =
+banners.find(
+b=>b.id===deleteId
+);
+
 await deleteBanner(deleteId);
+
+if(target?.imagePublicId){
+
+try{
+
+await deleteImageFromCloudinary(
+target.imagePublicId
+);
+
+}catch(err){
+
+console.log(
+"Banner image delete failed",
+err
+);
+
+}
+
+}
 
 successToast(
 "Banner Deleted"
