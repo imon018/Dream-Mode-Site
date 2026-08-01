@@ -1543,12 +1543,12 @@ outline-none
 ঢাকা - ৳৮০
 </option>
 
-<option value={100}>
-ঢাকা সাব এরিয়া - ৳১০০
+<option value={120}>
+ঢাকা সাব এরিয়া - ৳১২০
 </option>
 
-<option value={120}>
-ঢাকার বাইরে - ৳১২০
+<option value={150}>
+ঢাকার বাইরে - ৳১৫০
 </option>
 
 </select>
