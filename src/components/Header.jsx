@@ -237,12 +237,16 @@ const handleLogout = async()=>{
 
   setShowInstallDialog(false);
 
-  if (!window.deferredPrompt) {
-    alert("App installation is not available yet.");
-    return;
-  }
-
-  window.deferredPrompt.prompt();
+  // Directly download the signed release APK so Android's own
+  // install-confirmation dialog takes over from there - this works
+  // in any mobile browser, unlike the PWA beforeinstallprompt flow
+  // which only fires under narrow, browser-specific conditions.
+  const link = document.createElement("a");
+  link.href = "/downloads/Dream-Mode.apk";
+  link.download = "Dream-Mode.apk";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 
@@ -2020,6 +2024,23 @@ Downloading Dream Mode App?
 
 <button
 
+onClick={() => setShowInstallDialog(false)}
+
+className="
+flex-1
+border
+py-3
+rounded-xl
+"
+
+>
+
+No
+
+</button>
+
+<button
+
 onClick={handleInstallClick}
 
 className="
@@ -2033,23 +2054,6 @@ rounded-xl
 >
 
 Yes
-
-</button>
-
-<button
-
-onClick={() => setShowInstallDialog(false)}
-
-className="
-flex-1
-border
-py-3
-rounded-xl
-"
-
->
-
-No
 
 </button>
 
