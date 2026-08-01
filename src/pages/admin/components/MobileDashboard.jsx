@@ -55,26 +55,62 @@ icon:<FiDollarSign/>
 
 
 
+const today = new Date();
+
+const currentYear = today.getFullYear();
+const currentMonthIndex = today.getMonth();
+
+const daysInCurrentMonth =
+  new Date(currentYear, currentMonthIndex + 1, 0).getDate();
+
+const currentMonthName =
+  today.toLocaleString("en-US", { month: "long" });
+
+
+const dailyRevenueTotals =
+  new Array(daysInCurrentMonth).fill(0);
+
+orders.forEach((order) => {
+
+  if (order.status !== "Delivered") return;
+
+  if (!order.createdAt) return;
+
+  const orderDate = new Date(
+    order.createdAt.seconds
+      ? order.createdAt.seconds * 1000
+      : order.createdAt
+  );
+
+  if (
+    orderDate.getFullYear() === currentYear &&
+    orderDate.getMonth() === currentMonthIndex
+  ) {
+
+    const dayIndex = orderDate.getDate() - 1;
+
+    dailyRevenueTotals[dayIndex] +=
+      Number(order.total || 0);
+
+  }
+
+});
+
+
 const revenueData={
 
-labels:[
-"Week 1",
-"Week 2",
-"Week 3",
-"Week 4"
-],
+labels:
+  Array.from(
+    { length: daysInCurrentMonth },
+    (_, i) => String(i + 1)
+  ),
 
 datasets:[
 
 {
-label:"Revenue",
+label:`Revenue - ${currentMonthName} ${currentYear}`,
 
-data:[
-stats.revenue*.25,
-stats.revenue*.5,
-stats.revenue*.75,
-stats.revenue
-],
+data: dailyRevenueTotals,
 
 borderColor:"#F59E0B",
 
@@ -302,16 +338,43 @@ shadow-sm
 <h2 className="
 font-bold
 text-sm
-mb-3
 ">
 
 Revenue Overview
 
 </h2>
 
+<p className="
+text-xs
+text-gray-500
+mb-3
+">
+Daily revenue (Delivered) - {currentMonthName} {currentYear}
+</p>
+
 
 <Line
 data={revenueData}
+options={{
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      ticks: {
+        autoSkip: true,
+        maxRotation: 0,
+        font: { size: 9 },
+      },
+    },
+    y: {
+      beginAtZero: true,
+    },
+  },
+}}
 />
 
 
