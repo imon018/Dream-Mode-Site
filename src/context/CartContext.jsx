@@ -6,7 +6,14 @@ import {
 
 
 export const CartContext =
-  createContext();
+  createContext({
+    cart: [],
+    cartCount: 0,
+    addToCart: () => {},
+    removeFromCart: () => {},
+    updateQuantity: () => {},
+    clearCart: () => {},
+  });
 
 
 
@@ -248,12 +255,19 @@ export default function CartProvider({
 
 
 
+  const safeCart =
+    Array.isArray(cart)
+      ? cart
+      : [];
+
+
+
   const cartCount =
-    cart.reduce(
+    safeCart.reduce(
 
       (sum,item)=>
 
-      sum + item.quantity,
+      sum + (item.quantity || 0),
 
       0
 
@@ -273,7 +287,7 @@ export default function CartProvider({
 
       value={{
 
-        cart,
+        cart: safeCart,
 
         cartCount,
 
