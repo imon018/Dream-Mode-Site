@@ -201,7 +201,7 @@ export default function Users() {
 
         {/* USERS LIST */}
         {!loading && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100">
             {currentUsers.map((user) => (
               <div
                 key={user.id}
