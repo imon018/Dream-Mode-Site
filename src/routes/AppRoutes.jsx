@@ -113,6 +113,13 @@ export default function AppRoutes() {
 
         <Route path="/" element={<Home />} />
 
+        {/* The Android OTA update server always serves this app at
+            http://127.0.0.1:8765/index.html (native code hardcodes
+            that path). Without this route, react-router-dom treats
+            "/index.html" as an unknown path and renders the catch-all
+            404 route on first load after every update. */}
+        <Route path="/index.html" element={<Home />} />
+
         <Route path="/shop" element={<Shop />} />
 
         <Route
