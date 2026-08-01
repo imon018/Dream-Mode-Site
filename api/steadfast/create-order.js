@@ -7,19 +7,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // ✅ Test Mode
-    console.log("Steadfast Payload:", req.body);
-
-    return res.status(200).json({
-      success: true,
-      message: "Test Successful",
-    });
-
-    /*
-    // ===========================
-    // Production Mode
-    // ===========================
-
     const response = await fetch(
       "https://portal.packzy.com/api/v1/create_order",
       {
@@ -35,9 +22,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    return res.status(200).json(data);
-    */
-
+    return res.status(response.status).json(data);
   } catch (err) {
     return res.status(500).json({
       success: false,
