@@ -12,6 +12,7 @@ import {
 
 import {
   uploadImages,
+  deleteImageFromCloudinary,
 } from "../services/uploadService";
 
 import {
@@ -67,6 +68,9 @@ export default function Profile(){
         if(!file)
           return;
 
+        const oldPhotoPublicId =
+          user?.photoPublicId;
+
         const uploaded =
           await uploadImages([
             file,
@@ -74,6 +78,9 @@ export default function Profile(){
 
         const photoURL =
           uploaded[0].imageUrl;
+
+        const photoPublicId =
+          uploaded[0].publicId;
 
         await updateDoc(
 
@@ -85,9 +92,29 @@ export default function Profile(){
 
           {
             photoURL,
+            photoPublicId,
           }
 
         );
+
+        if(oldPhotoPublicId){
+
+          try{
+
+            await deleteImageFromCloudinary(
+              oldPhotoPublicId
+            );
+
+          }catch(err){
+
+            console.log(
+              "Old photo delete failed",
+              err
+            );
+
+          }
+
+        }
 
         alert(
           "Profile photo updated"
