@@ -177,6 +177,8 @@ useEffect(() => {
 // Fix: use a data-attribute + `closest()` check instead of a ref.
 // This works correctly no matter how many menu containers exist
 // in the DOM at once.
+
+	
 useEffect(() => {
 
   const handleClickOutside = (e) => {
@@ -260,7 +262,9 @@ status
 
   if (order) {
     try {
-      await sendToSteadfast({
+      console.log("Processing order:", order);
+
+      const result = await sendToSteadfast({
         invoice: order.id,
         recipient_name: order.customerName,
         recipient_phone: order.phone,
@@ -269,11 +273,13 @@ status
         note: order.notes || "",
       });
 
+      console.log("Steadfast Response:", result);
+
       successToast("Steadfast order created");
     } catch (err) {
-  console.error(err);
-  errorToast("Steadfast order failed");
-}
+      console.error(err);
+      errorToast(err.message);
+    }
   }
 }
 
