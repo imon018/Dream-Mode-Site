@@ -252,55 +252,61 @@ function drawHeart(doc, cx, cy, size, color) {
 
 }
 
-// Small line-style icons used next to the Customer section rows.
-// `baseY` is the text baseline they should sit next to; `size` is
-// the icon's rough height in mm.
+// Small line-style icons used next to the Customer section rows,
+// drawn as thin outlines (stroke only) to match the Feather-style
+// (FiUser/FiPhone/FiMapPin) icons used on the website, rather than
+// solid filled shapes. `baseY` is the text baseline they sit next
+// to; `size` is the icon's rough height in mm.
 
 function drawPersonIcon(doc, x, baseY, size, color) {
 
-  doc.setFillColor(...color);
+  doc.setDrawColor(...color);
+  doc.setLineWidth(size * 0.09);
 
   const cx = x + size * 0.34;
-  const headR = size * 0.2;
+  const headR = size * 0.19;
 
-  doc.circle(cx, baseY - size * 0.68, headR, "F");
+  doc.circle(cx, baseY - size * 0.72, headR, "S");
   doc.roundedRect(
-    x, baseY - size * 0.4,
-    size * 0.68, size * 0.42,
-    size * 0.14, size * 0.14,
-    "F"
+    x + size * 0.02, baseY - size * 0.42,
+    size * 0.64, size * 0.42,
+    size * 0.18, size * 0.18,
+    "S"
   );
 
 }
 
 function drawPhoneIcon(doc, x, baseY, size, color) {
 
-  doc.setFillColor(...color);
+  doc.setDrawColor(...color);
+  doc.setLineWidth(size * 0.09);
 
   doc.roundedRect(
-    x + size * 0.15, baseY - size * 0.85,
-    size * 0.4, size * 0.85,
+    x + size * 0.18, baseY - size * 0.85,
+    size * 0.34, size * 0.85,
     size * 0.12, size * 0.12,
-    "F"
+    "S"
   );
 
 }
 
 function drawPinIcon(doc, x, baseY, size, color) {
 
-  doc.setFillColor(...color);
+  doc.setDrawColor(...color);
+  doc.setLineWidth(size * 0.09);
 
-  const r = size * 0.26;
+  const r = size * 0.24;
   const cx = x + size * 0.3;
-  const topY = baseY - size * 0.78;
+  const topY = baseY - size * 0.8;
 
-  doc.circle(cx, topY, r, "F");
   doc.triangle(
-    cx - r * 0.75, topY + r * 0.45,
-    cx + r * 0.75, topY + r * 0.45,
+    cx - r * 0.7, topY + r * 0.35,
+    cx + r * 0.7, topY + r * 0.35,
     cx, baseY,
-    "F"
+    "S"
   );
+  doc.circle(cx, topY, r, "S");
+  doc.circle(cx, topY, r * 0.32, "S");
 
 }
 
