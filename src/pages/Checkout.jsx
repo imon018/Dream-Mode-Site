@@ -164,7 +164,7 @@ export default function Checkout(){
 useEffect(() => {
   if (cart.length === 0) return;
 
-  trackInitiateCheckout(cart, total);
+  trackInitiateCheckout(total, cart);
 }, [cart, total]);
 
 
@@ -318,7 +318,11 @@ useEffect(() => {
         "Order placed successfully"
       );
 
-      trackPurchase(orderId, cart, total);
+      trackPurchase({
+        id: orderId,
+        items: cart,
+        total,
+      });
 
       clearCart();
 
