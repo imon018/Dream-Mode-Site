@@ -574,6 +574,7 @@ export default function OrderSuccess(){
                   flex
                   items-center
                   gap-3
+                  ml-auto
                 "
               >
 
