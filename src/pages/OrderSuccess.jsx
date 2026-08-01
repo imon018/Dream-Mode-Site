@@ -16,7 +16,7 @@ import { db } from "../firebase/firestore";
 import { useReactToPrint } from "react-to-print";
 
 import Invoice58mm from "../components/invoice/Invoice58mm";
-import { generateInvoicePdfFromElement } from "../components/invoice/generateInvoicePdfFromElement";
+import { generateInvoicePdf } from "../components/invoice/generateInvoicePdf";
 
 
 import {
@@ -64,8 +64,6 @@ export default function OrderSuccess(){
   const [showInvoicePreview, setShowInvoicePreview] = useState(false);
 
   const invoicePrintRef = useRef(null);
-
-  const invoiceCaptureRef = useRef(null);
 
   const handlePrintInvoice = useReactToPrint({
     contentRef: invoicePrintRef,
@@ -523,7 +521,7 @@ export default function OrderSuccess(){
             <div
               className="
                 flex
-                items-start
+                items-center
                 justify-between
                 px-5
                 py-4
@@ -576,7 +574,6 @@ export default function OrderSuccess(){
                   flex
                   items-center
                   gap-3
-                  mt-0.5
                 "
               >
 
@@ -610,12 +607,7 @@ export default function OrderSuccess(){
 
                 <button
                   type="button"
-                  onClick={() =>
-                    generateInvoicePdfFromElement(
-                      invoiceCaptureRef.current,
-                      order
-                    )
-                  }
+                  onClick={() => generateInvoicePdf(order)}
                   aria-label="Download Invoice"
                   title="Download Invoice"
                   className="
@@ -1322,35 +1314,6 @@ export default function OrderSuccess(){
     >
 
       <div ref={invoicePrintRef}>
-
-        <Invoice58mm order={order} />
-
-      </div>
-
-    </div>
-
-
-    {/*
-      Off-screen invoice used only for the PDF "Download" capture.
-      Kept separate from the print node above: html2canvas needs the
-      target to have its real layout size, but the print node's
-      wrapper is intentionally width:0/height:0/overflow:hidden
-      (fine for react-to-print's own print stylesheet, but that
-      would clip an html2canvas screenshot). Pushed off-screen with
-      a large negative left offset instead, so it keeps its real
-      58mm layout while staying invisible to the user.
-    */}
-    <div
-      aria-hidden="true"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: "-9999px",
-        zIndex: -1,
-      }}
-    >
-
-      <div ref={invoiceCaptureRef}>
 
         <Invoice58mm order={order} />
 
