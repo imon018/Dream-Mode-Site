@@ -15,6 +15,7 @@ import Button from "../../components/ui/Button";
 
 import {
   uploadSingleImage,
+  deleteImageFromCloudinary,
 } from "../../services/uploadService";
 
 
@@ -58,6 +59,13 @@ setLoading
 
 
 
+const [
+currentPublicId,
+setCurrentPublicId
+]=useState("");
+
+
+
 
 
 
@@ -85,6 +93,15 @@ setPreview(
 banner.imageUrl
 );
 
+
+}
+
+
+if(banner?.publicId){
+
+setCurrentPublicId(
+banner.publicId
+);
 
 }
 
@@ -203,6 +220,30 @@ new Date(),
 
 });
 
+
+if(currentPublicId){
+
+try{
+
+await deleteImageFromCloudinary(
+currentPublicId
+);
+
+}catch(err){
+
+console.log(
+"Old banner delete failed",
+err
+);
+
+}
+
+}
+
+
+setCurrentPublicId(
+uploaded.publicId
+);
 
 
 successToast(
