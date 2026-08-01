@@ -19,15 +19,26 @@ export default function CartProvider({
     useState(()=>{
 
 
-      const savedCart =
-        localStorage.getItem(
-          "dream_cart"
-        );
+      try {
 
+        const savedCart =
+          localStorage.getItem(
+            "dream_cart"
+          );
 
-      return savedCart
-        ? JSON.parse(savedCart)
-        : [];
+        if (!savedCart) return [];
+
+        const parsed = JSON.parse(savedCart);
+
+        return Array.isArray(parsed)
+          ? parsed
+          : [];
+
+      } catch (err) {
+
+        return [];
+
+      }
 
 
     });
