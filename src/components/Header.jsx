@@ -384,7 +384,7 @@ whitespace-nowrap
 
 &nbsp;&nbsp;&nbsp;
 
-🚚 Outside Dhaka Delivery ৳120
+🚚 Outside Dhaka Delivery ৳150
 
 &nbsp;&nbsp;&nbsp;
 
