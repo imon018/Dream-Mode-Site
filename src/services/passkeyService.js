@@ -242,13 +242,12 @@ export async function loginWithPasskey(){
 
     console.log("PASSKEY LOGIN (BROWSER) ERROR:", error);
 
-    // ব্রাউজার কোনো সেভ করা Passkey খুঁজে পায়নি, বা ইউজার বাতিল
-    // করেছে — দুটো ক্ষেত্রেই WebAuthn একই রকম error দেয়, তাই এখানে
-    // "Setup করা হয়নি" মেসেজ দেখানো নিরাপদ ও প্রত্যাশিত UX।
-    const notSetupError =
-    new Error("PASSKEY_NOT_SETUP");
-
-    throw notSetupError;
+    // সাময়িকভাবে (ডিবাগ করার জন্য) ব্রাউজারের আসল error name+message
+    // দেখানো হচ্ছে, যাতে বোঝা যায় এটা সত্যিই "কোনো Passkey পাওয়া
+    // যায়নি" নাকি অন্য কোনো bug।
+    throw new Error(
+      `PASSKEY_BROWSER_ERROR: ${error.name || ""} — ${error.message || error}`
+    );
 
   }
 
@@ -286,6 +285,19 @@ export async function loginWithPasskey(){
 
       throw new Error(
         "সময় শেষ হয়ে গেছে। আবার চেষ্টা করুন।"
+      );
+
+    }
+
+    if(
+      error.message?.includes("PASSKEY_VERIFY_FAILED")
+    ){
+
+      throw new Error(
+        error.message.replace(
+          /.*PASSKEY_VERIFY_FAILED:\s*/,
+          ""
+        )
       );
 
     }
