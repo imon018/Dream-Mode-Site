@@ -2411,29 +2411,46 @@ exports.generatePasskeyAuthenticationOptions =
 onCall(
 async()=>{
 
-  const { rpID } =
-  await getPasskeyRpConfig();
+  try{
 
-  const options =
-  await generateAuthenticationOptions({
-    rpID,
-    userVerification: "preferred",
-  });
+    const { rpID } =
+    await getPasskeyRpConfig();
 
-  const challengeRef =
-  admin.firestore()
-  .collection("passkeyLoginChallenges")
-  .doc();
+    const options =
+    await generateAuthenticationOptions({
+      rpID,
+      userVerification: "preferred",
+    });
 
-  await challengeRef.set({
-    challenge: options.challenge,
-    createdAt: Date.now(),
-  });
+    const challengeRef =
+    admin.firestore()
+    .collection("passkeyLoginChallenges")
+    .doc();
 
-  return {
-    options,
-    challengeId: challengeRef.id,
-  };
+    await challengeRef.set({
+      challenge: options.challenge,
+      createdAt: Date.now(),
+    });
+
+    return {
+      options,
+      challengeId: challengeRef.id,
+    };
+
+  }catch(error){
+
+    // এই catch না থাকলে যেকোনো unexpected error (Firestore ইত্যাদি)
+    // Firebase নিজে থেকে একটা masked "INTERNAL" এরর হিসেবে পাঠিয়ে
+    // দেয়, যেটা client-এ কোনো নির্দিষ্ট মেসেজে ধরা পড়ে না এবং সবসময়
+    // একই generic মেসেজ দেখায়। এখানে ধরে, লগ করে, স্পষ্ট এরর পাঠানো হচ্ছে।
+    console.log("PASSKEY GENERATE AUTH OPTIONS ERROR:", error);
+
+    throw new HttpsError(
+      "internal",
+      `PASSKEY_OPTIONS_ERROR: ${error.message || error}`
+    );
+
+  }
 
 }
 );
@@ -2452,155 +2469,223 @@ exports.verifyPasskeyLogin =
 onCall(
 async(request)=>{
 
-  const { challengeId, response } = request.data || {};
-
-  if(!challengeId || !response){
-
-    throw new HttpsError(
-      "invalid-argument",
-      "Missing authentication response."
-    );
-
-  }
-
-  const challengeRef =
-  admin.firestore()
-  .collection("passkeyLoginChallenges")
-  .doc(challengeId);
-
-  const challengeSnap = await challengeRef.get();
-
-  if(!challengeSnap.exists){
-
-    throw new HttpsError(
-      "failed-precondition",
-      "PASSKEY_LOGIN_EXPIRED"
-    );
-
-  }
-
-  const { challenge, createdAt } = challengeSnap.data();
-
-  // এক-বার ব্যবহারযোগ্য চ্যালেঞ্জ — যাচাইয়ের আগেই মুছে ফেলা হচ্ছে
-  // replay attack ঠেকানোর জন্য।
-  await challengeRef.delete();
-
-  if(Date.now() - createdAt > 5 * 60 * 1000){
-
-    throw new HttpsError(
-      "deadline-exceeded",
-      "PASSKEY_LOGIN_EXPIRED"
-    );
-
-  }
-
-  const credentialId = response.id;
-
-  if(!credentialId){
-
-    throw new HttpsError(
-      "invalid-argument",
-      "Invalid passkey response."
-    );
-
-  }
-
-  const credRef =
-  admin.firestore()
-  .collection("passkeyCredentials")
-  .doc(credentialId);
-
-  const credSnap = await credRef.get();
-
-  if(!credSnap.exists){
-
-    throw new HttpsError(
-      "not-found",
-      "PASSKEY_NOT_SETUP"
-    );
-
-  }
-
-  const credData = credSnap.data();
-
-  const { rpID, origin } =
-  await getPasskeyRpConfig();
-
-  let verification;
+  // পুরো ফাংশনটা try/catch দিয়ে wrap করা হয়েছে। আগে শুধু
+  // verifyAuthenticationResponse-এর আশেপাশে catch ছিল — তার পরের ধাপ
+  // (credRef.update, userRef.get/set, createCustomToken) কোনো catch
+  // ছাড়াই ছিল। ওই ধাপগুলোর যেকোনো একটাতে সমস্যা হলে (যেমন:
+  // createCustomToken-এর জন্য প্রয়োজনীয় "Service Account Token
+  // Creator" IAM permission Cloud Function-এর service account-এ না
+  // থাকা — এটাই সবচেয়ে সম্ভাব্য কারণ, কারণ Email/Password Login ঠিকমতো
+  // কাজ করছে কিন্তু Passkey Login (যেটা createCustomToken ব্যবহার করে)
+  // Chrome ও Firefox উভয় জায়গাতেই একই রকম ব্যর্থ হচ্ছে), Firebase
+  // নিজে থেকে একটা masked, generic "INTERNAL" এরর পাঠিয়ে দেয়। Client
+  // সাইডে সেটা কোনো নির্দিষ্ট কেসে না মিলে সবসময় একই generic মেসেজ
+  // দেখায়। এখন সবকিছু ধরে, লগ করে এবং স্পষ্ট এরর কোড/মেসেজ দিয়ে পাঠানো
+  // হচ্ছে যাতে আসল কারণ Cloud Functions logs-এ এবং client-এ দুই জায়গাতেই
+  // ধরা যায়।
 
   try{
 
-    verification =
-    await verifyAuthenticationResponse({
-      response,
-      expectedChallenge: challenge,
-      expectedOrigin: origin,
-      expectedRPID: rpID,
-      credential: {
-        id: credentialId,
-        // admin SDK ফেরত দেয় Node Buffer হিসেবে, যেটা ইতিমধ্যে
-        // Uint8Array-এর subclass — তাই আলাদা conversion লাগে না।
-        publicKey: credData.publicKey,
-        counter: credData.counter,
-        transports: credData.transports || [],
-      },
+    const { challengeId, response } = request.data || {};
+
+    if(!challengeId || !response){
+
+      throw new HttpsError(
+        "invalid-argument",
+        "Missing authentication response."
+      );
+
+    }
+
+    const challengeRef =
+    admin.firestore()
+    .collection("passkeyLoginChallenges")
+    .doc(challengeId);
+
+    const challengeSnap = await challengeRef.get();
+
+    if(!challengeSnap.exists){
+
+      throw new HttpsError(
+        "failed-precondition",
+        "PASSKEY_LOGIN_EXPIRED"
+      );
+
+    }
+
+    const { challenge, createdAt } = challengeSnap.data();
+
+    // এক-বার ব্যবহারযোগ্য চ্যালেঞ্জ — যাচাইয়ের আগেই মুছে ফেলা হচ্ছে
+    // replay attack ঠেকানোর জন্য।
+    await challengeRef.delete();
+
+    if(Date.now() - createdAt > 5 * 60 * 1000){
+
+      throw new HttpsError(
+        "deadline-exceeded",
+        "PASSKEY_LOGIN_EXPIRED"
+      );
+
+    }
+
+    const credentialId = response.id;
+
+    if(!credentialId){
+
+      throw new HttpsError(
+        "invalid-argument",
+        "Invalid passkey response."
+      );
+
+    }
+
+    const credRef =
+    admin.firestore()
+    .collection("passkeyCredentials")
+    .doc(credentialId);
+
+    const credSnap = await credRef.get();
+
+    if(!credSnap.exists){
+
+      throw new HttpsError(
+        "not-found",
+        "PASSKEY_NOT_SETUP"
+      );
+
+    }
+
+    const credData = credSnap.data();
+
+    const { rpID, origin } =
+    await getPasskeyRpConfig();
+
+    let verification;
+
+    try{
+
+      verification =
+      await verifyAuthenticationResponse({
+        response,
+        expectedChallenge: challenge,
+        expectedOrigin: origin,
+        expectedRPID: rpID,
+        credential: {
+          id: credentialId,
+          // admin SDK ফেরত দেয় Node Buffer হিসেবে, যেটা ইতিমধ্যে
+          // Uint8Array-এর subclass — তাই আলাদা conversion লাগে না।
+          publicKey: credData.publicKey,
+          counter: credData.counter,
+          transports: credData.transports || [],
+        },
+      });
+
+    }catch(error){
+
+      console.log("PASSKEY LOGIN VERIFY ERROR:", error);
+
+      // rpID/origin mismatch (যেমন Admin Settings-এ Website URL আর
+      // আসল ডোমেইন আলাদা হয়ে গেলে) সাধারণত এখানে ধরা পড়ে — সরাসরি
+      // কারণটা মেসেজে দেখানো হচ্ছে, hide করা হচ্ছে না।
+      throw new HttpsError(
+        "permission-denied",
+        `PASSKEY_VERIFY_FAILED: ${error.message || error} (rpID: ${rpID}, origin: ${origin})`
+      );
+
+    }
+
+    if(!verification.verified){
+
+      throw new HttpsError(
+        "permission-denied",
+        `PASSKEY_VERIFY_FAILED: verification returned false (rpID: ${rpID}, origin: ${origin})`
+      );
+
+    }
+
+    await credRef.update({
+      counter: verification.authenticationInfo.newCounter,
+      lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    const userRef =
+    admin.firestore()
+    .collection("users")
+    .doc(credData.uid);
+
+    const userSnap = await userRef.get();
+
+    if(!userSnap.exists){
+
+      throw new HttpsError(
+        "not-found",
+        "PASSKEY_ACCOUNT_NOT_FOUND"
+      );
+
+    }
+
+    const role =
+    userSnap.data().role || "user";
+
+    await userRef.set(
+      {
+        lastLogin: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    let token;
+
+    try{
+
+      token =
+      await admin.auth().createCustomToken(credData.uid);
+
+    }catch(error){
+
+      // createCustomToken ব্যর্থ হওয়ার সবচেয়ে সাধারণ কারণ হলো Cloud
+      // Function-এর runtime service account-এ "Service Account Token
+      // Creator" (roles/iam.serviceAccountTokenCreator) role না থাকা।
+      // Google Cloud Console → IAM & Admin → IAM-এ গিয়ে চেক করুন যে
+      // এই ফাংশনের service account (সাধারণত
+      // <project-id>@appspot.gserviceaccount.com) নিজের উপর ওই role
+      // পেয়েছে কিনা।
+      console.log("PASSKEY CREATE CUSTOM TOKEN ERROR:", error);
+
+      throw new HttpsError(
+        "internal",
+        `PASSKEY_TOKEN_ERROR: ${error.message || error}`
+      );
+
+    }
+
+    if(!token){
+
+      throw new HttpsError(
+        "internal",
+        "PASSKEY_TOKEN_ERROR: token generation returned empty."
+      );
+
+    }
+
+    return { token, role };
 
   }catch(error){
 
-    console.log("PASSKEY LOGIN VERIFY ERROR:", error);
+    if(error instanceof HttpsError){
+
+      throw error;
+
+    }
+
+    console.log("PASSKEY LOGIN UNEXPECTED ERROR:", error);
 
     throw new HttpsError(
-      "permission-denied",
-      `PASSKEY_VERIFY_FAILED: ${error.message || error}`
+      "internal",
+      `PASSKEY_UNEXPECTED_ERROR: ${error.message || error}`
     );
 
   }
-
-  if(!verification.verified){
-
-    throw new HttpsError(
-      "permission-denied",
-      "Passkey verification failed."
-    );
-
-  }
-
-  await credRef.update({
-    counter: verification.authenticationInfo.newCounter,
-    lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
-  });
-
-  const userRef =
-  admin.firestore()
-  .collection("users")
-  .doc(credData.uid);
-
-  const userSnap = await userRef.get();
-
-  if(!userSnap.exists){
-
-    throw new HttpsError(
-      "not-found",
-      "Account not found."
-    );
-
-  }
-
-  const role =
-  userSnap.data().role || "user";
-
-  await userRef.set(
-    {
-      lastLogin: admin.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true }
-  );
-
-  const token =
-  await admin.auth().createCustomToken(credData.uid);
-
-  return { token, role };
 
 }
 );
