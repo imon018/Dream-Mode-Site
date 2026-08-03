@@ -16,6 +16,7 @@ import {
   FiRefreshCw,
   FiHeart,
   FiSettings,
+  FiKey,
   FiLock,
   FiTrash2,
   FiLogOut,
@@ -404,6 +405,42 @@ space-y-2
 "
 
 >
+
+
+
+<NavLink
+
+to="/profile/security/passkey"
+
+onClick={closeDrawer}
+
+className="
+block
+px-4
+py-2
+rounded-lg
+hover:bg-white
+text-slate-700
+"
+
+>
+
+
+<FiKey
+
+className="
+inline
+mr-2
+"
+
+/>
+
+
+Add Passkey
+
+
+</NavLink>
+
 
 
 
