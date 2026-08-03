@@ -2552,7 +2552,7 @@ async(request)=>{
 
     throw new HttpsError(
       "permission-denied",
-      `PASSKEY_VERIFY_FAILED: ${error.message || error}`
+      "Passkey verification failed."
     );
 
   }
