@@ -23,6 +23,13 @@ const nodemailer =
 require("nodemailer");
 
 
+const {
+  generateRegistrationOptions,
+  verifyRegistrationResponse,
+  generateAuthenticationOptions,
+  verifyAuthenticationResponse,
+} = require("@simplewebauthn/server");
+
 
 admin.initializeApp();
 
@@ -51,6 +58,53 @@ throw new Error(
 "Website URL not found"
 );
 
+
+}
+
+
+
+// =================================================
+// PASSKEY (WEBAUTHN) — RELYING PARTY CONFIG
+// Website URL চেঞ্জ হলে (Admin Settings থেকে) Passkey-র
+// RP ID/Origin ও automatically সেই নতুন ডোমেইন অনুযায়ী সেট
+// হয়ে যাবে। ডিফল্ট Vercel ডোমেইন fallback হিসেবে রাখা আছে
+// যাতে settings/store ডকুমেন্টে websiteUrl সেট না থাকলেও ভেঙে না পড়ে।
+// =================================================
+
+async function getPasskeyRpConfig(){
+
+  const snap =
+  await admin.firestore()
+  .collection("settings")
+  .doc("store")
+  .get();
+
+  const data =
+  (snap.exists && snap.data()) || {};
+
+  const origin =
+  (
+    data.websiteUrl ||
+    "https://dream-mode-site-eight.vercel.app"
+  ).replace(/\/$/, "");
+
+  let rpID = "localhost";
+
+  try{
+
+    rpID = new URL(origin).hostname;
+
+  }catch(err){
+
+    console.log("Invalid websiteUrl for passkey RP:", err);
+
+  }
+
+  const rpName =
+  (data.storeName && data.storeName.trim()) ||
+  "DREAM MODE";
+
+  return { rpID, rpName, origin };
 
 }
 
@@ -2004,3 +2058,549 @@ Disallow: /wishlist
 
 Sitemap: ${site}/sitemap.xml`);
 });
+
+
+
+// =================================================
+// PASSKEY — GENERATE REGISTRATION OPTIONS
+// LOGIN REQUIRED (Passkey Setup: User Settings / Admin Settings)
+// =================================================
+
+exports.generatePasskeyRegistrationOptions =
+
+onCall(
+async(request)=>{
+
+  if(!request.auth){
+
+    throw new HttpsError(
+      "unauthenticated",
+      "Please login first."
+    );
+
+  }
+
+  const uid = request.auth.uid;
+
+  const userSnap =
+  await admin.firestore()
+  .collection("users")
+  .doc(uid)
+  .get();
+
+  const userData =
+  (userSnap.exists && userSnap.data()) || {};
+
+  const existingSnap =
+  await admin.firestore()
+  .collection("passkeyCredentials")
+  .where("uid", "==", uid)
+  .get();
+
+  const excludeCredentials =
+  existingSnap.docs.map((d)=>({
+    id: d.id,
+    transports: d.data().transports || [],
+  }));
+
+  const { rpID, rpName } =
+  await getPasskeyRpConfig();
+
+  const options =
+  await generateRegistrationOptions({
+    rpName,
+    rpID,
+    userName: userData.email || uid,
+    userDisplayName: userData.name || userData.email || "User",
+    attestationType: "none",
+    excludeCredentials,
+    authenticatorSelection: {
+      residentKey: "required",
+      userVerification: "preferred",
+    },
+  });
+
+  await admin.firestore()
+  .collection("users")
+  .doc(uid)
+  .set(
+    {
+      passkeyChallenge: options.challenge,
+      passkeyChallengeExpiresAt: Date.now() + 5 * 60 * 1000,
+    },
+    { merge: true }
+  );
+
+  return options;
+
+}
+);
+
+
+
+// =================================================
+// PASSKEY — VERIFY REGISTRATION
+// LOGIN REQUIRED
+// =================================================
+
+exports.verifyPasskeyRegistration =
+
+onCall(
+async(request)=>{
+
+  if(!request.auth){
+
+    throw new HttpsError(
+      "unauthenticated",
+      "Please login first."
+    );
+
+  }
+
+  const uid = request.auth.uid;
+
+  const { response, label } = request.data || {};
+
+  if(!response){
+
+    throw new HttpsError(
+      "invalid-argument",
+      "Missing registration response."
+    );
+
+  }
+
+  const userRef =
+  admin.firestore()
+  .collection("users")
+  .doc(uid);
+
+  const userSnap = await userRef.get();
+
+  const userData =
+  (userSnap.exists && userSnap.data()) || {};
+
+  if(
+    !userData.passkeyChallenge ||
+    !userData.passkeyChallengeExpiresAt ||
+    userData.passkeyChallengeExpiresAt < Date.now()
+  ){
+
+    throw new HttpsError(
+      "deadline-exceeded",
+      "Passkey setup expired. Please try again."
+    );
+
+  }
+
+  const { rpID, origin } =
+  await getPasskeyRpConfig();
+
+  let verification;
+
+  try{
+
+    verification =
+    await verifyRegistrationResponse({
+      response,
+      expectedChallenge: userData.passkeyChallenge,
+      expectedOrigin: origin,
+      expectedRPID: rpID,
+    });
+
+  }catch(error){
+
+    console.log("PASSKEY REGISTRATION VERIFY ERROR:", error);
+
+    throw new HttpsError(
+      "invalid-argument",
+      "Passkey could not be verified."
+    );
+
+  }
+
+  if(!verification.verified || !verification.registrationInfo){
+
+    throw new HttpsError(
+      "invalid-argument",
+      "Passkey could not be verified."
+    );
+
+  }
+
+  const {
+    credential,
+    credentialDeviceType,
+    credentialBackedUp,
+  } = verification.registrationInfo;
+
+  const credRef =
+  admin.firestore()
+  .collection("passkeyCredentials")
+  .doc(credential.id);
+
+  const credSnap = await credRef.get();
+
+  if(credSnap.exists){
+
+    throw new HttpsError(
+      "already-exists",
+      "This passkey is already registered."
+    );
+
+  }
+
+  await credRef.set({
+    uid,
+    publicKey: Buffer.from(credential.publicKey),
+    counter: credential.counter,
+    transports: credential.transports || [],
+    deviceType: credentialDeviceType,
+    backedUp: credentialBackedUp,
+    label: (label && String(label).slice(0, 60)) || "Passkey",
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    lastUsedAt: null,
+  });
+
+  await userRef.set(
+    {
+      passkeyChallenge: admin.firestore.FieldValue.delete(),
+      passkeyChallengeExpiresAt: admin.firestore.FieldValue.delete(),
+    },
+    { merge: true }
+  );
+
+  return {
+    verified: true,
+    credentialId: credential.id,
+  };
+
+}
+);
+
+
+
+// =================================================
+// PASSKEY — LIST MY PASSKEYS
+// LOGIN REQUIRED
+// =================================================
+
+exports.listPasskeys =
+
+onCall(
+async(request)=>{
+
+  if(!request.auth){
+
+    throw new HttpsError(
+      "unauthenticated",
+      "Please login first."
+    );
+
+  }
+
+  const snap =
+  await admin.firestore()
+  .collection("passkeyCredentials")
+  .where("uid", "==", request.auth.uid)
+  .get();
+
+  const passkeys =
+  snap.docs
+  .map((d)=>{
+
+    const data = d.data();
+
+    return {
+      id: d.id,
+      label: data.label || "Passkey",
+      deviceType: data.deviceType || "singleDevice",
+      backedUp: !!data.backedUp,
+      createdAt:
+        data.createdAt && data.createdAt.toDate
+          ? data.createdAt.toDate().toISOString()
+          : null,
+      lastUsedAt:
+        data.lastUsedAt && data.lastUsedAt.toDate
+          ? data.lastUsedAt.toDate().toISOString()
+          : null,
+    };
+
+  })
+  .sort((a, b)=>{
+
+    return (
+      new Date(b.createdAt || 0) -
+      new Date(a.createdAt || 0)
+    );
+
+  });
+
+  return { passkeys };
+
+}
+);
+
+
+
+// =================================================
+// PASSKEY — DELETE
+// LOGIN REQUIRED
+// =================================================
+
+exports.deletePasskey =
+
+onCall(
+async(request)=>{
+
+  if(!request.auth){
+
+    throw new HttpsError(
+      "unauthenticated",
+      "Please login first."
+    );
+
+  }
+
+  const { credentialId } = request.data || {};
+
+  if(!credentialId){
+
+    throw new HttpsError(
+      "invalid-argument",
+      "credentialId is required."
+    );
+
+  }
+
+  const credRef =
+  admin.firestore()
+  .collection("passkeyCredentials")
+  .doc(credentialId);
+
+  const credSnap = await credRef.get();
+
+  if(
+    !credSnap.exists ||
+    credSnap.data().uid !== request.auth.uid
+  ){
+
+    throw new HttpsError(
+      "permission-denied",
+      "Passkey not found."
+    );
+
+  }
+
+  await credRef.delete();
+
+  return { deleted: true };
+
+}
+);
+
+
+
+// =================================================
+// PASSKEY — GENERATE AUTHENTICATION (LOGIN) OPTIONS
+// LOGIN NOT REQUIRED (usernameless / discoverable passkey login)
+// =================================================
+
+exports.generatePasskeyAuthenticationOptions =
+
+onCall(
+async()=>{
+
+  const { rpID } =
+  await getPasskeyRpConfig();
+
+  const options =
+  await generateAuthenticationOptions({
+    rpID,
+    userVerification: "preferred",
+  });
+
+  const challengeRef =
+  admin.firestore()
+  .collection("passkeyLoginChallenges")
+  .doc();
+
+  await challengeRef.set({
+    challenge: options.challenge,
+    createdAt: Date.now(),
+  });
+
+  return {
+    options,
+    challengeId: challengeRef.id,
+  };
+
+}
+);
+
+
+
+// =================================================
+// PASSKEY — VERIFY AUTHENTICATION (LOGIN)
+// LOGIN NOT REQUIRED
+// Returns a Firebase custom token on success so the client
+// can call signInWithCustomToken().
+// =================================================
+
+exports.verifyPasskeyLogin =
+
+onCall(
+async(request)=>{
+
+  const { challengeId, response } = request.data || {};
+
+  if(!challengeId || !response){
+
+    throw new HttpsError(
+      "invalid-argument",
+      "Missing authentication response."
+    );
+
+  }
+
+  const challengeRef =
+  admin.firestore()
+  .collection("passkeyLoginChallenges")
+  .doc(challengeId);
+
+  const challengeSnap = await challengeRef.get();
+
+  if(!challengeSnap.exists){
+
+    throw new HttpsError(
+      "failed-precondition",
+      "PASSKEY_LOGIN_EXPIRED"
+    );
+
+  }
+
+  const { challenge, createdAt } = challengeSnap.data();
+
+  // এক-বার ব্যবহারযোগ্য চ্যালেঞ্জ — যাচাইয়ের আগেই মুছে ফেলা হচ্ছে
+  // replay attack ঠেকানোর জন্য।
+  await challengeRef.delete();
+
+  if(Date.now() - createdAt > 5 * 60 * 1000){
+
+    throw new HttpsError(
+      "deadline-exceeded",
+      "PASSKEY_LOGIN_EXPIRED"
+    );
+
+  }
+
+  const credentialId = response.id;
+
+  if(!credentialId){
+
+    throw new HttpsError(
+      "invalid-argument",
+      "Invalid passkey response."
+    );
+
+  }
+
+  const credRef =
+  admin.firestore()
+  .collection("passkeyCredentials")
+  .doc(credentialId);
+
+  const credSnap = await credRef.get();
+
+  if(!credSnap.exists){
+
+    throw new HttpsError(
+      "not-found",
+      "PASSKEY_NOT_SETUP"
+    );
+
+  }
+
+  const credData = credSnap.data();
+
+  const { rpID, origin } =
+  await getPasskeyRpConfig();
+
+  let verification;
+
+  try{
+
+    verification =
+    await verifyAuthenticationResponse({
+      response,
+      expectedChallenge: challenge,
+      expectedOrigin: origin,
+      expectedRPID: rpID,
+      credential: {
+        id: credentialId,
+        // admin SDK ফেরত দেয় Node Buffer হিসেবে, যেটা ইতিমধ্যে
+        // Uint8Array-এর subclass — তাই আলাদা conversion লাগে না।
+        publicKey: credData.publicKey,
+        counter: credData.counter,
+        transports: credData.transports || [],
+      },
+    });
+
+  }catch(error){
+
+    console.log("PASSKEY LOGIN VERIFY ERROR:", error);
+
+    throw new HttpsError(
+      "permission-denied",
+      "Passkey verification failed."
+    );
+
+  }
+
+  if(!verification.verified){
+
+    throw new HttpsError(
+      "permission-denied",
+      "Passkey verification failed."
+    );
+
+  }
+
+  await credRef.update({
+    counter: verification.authenticationInfo.newCounter,
+    lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  const userRef =
+  admin.firestore()
+  .collection("users")
+  .doc(credData.uid);
+
+  const userSnap = await userRef.get();
+
+  if(!userSnap.exists){
+
+    throw new HttpsError(
+      "not-found",
+      "Account not found."
+    );
+
+  }
+
+  const role =
+  userSnap.data().role || "user";
+
+  await userRef.set(
+    {
+      lastLogin: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+
+  const token =
+  await admin.auth().createCustomToken(credData.uid);
+
+  return { token, role };
+
+}
+);
