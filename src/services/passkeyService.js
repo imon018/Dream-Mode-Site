@@ -280,11 +280,20 @@ export async function loginWithPasskey(){
     console.log("PASSKEY LOGIN (VERIFY) ERROR:", error);
 
     if(
-      error.message?.includes("PASSKEY_NOT_SETUP") ||
-      error.code === "functions/not-found"
+      error.message?.includes("PASSKEY_NOT_SETUP")
     ){
 
       throw new Error("PASSKEY_NOT_SETUP");
+
+    }
+
+    if(
+      error.message?.includes("PASSKEY_ACCOUNT_NOT_FOUND")
+    ){
+
+      throw new Error(
+        "এই Passkey-র সাথে যুক্ত অ্যাকাউন্টটি খুঁজে পাওয়া যায়নি।"
+      );
 
     }
 
@@ -301,17 +310,32 @@ export async function loginWithPasskey(){
     }
 
     if(
-      error.message?.includes("PASSKEY_VERIFY_FAILED")
+      error.message?.includes("PASSKEY_VERIFY_FAILED") ||
+      error.message?.includes("PASSKEY_TOKEN_ERROR") ||
+      error.message?.includes("PASSKEY_OPTIONS_ERROR") ||
+      error.message?.includes("PASSKEY_UNEXPECTED_ERROR")
     ){
 
+      // এই মেসেজগুলো এখন backend থেকে আসল, নির্দিষ্ট কারণসহ আসে
+      // (যেমন rpID/origin mismatch, বা createCustomToken/IAM
+      // permission সমস্যা)। আগে এই তথ্যটা সব সময় একটা generic
+      // মেসেজ দিয়ে চাপা পড়ে যেত, যার কারণে আসল সমস্যা ধরা যাচ্ছিল না।
+      console.log("PASSKEY LOGIN DETAILED ERROR:", error.message);
+
       throw new Error(
+        "Passkey Login করা যায়নি। কারিগরি বিস্তারিত: " +
         error.message.replace(
-          /.*PASSKEY_VERIFY_FAILED:\s*/,
+          /.*PASSKEY_(VERIFY_FAILED|TOKEN_ERROR|OPTIONS_ERROR|UNEXPECTED_ERROR):\s*/,
           ""
-        )
+        ) +
+        " — আপাতত Email/Password দিয়ে Login করুন।"
       );
 
     }
+
+    // শুধুমাত্র সত্যিকারের অজানা/নেটওয়ার্ক সমস্যার ক্ষেত্রেই এই generic
+    // মেসেজ দেখানো হবে এখন। console-এ আসল error টা দেখা যাবে debug করার জন্য।
+    console.log("PASSKEY LOGIN UNMAPPED ERROR:", error);
 
     throw new Error(
       "ডিভাইস/ব্রাউজারে সাময়িক একটা সমস্যা হচ্ছে Passkey যাচাই করতে। " +
