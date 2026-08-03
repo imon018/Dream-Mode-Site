@@ -257,8 +257,7 @@ export async function loginWithPasskey(){
     }
 
     throw new Error(
-      "ডিভাইস/ব্রাউজারে সাময়িক একটা সমস্যা হচ্ছে Passkey যাচাই করতে। " +
-      "আবার চেষ্টা করুন, অথবা এখন Email/Password দিয়ে Login করুন।"
+      `PASSKEY_CLIENT_ERROR: ${error.name || ""} — ${error.message || error}`
     );
 
   }
