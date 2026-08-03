@@ -13,6 +13,7 @@ import ProtectedAdminRoute from "./ProtectedAdminRoute";
 
 import Profile from "../pages/Profile";
 import ChangePassword from "../pages/user/ChangePassword";
+import PasskeySettings from "../pages/user/PasskeySettings";
 import DeleteAccount from "../pages/user/DeleteAccount";
 import ProfileEditPage from "../pages/ProfileEditPage";
 import Wishlist from "../pages/Wishlist";
@@ -244,6 +245,11 @@ element={<ReturnOrder />}
           <Route
             path="security/password"
             element={<ChangePassword />}
+          />
+
+          <Route
+            path="security/passkey"
+            element={<PasskeySettings />}
           />
 
           <Route
