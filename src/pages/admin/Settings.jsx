@@ -30,8 +30,6 @@ import {
   deleteImageFromCloudinary,
 } from "../../services/uploadService";
 
-import PasskeyManager from "../../components/auth/PasskeyManager";
-
 
 
 
@@ -1580,16 +1578,6 @@ Save Settings
 
 
 </form>
-
-
-
-{/* PASSKEY LOGIN (Admin's own account) */}
-
-<div className="mt-5">
-
-<PasskeyManager/>
-
-</div>
 
 
 
