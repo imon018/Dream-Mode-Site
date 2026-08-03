@@ -4,6 +4,13 @@ import {
   loginWithGoogle,
 } from "../../services/authService";
 
+import {
+  loginWithPasskey,
+  isPasskeySupported,
+} from "../../services/passkeyService";
+
+import { FiKey } from "react-icons/fi";
+
 import { errorToast } from "../ui/Toast";
 
 // =========================
@@ -79,6 +86,11 @@ export default function SocialLoginButtons({ onAuthenticated }) {
         message =
           "এই email আগে থেকেই অন্য একটি sign-in পদ্ধতিতে ব্যবহৃত হয়েছে।";
 
+      } else if (error.message === "PASSKEY_NOT_SETUP") {
+
+        message =
+          "Please Login your account and setup Passkey first.";
+
       } else if (error.message) {
 
         message = error.message;
@@ -135,6 +147,39 @@ export default function SocialLoginButtons({ onAuthenticated }) {
           ? "Connecting..."
           : "Continue with Google"}
       </button>
+
+      {/* PASSKEY */}
+      {isPasskeySupported() && (
+        <button
+          type="button"
+          disabled={!!loadingProvider}
+          onClick={() => handleClick(loginWithPasskey, "passkey")}
+          className="
+            w-full
+            h-12
+            rounded-lg
+            border
+            border-gray-200
+            bg-white
+            text-sm
+            font-semibold
+            text-gray-700
+            flex
+            items-center
+            justify-center
+            gap-2
+            transition-all
+            duration-200
+            hover:bg-gray-50
+            disabled:opacity-60
+          "
+        >
+          <FiKey size={18} />
+          {loadingProvider === "passkey"
+            ? "Verifying..."
+            : "Login with Passkey"}
+        </button>
+      )}
 
     </div>
   );
