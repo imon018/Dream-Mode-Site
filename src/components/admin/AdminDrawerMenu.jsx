@@ -22,6 +22,7 @@ import {
   FiUpload,
   FiImage,
   FiSettings,
+  FiLock,
   FiLogOut,
   FiChevronUp,
   FiChevronDown,
@@ -762,7 +763,7 @@ Website Settings
 
 <NavLink
 
-to="/admin/change-password"
+to="/admin/passkey"
 
 onClick={closeDrawer}
 
@@ -771,6 +772,24 @@ className="block px-4 py-2 rounded-lg hover:bg-white"
 >
 
 <FiKey className="inline mr-2"/>
+
+Add Passkey
+
+</NavLink>
+
+
+
+<NavLink
+
+to="/admin/change-password"
+
+onClick={closeDrawer}
+
+className="block px-4 py-2 rounded-lg hover:bg-white"
+
+>
+
+<FiLock className="inline mr-2"/>
 
 Change Password
 
