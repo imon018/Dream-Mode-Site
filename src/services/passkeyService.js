@@ -301,6 +301,19 @@ export async function loginWithPasskey(){
 
     }
 
+    if(
+      error.message?.includes("PASSKEY_VERIFY_FAILED")
+    ){
+
+      throw new Error(
+        error.message.replace(
+          /.*PASSKEY_VERIFY_FAILED:\s*/,
+          ""
+        )
+      );
+
+    }
+
     throw new Error(
       "ডিভাইস/ব্রাউজারে সাময়িক একটা সমস্যা হচ্ছে Passkey যাচাই করতে। " +
       "আবার চেষ্টা করুন, অথবা এখন Email/Password দিয়ে Login করুন।"
