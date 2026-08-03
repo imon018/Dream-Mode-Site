@@ -16,6 +16,7 @@ import {
   FiShoppingBag,
   FiHeart,
   FiLock,
+  FiKey,
   FiTrash2,
   FiLogOut,
   FiBell,
@@ -131,6 +132,13 @@ const menu=[
  name:"Change Password",
  path:"/profile/security/password",
  icon:<FiLock/>,
+},
+
+
+{
+ name:"Passkey Setup",
+ path:"/profile/security/passkey",
+ icon:<FiKey/>,
 },
 
 
