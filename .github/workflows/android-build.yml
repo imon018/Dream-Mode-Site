@@ -110,6 +110,22 @@ jobs:
           -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
 
 
+      - name: Print SHA-256 Fingerprint (for Passkey assetlinks.json)
+        run: |
+          echo "======================================================"
+          echo " Copy the SHA256 value below into:"
+          echo " public/.well-known/assetlinks.json"
+          echo " -> sha256_cert_fingerprints"
+          echo " (only needs to be done once, the signing key doesn't"
+          echo "  change between builds)"
+          echo "======================================================"
+          keytool -list -v \
+          -keystore android/app/dream-mode-release.keystore \
+          -alias "${{ secrets.ANDROID_KEY_ALIAS }}" \
+          -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+          | grep "SHA256:"
+
+
       - name: Strip Unnecessary Assets Before Android Sync
         run: |
           # public/downloads (direct-download APK) and public/updates (OTA package)
