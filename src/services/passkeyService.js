@@ -242,11 +242,23 @@ export async function loginWithPasskey(){
 
     console.log("PASSKEY LOGIN (BROWSER) ERROR:", error);
 
-    // সাময়িকভাবে (ডিবাগ করার জন্য) ব্রাউজারের আসল error name+message
-    // দেখানো হচ্ছে, যাতে বোঝা যায় এটা সত্যিই "কোনো Passkey পাওয়া
-    // যায়নি" নাকি অন্য কোনো bug।
+    // Android-এ Chrome/Google Play Services-এর Credential Manager-এর
+    // একটা পরিচিত, মাঝে মাঝে হওয়া bug আছে (NotReadableError/AbortError
+    // ইত্যাদি) যেটা Passkey সেটআপ করা থাকলেও মাঝেমধ্যে fail করে। এটাকে
+    // "Setup করা হয়নি" থেকে আলাদা মেসেজ দেখানো হচ্ছে যাতে ইউজার
+    // confuse না হয়ে আবার চেষ্টা করেন বা Password দিয়ে Login করেন।
+    if(
+      error.name === "NotAllowedError" ||
+      error.name === "InvalidStateError"
+    ){
+
+      throw new Error("PASSKEY_NOT_SETUP");
+
+    }
+
     throw new Error(
-      `PASSKEY_BROWSER_ERROR: ${error.name || ""} — ${error.message || error}`
+      "ডিভাইস/ব্রাউজারে সাময়িক একটা সমস্যা হচ্ছে Passkey যাচাই করতে। " +
+      "আবার চেষ্টা করুন, অথবা এখন Email/Password দিয়ে Login করুন।"
     );
 
   }
@@ -289,21 +301,9 @@ export async function loginWithPasskey(){
 
     }
 
-    if(
-      error.message?.includes("PASSKEY_VERIFY_FAILED")
-    ){
-
-      throw new Error(
-        error.message.replace(
-          /.*PASSKEY_VERIFY_FAILED:\s*/,
-          ""
-        )
-      );
-
-    }
-
     throw new Error(
-      "Passkey verify করা যায়নি। আবার চেষ্টা করুন।"
+      "ডিভাইস/ব্রাউজারে সাময়িক একটা সমস্যা হচ্ছে Passkey যাচাই করতে। " +
+      "আবার চেষ্টা করুন, অথবা এখন Email/Password দিয়ে Login করুন।"
     );
 
   }
