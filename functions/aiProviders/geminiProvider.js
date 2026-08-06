@@ -47,6 +47,10 @@ function encodeContents(genericMessages) {
 
         if (p.type === "text") {
           parts.push({ text: p.text });
+        } else if (p.type === "image") {
+          parts.push({
+            inlineData: { mimeType: p.mimeType, data: p.data },
+          });
         } else if (p.type === "tool_result") {
           parts.push({
             functionResponse: {
