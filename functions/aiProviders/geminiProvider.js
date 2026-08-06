@@ -98,9 +98,18 @@ function encodeContents(genericMessages) {
         if (p.type === "text" && p.text) {
           parts.push({ text: p.text });
         } else if (p.type === "tool_use") {
-          parts.push({
+          const fcPart = {
             functionCall: { name: p.name, args: p.input || {} },
-          });
+          };
+          // Gemini-এর নতুন মডেলগুলো মাল্টি-টার্ন কথোপকথনে আগের
+          // functionCall part-এর সাথে thoughtSignature ফেরত না পেলে
+          // 400 error দেয় (INVALID_ARGUMENT)। sendTurn-এ রেসপন্স
+          // থেকে এটা capture করে assistantParts-এ রাখা হয় (নিচে),
+          // এখানে সেটা আবার ফেরত পাঠানো হচ্ছে।
+          if (p.thoughtSignature) {
+            fcPart.thoughtSignature = p.thoughtSignature;
+          }
+          parts.push(fcPart);
         }
 
       }
@@ -172,12 +181,18 @@ async function sendTurn({ apiKey, systemPrompt, tools, genericMessages }) {
 
       const id = `${part.functionCall.name}_${callIndex++}`;
 
-      assistantParts.push({
+      const toolUsePart = {
         type: "tool_use",
         id,
         name: part.functionCall.name,
         input: part.functionCall.args || {},
-      });
+      };
+
+      if (part.thoughtSignature) {
+        toolUsePart.thoughtSignature = part.thoughtSignature;
+      }
+
+      assistantParts.push(toolUsePart);
 
       toolCalls.push({
         id,
@@ -198,3 +213,4 @@ async function sendTurn({ apiKey, systemPrompt, tools, genericMessages }) {
 }
 
 module.exports = { sendTurn, name: MODEL };
+
