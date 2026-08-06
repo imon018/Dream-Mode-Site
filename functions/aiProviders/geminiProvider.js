@@ -18,7 +18,7 @@
 // করবেন।
 // =================================================
 
-const MODEL = "gemini-flash-latest";
+const MODEL = "gemini-flash-lite-latest";
 
 function toGeminiSchema(schema) {
 
