@@ -295,11 +295,18 @@ export default function AIChatWidget() {
       // সর্বশেষ ইউজার মেসেজে ছবি সংযুক্ত থাকলে সেটার base64 ডেটা
       // (data: URL prefix বাদ দিয়ে) আলাদাভাবে পাঠানো হচ্ছে যাতে
       // ব্যাকএন্ড vision-সক্ষম provider-কে (Gemini) সেটা দেখাতে পারে।
-      const apiMessages = nextMessages.map((m, idx) => {
+      // পুরো history-টা প্রতিবার পাঠানোর দরকার নেই — চ্যাট যত লম্বা
+      // হবে তত বেশি টোকেন খরচ হবে, যেটা ফ্রি tier-এর rate limit-এ
+      // আরও দ্রুত ধাক্কা দেয়। শেষ কয়েকটা মেসেজই (context বোঝার
+      // জন্য যথেষ্ট) পাঠানো হচ্ছে।
+      const MAX_HISTORY_MESSAGES = 16;
+      const trimmedMessages = nextMessages.slice(-MAX_HISTORY_MESSAGES);
+
+      const apiMessages = trimmedMessages.map((m, idx) => {
 
         const base = { role: m.role, content: m.display };
 
-        const isLastMessage = idx === nextMessages.length - 1;
+        const isLastMessage = idx === trimmedMessages.length - 1;
 
         if (isLastMessage && m.image) {
 
