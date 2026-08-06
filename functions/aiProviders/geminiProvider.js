@@ -18,7 +18,7 @@
 // করবেন।
 // =================================================
 
-const MODEL = "gemini-flash-lite-latest";
+const MODEL = "gemini-flash-latest";
 
 function toGeminiSchema(schema) {
 
@@ -198,4 +198,3 @@ async function sendTurn({ apiKey, systemPrompt, tools, genericMessages }) {
 }
 
 module.exports = { sendTurn, name: MODEL };
-
