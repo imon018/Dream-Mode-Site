@@ -25,7 +25,20 @@ async function searchProducts({ query, category }) {
     .collection("products")
     .get();
 
-  const q = (query || "").trim().toLowerCase();
+  // query আর category — দুটোকেই একসাথে "search terms" হিসেবে
+  // treat করা হচ্ছে, এবং কোনো একটা শব্দ মিললেই (strict AND এর
+  // বদলে OR) প্রোডাক্ট দেখানো হচ্ছে। আগে category-এর জন্য exact
+  // match লাগতো, যেটা AI যদি ইংরেজিতে অনুবাদ করে category পাঠায়
+  // (যেমন কাস্টমার "জুয়েলারি" লিখলেও AI "Jewelry" tool-এ পাঠায়)
+  // তাহলে বাংলা ক্যাটাগরির সাথে কখনোই মিলতো না, ফলে ভুলভাবে
+  // "কোনো প্রোডাক্ট নেই" দেখাতো।
+  const terms = [query, category]
+    .filter(Boolean)
+    .join(" ")
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
 
   const results = [];
 
@@ -33,18 +46,21 @@ async function searchProducts({ query, category }) {
 
     const p = doc.data();
 
-    const matchesQuery =
-      !q ||
-      (p.name || "").toLowerCase().includes(q) ||
-      (p.title || "").toLowerCase().includes(q) ||
-      (p.category || "").toLowerCase().includes(q) ||
-      (p.description || "").toLowerCase().includes(q);
+    const haystack = [
+      p.name,
+      p.title,
+      p.category,
+      p.description,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
-    const matchesCategory =
-      !category ||
-      (p.category || "").toLowerCase() === category.toLowerCase();
+    const matches =
+      !terms.length ||
+      terms.some((term) => haystack.includes(term));
 
-    if (matchesQuery && matchesCategory) {
+    if (matches) {
 
       results.push({
         id: doc.id,
@@ -58,6 +74,7 @@ async function searchProducts({ query, category }) {
       });
 
     }
+
 
   });
 
