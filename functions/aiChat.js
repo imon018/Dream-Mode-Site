@@ -380,6 +380,38 @@ function collectUiData(collected, toolName, output) {
 // -------------------------------------------------
 // একটা নির্দিষ্ট provider attempt দিয়ে পুরো tool-use loop চালানো
 // -------------------------------------------------
+// -------------------------------------------------
+// একটা provider call-কে সাময়িক rate-limit (HTTP 429) থেকে বাঁচানো।
+// প্রতিটা user মেসেজে internally একাধিক (সর্বোচ্চ ৫টা) API কল
+// লাগতে পারে (search → check_stock → create_order ইত্যাদি প্রতিটা
+// tool round-trip-এ একটা কল), তাই ফ্রি tier-এর per-minute quota
+// দ্রুত শেষ হয়ে যেতে পারে। 429 পেলে সাথে সাথে পরের provider-এ না
+// গিয়ে ১-২ সেকেন্ড wait করে একবার আবার চেষ্টা করা হচ্ছে — বেশিরভাগ
+// per-minute rate-limit কয়েক সেকেন্ডেই রিসেট হয়ে যায়।
+// -------------------------------------------------
+async function sendTurnWithRetry(attempt, args) {
+
+  try {
+
+    return await attempt.provider.sendTurn(args);
+
+  } catch (err) {
+
+    if (err.status === 429) {
+
+      console.log(`AI CHAT — "${attempt.key}" rate-limited, retrying once...`);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      return await attempt.provider.sendTurn(args);
+
+    }
+
+    throw err;
+
+  }
+
+}
+
 async function runConversation({ attempt, genericMessages, uid }) {
 
   if (!attempt.apiKey) {
@@ -396,7 +428,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
   for (let i = 0; i < 5; i++) {
 
-    const result = await attempt.provider.sendTurn({
+    const result = await sendTurnWithRetry(attempt, {
       apiKey: attempt.apiKey,
       systemPrompt: SYSTEM_PROMPT,
       tools: TOOLS,
