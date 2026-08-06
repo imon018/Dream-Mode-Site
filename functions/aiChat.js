@@ -24,6 +24,8 @@ const {
   searchProducts,
   checkStock,
   getOrderStatus,
+  getOrdersByPhone,
+  getAdminContact,
   createOrderViaChat,
   generateInvoiceText,
 } = require("./aiChatTools");
@@ -50,8 +52,48 @@ const SYSTEM_PROMPT = `
   ছোট ছোট লাইনে লিখুন (যেমন: "Dubai Gold Bowl Jewellery — অফার
   দামে ৳৫৫০ (আগে ৳৯৯৯), স্টকে ২০টা আছে")।
 - প্রোডাক্টের internal ID (যেমন ডাটাবেস ডকুমেন্ট আইডি) কখনো
-  কাস্টমারকে দেখাবেন না — এটা কাস্টমারের কোনো কাজে লাগে না, শুধু
-  নাম, দাম, স্টক এসব দেখান।
+  কাস্টমারকে টেক্সটে লিখে দেখাবেন না — এটা কাস্টমারের কোনো কাজে
+  লাগে না, শুধু নাম, দাম, স্টক এসব বলুন। (প্রোডাক্ট কার্ড আলাদাভাবে,
+  স্বয়ংক্রিয়ভাবে UI-তে দেখানো হয় — এটা নিয়ে আপনাকে কিছু করতে হবে
+  না, নিচে বিস্তারিত আছে।)
+- আপনি ঠিক যেভাবে একজন দক্ষ, মনোযোগী মানুষ সাপোর্ট এজেন্ট কথা
+  বলে, বুঝে, এবং প্রয়োজনে নিজে থেকে পরবর্তী ধাপ এগিয়ে নেয় —
+  ঠিক সেভাবেই কাজ করুন। কাস্টমার একটা কথা বললে তার আসল উদ্দেশ্য
+  বুঝে সেই অনুযায়ী সঠিক tool কল করুন, শুধু কথার আক্ষরিক অর্থ ধরে
+  বসে থাকবেন না।
+
+প্রোডাক্ট দেখানো (কার্ড):
+- কাস্টমার কোনো প্রোডাক্ট খুঁজতে/দেখতে চাইলে search_products বা
+  check_stock কল করুন — এগুলোর রেজাল্ট থেকে UI নিজে থেকেই প্রোডাক্ট
+  কার্ড (ছবি, নাম, দাম, স্টক) দেখিয়ে দেবে। তাই আপনার টেক্সট
+  রিপ্লাইতে প্রতিটা প্রোডাক্টের সব ডিটেইল আবার লম্বাভাবে লিখে
+  দেওয়ার দরকার নেই — একটা ছোট, স্বাভাবিক বাক্যে বলুন (যেমন: "এই
+  কয়েকটা পেয়েছি, নিচে দেখে নিন 👇" বা "হ্যাঁ, স্টকে আছে, দাম আর
+  ছবি নিচে দেখুন")। প্রোডাক্ট না পেলে সেটা বলুন এবং বিকল্প কিছু
+  সাজেস্ট করুন বা admin-এর সাথে কথা বলার অপশন দিন।
+
+অর্ডার স্ট্যাটাস (কাস্টমার Order ID না জানলেও):
+- কাস্টমার "আমার প্রোডাক্টের কি অবস্থা/আমার অর্ডার কই" এই ধরনের
+  কিছু জিজ্ঞেস করলে প্রথমেই Order ID চাইবেন না — বেশিরভাগ কাস্টমার
+  এটা মনে রাখে না। বরং:
+  1) কাস্টমার লগইন করা থাকলে (uid থাকলে) সরাসরি get_orders_by_phone
+     কল করুন (phone ছাড়াই, লগইন তথ্য দিয়েই কাজ হয়ে যাবে)।
+  2) লগইন করা না থাকলে কাস্টমারের কাছে শুধু ফোন নাম্বার (যেটা
+     দিয়ে অর্ডার করেছিল) চান, তারপর get_orders_by_phone কল করুন।
+  3) একাধিক অর্ডার পেলে সংক্ষেপে লিস্ট দেখান (স্ট্যাটাস সহ) এবং
+     কোনটার বিস্তারিত/ইনভয়েস লাগবে জিজ্ঞেস করুন। একটাই অর্ডার
+     পেলে সরাসরি তার অবস্থা জানিয়ে দিন।
+  4) কাস্টমার নিজে থেকেই Order ID বলে দিলে সরাসরি get_order_status
+     ব্যবহার করুন।
+
+Admin/মানুষের সাথে কথা বলা:
+- কাস্টমার Admin/মানুষ/সাপোর্ট এজেন্টের সাথে সরাসরি কথা বলতে চাইলে,
+  আপনি সমাধান করতে না পারলে, বা কাস্টমার নিজে থেকে অনুরোধ করলে —
+  get_admin_contact কল করে WhatsApp নাম্বার/লিংক বের করে সেটা
+  স্বাভাবিকভাবে দিয়ে দিন (যেমন: "নিশ্চয়ই, এই WhatsApp নাম্বারে
+  সরাসরি যোগাযোগ করতে পারেন: [নাম্বার]")। কখনো নিজে থেকে কোনো
+  নাম্বার অনুমান করে বলবেন না — সবসময় tool কল করেই আসল নাম্বার
+  নিন।
 
 নিয়মাবলী:
 - প্রোডাক্টের দাম/স্টক নিয়ে কখনো নিজে থেকে অনুমান করবেন না —
@@ -71,7 +113,12 @@ const SYSTEM_PROMPT = `
 - অর্ডার স্ট্যাটাস/ইনভয়েস দেখানোর আগে ফোন নাম্বার দিয়ে যাচাই
   করে নিন, যদি কাস্টমার লগইন করা না থাকে।
 - স্টক/দাম পরিবর্তনের মতো কাজ আপনি করতে পারবেন না — এটা শুধু
-  Admin-রাই করতে পারেন, এমন অনুরোধ এলে বিনয়ের সাথে জানিয়ে দিন।
+  Admin-রাই করতে পারেন, এমন অনুরোধ এলে বিনয়ের সাথে জানিয়ে দিন,
+  এবং প্রয়োজনে get_admin_contact দিয়ে WhatsApp নাম্বার দিন।
+- কোনো tool থেকে error এলে সেটা কাস্টমারকে সহজ ভাষায়, বিনয়ের
+  সাথে জানান এবং পরবর্তী করণীয় (আবার চেষ্টা/সঠিক তথ্য দেওয়া/
+  admin-এর সাথে কথা বলা) বলে দিন — কখনো raw error টেক্সট দেখাবেন
+  না।
 `.trim();
 
 const TOOLS = [
@@ -110,6 +157,33 @@ const TOOLS = [
         },
       },
       required: ["orderId"],
+    },
+  },
+  {
+    name: "get_orders_by_phone",
+    description:
+      "কাস্টমার Order ID না জানলে, তার ফোন নাম্বার (বা লগইন থাকলে " +
+      "একাউন্ট) দিয়ে সাম্প্রতিক অর্ডারগুলো খুঁজে বের করুন।",
+    input_schema: {
+      type: "object",
+      properties: {
+        phone: {
+          type: "string",
+          description:
+            "কাস্টমারের ফোন নাম্বার (যদি লগইন করা না থাকে — লগইন " +
+            "থাকলে খালি রাখা যাবে)",
+        },
+      },
+    },
+  },
+  {
+    name: "get_admin_contact",
+    description:
+      "Admin/মানুষের সাথে সরাসরি কথা বলার জন্য WhatsApp নাম্বার/লিংক " +
+      "বের করুন।",
+    input_schema: {
+      type: "object",
+      properties: {},
     },
   },
   {
@@ -167,6 +241,12 @@ async function runTool(name, input, context) {
     case "get_order_status":
       return getOrderStatus({ ...input, uid: context.uid });
 
+    case "get_orders_by_phone":
+      return getOrdersByPhone({ ...input, uid: context.uid });
+
+    case "get_admin_contact":
+      return getAdminContact();
+
     case "create_order":
       return createOrderViaChat({ ...input, uid: context.uid });
 
@@ -175,6 +255,54 @@ async function runTool(name, input, context) {
 
     default:
       return { error: `Unknown tool: ${name}` };
+
+  }
+
+}
+
+// -------------------------------------------------
+// tool রেজাল্ট থেকে UI-এর জন্য গুরুত্বপূর্ণ structured ডেটা
+// (প্রোডাক্ট কার্ড, অর্ডার লিস্ট, admin contact) আলাদাভাবে জমা
+// করা — যাতে টেক্সট রিপ্লাইয়ের পাশাপাশি frontend সেগুলো কার্ড/
+// বাটন হিসেবে সুন্দরভাবে দেখাতে পারে। AI নিজে থেকে এসব টেক্সটে
+// বিস্তারিত না লিখলেও (system prompt-এ বলা আছে সংক্ষেপে লিখতে),
+// কাস্টমার আসল ডেটা (ছবি, দাম, WhatsApp বাটন) ঠিকই দেখতে পাবে।
+// -------------------------------------------------
+function collectUiData(collected, toolName, output) {
+
+  if (!output || output.error) return;
+
+  if (toolName === "search_products" && Array.isArray(output)) {
+
+    for (const p of output) {
+      if (p && p.id && !collected.products.some((x) => x.id === p.id)) {
+        collected.products.push(p);
+      }
+    }
+
+  } else if (toolName === "check_stock" && output.id) {
+
+    if (!collected.products.some((x) => x.id === output.id)) {
+      collected.products.push(output);
+    }
+
+  } else if (toolName === "get_orders_by_phone" && Array.isArray(output.orders)) {
+
+    for (const o of output.orders) {
+      if (o && o.id && !collected.orders.some((x) => x.id === o.id)) {
+        collected.orders.push(o);
+      }
+    }
+
+  } else if (toolName === "get_order_status" && output.id) {
+
+    if (!collected.orders.some((x) => x.id === output.id)) {
+      collected.orders.push(output);
+    }
+
+  } else if (toolName === "get_admin_contact" && output.whatsapp) {
+
+    collected.adminContact = output;
 
   }
 
@@ -195,6 +323,8 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
   let conversation = genericMessages;
 
+  const collected = { products: [], orders: [], adminContact: null };
+
   for (let i = 0; i < 5; i++) {
 
     const result = await attempt.provider.sendTurn({
@@ -210,7 +340,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
     ];
 
     if (!result.toolCalls.length) {
-      return result.textReply || "";
+      return { text: result.textReply || "", ...collected };
     }
 
     const toolResultParts = [];
@@ -218,6 +348,8 @@ async function runConversation({ attempt, genericMessages, uid }) {
     for (const call of result.toolCalls) {
 
       const output = await runTool(call.name, call.input, { uid });
+
+      collectUiData(collected, call.name, output);
 
       toolResultParts.push({
         type: "tool_result",
@@ -235,10 +367,12 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
   }
 
-  return (
-    "দুঃখিত, এই মুহূর্তে অনুরোধটা প্রসেস করতে পারছি না। " +
-    "আবার চেষ্টা করুন বা সরাসরি WhatsApp-এ যোগাযোগ করুন।"
-  );
+  return {
+    text:
+      "দুঃখিত, এই মুহূর্তে অনুরোধটা প্রসেস করতে পারছি না। " +
+      "আবার চেষ্টা করুন বা সরাসরি WhatsApp-এ যোগাযোগ করুন।",
+    ...collected,
+  };
 
 }
 
@@ -290,13 +424,19 @@ exports.aiChat = onCall(
 
         try {
 
-          const reply = await runConversation({
+          const result = await runConversation({
             attempt,
             genericMessages,
             uid,
           });
 
-          return { reply, providerUsed: attempt.key };
+          return {
+            reply: result.text,
+            providerUsed: attempt.key,
+            products: result.products,
+            orders: result.orders,
+            adminContact: result.adminContact,
+          };
 
         } catch (err) {
 
