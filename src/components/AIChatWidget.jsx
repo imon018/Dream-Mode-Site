@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../firebase/functions";
 import useAuth from "../hooks/useAuth";
@@ -41,6 +42,134 @@ function loadStoredMessages() {
   }
 
   return [WELCOME_MESSAGE];
+
+}
+
+// -------------------------------------------------
+// প্রোডাক্ট কার্ড — search_products/check_stock থেকে পাওয়া
+// প্রোডাক্টগুলো ছবি, নাম, দাম, স্টক সহ কার্ড আকারে দেখায়।
+// -------------------------------------------------
+function ProductCards({ products }) {
+
+  if (!products || !products.length) return null;
+
+  return (
+    <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+      {products.map((p) => (
+        <Link
+          key={p.id}
+          to={`/product/${p.id}`}
+          className="block w-36 flex-shrink-0 rounded-xl border border-gray-200
+                     bg-white p-2 text-left shadow-sm hover:shadow-md
+                     transition-shadow"
+        >
+          <div className="mb-2 h-24 w-full overflow-hidden rounded-lg bg-gray-100">
+            {p.image ? (
+              <img
+                src={p.image}
+                alt={p.name}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-2xl">
+                📦
+              </div>
+            )}
+          </div>
+
+          <p className="line-clamp-2 text-xs font-medium text-gray-800">
+            {p.name}
+          </p>
+
+          <div className="mt-1 flex items-baseline gap-1">
+            {p.offerPrice > 0 ? (
+              <>
+                <span className="text-sm font-bold text-black">
+                  ৳{p.offerPrice}
+                </span>
+                <span className="text-[11px] text-gray-400 line-through">
+                  ৳{p.price}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm font-bold text-black">৳{p.price}</span>
+            )}
+          </div>
+
+          <p
+            className={`mt-1 text-[11px] font-medium ${
+              p.inStock ? "text-green-600" : "text-red-500"
+            }`}
+          >
+            {p.inStock ? `স্টকে আছে (${p.stock})` : "স্টক নেই"}
+          </p>
+        </Link>
+      ))}
+    </div>
+  );
+
+}
+
+// -------------------------------------------------
+// অর্ডার কার্ড — get_order_status/get_orders_by_phone থেকে পাওয়া
+// অর্ডারগুলো সংক্ষেপে দেখায়।
+// -------------------------------------------------
+function OrderCards({ orders }) {
+
+  if (!orders || !orders.length) return null;
+
+  return (
+    <div className="mt-2 space-y-2">
+      {orders.map((o) => (
+        <div
+          key={o.id}
+          className="rounded-xl border border-gray-200 bg-white p-3 text-xs shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[11px] text-gray-500">
+              #{o.id.slice(-8)}
+            </span>
+            <span className="rounded-full bg-black px-2 py-0.5 text-[11px] text-white">
+              {o.status}
+            </span>
+          </div>
+
+          {o.itemsSummary && (
+            <p className="mt-1 text-gray-700">{o.itemsSummary}</p>
+          )}
+
+          <div className="mt-1 flex items-center justify-between text-gray-600">
+            <span>পেমেন্ট: {o.paymentStatus}</span>
+            {!!o.total && <span className="font-semibold">৳{o.total}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+}
+
+// -------------------------------------------------
+// Admin/WhatsApp বাটন — get_admin_contact থেকে পাওয়া নাম্বার দিয়ে
+// সরাসরি WhatsApp চ্যাট খোলার বাটন দেখায়।
+// -------------------------------------------------
+function AdminContactCard({ adminContact }) {
+
+  if (!adminContact || !adminContact.whatsapp) return null;
+
+  return (
+    <a
+      href={adminContact.whatsappLink || `https://wa.me/${adminContact.whatsapp}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-2 flex items-center gap-2 rounded-xl border border-green-200
+                 bg-green-50 px-3 py-2 text-xs font-medium text-green-700
+                 hover:bg-green-100"
+    >
+      💬 WhatsApp-এ Admin-এর সাথে কথা বলুন ({adminContact.whatsapp})
+    </a>
+  );
 
 }
 
@@ -124,6 +253,9 @@ export default function AIChatWidget() {
         {
           role: "assistant",
           display: result.data.reply || "দুঃখিত, উত্তর পাওয়া যায়নি।",
+          products: result.data.products || [],
+          orders: result.data.orders || [],
+          adminContact: result.data.adminContact || null,
         },
       ]);
 
@@ -227,8 +359,8 @@ export default function AIChatWidget() {
             {messages.map((m, idx) => (
               <div
                 key={idx}
-                className={`flex ${
-                  m.role === "user" ? "justify-end" : "justify-start"
+                className={`flex flex-col ${
+                  m.role === "user" ? "items-end" : "items-start"
                 }`}
               >
                 <div
@@ -240,6 +372,14 @@ export default function AIChatWidget() {
                 >
                   {m.display}
                 </div>
+
+                {m.role === "assistant" && (
+                  <div className="w-full max-w-[92%]">
+                    <ProductCards products={m.products} />
+                    <OrderCards orders={m.orders} />
+                    <AdminContactCard adminContact={m.adminContact} />
+                  </div>
+                )}
               </div>
             ))}
 
