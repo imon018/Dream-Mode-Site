@@ -44,6 +44,10 @@ jobs:
 
         echo "${{ secrets.GMAIL_PASSWORD }}" | firebase functions:secrets:set GMAIL_PASSWORD --token ${{ secrets.FIREBASE_TOKEN }}
 
+        echo "${{ secrets.GEMINI_API_KEY }}" | firebase functions:secrets:set GEMINI_API_KEY --token ${{ secrets.FIREBASE_TOKEN }}
+
+        echo "${{ secrets.OPENROUTER_API_KEY }}" | firebase functions:secrets:set OPENROUTER_API_KEY --token ${{ secrets.FIREBASE_TOKEN }}
+
 
 
     - name: Deploy Functions
