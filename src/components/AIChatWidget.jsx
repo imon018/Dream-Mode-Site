@@ -182,8 +182,53 @@ export default function AIChatWidget() {
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [messages, setMessages] = useState(loadStoredMessages);
+  const [attachedImage, setAttachedImage] = useState(null); // { dataUrl, mimeType }
+  const [imageError, setImageError] = useState("");
 
   const scrollRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const MAX_IMAGE_MB = 4;
+
+  const handleAttachClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // একই ছবি আবার সিলেক্ট করলেও change event ফায়ার হবে
+
+    if (!file) return;
+
+    setImageError("");
+
+    if (!file.type.startsWith("image/")) {
+      setImageError("শুধু ছবি (image) ফাইল সংযুক্ত করা যাবে।");
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+      setImageError(`ছবিটি ${MAX_IMAGE_MB}MB-এর বেশি বড় — একটু ছোট ছবি দিন।`);
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setAttachedImage({
+        dataUrl: reader.result,
+        mimeType: file.type,
+      });
+    };
+
+    reader.onerror = () => {
+      setImageError("ছবি লোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const removeAttachedImage = () => setAttachedImage(null);
 
   useEffect(() => {
 
@@ -222,13 +267,21 @@ export default function AIChatWidget() {
 
     const text = input.trim();
 
-    if (!text || loading) return;
+    if ((!text && !attachedImage) || loading) return;
 
     setInput("");
 
+    const imageToSend = attachedImage;
+    setAttachedImage(null);
+    setImageError("");
+
     const nextMessages = [
       ...messages,
-      { role: "user", display: text },
+      {
+        role: "user",
+        display: text || "📷 ছবি পাঠানো হয়েছে",
+        image: imageToSend ? imageToSend.dataUrl : null,
+      },
     ];
 
     setMessages(nextMessages);
@@ -239,10 +292,29 @@ export default function AIChatWidget() {
       // Claude API-এর ফরম্যাটে পাঠানোর জন্য শুধু role+content রাখা
       // হচ্ছে, tool_use/tool_result ব্লক ইতিমধ্যে display করার
       // দরকার নেই, তাই ফাইনাল রিপ্লাইয়ের সাথে আলাদা রাখা হলো।
-      const apiMessages = nextMessages.map((m) => ({
-        role: m.role,
-        content: m.display,
-      }));
+      // সর্বশেষ ইউজার মেসেজে ছবি সংযুক্ত থাকলে সেটার base64 ডেটা
+      // (data: URL prefix বাদ দিয়ে) আলাদাভাবে পাঠানো হচ্ছে যাতে
+      // ব্যাকএন্ড vision-সক্ষম provider-কে (Gemini) সেটা দেখাতে পারে।
+      const apiMessages = nextMessages.map((m, idx) => {
+
+        const base = { role: m.role, content: m.display };
+
+        const isLastMessage = idx === nextMessages.length - 1;
+
+        if (isLastMessage && m.image) {
+
+          const [, mimeType, base64Data] =
+            m.image.match(/^data:(.+?);base64,(.*)$/) || [];
+
+          if (base64Data) {
+            base.image = { mimeType: mimeType || "image/jpeg", data: base64Data };
+          }
+
+        }
+
+        return base;
+
+      });
 
       const aiChat = httpsCallable(functions, "aiChat");
 
@@ -292,9 +364,15 @@ export default function AIChatWidget() {
 
   };
 
+  // আগে প্লেইন Enter চাপলেই সাথে সাথে মেসেজ সেন্ড হয়ে যেতো, ফলে
+  // একাধিক লাইনে কিছু লেখা যেতো না (Enter দিলে টেক্সট নতুন লাইনে
+  // না গিয়ে সোজা সেন্ড হয়ে যেতো)। এখন Enter স্বাভাবিক নতুন-লাইন
+  // হিসেবেই কাজ করবে (textarea-এর ডিফল্ট আচরণ) — মেসেজ পাঠাতে
+  // "পাঠান" বাটন চাপতে হবে, অথবা Ctrl/Cmd+Enter শর্টকাট ব্যবহার
+  // করা যাবে।
   const handleKeyDown = (e) => {
 
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       sendMessage();
     }
@@ -370,6 +448,13 @@ export default function AIChatWidget() {
                       : "bg-white text-gray-800 border border-gray-200"
                   }`}
                 >
+                  {m.image && (
+                    <img
+                      src={m.image}
+                      alt="সংযুক্ত ছবি"
+                      className="mb-1 max-h-40 w-full rounded-lg object-cover"
+                    />
+                  )}
                   {m.display}
                 </div>
 
@@ -392,24 +477,70 @@ export default function AIChatWidget() {
             )}
           </div>
 
-          <div className="flex items-end gap-2 border-t border-gray-200 p-2">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="মেসেজ লিখুন..."
-              rows={1}
-              className="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2
-                         text-sm outline-none focus:border-black"
-            />
-            <button
-              onClick={sendMessage}
-              disabled={loading || !input.trim()}
-              className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white
-                         disabled:opacity-40"
-            >
-              পাঠান
-            </button>
+          <div className="border-t border-gray-200 p-2">
+            {imageError && (
+              <p className="mb-1 px-1 text-[11px] text-red-500">{imageError}</p>
+            )}
+
+            {attachedImage && (
+              <div className="mb-2 flex items-center gap-2 px-1">
+                <div className="relative">
+                  <img
+                    src={attachedImage.dataUrl}
+                    alt="সংযুক্ত করার জন্য প্রস্তুত"
+                    className="h-14 w-14 rounded-lg object-cover border border-gray-300"
+                  />
+                  <button
+                    onClick={removeAttachedImage}
+                    aria-label="ছবি সরান"
+                    className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center
+                               justify-center rounded-full bg-black text-[11px] text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <span className="text-[11px] text-gray-500">ছবি সংযুক্ত হয়েছে</span>
+              </div>
+            )}
+
+            <div className="flex items-end gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+
+              <button
+                onClick={handleAttachClick}
+                disabled={loading}
+                aria-label="ছবি সংযুক্ত করুন"
+                className="flex h-10 w-10 flex-shrink-0 items-center justify-center
+                           rounded-xl border border-gray-300 text-lg text-gray-600
+                           hover:bg-gray-100 disabled:opacity-40"
+              >
+                📎
+              </button>
+
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="মেসেজ লিখুন..."
+                rows={1}
+                className="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2
+                           text-sm outline-none focus:border-black"
+              />
+              <button
+                onClick={sendMessage}
+                disabled={loading || (!input.trim() && !attachedImage)}
+                className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white
+                           disabled:opacity-40"
+              >
+                পাঠান
+              </button>
+            </div>
           </div>
         </div>
       )}
