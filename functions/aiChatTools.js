@@ -70,7 +70,7 @@ async function searchProducts({ query, category }) {
         offerPrice: p.offerPrice || 0,
         stock: p.stock ?? 0,
         inStock: (p.stock ?? 0) > 0,
-        image: p.image || "",
+        image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
       });
 
     }
@@ -78,7 +78,10 @@ async function searchProducts({ query, category }) {
 
   });
 
-  // AI-কে বেশি টোকেন খরচ না করিয়ে সবচেয়ে প্রাসঙ্গিক ১০টা রেজাল্ট
+  // AI-কে বেশি টোকেন খরচ না করিয়ে সবচেয়ে প্রাসঙ্গিক ১০টা রেজাল্ট।
+  // এই একই লিস্ট frontend-এ প্রোডাক্ট কার্ড রেন্ডার করতেও ব্যবহার
+  // হবে (aiChat.js orchestrator এটা কালেক্ট করে রাখে), তাই id/image
+  // বাদ দেওয়া যাবে না — শুধু চ্যাট টেক্সটে id দেখানো হয় না।
   return results.slice(0, 10);
 
 }
@@ -107,10 +110,12 @@ async function checkStock({ productId }) {
   return {
     id: snap.id,
     name: p.name || p.title || "Unnamed",
+    category: p.category || "",
     stock: p.stock ?? 0,
     inStock: (p.stock ?? 0) > 0,
     price: p.price ?? 0,
     offerPrice: p.offerPrice || 0,
+    image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
   };
 
 }
@@ -164,6 +169,115 @@ async function getOrderStatus({ orderId, phone, uid }) {
       price: i.price || 0,
     })),
     createdAt: order.createdAt || "",
+  };
+
+}
+
+// -------------------------------------------------
+// PHONE/ACCOUNT দিয়ে সাম্প্রতিক অর্ডার লিস্ট খোঁজা
+// কাস্টমার সবসময় Order ID মনে রাখে না — "আমার প্রোডাক্টের কি
+// অবস্থা?" জিজ্ঞেস করলে AI প্রথমে এটা কল করে সবগুলো (বা লগইন
+// করা থাকলে তার নিজের) অর্ডার খুঁজে বের করবে, তারপর দরকার হলে
+// কাস্টমারকে জিজ্ঞেস করে নির্দিষ্ট একটা বেছে নেবে।
+// নিরাপত্তা: লগইন করা না থাকলে অবশ্যই phone লাগবে — খালি
+// অনুরোধে (uid/phone ছাড়া) কখনো ডাটাবেস স্ক্যান করা হবে না।
+// -------------------------------------------------
+async function getOrdersByPhone({ phone, uid }) {
+
+  if (!uid && !phone) {
+    return {
+      error:
+        "অর্ডার খুঁজতে ফোন নাম্বার লাগবে (যেটা দিয়ে অর্ডার করা " +
+        "হয়েছিল), অথবা লগইন করা থাকলে সেটাই যথেষ্ট।",
+    };
+  }
+
+  const db = admin.firestore();
+  let snap;
+
+  if (uid) {
+    snap = await db
+      .collection("orders")
+      .where("userId", "==", uid)
+      .orderBy("createdAt", "desc")
+      .limit(5)
+      .get();
+  } else {
+    snap = await db
+      .collection("orders")
+      .where("phone", "==", phone)
+      .orderBy("createdAt", "desc")
+      .limit(5)
+      .get();
+  }
+
+  if (snap.empty) {
+    return {
+      error:
+        "এই তথ্য দিয়ে কোনো অর্ডার খুঁজে পাওয়া যায়নি। ফোন নাম্বারটা " +
+        "আবার একটু চেক করে দিন।",
+    };
+  }
+
+  const orders = [];
+
+  snap.forEach((doc) => {
+
+    const order = doc.data();
+
+    orders.push({
+      id: doc.id,
+      status: order.status || "Pending",
+      paymentStatus: order.paymentStatus || "Pending",
+      customerName: order.customerName || "",
+      total: order.total || 0,
+      itemsSummary: (order.items || [])
+        .map((i) => `${i.name || i.title || "Item"} x${i.qty || i.quantity || 1}`)
+        .join(", "),
+      createdAt: order.createdAt || "",
+    });
+
+  });
+
+  return { orders };
+
+}
+
+// -------------------------------------------------
+// ADMIN কন্টাক্ট তথ্য (READ-ONLY, settings/store থেকে)
+// কাস্টমার সরাসরি মানুষের (Admin) সাথে কথা বলতে চাইলে এটা কল
+// করে WhatsApp নাম্বার/লিংক বের করে দিতে হবে।
+// -------------------------------------------------
+async function getAdminContact() {
+
+  const snap = await admin
+    .firestore()
+    .collection("settings")
+    .doc("store")
+    .get();
+
+  const s = snap.exists ? snap.data() : {};
+
+  const whatsapp = (s.whatsapp || "").toString().trim();
+
+  if (!whatsapp) {
+    return {
+      error:
+        "এই মুহূর্তে WhatsApp নাম্বার সেট করা নেই। কাস্টমারকে ফোন " +
+        "নাম্বার বা ইমেইল দিয়ে সাহায্য করুন যদি পাওয়া যায়।",
+      phone: s.phone || "",
+      email: s.email || "",
+    };
+  }
+
+  // whatsapp লিংক বানানো — শুধু সংখ্যা রাখা হচ্ছে (+, স্পেস, ড্যাশ বাদ)
+  const digitsOnly = whatsapp.replace(/[^\d]/g, "");
+
+  return {
+    whatsapp,
+    whatsappLink: digitsOnly ? `https://wa.me/${digitsOnly}` : "",
+    phone: s.phone || "",
+    email: s.email || "",
   };
 
 }
@@ -309,6 +423,8 @@ module.exports = {
   searchProducts,
   checkStock,
   getOrderStatus,
+  getOrdersByPhone,
+  getAdminContact,
   createOrderViaChat,
   generateInvoiceText,
 };
