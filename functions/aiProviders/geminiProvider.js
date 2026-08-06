@@ -1,7 +1,21 @@
 // =================================================
-// GEMINI PROVIDER (ফ্রি tier)
+// GEMINI PROVIDER — Gemini 2.5 Flash-Lite
+//
+// এই একই provider module দুইবার ব্যবহার হয় (aiChat.js-এ):
+//   ১) একটা ফ্রি প্রজেক্টের API key দিয়ে (billing off — দিনে
+//      ~১০০০-১৫০০ রিকোয়েস্ট পর্যন্ত সম্পূর্ণ ফ্রি)
+//   ২) একটা পেইড প্রজেক্টের API key দিয়ে, শুধু fallback হিসেবে —
+//      ফ্রি প্রজেক্টে rate-limit (429) বা অন্য এরর হলেই এটা ব্যবহার
+//      হবে, নাহলে কখনো টাকা কাটবে না।
+//
+// ⚠️ একই Google একাউন্টে একাধিক ফ্রি প্রজেক্ট বানিয়ে ঘুরিয়ে-ফিরিয়ে
+// ব্যবহার করাটা Google-এর ToS অনুযায়ী ঝুঁকিপূর্ণ (quota-bypass
+// হিসেবে গণ্য হতে পারে) — তাই ইচ্ছাকৃতভাবে এখানে শুধু ২টা attempt
+// (১ ফ্রি + ১ পেইড) রাখা হয়েছে, বেশি না।
+//
 // মডেলের নাম সময়ের সাথে পাল্টাতে পারে — Google AI Studio-তে গিয়ে
-// সর্বশেষ ফ্রি Flash মডেলের নাম চেক করে নিচের MODEL আপডেট করবেন।
+// সর্বশেষ ফ্রি Flash-Lite মডেলের নাম চেক করে নিচের MODEL আপডেট
+// করবেন।
 // =================================================
 
 const MODEL = "gemini-2.5-flash-lite";
@@ -46,18 +60,29 @@ function encodeContents(genericMessages) {
       for (const p of msg.parts) {
 
         if (p.type === "text") {
+
           parts.push({ text: p.text });
+
         } else if (p.type === "image") {
+
+          // Gemini সরাসরি ছবি দেখতে পারে (vision) — inline_data
+          // হিসেবে base64 পাঠালেই মডেল ছবিটা বিশ্লেষণ করতে পারবে।
           parts.push({
-            inlineData: { mimeType: p.mimeType, data: p.data },
+            inline_data: {
+              mime_type: p.mimeType || "image/jpeg",
+              data: p.data,
+            },
           });
+
         } else if (p.type === "tool_result") {
+
           parts.push({
             functionResponse: {
               name: p.name,
               response: { result: p.output },
             },
           });
+
         }
 
       }
@@ -172,4 +197,4 @@ async function sendTurn({ apiKey, systemPrompt, tools, genericMessages }) {
 
 }
 
-module.exports = { sendTurn, name: "gemini" };
+module.exports = { sendTurn, name: MODEL };
