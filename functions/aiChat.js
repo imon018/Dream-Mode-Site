@@ -1,14 +1,14 @@
 // =================================================
 // AI CHAT — MAIN AGENT
 //
-// প্রোভাইডার: Gemini 2.5 Flash-Lite — একই মডেল দুইবার ব্যবহার হয়:
-//   ১) ফ্রি প্রজেক্টের key (প্রাইমারি, খরচ ০)
-//   ২) পেইড প্রজেক্টের key (fallback — ফ্রি কোটা শেষ/এরর হলেই
-//      শুধু ব্যবহার হবে)
+// প্রোভাইডার চেইন (দুটোই সম্পূর্ণ ফ্রি, কোনো টাকা লাগে না):
+//   ১) Gemini 2.5 Flash-Lite — প্রাইমারি (ফ্রি প্রজেক্টের key,
+//      GEMINI_API_KEY নামে আগে থেকেই সেট করা আছে)
+//   ২) Groq (Llama 3.3 70B) — fallback, শুধু Gemini fail করলে/
+//      rate-limit (429) হলেই ব্যবহার হবে
 //
-// দুটো আলাদা Google Cloud প্রজেক্ট থেকে আসা key হতে হবে (একটায়
-// billing off, আরেকটায় billing on) — একই প্রজেক্টের একাধিক key
-// একই quota শেয়ার করে, তাতে fallback হিসেবে কোনো লাভ হবে না।
+// পেইড কোনো key লাগে না — ভবিষ্যতে বাজেট থাকলে GEMINI_API_KEY_PAID
+// secret যোগ করে চেইনে আরেকটা ধাপ (পেইড) সহজেই বাড়ানো যাবে।
 // =================================================
 
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
@@ -26,9 +26,10 @@ const {
 } = require("./aiChatTools");
 
 const geminiProvider = require("./aiProviders/geminiProvider");
+const groqProvider = require("./aiProviders/groqProvider");
 
-const geminiFreeApiKey = defineSecret("GEMINI_API_KEY_FREE");
-const geminiPaidApiKey = defineSecret("GEMINI_API_KEY_PAID");
+const geminiApiKey = defineSecret("GEMINI_API_KEY");
+const groqApiKey = defineSecret("GROQ_API_KEY");
 
 const SYSTEM_PROMPT = `
 আপনি Dream Mode-এর কাস্টমার সাপোর্ট ও অর্ডার সহকারী AI।
@@ -59,7 +60,10 @@ const SYSTEM_PROMPT = `
 ছবি দেখা:
 - কাস্টমার কোনো ছবি (স্ক্রিনশট, প্রোডাক্টের ছবি, পেমেন্ট রিসিট
   ইত্যাদি) সংযুক্ত করে পাঠালে, সেই ছবি আপনি সরাসরি দেখতে পারেন —
-  ছবিতে কী আছে সেটা মনোযোগ দিয়ে দেখে প্রাসঙ্গিক সাহায্য করুন।
+  ছবিতে কী আছে সেটা মনোযোগ দিয়ে দেখে প্রাসঙ্গিক সাহায্য করুন। তবে
+  fallback হিসেবে অন্য মডেল ব্যবহার হলে ছবিটা নাও দেখা যেতে পারে —
+  এমন হলে কাস্টমারকে বিনয়ের সাথে ছবিতে কী আছে টেক্সটে বলে দিতে
+  বলুন, কখনো ছবির বিষয়বস্তু নিজে থেকে অনুমান করে বলবেন না।
 
 প্রোডাক্ট দেখানো (কার্ড):
 - কাস্টমার কোনো প্রোডাক্ট খুঁজতে/দেখতে চাইলে search_products বা
@@ -468,7 +472,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
 }
 
 exports.aiChat = onCall(
-  { secrets: [geminiFreeApiKey, geminiPaidApiKey] },
+  { secrets: [geminiApiKey, groqApiKey] },
   async (request) => {
 
     try {
@@ -488,7 +492,9 @@ exports.aiChat = onCall(
 
       // কাস্টমার ছবি সংযুক্ত করে পাঠালে (m.image = {mimeType, data})
       // সেটা একটা আলাদা "image" part হিসেবে যোগ করা হচ্ছে — Gemini
-      // এটা সরাসরি দেখতে পারে (vision)।
+      // (প্রাইমারি) এটা সরাসরি দেখতে পারে। Groq fallback ব্যবহার
+      // হলে দেখতে পারবে না — openAiCompatible.js নিজে থেকেই তখন
+      // "ছবি দেখা যাচ্ছে না" নোটে বদলে দেয়।
       const genericMessages = messages.map((m) => {
 
         const parts = [{ type: "text", text: m.content }];
@@ -507,13 +513,11 @@ exports.aiChat = onCall(
 
       });
 
-      // চেইন: প্রথমে ফ্রি প্রজেক্টের key, ফেল করলে/rate-limit হলে
-      // পেইড প্রজেক্টের key। দুটোই একই Gemini মডেল — শুধু কোন
-      // Google Cloud প্রজেক্টে billing চালু আছে তার ওপর নির্ভর করে
-      // কোনটা ফ্রি আর কোনটা পেইড।
+      // চেইন: প্রথমে Gemini (ফ্রি), ফেল করলে/rate-limit হলে Groq
+      // (ফ্রি fallback) — দুটোই কোনো টাকা লাগে না।
       const chain = [
-        { key: "gemini-free", provider: geminiProvider, apiKey: geminiFreeApiKey.value() },
-        { key: "gemini-paid", provider: geminiProvider, apiKey: geminiPaidApiKey.value() },
+        { key: "gemini", provider: geminiProvider, apiKey: geminiApiKey.value() },
+        { key: "groq-llama-3.3-70b", provider: groqProvider, apiKey: groqApiKey.value() },
       ];
 
       let lastError = null;
@@ -540,7 +544,7 @@ exports.aiChat = onCall(
 
           console.log(`AI CHAT — "${attempt.key}" failed:`, err.message);
           lastError = err;
-          continue; // ফ্রি ব্যর্থ হলে পেইড key দিয়ে আবার চেষ্টা করবে
+          continue; // Gemini ব্যর্থ হলে Groq দিয়ে আবার চেষ্টা করবে
 
         }
 
