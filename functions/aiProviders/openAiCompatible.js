@@ -28,13 +28,28 @@ function encodeMessages(systemPrompt, genericMessages) {
     if (msg.role === "user") {
 
       const textParts = msg.parts.filter((p) => p.type === "text");
+      const imageParts = msg.parts.filter((p) => p.type === "image");
       const toolResultParts = msg.parts.filter((p) => p.type === "tool_result");
 
-      if (textParts.length) {
+      // এই ফ্রি ফলব্যাক মডেলগুলো ছবি (vision) দেখতে পারে না, তাই
+      // ছবি চুপচাপ বাদ দেওয়ার বদলে কাস্টমারকে জিজ্ঞেস করার জন্য
+      // একটা স্পষ্ট নোট যোগ করা হচ্ছে — যাতে AI নিজে থেকে ছবির
+      // বিষয়বস্তু আন্দাজ/বানিয়ে না বলে।
+      let content = textParts.map((p) => p.text).join("\n");
+
+      if (imageParts.length) {
+        content +=
+          (content ? "\n" : "") +
+          "[কাস্টমার একটা ছবি সংযুক্ত করেছে, কিন্তু এই মুহূর্তে " +
+          "ছবিটা দেখা যাচ্ছে না — ছবিতে কী আছে সেটা টেক্সটে " +
+          "জিজ্ঞেস করুন, নিজে থেকে অনুমান করবেন না।]";
+      }
+
+      if (content) {
 
         messages.push({
           role: "user",
-          content: textParts.map((p) => p.text).join("\n"),
+          content,
         });
 
       }
