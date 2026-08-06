@@ -4,7 +4,7 @@
 // সর্বশেষ ফ্রি Flash মডেলের নাম চেক করে নিচের MODEL আপডেট করবেন।
 // =================================================
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "gemini-2.5-flash-lite";
 
 function toGeminiSchema(schema) {
 
