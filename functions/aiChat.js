@@ -513,6 +513,19 @@ exports.aiChat = onCall(
 
       });
 
+      // ফ্রি tier-এ (Gemini + Groq) টোকেন/রিকোয়েস্ট বাজেট সীমিত, আর
+      // ক্লায়েন্ট প্রতিবার পুরো কথোপকথনের ইতিহাস পাঠায় — তাই লম্বা
+      // চ্যাটে (যেমন checkout flow) টোকেন সংখ্যা বেড়ে গিয়ে Groq-এর
+      // ১২০০০ TPM লিমিট ছাড়িয়ে যেতে পারে (413 error)। শুধু সাম্প্রতিক
+      // কিছু মেসেজ পাঠিয়ে এটা এড়ানো হচ্ছে — পুরনো প্রসঙ্গ হারালেও
+      // order flow-এর জন্য এটুকু যথেষ্ট (কাস্টমারের নাম/ফোন/ঠিকানা
+      // সাধারণত সাম্প্রতিক মেসেজেই থাকে)।
+      const MAX_HISTORY_MESSAGES = 16;
+      const trimmedMessages =
+        genericMessages.length > MAX_HISTORY_MESSAGES
+          ? genericMessages.slice(-MAX_HISTORY_MESSAGES)
+          : genericMessages;
+
       // চেইন: প্রথমে Gemini (ফ্রি), ফেল করলে/rate-limit হলে Groq
       // (ফ্রি fallback) — দুটোই কোনো টাকা লাগে না।
       const chain = [
@@ -528,7 +541,7 @@ exports.aiChat = onCall(
 
           const result = await runConversation({
             attempt,
-            genericMessages,
+            genericMessages: trimmedMessages,
             uid,
           });
 
