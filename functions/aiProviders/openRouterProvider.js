@@ -1,18 +1,23 @@
 // =================================================
-// OPENROUTER — ফ্রি ব্যাকআপ চেইন (Qwen → Llama → Mistral → DeepSeek)
+// OPENROUTER — ফ্রি ব্যাকআপ চেইন
 //
-// ⚠️ গুরুত্বপূর্ণ: OpenRouter-এর ফ্রি মডেল লিস্ট ঘন ঘন বদলায় —
-// কোনো মডেল কয়েক সপ্তাহ পর delist/paid হয়ে যেতে পারে। নিচের
-// slug-গুলো এই মুহূর্তে সঠিক বলে জানা যাচ্ছে, কিন্তু মাঝে মাঝে
-// https://openrouter.ai/models?fmt=cards&q=free এ গিয়ে চেক করে
-// প্রয়োজনে নিচের OPENROUTER_MODELS array আপডেট করবেন (নতুন slug
-// বসিয়ে দিলেই হবে, কোড আর কোথাও বদলাতে হবে না)।
+// ⚠️ আপডেট (আগস্ট ২০২৬): Qwen/Llama/Mistral/DeepSeek-এর ফ্রি
+// tier এখন বেশিরভাগই বন্ধ হয়ে গেছে (OpenRouter এগুলো paid-এ
+// সরিয়ে নিয়েছে) — এটা আসল প্রোডাকশন লগে ধরা পড়েছে (DeepSeek:
+// "This model is unavailable for free")। তাই সেগুলোর বদলে:
 //
-// আরেকটা বাস্তব বিষয়: ছোট/ফ্রি ওপেন-সোর্স মডেলগুলো (Qwen/Llama/
-// Mistral/DeepSeek-এর ফ্রি ভ্যারিয়েন্ট) tool-calling-এ Gemini/
-// OpenAI-এর মতো নির্ভরযোগ্য না — মাঝে মাঝে সঠিকভাবে tool কল না
-// করে নিজে থেকে উত্তর বানিয়ে দিতে পারে। তাই এগুলো শুধু ব্যাকআপ,
-// প্রধান provider না।
+//   1. openai/gpt-oss-20b:free   — এই মুহূর্তে নিশ্চিতভাবে ফ্রি,
+//      tool-calling ভালোভাবে সাপোর্ট করে
+//   2. openai/gpt-oss-120b:free  — বড়, আরেকটু ভালো quality
+//   3. openrouter/free           — OpenRouter-এর নিজস্ব
+//      "auto-router": এই মুহূর্তে যে ফ্রি মডেল কাজ করছে এবং
+//      tool-calling সাপোর্ট করে, সেটা নিজে থেকেই বেছে নেয় —
+//      তাই ভবিষ্যতে কোনো নির্দিষ্ট মডেল delist হয়ে গেলেও এই
+//      ধাপটা ভাঙবে না।
+//
+// তারপরও, https://openrouter.ai/models?fmt=cards&q=free এ
+// মাঝে মাঝে চেক করে উপরের ১ ও ২ নম্বর মডেল এখনো ফ্রি আছে কিনা
+// দেখে নেবেন — ৩ নম্বর (auto-router) সবসময় কাজ করার কথা।
 // =================================================
 
 const { createProvider } = require("./openAiCompatible");
@@ -27,10 +32,9 @@ const EXTRA_HEADERS = {
 };
 
 const OPENROUTER_MODELS = [
-  "qwen/qwen-2.5-7b-instruct:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "mistralai/mistral-small-24b-instruct-2501:free",
-  "deepseek/deepseek-r1-distill-llama-70b:free",
+  "openai/gpt-oss-20b:free",
+  "openai/gpt-oss-120b:free",
+  "openrouter/free",
 ];
 
 // প্রতিটা মডেলের জন্য একটা করে { key, provider } — orchestrator
