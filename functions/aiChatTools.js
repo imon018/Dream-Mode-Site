@@ -16,6 +16,55 @@
 const admin = require("firebase-admin");
 
 // -------------------------------------------------
+// DELIVERY CHARGE — সত্যিকারের সোর্স (Checkout.jsx-এর সাথে হুবহু
+// মিলিয়ে রাখা হয়েছে)। আগে AI নিজে থেকে দাম "অনুমান" করে বলতো
+// (ভুল/এলোমেলো তথ্য দিতো) — এখন থেকে এই একই তালিকা থেকেই সবসময়
+// সত্যি সংখ্যা বলা হবে, এবং create_order-ও এই একই হিসাব দিয়ে
+// deliveryCharge বসায় — তাই কাস্টমারকে যা বলা হয় আর আসলে যা
+// চার্জ হয়, দুটো সবসময় এক থাকবে।
+// -------------------------------------------------
+const DELIVERY_TIERS = [
+  { key: "dhaka_city", label: "ঢাকা সিটির ভেতরে", charge: 80 },
+  { key: "dhaka_sub_area", label: "ঢাকার আশেপাশের এলাকা (সাব-এরিয়া)", charge: 120 },
+  { key: "outside_dhaka", label: "ঢাকার বাইরে (সারাদেশ)", charge: 150 },
+];
+
+function calculateDeliveryCharge(district) {
+
+  const d = (district || "").toString().trim().toLowerCase();
+
+  if (!d) return null; // এলাকা জানা না গেলে অনুমান করা হবে না
+
+  if (d.includes("ঢাকা") || d.includes("dhaka")) {
+    return DELIVERY_TIERS[0].charge; // ডিফল্ট: ঢাকা সিটি রেট
+  }
+
+  return DELIVERY_TIERS[2].charge; // ঢাকার বাইরে
+
+}
+
+// -------------------------------------------------
+// DELIVERY INFO (READ-ONLY)
+// কাস্টমার ডেলিভারি চার্জ জিজ্ঞেস করলে AI অবশ্যই এটা কল করবে —
+// নিজে থেকে সংখ্যা বানাবে না। district দিলে সেই এলাকার জন্য সঠিক
+// চার্জও বলে দেওয়া হয়।
+// -------------------------------------------------
+async function getDeliveryInfo({ district } = {}) {
+
+  const charge = district ? calculateDeliveryCharge(district) : null;
+
+  return {
+    tiers: DELIVERY_TIERS,
+    freeDeliveryOver: 3000,
+    matchedCharge: charge,
+    note:
+      "৳৩০০০ বা তার বেশি অর্ডারে ডেলিভারি ফ্রি। এলাকা অনুযায়ী চার্জ " +
+      "উপরের tiers থেকে বলুন, matchedCharge থাকলে সরাসরি সেটাই বলুন।",
+  };
+
+}
+
+// -------------------------------------------------
 // PRODUCT SEARCH (READ-ONLY)
 // -------------------------------------------------
 async function searchProducts({ query, category }) {
@@ -351,7 +400,11 @@ async function createOrderViaChat({
 
   }
 
-  const deliveryCharge = 0; // চাইলে settings/store থেকে ডাইনামিক করা যাবে
+  // Checkout পেজের মতো একই hisab দিয়ে ডেলিভারি চার্জ বসানো হচ্ছে —
+  // AI এটা নিজে থেকে বানায় না, এবং কাস্টমারকে যা বলা হয়েছে (get_delivery_info
+  // থেকে) তার সাথেই এটা মিলবে। district অস্পষ্ট/না-দেওয়া থাকলে
+  // ডিফল্ট হিসেবে "ঢাকার বাইরে"-র রেট ধরা হচ্ছে (নিরাপদ দিক)।
+  const deliveryCharge = calculateDeliveryCharge(district) ?? DELIVERY_TIERS[2].charge;
   const total = subtotal + deliveryCharge;
 
   const orderData = {
@@ -379,9 +432,63 @@ async function createOrderViaChat({
     .collection("orders")
     .add(orderData);
 
+  // ফ্রন্টএন্ড checkout থেকে অর্ডার করলে admin/user notification
+  // তৈরি হয় (notificationService.js), কিন্তু চ্যাট থেকে অর্ডার হলে
+  // আগে এটা বাদ পড়তো — ফলে admin panel-এ bell-এ কিছু দেখা যেতো
+  // না। এখানে একই notification schema (isDeleted/isRead/receiverId
+  // ইত্যাদি) হুবহু মিলিয়ে সরাসরি Admin SDK দিয়ে লেখা হচ্ছে যাতে
+  // admin-এর নোটিফিকেশন ড্রপডাউনে এটাও দেখা যায়।
+  try {
+
+    await admin.firestore().collection("notifications").add({
+      title: "📦 New Order Received",
+      message: `${customerName} placed a new order via AI chat.`,
+      type: "order",
+      priority: "high",
+      receiverId: "ADMIN",
+      senderId: null,
+      senderName: "",
+      senderRole: "",
+      actionUrl: `/admin/orders/${docRef.id}`,
+      image: "",
+      extra: {},
+      isRead: false,
+      isDeleted: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    if (uid) {
+
+      await admin.firestore().collection("notifications").add({
+        title: "🛒 Order Placed",
+        message: "Your order has been placed successfully.",
+        type: "order",
+        priority: "medium",
+        receiverId: uid,
+        senderId: null,
+        senderName: "",
+        senderRole: "",
+        actionUrl: `/profile/orders/${docRef.id}`,
+        image: "",
+        extra: {},
+        isRead: false,
+        isDeleted: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+    }
+
+  } catch (notifyErr) {
+
+    // নোটিফিকেশন ব্যর্থ হলেও অর্ডার তৈরি সফল থাকবে — শুধু লগ করা হলো
+    console.log("AI CHAT — order notification failed:", notifyErr.message);
+
+  }
+
   return {
     orderId: docRef.id,
     total,
+    deliveryCharge,
     items: verifiedItems,
     message: "অর্ডার সফলভাবে নেওয়া হয়েছে।",
   };
@@ -420,6 +527,7 @@ async function generateInvoiceText({ orderId, phone, uid }) {
 }
 
 module.exports = {
+  getDeliveryInfo,
   searchProducts,
   checkStock,
   getOrderStatus,
