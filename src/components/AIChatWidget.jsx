@@ -7,7 +7,42 @@ import useAuth from "../hooks/useAuth";
 // AI CHAT WIDGET
 // Home/Shop-এর যেকোনো লেআউটে <AIChatWidget /> বসিয়ে দিলেই কাজ
 // করবে। এটা নিচে-ডানে একটা ভাসমান বাটন হিসেবে দেখাবে।
+//
+// এই ভার্সনে যোগ করা হয়েছে:
+// - localStorage-এ চ্যাট history সেভ থাকে, রিফ্রেশ করলেও হারায় না
+// - চ্যাট বন্ধ থাকা অবস্থায় নতুন রিপ্লাই এলে বাটনে unread badge
 // =================================================
+
+const STORAGE_KEY = "dreamModeChatHistory";
+
+const WELCOME_MESSAGE = {
+  role: "assistant",
+  display:
+    "আসসালামু আলাইকুম! আমি Dream Mode-এর AI সহকারী। " +
+    "প্রোডাক্ট খুঁজে দেওয়া, অর্ডার করা বা আপনার অর্ডারের " +
+    "স্ট্যাটাস জানাতে আমি সাহায্য করতে পারি। কী জানতে চান?",
+};
+
+function loadStoredMessages() {
+
+  try {
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+
+    if (Array.isArray(parsed) && parsed.length) {
+      return parsed;
+    }
+
+  } catch (error) {
+
+    console.log("AI CHAT WIDGET — history load failed:", error);
+
+  }
+
+  return [WELCOME_MESSAGE];
+
+}
 
 export default function AIChatWidget() {
 
@@ -16,15 +51,8 @@ export default function AIChatWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      display:
-        "আসসালামু আলাইকুম! আমি Dream Mode-এর AI সহকারী। " +
-        "প্রোডাক্ট খুঁজে দেওয়া, অর্ডার করা বা আপনার অর্ডারের " +
-        "স্ট্যাটাস জানাতে আমি সাহায্য করতে পারি। কী জানতে চান?",
-    },
-  ]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [messages, setMessages] = useState(loadStoredMessages);
 
   const scrollRef = useRef(null);
 
@@ -36,6 +64,30 @@ export default function AIChatWidget() {
     });
 
   }, [messages, open]);
+
+  // চ্যাট history localStorage-এ সেভ রাখা — রিফ্রেশ করলে হারাবে না
+  useEffect(() => {
+
+    try {
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+
+    } catch (error) {
+
+      console.log("AI CHAT WIDGET — history save failed:", error);
+
+    }
+
+  }, [messages]);
+
+  // চ্যাট খোলা হলে unread badge মুছে যাবে
+  useEffect(() => {
+
+    if (open) {
+      setUnreadCount(0);
+    }
+
+  }, [open]);
 
   const sendMessage = async () => {
 
@@ -75,6 +127,17 @@ export default function AIChatWidget() {
         },
       ]);
 
+      // widget বন্ধ থাকা অবস্থায় রিপ্লাই এলে unread count বাড়বে
+      setOpen((currentlyOpen) => {
+
+        if (!currentlyOpen) {
+          setUnreadCount((c) => c + 1);
+        }
+
+        return currentlyOpen;
+
+      });
+
     } catch (error) {
 
       console.log("AI CHAT WIDGET ERROR:", error);
@@ -106,6 +169,12 @@ export default function AIChatWidget() {
 
   };
 
+  const startNewChat = () => {
+
+    setMessages([WELCOME_MESSAGE]);
+
+  };
+
   return (
     <>
       {/* ফ্লোটিং বাটন */}
@@ -117,6 +186,16 @@ export default function AIChatWidget() {
         aria-label="AI Chat"
       >
         {open ? "✕" : "💬"}
+
+        {!open && unreadCount > 0 && (
+          <span
+            className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center
+                       justify-center rounded-full bg-red-500 px-1 text-[11px]
+                       font-bold text-white"
+          >
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
       </button>
 
       {/* চ্যাট উইন্ডো */}
@@ -126,9 +205,19 @@ export default function AIChatWidget() {
                      max-w-[380px] flex-col overflow-hidden rounded-2xl border
                      border-gray-200 bg-white shadow-2xl"
         >
-          <div className="bg-black px-4 py-3 text-white">
-            <p className="font-semibold">Dream Mode Assistant</p>
-            <p className="text-xs text-gray-300">সাধারণত সাথে সাথে উত্তর দেয়</p>
+          <div className="flex items-center justify-between bg-black px-4 py-3 text-white">
+            <div>
+              <p className="font-semibold">Dream Mode Assistant</p>
+              <p className="text-xs text-gray-300">সাধারণত সাথে সাথে উত্তর দেয়</p>
+            </div>
+
+            <button
+              onClick={startNewChat}
+              className="rounded-lg border border-gray-500 px-2 py-1 text-xs text-gray-200
+                         hover:bg-gray-800"
+            >
+              নতুন চ্যাট
+            </button>
           </div>
 
           <div
