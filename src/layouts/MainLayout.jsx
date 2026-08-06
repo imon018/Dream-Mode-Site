@@ -9,6 +9,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import MobileBottomNav from "../components/MobileBottomNav";
 import WhatsAppButton from "../components/WhatsAppButton";
+import AIChatWidget from "../components/AIChatWidget";
 
 
 
@@ -109,6 +110,14 @@ hideFooter
 
 <MobileBottomNav />
 
+{/* Admin প্যানেলে দরকার নেই, বাকি সব জায়গায় (public + user profile) থাকবে */}
+{
+!isAdminPanel && (
+
+<AIChatWidget />
+
+)
+}
 
 </div>
 
