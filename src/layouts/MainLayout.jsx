@@ -8,7 +8,6 @@ import AnnouncementBar from "../components/AnnouncementBar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import MobileBottomNav from "../components/MobileBottomNav";
-import WhatsAppButton from "../components/WhatsAppButton";
 import AIChatWidget from "../components/AIChatWidget";
 
 
@@ -91,14 +90,12 @@ hideFooter
 
 
 
-{/* শুধু Public Page এ Footer/WhatsApp, Bottom Nav সব জায়গায় থাকবে */}
+{/* শুধু Public Page এ Footer, Bottom Nav সব জায়গায় থাকবে */}
 
 {
 !hideFooter && (
 
 <>
-
-<WhatsAppButton />
 
 <Footer />
 
