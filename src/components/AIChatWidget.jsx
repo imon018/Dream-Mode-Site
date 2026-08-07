@@ -24,11 +24,11 @@ const WELCOME_MESSAGE = {
     "স্ট্যাটাস জানাতে আমি সাহায্য করতে পারি। কী জানতে চান?",
 };
 
-function loadStoredMessages() {
+function loadStoredMessages(storageKey, welcomeMessage) {
 
   try {
 
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey);
     const parsed = raw ? JSON.parse(raw) : null;
 
     if (Array.isArray(parsed) && parsed.length) {
@@ -41,7 +41,7 @@ function loadStoredMessages() {
 
   }
 
-  return [WELCOME_MESSAGE];
+  return [welcomeMessage];
 
 }
 
@@ -151,6 +151,29 @@ function OrderCards({ orders }) {
 }
 
 // -------------------------------------------------
+// ইনভয়েস কার্ড — generate_invoice_pdf থেকে পাওয়া PDF লিংক
+// ডাউনলোড বাটন হিসেবে দেখায়।
+// -------------------------------------------------
+function InvoiceCard({ invoice }) {
+
+  if (!invoice || !invoice.pdfUrl) return null;
+
+  return (
+    <a
+      href={invoice.pdfUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-2 flex items-center gap-2 rounded-xl border border-blue-200
+                 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700
+                 hover:bg-blue-100"
+    >
+      📄 ইনভয়েস PDF ডাউনলোড করুন
+    </a>
+  );
+
+}
+
+// -------------------------------------------------
 // Admin/WhatsApp বাটন — get_admin_contact থেকে পাওয়া নাম্বার দিয়ে
 // সরাসরি WhatsApp চ্যাট খোলার বাটন দেখায়।
 // -------------------------------------------------
@@ -173,15 +196,23 @@ function AdminContactCard({ adminContact }) {
 
 }
 
-export default function AIChatWidget() {
+export default function AIChatWidget({
+  functionName = "aiChat",
+  storageKey = STORAGE_KEY,
+  title = "Dream Mode Assistant",
+  subtitle = "সাধারণত সাথে সাথে উত্তর দেয়",
+  welcomeText = WELCOME_MESSAGE.display,
+} = {}) {
 
   const { user } = useAuth() || {};
+
+  const welcomeMessage = { role: "assistant", display: welcomeText };
 
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [messages, setMessages] = useState(loadStoredMessages);
+  const [messages, setMessages] = useState(() => loadStoredMessages(storageKey, welcomeMessage));
   const [attachedImage, setAttachedImage] = useState(null); // { dataUrl, mimeType }
   const [imageError, setImageError] = useState("");
 
@@ -244,7 +275,7 @@ export default function AIChatWidget() {
 
     try {
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      localStorage.setItem(storageKey, JSON.stringify(messages));
 
     } catch (error) {
 
@@ -323,7 +354,7 @@ export default function AIChatWidget() {
 
       });
 
-      const aiChat = httpsCallable(functions, "aiChat");
+      const aiChat = httpsCallable(functions, functionName);
 
       const result = await aiChat({ messages: apiMessages });
 
@@ -335,6 +366,7 @@ export default function AIChatWidget() {
           products: result.data.products || [],
           orders: result.data.orders || [],
           adminContact: result.data.adminContact || null,
+          invoice: result.data.invoice || null,
         },
       ]);
 
@@ -388,7 +420,7 @@ export default function AIChatWidget() {
 
   const startNewChat = () => {
 
-    setMessages([WELCOME_MESSAGE]);
+    setMessages([welcomeMessage]);
 
   };
 
@@ -424,8 +456,8 @@ export default function AIChatWidget() {
         >
           <div className="flex items-center justify-between bg-black px-4 py-3 text-white">
             <div>
-              <p className="font-semibold">Dream Mode Assistant</p>
-              <p className="text-xs text-gray-300">সাধারণত সাথে সাথে উত্তর দেয়</p>
+              <p className="font-semibold">{title}</p>
+              <p className="text-xs text-gray-300">{subtitle}</p>
             </div>
 
             <button
@@ -470,6 +502,7 @@ export default function AIChatWidget() {
                     <ProductCards products={m.products} />
                     <OrderCards orders={m.orders} />
                     <AdminContactCard adminContact={m.adminContact} />
+                    <InvoiceCard invoice={m.invoice} />
                   </div>
                 )}
               </div>
