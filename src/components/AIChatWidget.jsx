@@ -5,24 +5,62 @@ import { functions } from "../firebase/functions";
 import useAuth from "../hooks/useAuth";
 
 // =================================================
-// AI CHAT WIDGET
+// AI CHAT WIDGET — Dream AI থিম
 // Home/Shop-এর যেকোনো লেআউটে <AIChatWidget /> বসিয়ে দিলেই কাজ
-// করবে। এটা নিচে-ডানে একটা ভাসমান বাটন হিসেবে দেখাবে।
+// করবে। এটা একটা ভাসমান বাটন হিসেবে দেখাবে, যেটা আগে যেমন
+// WhatsApp বাটন যেকোনো জায়গায় টেনে (drag) নেওয়া যেতো, ঠিক
+// সেভাবেই স্ক্রিনের যেকোনো জায়গায় সরানো যাবে এবং পজিশন সেভ
+// থাকবে।
 //
-// এই ভার্সনে যোগ করা হয়েছে:
+// এই ভার্সনে যা আছে:
 // - localStorage-এ চ্যাট history সেভ থাকে, রিফ্রেশ করলেও হারায় না
+// - localStorage-এ বাটনের পজিশন সেভ থাকে (drag করে যেখানে রাখা হয়)
 // - চ্যাট বন্ধ থাকা অবস্থায় নতুন রিপ্লাই এলে বাটনে unread badge
+// - চ্যাট শুরুতে quick-action কার্ড (প্রোডাক্ট, সাইজ গাইড, ডেলিভারি, রিটার্ন)
 // =================================================
 
 const STORAGE_KEY = "dreamModeChatHistory";
+const WIDGET_POSITION_KEY = "dreamAIWidgetPosition";
+
+const BUTTON_SIZE = 64;
+const PANEL_MARGIN = 16;
+const PANEL_WIDTH = 380;
+const PANEL_HEIGHT = 560;
 
 const WELCOME_MESSAGE = {
   role: "assistant",
   display:
-    "আসসালামু আলাইকুম! আমি Dream Mode-এর AI সহকারী। " +
+    "আসসালামু আলাইকুম! আমি Dream AI, আপনার শপিং সহকারী। " +
     "প্রোডাক্ট খুঁজে দেওয়া, অর্ডার করা বা আপনার অর্ডারের " +
     "স্ট্যাটাস জানাতে আমি সাহায্য করতে পারি। কী জানতে চান?",
 };
+
+const QUICK_ACTIONS = [
+  {
+    icon: "🛍️",
+    title: "প্রোডাক্ট খুঁজুন",
+    subtitle: "পণ্য অনুসন্ধান করুন",
+    prompt: "আমাকে কিছু ভালো প্রোডাক্ট সাজেস্ট করুন",
+  },
+  {
+    icon: "📏",
+    title: "সাইজ গাইড",
+    subtitle: "সঠিক সাইজ বেছে নিন",
+    prompt: "সাইজ গাইড সম্পর্কে জানতে চাই",
+  },
+  {
+    icon: "🚚",
+    title: "ডেলিভারি তথ্য",
+    subtitle: "শিপিং ও ডেলিভারি",
+    prompt: "ডেলিভারি চার্জ ও সময় সম্পর্কে জানতে চাই",
+  },
+  {
+    icon: "↩️",
+    title: "রিটার্ন পলিসি",
+    subtitle: "রিটার্ন ও রিফান্ড",
+    prompt: "আপনাদের রিটার্ন পলিসি কী?",
+  },
+];
 
 function loadStoredMessages(storageKey, welcomeMessage) {
 
@@ -42,6 +80,16 @@ function loadStoredMessages(storageKey, welcomeMessage) {
   }
 
   return [welcomeMessage];
+
+}
+
+function formatTime() {
+
+  try {
+    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch (error) {
+    return "";
+  }
 
 }
 
@@ -85,7 +133,7 @@ function ProductCards({ products }) {
           <div className="mt-1 flex items-baseline gap-1">
             {p.offerPrice > 0 ? (
               <>
-                <span className="text-sm font-bold text-black">
+                <span className="text-sm font-bold text-violet-700">
                   ৳{p.offerPrice}
                 </span>
                 <span className="text-[11px] text-gray-400 line-through">
@@ -93,7 +141,7 @@ function ProductCards({ products }) {
                 </span>
               </>
             ) : (
-              <span className="text-sm font-bold text-black">৳{p.price}</span>
+              <span className="text-sm font-bold text-violet-700">৳{p.price}</span>
             )}
           </div>
 
@@ -130,7 +178,7 @@ function OrderCards({ orders }) {
             <span className="font-mono text-[11px] text-gray-500">
               #{o.id.slice(-8)}
             </span>
-            <span className="rounded-full bg-black px-2 py-0.5 text-[11px] text-white">
+            <span className="rounded-full bg-violet-600 px-2 py-0.5 text-[11px] text-white">
               {o.status}
             </span>
           </div>
@@ -199,8 +247,8 @@ function AdminContactCard({ adminContact }) {
 export default function AIChatWidget({
   functionName = "aiChat",
   storageKey = STORAGE_KEY,
-  title = "Dream Mode Assistant",
-  subtitle = "সাধারণত সাথে সাথে উত্তর দেয়",
+  title = "Dream AI",
+  subtitle = "আপনার শপিং সহকারী",
   welcomeText = WELCOME_MESSAGE.display,
 } = {}) {
 
@@ -209,6 +257,7 @@ export default function AIChatWidget({
   const welcomeMessage = { role: "assistant", display: welcomeText };
 
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -216,10 +265,173 @@ export default function AIChatWidget({
   const [attachedImage, setAttachedImage] = useState(null); // { dataUrl, mimeType }
   const [imageError, setImageError] = useState("");
 
+  // ভাসমান বাটনের পজিশন — WhatsApp বাটনের মতোই যেকোনো জায়গায় drag করা যাবে
+  const [position, setPosition] = useState(() => ({
+    x: Math.max(0, window.innerWidth - BUTTON_SIZE - 20),
+    y: Math.max(0, window.innerHeight - BUTTON_SIZE - 150),
+  }));
+  const [dragging, setDragging] = useState(false);
+
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
+  const dragStateRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0, moved: false });
 
   const MAX_IMAGE_MB = 4;
+
+  // --------- সেভ করা পজিশন লোড (মাউন্টে একবার) ---------
+  useEffect(() => {
+
+    try {
+
+      const saved = localStorage.getItem(WIDGET_POSITION_KEY);
+
+      if (saved) {
+
+        const oldPosition = JSON.parse(saved);
+
+        const safePosition = {
+          x: Math.min(Math.max(0, oldPosition.x), window.innerWidth - BUTTON_SIZE),
+          y: Math.min(Math.max(0, oldPosition.y), window.innerHeight - BUTTON_SIZE),
+        };
+
+        setPosition(safePosition);
+
+      }
+
+    } catch (error) {
+
+      console.log("AI CHAT WIDGET — position load failed:", error);
+
+    }
+
+  }, []);
+
+  const getPoint = (e) => {
+
+    if (e.touches && e.touches[0]) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+
+    return { x: e.clientX, y: e.clientY };
+
+  };
+
+  const handlePointerDown = (e) => {
+
+    const point = getPoint(e);
+
+    dragStateRef.current = {
+      startX: point.x,
+      startY: point.y,
+      startPosX: position.x,
+      startPosY: position.y,
+      moved: false,
+    };
+
+    setDragging(true);
+
+  };
+
+  const handlePointerMove = (e) => {
+
+    const point = getPoint(e);
+    const dx = point.x - dragStateRef.current.startX;
+    const dy = point.y - dragStateRef.current.startY;
+
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+      dragStateRef.current.moved = true;
+    }
+
+    const nextX = Math.min(
+      Math.max(0, dragStateRef.current.startPosX + dx),
+      window.innerWidth - BUTTON_SIZE
+    );
+
+    const nextY = Math.min(
+      Math.max(0, dragStateRef.current.startPosY + dy),
+      window.innerHeight - BUTTON_SIZE
+    );
+
+    setPosition({ x: nextX, y: nextY });
+
+  };
+
+  const handlePointerUp = () => {
+
+    setDragging(false);
+
+    setPosition((currentPosition) => {
+
+      try {
+        localStorage.setItem(WIDGET_POSITION_KEY, JSON.stringify(currentPosition));
+      } catch (error) {
+        console.log("AI CHAT WIDGET — position save failed:", error);
+      }
+
+      return currentPosition;
+
+    });
+
+    if (!dragStateRef.current.moved) {
+      setOpen((o) => !o);
+    }
+
+  };
+
+  // drag চলাকালীন window-জুড়ে মুভমেন্ট ট্র্যাক করা হয়, যাতে বাটনের
+  // বাইরে দ্রুত মাউস সরে গেলেও drag হারিয়ে না যায়
+  useEffect(() => {
+
+    if (!dragging) return;
+
+    const onMove = (e) => handlePointerMove(e);
+    const onUp = () => handlePointerUp();
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onUp);
+
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onMove);
+      window.removeEventListener("touchend", onUp);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragging]);
+
+  // বাটনের বর্তমান পজিশনের কাছাকাছি স্ক্রিনে জায়গা অনুযায়ী চ্যাট প্যানেল বসানো
+  const getPanelStyle = () => {
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const panelWidth = Math.min(PANEL_WIDTH, vw - PANEL_MARGIN * 2);
+    const panelHeight = Math.min(PANEL_HEIGHT, Math.floor(vh * 0.75));
+
+    const buttonCenterX = position.x + BUTTON_SIZE / 2;
+    const buttonCenterY = position.y + BUTTON_SIZE / 2;
+
+    const openToLeft = buttonCenterX > vw / 2;
+    const openUpward = buttonCenterY > vh / 2;
+
+    let left = openToLeft
+      ? position.x + BUTTON_SIZE - panelWidth
+      : position.x;
+
+    left = Math.min(Math.max(PANEL_MARGIN, left), vw - panelWidth - PANEL_MARGIN);
+
+    let top = openUpward
+      ? position.y - panelHeight - 12
+      : position.y + BUTTON_SIZE + 12;
+
+    top = Math.min(Math.max(PANEL_MARGIN, top), vh - panelHeight - PANEL_MARGIN);
+
+    return { left, top, width: panelWidth, height: panelHeight };
+
+  };
 
   const handleAttachClick = () => {
     fileInputRef.current?.click();
@@ -290,17 +502,21 @@ export default function AIChatWidget({
 
     if (open) {
       setUnreadCount(0);
+      setMenuOpen(false);
     }
 
   }, [open]);
 
-  const sendMessage = async () => {
+  const sendMessage = async (overrideText) => {
 
-    const text = input.trim();
+    const isQuickAction = typeof overrideText === "string";
+    const text = (isQuickAction ? overrideText : input).trim();
 
     if ((!text && !attachedImage) || loading) return;
 
-    setInput("");
+    if (!isQuickAction) {
+      setInput("");
+    }
 
     const imageToSend = attachedImage;
     setAttachedImage(null);
@@ -312,6 +528,7 @@ export default function AIChatWidget({
         role: "user",
         display: text || "📷 ছবি পাঠানো হয়েছে",
         image: imageToSend ? imageToSend.dataUrl : null,
+        time: formatTime(),
       },
     ];
 
@@ -367,6 +584,7 @@ export default function AIChatWidget({
           orders: result.data.orders || [],
           adminContact: result.data.adminContact || null,
           invoice: result.data.invoice || null,
+          time: formatTime(),
         },
       ]);
 
@@ -392,6 +610,7 @@ export default function AIChatWidget({
           display:
             "দুঃখিত, এই মুহূর্তে সাড়া দিতে পারছি না। " +
             "একটু পর আবার চেষ্টা করুন, অথবা WhatsApp-এ যোগাযোগ করুন।",
+          time: formatTime(),
         },
       ]);
 
@@ -426,15 +645,23 @@ export default function AIChatWidget({
 
   return (
     <>
-      {/* ফ্লোটিং বাটন */}
+      {/* ফ্লোটিং বাটন — যেকোনো জায়গায় টেনে (drag) সরানো যাবে */}
       <button
-        onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-24 right-5 z-50 flex h-14 w-14 items-center justify-center
-                   rounded-full bg-black text-white shadow-lg hover:bg-gray-800
-                   transition-transform active:scale-95"
-        aria-label="AI Chat"
+        onMouseDown={handlePointerDown}
+        onTouchStart={handlePointerDown}
+        style={{ left: position.x, top: position.y, touchAction: "none" }}
+        aria-label="Dream AI চ্যাট"
+        className={`fixed z-50 flex h-16 w-16 items-center justify-center rounded-full
+                   bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600
+                   text-white shadow-2xl ring-4 ring-white/40
+                   transition-transform hover:scale-105
+                   ${dragging ? "cursor-grabbing scale-105" : "cursor-grab"}`}
       >
-        {open ? "✕" : "💬"}
+        <span className="text-2xl">{open ? "✕" : "🤖"}</span>
+
+        {!open && (
+          <span className="absolute -top-1 -left-1 text-sm">✨</span>
+        )}
 
         {!open && unreadCount > 0 && (
           <span
@@ -447,26 +674,69 @@ export default function AIChatWidget({
         )}
       </button>
 
-      {/* চ্যাট উইন্ডো */}
+      {/* চ্যাট উইন্ডো — বাটন যেখানে আছে তার কাছাকাছি খোলে */}
       {open && (
         <div
-          className="fixed bottom-40 right-5 z-50 flex h-[70vh] max-h-[560px] w-[90vw]
-                     max-w-[380px] flex-col overflow-hidden rounded-2xl border
+          style={getPanelStyle()}
+          className="fixed z-50 flex flex-col overflow-hidden rounded-2xl border
                      border-gray-200 bg-white shadow-2xl"
         >
-          <div className="flex items-center justify-between bg-black px-4 py-3 text-white">
-            <div>
-              <p className="font-semibold">{title}</p>
-              <p className="text-xs text-gray-300">{subtitle}</p>
+          <div className="flex items-center justify-between bg-gradient-to-r
+                          from-violet-600 via-purple-600 to-fuchsia-600 px-4 py-3 text-white">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full
+                              bg-white/90 text-xl">
+                🤖
+              </div>
+
+              <div>
+                <p className="flex items-center gap-1 font-semibold leading-tight">
+                  {title} <span className="text-sm">✨</span>
+                </p>
+                <p className="text-xs text-white/80">{subtitle}</p>
+              </div>
             </div>
 
-            <button
-              onClick={startNewChat}
-              className="rounded-lg border border-gray-500 px-2 py-1 text-xs text-gray-200
-                         hover:bg-gray-800"
-            >
-              নতুন চ্যাট
-            </button>
+            <div className="relative flex items-center gap-1">
+              <button
+                onClick={() => setMenuOpen((m) => !m)}
+                aria-label="মেনু"
+                className="rounded-lg px-2 py-1 text-lg leading-none hover:bg-white/10"
+              >
+                ⋮
+              </button>
+
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="বন্ধ করুন"
+                className="rounded-lg px-2 py-1 text-lg leading-none hover:bg-white/10"
+              >
+                ⌄
+              </button>
+
+              {menuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setMenuOpen(false)}
+                  />
+
+                  <div className="absolute right-0 top-10 z-20 w-44 overflow-hidden
+                                  rounded-xl border border-gray-200 bg-white text-sm
+                                  text-gray-700 shadow-xl">
+                    <button
+                      onClick={() => {
+                        startNewChat();
+                        setMenuOpen(false);
+                      }}
+                      className="block w-full px-3 py-2 text-left hover:bg-gray-100"
+                    >
+                      🔄 নতুন চ্যাট শুরু করুন
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           <div
@@ -483,7 +753,7 @@ export default function AIChatWidget({
                 <div
                   className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
                     m.role === "user"
-                      ? "bg-black text-white"
+                      ? "bg-violet-100 text-gray-900"
                       : "bg-white text-gray-800 border border-gray-200"
                   }`}
                 >
@@ -497,6 +767,12 @@ export default function AIChatWidget({
                   {m.display}
                 </div>
 
+                {m.time && (
+                  <span className="mt-0.5 px-1 text-[10px] text-gray-400">
+                    {m.time}
+                  </span>
+                )}
+
                 {m.role === "assistant" && (
                   <div className="w-full max-w-[92%]">
                     <ProductCards products={m.products} />
@@ -508,10 +784,44 @@ export default function AIChatWidget({
               </div>
             ))}
 
+            {/* চ্যাট একদম শুরুতে থাকলে quick-action কার্ড দেখানো হয় */}
+            {messages.length === 1 && !loading && (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                {QUICK_ACTIONS.map((action) => (
+                  <button
+                    key={action.title}
+                    onClick={() => sendMessage(action.prompt)}
+                    disabled={loading}
+                    className="flex flex-col items-start gap-0.5 rounded-xl border
+                               border-gray-200 bg-white p-3 text-left shadow-sm
+                               transition-shadow hover:shadow-md disabled:opacity-50"
+                  >
+                    <span className="text-lg">{action.icon}</span>
+                    <span className="text-xs font-semibold text-gray-800">
+                      {action.title}
+                    </span>
+                    <span className="text-[10px] text-gray-400">
+                      {action.subtitle}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+
             {loading && (
-              <div className="flex justify-start">
-                <div className="rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-500">
-                  লিখছে...
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-2 rounded-2xl border
+                                border-gray-200 bg-white px-3 py-2 text-sm
+                                text-gray-500 shadow-sm">
+                  <span>ভাবছি...</span>
+                  <span className="flex gap-1">
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full
+                                     bg-violet-500 [animation-delay:-0.3s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full
+                                     bg-purple-500 [animation-delay:-0.15s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full
+                                     bg-fuchsia-500" />
+                  </span>
                 </div>
               </div>
             )}
@@ -534,7 +844,7 @@ export default function AIChatWidget({
                     onClick={removeAttachedImage}
                     aria-label="ছবি সরান"
                     className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center
-                               justify-center rounded-full bg-black text-[11px] text-white"
+                               justify-center rounded-full bg-violet-600 text-[11px] text-white"
                   >
                     ✕
                   </button>
@@ -557,8 +867,8 @@ export default function AIChatWidget({
                 disabled={loading}
                 aria-label="ছবি সংযুক্ত করুন"
                 className="flex h-10 w-10 flex-shrink-0 items-center justify-center
-                           rounded-xl border border-gray-300 text-lg text-gray-600
-                           hover:bg-gray-100 disabled:opacity-40"
+                           rounded-xl border border-violet-200 text-lg text-violet-600
+                           hover:bg-violet-50 disabled:opacity-40"
               >
                 📎
               </button>
@@ -570,17 +880,23 @@ export default function AIChatWidget({
                 placeholder="মেসেজ লিখুন..."
                 rows={1}
                 className="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2
-                           text-sm outline-none focus:border-black"
+                           text-sm outline-none focus:border-violet-500"
               />
               <button
-                onClick={sendMessage}
+                onClick={() => sendMessage()}
                 disabled={loading || (!input.trim() && !attachedImage)}
-                className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white
+                className="rounded-xl bg-gradient-to-br from-violet-600 to-purple-600
+                           px-4 py-2 text-sm font-medium text-white shadow-sm
                            disabled:opacity-40"
               >
                 পাঠান
               </button>
             </div>
+          </div>
+
+          <div className="border-t border-gray-100 bg-white px-3 py-1.5 text-center
+                          text-[11px] text-gray-400">
+            ✨ Powered by <span className="font-medium text-violet-600">Dream AI</span>
           </div>
         </div>
       )}
@@ -588,5 +904,3 @@ export default function AIChatWidget({
   );
 
 }
-
-
