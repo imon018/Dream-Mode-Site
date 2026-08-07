@@ -416,6 +416,20 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
   }
 
+  // AI নিজে থেকে জানে না কাস্টমার লগইন করা আছে কিনা (uid শুধু
+  // ব্যাকএন্ডেই থাকে) — তাই প্রতি রিকোয়েস্টে এটা স্পষ্টভাবে system
+  // prompt-এ জানিয়ে দেওয়া হচ্ছে, নাহলে AI সবসময় ধরে নেয় কাস্টমার
+  // লগইন করা নেই এবং অযথা ফোন নাম্বার চায়।
+  const loginStatusNote = uid
+    ? "\n\n[সিস্টেম নোট: এই কাস্টমার এই মুহূর্তে লগইন করা আছেন। " +
+      "অর্ডার স্ট্যাটাস/হিস্ট্রি জিজ্ঞেস করলে ফোন নাম্বার না চেয়ে " +
+      "সরাসরি get_orders_by_phone কল করুন (phone প্যারামিটার খালি " +
+      "রেখে) — uid থেকেই তার অর্ডার পাওয়া যাবে।]"
+    : "\n\n[সিস্টেম নোট: এই কাস্টমার লগইন করা নেই (guest)। অর্ডার " +
+      "স্ট্যাটাস জিজ্ঞেস করলে অবশ্যই ফোন নাম্বার চেয়ে নিন।]";
+
+  const systemPromptForRequest = SYSTEM_PROMPT + loginStatusNote;
+
   let conversation = genericMessages;
 
   const collected = { products: [], orders: [], adminContact: null };
@@ -424,7 +438,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
     const result = await sendTurnWithRetry(attempt, {
       apiKey: attempt.apiKey,
-      systemPrompt: SYSTEM_PROMPT,
+      systemPrompt: systemPromptForRequest,
       tools: TOOLS,
       genericMessages: conversation,
     });
