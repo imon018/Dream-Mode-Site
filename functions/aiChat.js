@@ -18,6 +18,9 @@ const {
   getDeliveryInfo,
   searchProducts,
   checkStock,
+  getRelatedProducts,
+  getWishlistItems,
+  getTrendingProducts,
   getOrderStatus,
   getOrdersByPhone,
   getAdminContact,
@@ -65,16 +68,68 @@ const SYSTEM_PROMPT = `
   fallback হিসেবে অন্য মডেল ব্যবহার হলে ছবিটা নাও দেখা যেতে পারে —
   এমন হলে কাস্টমারকে বিনয়ের সাথে ছবিতে কী আছে টেক্সটে বলে দিতে
   বলুন, কখনো ছবির বিষয়বস্তু নিজে থেকে অনুমান করে বলবেন না।
+- কাস্টমার ছবি পাঠিয়ে "এই ছবির মতো/এমন প্রোডাক্ট আছে?" জাতীয়
+  কিছু জিজ্ঞেস করলে (image-based search): প্রথমে ছবিতে যা দেখছেন
+  (ধরন — যেমন শাড়ি/জুয়েলারি/ব্যাগ, রঙ, প্যাটার্ন/স্টাইল) মনে মনে
+  চিহ্নিত করুন, তারপর সেই বর্ণনার মূল শব্দগুলো (রঙ + ধরন/category)
+  দিয়ে search_products কল করুন। হুবহু মিল না পেলে সেটা সততার
+  সাথে বলুন (যেমন: "একদম এই ডিজাইনটা নেই, তবে কাছাকাছি এগুলো
+  আছে") এবং কাছাকাছি যা tool রেজাল্টে পেয়েছেন সেটাই দেখান —
+  কখনো ছবির সাথে "হুবহু মিলে গেছে" বলে দাবি করবেন না যদি নিশ্চিত
+  না হন।
+
+সাইজ সম্পর্কিত প্রশ্ন:
+- এই স্টোরের প্রোডাক্ট ডেটাবেসে আলাদা সাইজ/ভ্যারিয়েন্ট তথ্য রাখা
+  নেই। কাস্টমার সাইজ নিয়ে জিজ্ঞেস করলে নিজে থেকে কোনো সাইজ
+  বানিয়ে বলবেন না — প্রোডাক্ট পেজের বিবরণে (description) থাকলে
+  সেটা দেখতে বলুন, নাহলে বিনয়ের সাথে জানান যে নির্দিষ্ট সাইজ
+  নিশ্চিত করতে Admin-এর (WhatsApp) সাথে কথা বলাই সবচেয়ে ভালো হবে
+  এবং get_admin_contact দিয়ে নাম্বার দিন।
 
 প্রোডাক্ট দেখানো (কার্ড):
 - কাস্টমার কোনো প্রোডাক্ট খুঁজতে/দেখতে চাইলে search_products বা
   check_stock কল করুন — এগুলোর রেজাল্ট থেকে UI নিজে থেকেই প্রোডাক্ট
-  কার্ড (ছবি, নাম, দাম, স্টক) দেখিয়ে দেবে। তাই আপনার টেক্সট
-  রিপ্লাইতে প্রতিটা প্রোডাক্টের সব ডিটেইল আবার লম্বাভাবে লিখে
-  দেওয়ার দরকার নেই — একটা ছোট, স্বাভাবিক বাক্যে বলুন (যেমন: "এই
-  কয়েকটা পেয়েছি, নিচে দেখে নিন 👇" বা "হ্যাঁ, স্টকে আছে, দাম আর
-  ছবি নিচে দেখুন")। প্রোডাক্ট না পেলে সেটা বলুন এবং বিকল্প কিছু
-  সাজেস্ট করুন বা admin-এর সাথে কথা বলার অপশন দিন।
+  কার্ড (ছবি, নাম, দাম, স্টক, ডিসকাউন্ট ব্যাজ) দেখিয়ে দেবে। তাই
+  আপনার টেক্সট রিপ্লাইতে প্রতিটা প্রোডাক্টের সব ডিটেইল আবার
+  লম্বাভাবে লিখে দেওয়ার দরকার নেই — একটা ছোট, স্বাভাবিক বাক্যে
+  বলুন (যেমন: "এই কয়েকটা পেয়েছি, নিচে দেখে নিন 👇" বা "হ্যাঁ,
+  স্টকে আছে, দাম আর ছবি নিচে দেখুন")। প্রোডাক্ট না পেলে/স্টকে না
+  থাকলে সেটা স্পষ্ট
+  বলুন এবং get_related_products বা search_products দিয়ে একই
+  category-র বিকল্প কিছু খুঁজে সাজেস্ট করুন (কখনো নিজে থেকে বিকল্প
+  বানাবেন না, tool রেজাল্ট থেকেই দিন)।
+
+শপিং সহকারী (বাজেট, রঙ, উপলক্ষ):
+- কাস্টমার প্রোডাক্ট খুঁজতে চাইলে, প্রয়োজনে স্বাভাবিকভাবে বাজেট
+  (কত টাকার মধ্যে চান) ও পছন্দের রঙ জিজ্ঞেস করতে পারেন — তবে
+  কাস্টমার আগেই এসব বলে দিলে আবার জিজ্ঞেস করবেন না। বাজেট জানা
+  থাকলে search_products/get_related_products-এর রেজাল্ট থেকে
+  বাজেটের মধ্যে যেগুলো পড়ে সেগুলোই আগে দেখান।
+- উপলক্ষ (যেমন বিয়ে, পার্টি, ক্যাজুয়াল/রোজকার ব্যবহার) বললে সেই
+  অনুযায়ী category/query দিয়ে search_products কল করুন (যেমন বিয়ের
+  কথা বললে "wedding"/ভারী/জমকালো ধরনের কিছু খুঁজুন, ক্যাজুয়াল
+  বললে হালকা/দৈনন্দিন ব্যবহারের জিনিস খুঁজুন) — শুধু tool রেজাল্টে
+  যা সত্যিই আছে সেটাই সাজেস্ট করুন, কখনো নিজে থেকে প্রোডাক্ট বানাবেন
+  না।
+- একটা প্রোডাক্ট দেখানোর পর স্বাভাবিকভাবে (জোর করে না) get_related_products
+  দিয়ে মিলিয়ে পরার মতো/একই category-র আরেকটা জিনিস সাজেস্ট করতে
+  পারেন (যেমন ড্রেসের সাথে ম্যাচিং জুয়েলারি/এক্সেসরিজ — যদি সেই
+  category-তে প্রোডাক্ট থাকে)। কাস্টমার আগ্রহ না দেখালে জোর করবেন
+  না।
+- গিফট খুঁজছে বললে (কার জন্য, কী উপলক্ষ জানার চেষ্টা করে) সেই
+  অনুযায়ী search_products/get_trending_products দিয়ে উপযুক্ত কিছু
+  সাজেস্ট করুন।
+- কাস্টমার কী "trending"/"জনপ্রিয়"/সবাই কী কিনছে জানতে চাইলে
+  get_trending_products কল করুন। লগইন করা কাস্টমার তার wishlist-এ
+  কী সেভ করে রেখেছে জানতে চাইলে বা আগের পছন্দের ভিত্তিতে সাজেশন
+  চাইলে get_wishlist_items কল করুন (গেস্ট/লগইন-ছাড়া কাস্টমারের
+  জন্য এটা কাজ করবে না, tool error দিলে সেটা বিনয়ের সাথে বলে
+  লগইন করতে বলুন)।
+- Cart/Checkout নিয়ে কাস্টমার কিছু জিজ্ঞেস করলে (যেমন cart-এ কী
+  আছে, কতগুলো আইটেম) সেটা শুধু frontend-এ (আপনার বাইরে) ম্যানেজ
+  হয় — আপনি নিজে থেকে cart-এর সংখ্যা বানাবেন না। প্রোডাক্ট কার্ড
+  দেখানোর পর কাস্টমারকে "Add to Cart"/"Buy Now" বাটন থেকেই cart-এ
+  যোগ করতে বলুন (বাটন এমনিতেই কার্ডের সাথে UI-তে দেখানো হয়)।
 
 অর্ডার স্ট্যাটাস (কাস্টমার Order ID না জানলেও):
 - কাস্টমার "আমার প্রোডাক্টের কি অবস্থা/আমার অর্ডার কই" এই ধরনের
@@ -206,6 +261,39 @@ const TOOLS = [
     },
   },
   {
+    name: "get_related_products",
+    description:
+      "একটা প্রোডাক্টের সাথে মিলিয়ে (একই category) আরও প্রোডাক্ট " +
+      "সাজেস্ট করুন — outfit matching/combo সাজেশনের জন্য ব্যবহার করুন।",
+    input_schema: {
+      type: "object",
+      properties: {
+        productId: { type: "string", description: "যে প্রোডাক্টের সাথে মেলাতে চান (ঐচ্ছিক)" },
+        category: { type: "string", description: "category সরাসরি দিলে productId লাগবে না (ঐচ্ছিক)" },
+      },
+    },
+  },
+  {
+    name: "get_wishlist_items",
+    description:
+      "লগইন করা কাস্টমারের wishlist-এ সেভ করা প্রোডাক্টগুলো দেখুন — " +
+      "personalized সাজেশনের জন্য ব্যবহার করুন। গেস্টের জন্য কাজ করবে না।",
+    input_schema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "get_trending_products",
+    description:
+      "সাম্প্রতিক অর্ডারের ভিত্তিতে সবচেয়ে বেশি বিক্রি হওয়া/জনপ্রিয় " +
+      "প্রোডাক্টগুলো দেখুন।",
+    input_schema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
     name: "get_order_status",
     description: "একটা অর্ডারের বর্তমান অবস্থা দেখুন।",
     input_schema: {
@@ -316,6 +404,15 @@ async function runTool(name, input, context) {
     case "check_stock":
       return checkStock(input);
 
+    case "get_related_products":
+      return getRelatedProducts(input);
+
+    case "get_wishlist_items":
+      return getWishlistItems({ uid: context.uid });
+
+    case "get_trending_products":
+      return getTrendingProducts();
+
     case "get_order_status":
       return getOrderStatus({ ...input, uid: context.uid });
 
@@ -365,6 +462,25 @@ function collectUiData(collected, toolName, output) {
 
     if (!collected.products.some((x) => x.id === output.id)) {
       collected.products.push(output);
+    }
+
+  } else if (toolName === "get_related_products" && Array.isArray(output)) {
+
+    for (const p of output) {
+      if (p && p.id && !collected.products.some((x) => x.id === p.id)) {
+        collected.products.push(p);
+      }
+    }
+
+  } else if (
+    (toolName === "get_wishlist_items" || toolName === "get_trending_products") &&
+    Array.isArray(output.items)
+  ) {
+
+    for (const p of output.items) {
+      if (p && p.id && !collected.products.some((x) => x.id === p.id)) {
+        collected.products.push(p);
+      }
     }
 
   } else if (toolName === "get_orders_by_phone" && Array.isArray(output.orders)) {
