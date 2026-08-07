@@ -797,6 +797,28 @@ async function getAdminContact() {
 // তাই এখন শুধু COD সাপোর্ট করছে। পরে চাইলে payment flow যোগ করা
 // যাবে।
 // -------------------------------------------------
+// -------------------------------------------------
+// বাংলাদেশি মোবাইল নাম্বার normalize + validate করা
+// - 01XXXXXXXXX (মোট ১১ সংখ্যা) সরাসরি গ্রহণযোগ্য
+// - +8801XXXXXXXXX দিলে শুরুর "+88" কেটে বাকি ১১ সংখ্যা রাখা হয়
+// - অন্য কোনো ফরম্যাট হলে null রিটার্ন করে (invalid ধরা হয়)
+// -------------------------------------------------
+function normalizeBDPhone(raw) {
+
+  if (!raw) return null;
+
+  let p = String(raw).trim().replace(/[\s\-()]/g, "");
+
+  if (p.startsWith("+8801")) {
+    p = p.slice(3); // "+88" (৩ ক্যারেক্টার) কেটে বাকি "01XXXXXXXXX" রাখা হচ্ছে
+  } else if (p.startsWith("8801") && p.length === 13) {
+    p = p.slice(2); // "88" কেটে বাকি "01XXXXXXXXX" রাখা হচ্ছে
+  }
+
+  return /^01\d{9}$/.test(p) ? p : null;
+
+}
+
 async function createOrderViaChat({
   customerName,
   phone,
@@ -808,14 +830,41 @@ async function createOrderViaChat({
   uid,
 }) {
 
-  if (!customerName || !phone || !address || !items || !items.length) {
+  if (!customerName || !phone || !address || !district || !items || !items.length) {
 
     return {
       error:
-        "অর্ডার করতে নাম, ফোন নাম্বার, ঠিকানা এবং কমপক্ষে একটা প্রোডাক্ট লাগবে।",
+        "অর্ডার কনফার্ম করতে নাম, ১১ সংখ্যার মোবাইল নাম্বার, সম্পূর্ণ ঠিকানা, " +
+        "জেলা এবং কমপক্ষে একটা প্রোডাক্ট — সবগুলো লাগবে। যা যা এখনো পাননি সেগুলো " +
+        "কাস্টমারের কাছে চেয়ে নিন।",
     };
 
   }
+
+  const normalizedPhone = normalizeBDPhone(phone);
+
+  if (!normalizedPhone) {
+
+    return {
+      error:
+        "মোবাইল নাম্বারটা সঠিক ফরম্যাটে নেই। এটা অবশ্যই ১১ সংখ্যার এবং " +
+        "০১ দিয়ে শুরু হতে হবে (যেমন 01712345678), অথবা +৮৮ সহ দিতে পারেন " +
+        "(যেমন +8801712345678)। কাস্টমারকে সঠিক নাম্বার আবার চাইুন।",
+    };
+
+  }
+
+  if (address.trim().length < 8) {
+
+    return {
+      error:
+        "ঠিকানাটা যথেষ্ট বিস্তারিত মনে হচ্ছে না। বাসা/হোল্ডিং নাম্বার, " +
+        "রোড, এলাকাসহ সম্পূর্ণ ঠিকানা কাস্টমারের কাছে চেয়ে নিন।",
+    };
+
+  }
+
+  phone = normalizedPhone;
 
   // প্রতিটা প্রোডাক্ট আসল Firestore থেকে verify করা হচ্ছে —
   // AI যেন নিজে থেকে দাম বানিয়ে না দেয়, stock না থাকা প্রোডাক্টও
