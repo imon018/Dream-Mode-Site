@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../firebase/functions";
 import useAuth from "../hooks/useAuth";
+import { useSettings } from "../context/SettingsContext";
 
 // =================================================
 // AI CHAT WIDGET — Dream AI থিম
@@ -16,16 +17,20 @@ import useAuth from "../hooks/useAuth";
 // - localStorage-এ চ্যাট history সেভ থাকে, রিফ্রেশ করলেও হারায় না
 // - localStorage-এ বাটনের পজিশন সেভ থাকে (drag করে যেখানে রাখা হয়)
 // - চ্যাট বন্ধ থাকা অবস্থায় নতুন রিপ্লাই এলে বাটনে unread badge
-// - চ্যাট শুরুতে quick-action কার্ড (প্রোডাক্ট, সাইজ গাইড, ডেলিভারি, রিটার্ন)
+// - চ্যাট শুরুতে quick-action কার্ড (customizable via `quickActions` prop)
+// - প্রথমবার ওয়েবসাইটে ঢুকলে একবার greeting বাবল popup হয়
 // =================================================
 
 const STORAGE_KEY = "dreamModeChatHistory";
 const WIDGET_POSITION_KEY = "dreamAIWidgetPosition";
+const GREETING_SHOWN_KEY = "dreamAIGreetingShown";
 
-const BUTTON_SIZE = 64;
+const BUTTON_SIZE = 58;
 const PANEL_MARGIN = 16;
 const PANEL_WIDTH = 380;
 const PANEL_HEIGHT = 560;
+const BUBBLE_WIDTH = 240;
+const BUBBLE_HEIGHT_ESTIMATE = 110;
 
 const WELCOME_MESSAGE = {
   role: "assistant",
@@ -35,7 +40,9 @@ const WELCOME_MESSAGE = {
     "স্ট্যাটাস জানাতে আমি সাহায্য করতে পারি। কী জানতে চান?",
 };
 
-const QUICK_ACTIONS = [
+// কাস্টমার-চ্যাটের ডিফল্ট quick-action কার্ড। Admin প্যানেলে
+// আলাদা `quickActions` prop দিয়ে ওভাররাইড করা হয়।
+const DEFAULT_QUICK_ACTIONS = [
   {
     icon: "🛍️",
     title: "প্রোডাক্ট খুঁজুন",
@@ -43,10 +50,10 @@ const QUICK_ACTIONS = [
     prompt: "আমাকে কিছু ভালো প্রোডাক্ট সাজেস্ট করুন",
   },
   {
-    icon: "📏",
-    title: "সাইজ গাইড",
-    subtitle: "সঠিক সাইজ বেছে নিন",
-    prompt: "সাইজ গাইড সম্পর্কে জানতে চাই",
+    icon: "🛠️",
+    title: "এডমিন হেল্প",
+    subtitle: "সরাসরি যোগাযোগ করুন",
+    type: "adminHelp",
   },
   {
     icon: "🚚",
@@ -90,6 +97,40 @@ function formatTime() {
   } catch (error) {
     return "";
   }
+
+}
+
+// -------------------------------------------------
+// রোবট আইকন — সাদামাটা browser emoji-র বদলে ভেক্টর SVG আইকন,
+// যাতে সব ডিভাইসে একই সাইজ ও লুক দেখায়। `bodyColor` হলো রোবটের
+// মূল বডি/কানের রং, `screenColor` হলো মুখের স্ক্রিনের রং।
+// -------------------------------------------------
+function RobotIcon({ className = "h-6 w-6", bodyColor = "#FFFFFF", screenColor = "#4C1D95" }) {
+
+  return (
+    <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+      <line x1="32" y1="4" x2="32" y2="13" stroke={bodyColor} strokeWidth="3.5" strokeLinecap="round" />
+      <circle cx="32" cy="4" r="4" fill={bodyColor} />
+
+      <rect x="2" y="25" width="8" height="15" rx="4" fill={bodyColor} />
+      <rect x="54" y="25" width="8" height="15" rx="4" fill={bodyColor} />
+
+      <rect x="10" y="13" width="44" height="37" rx="18" fill={bodyColor} />
+
+      <rect x="17" y="21" width="30" height="22" rx="11" fill={screenColor} />
+
+      <circle cx="26.5" cy="32" r="3.2" fill={bodyColor} />
+      <circle cx="37.5" cy="32" r="3.2" fill={bodyColor} />
+
+      <path
+        d="M26 38c2.2 2 9.8 2 12 0"
+        stroke={bodyColor}
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  );
 
 }
 
@@ -244,20 +285,62 @@ function AdminContactCard({ adminContact }) {
 
 }
 
+// -------------------------------------------------
+// এডমিন হেল্প কার্ড — "এডমিন হেল্প" quick-action এ ক্লিক করলে
+// সরাসরি (কোনো AI কল ছাড়াই) এডমিনের WhatsApp নাম্বার ও Store
+// ইমেইল দেখায়।
+// -------------------------------------------------
+function AdminHelpCard({ adminHelp }) {
+
+  if (!adminHelp || (!adminHelp.whatsapp && !adminHelp.email)) return null;
+
+  return (
+    <div className="mt-2 space-y-1.5">
+      {adminHelp.whatsapp && (
+        <a
+          href={`https://wa.me/${adminHelp.whatsapp}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 rounded-xl border border-green-200
+                     bg-green-50 px-3 py-2 text-xs font-medium text-green-700
+                     hover:bg-green-100"
+        >
+          💬 WhatsApp: {adminHelp.whatsapp}
+        </a>
+      )}
+
+      {adminHelp.email && (
+        <a
+          href={`mailto:${adminHelp.email}`}
+          className="flex items-center gap-2 rounded-xl border border-blue-200
+                     bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700
+                     hover:bg-blue-100"
+        >
+          ✉️ ইমেইল: {adminHelp.email}
+        </a>
+      )}
+    </div>
+  );
+
+}
+
 export default function AIChatWidget({
   functionName = "aiChat",
   storageKey = STORAGE_KEY,
   title = "Dream AI",
   subtitle = "আপনার শপিং সহকারী",
   welcomeText = WELCOME_MESSAGE.display,
+  quickActions = DEFAULT_QUICK_ACTIONS,
 } = {}) {
 
   const { user } = useAuth() || {};
+  const { settings } = useSettings();
 
   const welcomeMessage = { role: "assistant", display: welcomeText };
 
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -306,6 +389,47 @@ export default function AIChatWidget({
 
   }, []);
 
+  // --------- প্রথমবার ওয়েবসাইটে ঢুকলে একবার greeting বাবল দেখানো ---------
+  useEffect(() => {
+
+    let showTimer;
+    let hideTimer;
+
+    try {
+
+      const alreadyShown = localStorage.getItem(GREETING_SHOWN_KEY);
+
+      if (!alreadyShown) {
+
+        showTimer = setTimeout(() => {
+
+          setShowGreeting(true);
+
+          try {
+            localStorage.setItem(GREETING_SHOWN_KEY, "1");
+          } catch (error) {
+            console.log("AI CHAT WIDGET — greeting flag save failed:", error);
+          }
+
+          hideTimer = setTimeout(() => setShowGreeting(false), 9000);
+
+        }, 1400);
+
+      }
+
+    } catch (error) {
+
+      console.log("AI CHAT WIDGET — greeting flag load failed:", error);
+
+    }
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+
+  }, []);
+
   const getPoint = (e) => {
 
     if (e.touches && e.touches[0]) {
@@ -317,6 +441,8 @@ export default function AIChatWidget({
   };
 
   const handlePointerDown = (e) => {
+
+    setShowGreeting(false);
 
     const point = getPoint(e);
 
@@ -433,6 +559,36 @@ export default function AIChatWidget({
 
   };
 
+  // greeting বাবলের পজিশন — বাটনের কাছাকাছি, ছোট সাইজের জন্য আলাদা হিসাব
+  const getGreetingStyle = () => {
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const bubbleWidth = Math.min(BUBBLE_WIDTH, vw - PANEL_MARGIN * 2);
+
+    const buttonCenterX = position.x + BUTTON_SIZE / 2;
+    const buttonCenterY = position.y + BUTTON_SIZE / 2;
+
+    const openToLeft = buttonCenterX > vw / 2;
+    const openUpward = buttonCenterY > vh / 2;
+
+    let left = openToLeft
+      ? position.x + BUTTON_SIZE - bubbleWidth
+      : position.x;
+
+    left = Math.min(Math.max(PANEL_MARGIN, left), vw - bubbleWidth - PANEL_MARGIN);
+
+    let top = openUpward
+      ? position.y - BUBBLE_HEIGHT_ESTIMATE - 10
+      : position.y + BUTTON_SIZE + 10;
+
+    top = Math.min(Math.max(PANEL_MARGIN, top), vh - BUBBLE_HEIGHT_ESTIMATE - PANEL_MARGIN);
+
+    return { left, top, width: bubbleWidth };
+
+  };
+
   const handleAttachClick = () => {
     fileInputRef.current?.click();
   };
@@ -497,15 +653,48 @@ export default function AIChatWidget({
 
   }, [messages]);
 
-  // চ্যাট খোলা হলে unread badge মুছে যাবে
+  // চ্যাট খোলা হলে unread badge ও greeting বাবল মুছে যাবে
   useEffect(() => {
 
     if (open) {
       setUnreadCount(0);
       setMenuOpen(false);
+      setShowGreeting(false);
     }
 
   }, [open]);
+
+  // "এডমিন হেল্প" quick-action — কোনো AI কল ছাড়াই সরাসরি এডমিনের
+  // WhatsApp নাম্বার ও Store ইমেইল মেসেজ আকারে দেখানো হয়
+  const handleAdminHelp = () => {
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        display: "নিচে আমাদের এডমিনের সরাসরি যোগাযোগের তথ্য দেওয়া হলো:",
+        adminHelp: {
+          whatsapp: settings?.whatsapp || "",
+          email: settings?.email || "",
+        },
+        time: formatTime(),
+      },
+    ]);
+
+  };
+
+  const handleQuickAction = (action) => {
+
+    if (loading) return;
+
+    if (action.type === "adminHelp") {
+      handleAdminHelp();
+      return;
+    }
+
+    sendMessage(action.prompt);
+
+  };
 
   const sendMessage = async (overrideText) => {
 
@@ -645,29 +834,76 @@ export default function AIChatWidget({
 
   return (
     <>
+      {/* প্রথমবার ঢুকলে একবার দেখা যাওয়া greeting বাবল */}
+      {showGreeting && !open && (
+        <div
+          style={getGreetingStyle()}
+          onClick={() => {
+            setOpen(true);
+            setShowGreeting(false);
+          }}
+          className="fixed z-50 max-w-[240px] cursor-pointer rounded-2xl rounded-bl-sm
+                     bg-white p-3 text-sm shadow-2xl"
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowGreeting(false);
+            }}
+            aria-label="বন্ধ করুন"
+            className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center
+                       rounded-full bg-gray-300 text-[10px] text-gray-700 shadow"
+          >
+            ✕
+          </button>
+
+          <p className="text-gray-800">
+            হাই! আমি <span className="font-semibold text-violet-600">Dream AI</span> 👋
+          </p>
+          <p className="mt-1 text-gray-600">
+            আপনার শপিং সহকারী। আজ কীভাবে সাহায্য করতে পারি?
+          </p>
+        </div>
+      )}
+
       {/* ফ্লোটিং বাটন — যেকোনো জায়গায় টেনে (drag) সরানো যাবে */}
       <button
         onMouseDown={handlePointerDown}
         onTouchStart={handlePointerDown}
-        style={{ left: position.x, top: position.y, touchAction: "none" }}
+        style={{
+          left: position.x,
+          top: position.y,
+          width: BUTTON_SIZE,
+          height: BUTTON_SIZE,
+          touchAction: "none",
+        }}
         aria-label="Dream AI চ্যাট"
-        className={`fixed z-50 flex h-16 w-16 items-center justify-center rounded-full
-                   bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600
-                   text-white shadow-2xl ring-4 ring-white/40
+        className={`fixed z-50 flex flex-col items-center justify-center gap-0.5
+                   rounded-full bg-gradient-to-br from-violet-600 via-purple-600
+                   to-fuchsia-600 text-white shadow-2xl ring-4 ring-white/40
                    transition-transform hover:scale-105
                    ${dragging ? "cursor-grabbing scale-105" : "cursor-grab"}`}
       >
-        <span className="text-2xl">{open ? "✕" : "🤖"}</span>
+        {open ? (
+          <span className="text-xl">✕</span>
+        ) : (
+          <>
+            <RobotIcon className="h-5 w-5" bodyColor="#FFFFFF" screenColor="#4C1D95" />
+            <span className="text-[7px] font-bold leading-none tracking-wide">
+              Dream AI
+            </span>
+          </>
+        )}
 
         {!open && (
-          <span className="absolute -top-1 -left-1 text-sm">✨</span>
+          <span className="absolute -top-1 -right-1 text-xs">✨</span>
         )}
 
         {!open && unreadCount > 0 && (
           <span
-            className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center
-                       justify-center rounded-full bg-red-500 px-1 text-[11px]
-                       font-bold text-white"
+            className="absolute -bottom-1 -right-1 flex h-5 min-w-[20px] items-center
+                       justify-center rounded-full bg-red-500 px-1 text-[10px]
+                       font-bold text-white ring-2 ring-white"
           >
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
@@ -685,8 +921,8 @@ export default function AIChatWidget({
                           from-violet-600 via-purple-600 to-fuchsia-600 px-4 py-3 text-white">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full
-                              bg-white/90 text-xl">
-                🤖
+                              bg-white/90">
+                <RobotIcon className="h-6 w-6" bodyColor="#7C3AED" screenColor="#FFFFFF" />
               </div>
 
               <div>
@@ -778,6 +1014,7 @@ export default function AIChatWidget({
                     <ProductCards products={m.products} />
                     <OrderCards orders={m.orders} />
                     <AdminContactCard adminContact={m.adminContact} />
+                    <AdminHelpCard adminHelp={m.adminHelp} />
                     <InvoiceCard invoice={m.invoice} />
                   </div>
                 )}
@@ -787,10 +1024,10 @@ export default function AIChatWidget({
             {/* চ্যাট একদম শুরুতে থাকলে quick-action কার্ড দেখানো হয় */}
             {messages.length === 1 && !loading && (
               <div className="grid grid-cols-2 gap-2 pt-1">
-                {QUICK_ACTIONS.map((action) => (
+                {quickActions.map((action) => (
                   <button
                     key={action.title}
-                    onClick={() => sendMessage(action.prompt)}
+                    onClick={() => handleQuickAction(action)}
                     disabled={loading}
                     className="flex flex-col items-start gap-0.5 rounded-xl border
                                border-gray-200 bg-white p-3 text-left shadow-sm
