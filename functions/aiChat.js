@@ -23,6 +23,7 @@ const {
   getAdminContact,
   createOrderViaChat,
   generateInvoiceText,
+  generateInvoicePdf,
 } = require("./aiChatTools");
 
 const geminiProvider = require("./aiProviders/geminiProvider");
@@ -276,7 +277,21 @@ const TOOLS = [
   },
   {
     name: "generate_invoice",
-    description: "একটা অর্ডারের জন্য টেক্সট ইনভয়েস বানান।",
+    description: "একটা অর্ডারের জন্য টেক্সট ইনভয়েস বানান (চ্যাটেই পড়ার জন্য)।",
+    input_schema: {
+      type: "object",
+      properties: {
+        orderId: { type: "string" },
+        phone: { type: "string" },
+      },
+      required: ["orderId"],
+    },
+  },
+  {
+    name: "generate_invoice_pdf",
+    description:
+      "একটা অর্ডারের জন্য প্রকৃত ডাউনলোডযোগ্য PDF ইনভয়েস বানান। " +
+      "কাস্টমার PDF/ডাউনলোড/প্রিন্ট করার মতো ইনভয়েস চাইলে এটা কল করুন।",
     input_schema: {
       type: "object",
       properties: {
@@ -315,6 +330,9 @@ async function runTool(name, input, context) {
 
     case "generate_invoice":
       return generateInvoiceText({ ...input, uid: context.uid });
+
+    case "generate_invoice_pdf":
+      return generateInvoicePdf({ ...input, uid: context.uid });
 
     default:
       return { error: `Unknown tool: ${name}` };
@@ -366,6 +384,10 @@ function collectUiData(collected, toolName, output) {
   } else if (toolName === "get_admin_contact" && output.whatsapp) {
 
     collected.adminContact = output;
+
+  } else if (toolName === "generate_invoice_pdf" && output.pdfUrl) {
+
+    collected.invoice = { orderId: output.orderId, pdfUrl: output.pdfUrl };
 
   }
 
@@ -432,7 +454,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
   let conversation = genericMessages;
 
-  const collected = { products: [], orders: [], adminContact: null };
+  const collected = { products: [], orders: [], adminContact: null, invoice: null };
 
   for (let i = 0; i < 5; i++) {
 
@@ -565,6 +587,7 @@ exports.aiChat = onCall(
             products: result.products,
             orders: result.orders,
             adminContact: result.adminContact,
+            invoice: result.invoice,
           };
 
         } catch (err) {
