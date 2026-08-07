@@ -2695,3 +2695,9 @@ async(request)=>{
 // =================================================
 
 exports.aiChat = require("./aiChat").aiChat;
+
+// =================================================
+// AI CHAT — ADMIN ASSISTANT (Phase 2)
+// =================================================
+
+exports.aiChatAdmin = require("./aiChatAdmin").aiChatAdmin;
