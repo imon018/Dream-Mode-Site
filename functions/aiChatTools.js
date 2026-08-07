@@ -170,6 +170,183 @@ async function checkStock({ productId }) {
 }
 
 // -------------------------------------------------
+// RELATED PRODUCTS (READ-ONLY)
+// একটা প্রোডাক্টের সাথে মিলিয়ে (একই category) আরও কিছু প্রোডাক্ট
+// সাজেস্ট করার জন্য — কাস্টমার একটা প্রোডাক্ট দেখার পর/কিনতে চাইলে
+// "এটার সাথে আরও কী ভালো লাগবে" টাইপ প্রশ্নে ব্যবহার হয়। আসল
+// Firestore ডেটা থেকেই আসে, কোনো কিছু বানানো হয় না।
+// -------------------------------------------------
+async function getRelatedProducts({ productId, category } = {}) {
+
+  let targetCategory = (category || "").trim();
+  let excludeId = productId || "";
+
+  if (!targetCategory && productId) {
+
+    const pSnap = await admin
+      .firestore()
+      .collection("products")
+      .doc(productId)
+      .get();
+
+    if (pSnap.exists) {
+      targetCategory = pSnap.data().category || "";
+    }
+
+  }
+
+  if (!targetCategory) {
+    return { error: "related products খুঁজতে productId বা category লাগবে।" };
+  }
+
+  const snap = await admin
+    .firestore()
+    .collection("products")
+    .where("category", "==", targetCategory)
+    .limit(15)
+    .get();
+
+  const results = [];
+
+  snap.forEach((doc) => {
+
+    if (doc.id === excludeId) return;
+
+    const p = doc.data();
+
+    results.push({
+      id: doc.id,
+      name: p.name || p.title || "Unnamed",
+      category: p.category || "",
+      price: p.price ?? 0,
+      offerPrice: p.offerPrice || 0,
+      stock: p.stock ?? 0,
+      inStock: (p.stock ?? 0) > 0,
+      image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
+    });
+
+  });
+
+  return results.slice(0, 6);
+
+}
+
+// -------------------------------------------------
+// WISHLIST দেখা (শুধু লগইন করা কাস্টমারের জন্য)
+// কাস্টমার তার wishlist-এ কী আছে জিজ্ঞেস করলে, বা personalized
+// সাজেশন দেওয়ার আগে (আগে থেকে মনে রাখা আইটেম) এটা কল হয়।
+// -------------------------------------------------
+async function getWishlistItems({ uid } = {}) {
+
+  if (!uid) {
+    return {
+      error: "wishlist দেখতে হলে কাস্টমারকে লগইন করা থাকতে হবে।",
+    };
+  }
+
+  const snap = await admin
+    .firestore()
+    .collection("wishlist")
+    .where("userId", "==", uid)
+    .limit(10)
+    .get();
+
+  if (snap.empty) {
+    return { items: [] };
+  }
+
+  const items = [];
+
+  snap.forEach((doc) => {
+
+    const w = doc.data();
+    const p = w.product || {};
+
+    if (!p.id) return;
+
+    items.push({
+      id: p.id,
+      name: p.name || p.title || "Unnamed",
+      category: p.category || "",
+      price: p.price ?? 0,
+      offerPrice: p.offerPrice || 0,
+      stock: p.stock ?? 0,
+      inStock: (p.stock ?? 0) > 0,
+      image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
+    });
+
+  });
+
+  return { items };
+
+}
+
+// -------------------------------------------------
+// TRENDING PRODUCTS (READ-ONLY)
+// সাম্প্রতিক অর্ডারগুলোর items থেকে গণনা করে কোন প্রোডাক্ট সবচেয়ে
+// বেশি বিক্রি হচ্ছে বের করা হয় — কোনো আলাদা "trending" ফিল্ড
+// বানানো হয়নি, আসল অর্ডার ডেটা থেকেই হিসাব হচ্ছে।
+// -------------------------------------------------
+async function getTrendingProducts() {
+
+  const ordersSnap = await admin
+    .firestore()
+    .collection("orders")
+    .orderBy("createdAt", "desc")
+    .limit(100)
+    .get();
+
+  const countByProduct = {};
+
+  ordersSnap.forEach((doc) => {
+
+    const items = doc.data().items || [];
+
+    for (const item of items) {
+      if (!item.productId) continue;
+      const qty = Number(item.qty || item.quantity || 1);
+      countByProduct[item.productId] = (countByProduct[item.productId] || 0) + qty;
+    }
+
+  });
+
+  const topIds = Object.entries(countByProduct)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([id]) => id);
+
+  if (!topIds.length) {
+    return { items: [], note: "এখনো পর্যাপ্ত অর্ডার ডেটা নেই ট্রেন্ডিং বের করার জন্য।" };
+  }
+
+  const items = [];
+
+  for (const id of topIds) {
+
+    const pSnap = await admin.firestore().collection("products").doc(id).get();
+
+    if (!pSnap.exists) continue;
+
+    const p = pSnap.data();
+
+    items.push({
+      id: pSnap.id,
+      name: p.name || p.title || "Unnamed",
+      category: p.category || "",
+      price: p.price ?? 0,
+      offerPrice: p.offerPrice || 0,
+      stock: p.stock ?? 0,
+      inStock: (p.stock ?? 0) > 0,
+      image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
+    });
+
+  }
+
+  return { items };
+
+}
+
+// -------------------------------------------------
 // ORDER STATUS LOOKUP
 // নিরাপত্তা: যদি ইউজার লগইন করা থাকে (uid দেওয়া থাকে), তাহলে শুধু
 // তার নিজের userId-এর অর্ডারই দেখাবে। লগইন ছাড়া হলে orderId +
@@ -582,6 +759,9 @@ module.exports = {
   getDeliveryInfo,
   searchProducts,
   checkStock,
+  getRelatedProducts,
+  getWishlistItems,
+  getTrendingProducts,
   getOrderStatus,
   getOrdersByPhone,
   getAdminContact,
