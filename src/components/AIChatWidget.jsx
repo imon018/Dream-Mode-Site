@@ -5,6 +5,7 @@ import { functions } from "../firebase/functions";
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
 import { useSettings } from "../context/SettingsContext";
+import { addWishlistItem } from "../services/wishlistService";
 
 // =================================================
 // AI CHAT WIDGET — Dream AI থিম
@@ -142,11 +143,30 @@ function RobotIcon({ className = "h-6 w-6", bodyColor = "#FFFFFF", screenColor =
 function ProductCards({ products }) {
 
   const { addToCart, cartCount } = useCart() || {};
+  const { user } = useAuth() || {};
   const navigate = useNavigate();
   const [addedId, setAddedId] = useState(null);
   const [addedCartCount, setAddedCartCount] = useState(0);
+  const [wishedId, setWishedId] = useState(null);
 
   if (!products || !products.length) return null;
+
+  const handleWishlist = async (e, p) => {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user?.uid) return;
+
+    try {
+      await addWishlistItem(user.uid, p);
+      setWishedId(p.id);
+      setTimeout(() => setWishedId((cur) => (cur === p.id ? null : cur)), 2500);
+    } catch (error) {
+      console.log("AI CHAT WIDGET — wishlist add failed:", error);
+    }
+
+  };
 
   const handleAddToCart = (e, p) => {
 
@@ -190,6 +210,18 @@ function ProductCards({ products }) {
                                   px-1.5 py-0.5 text-[9px] font-bold text-white shadow">
                   {Math.round(((p.price - p.offerPrice) / p.price) * 100)}% OFF
                 </span>
+              )}
+              {user?.uid && (
+                <button
+                  type="button"
+                  onClick={(e) => handleWishlist(e, p)}
+                  aria-label="Wishlist-এ যোগ করুন"
+                  className="absolute right-1 top-1 z-10 flex h-6 w-6 items-center
+                             justify-center rounded-full bg-white/90 text-sm shadow
+                             hover:bg-white"
+                >
+                  {wishedId === p.id ? "❤️" : "🤍"}
+                </button>
               )}
               {p.image ? (
                 <img
@@ -444,6 +476,8 @@ export default function AIChatWidget({
 
   const { user } = useAuth() || {};
   const { settings } = useSettings();
+  const { cart } = useCart() || {};
+  const navigate = useNavigate();
 
   // লগইন করা কাস্টমারকে নাম ধরে শুভেচ্ছা জানানো — নাম না থাকলে
   // (গেস্ট বা নাম সেট করা নেই) ডিফল্ট সাধারণ welcome text দেখানো হয়।
@@ -476,6 +510,8 @@ export default function AIChatWidget({
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
   const dragStateRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0, moved: false });
+  const cartRecoveryShownRef = useRef(false);
+  const proactiveCheckedRef = useRef(false);
 
   const MAX_IMAGE_MB = 4;
 
@@ -800,6 +836,54 @@ export default function AIChatWidget({
 
   }, [open]);
 
+  // --------- Smart Cart Recovery: চ্যাট খোলার সময় Cart-এ আইটেম
+  // পড়ে থাকলে (কোনো AI কল ছাড়াই, শুধু local cart context থেকে)
+  // একবার মনে করিয়ে দেওয়া — সেশনে একবারের বেশি না ---------
+  useEffect(() => {
+
+    if (!open || cartRecoveryShownRef.current) return;
+    if (!cart || !cart.length) return;
+
+    cartRecoveryShownRef.current = true;
+
+    const totalQty = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        display: `আপনার Cart-এ ${totalQty}টি আইটেম অপেক্ষা করছে। Checkout করবেন? 🛒`,
+        cartRecovery: true,
+        time: formatTime(),
+      },
+    ]);
+
+  }, [open, cart]);
+
+  // --------- Proactive AI: লগইন করা কাস্টমার প্রথমবার চ্যাট খুললে
+  // (কথোপকথন এখনো শুরু হয়নি) চুপচাপ ব্যাকগ্রাউন্ডে নতুন
+  // প্রোডাক্ট/wishlist ছাড় আছে কিনা চেক করানো — কিছু পাওয়া গেলে
+  // AI নিজে থেকেই এক লাইনে জানাবে, না পেলে কিছু দেখানো হবে না ---------
+  useEffect(() => {
+
+    if (!open || proactiveCheckedRef.current) return;
+    if (!user?.uid) return;
+    if (messages.length !== 1 || messages[0].role !== "assistant") return;
+
+    proactiveCheckedRef.current = true;
+
+    const timer = setTimeout(() => {
+      sendMessage(
+        "[PROACTIVE_CHECK] নতুন প্রোডাক্ট বা wishlist ছাড় আছে কিনা দেখুন।",
+        { hidden: true }
+      );
+    }, 600);
+
+    return () => clearTimeout(timer);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, user?.uid]);
+
   // "এডমিন হেল্প" quick-action — কোনো AI কল ছাড়াই সরাসরি এডমিনের
   // WhatsApp নাম্বার ও Store ইমেইল মেসেজ আকারে দেখানো হয়
   const handleAdminHelp = () => {
@@ -832,10 +916,11 @@ export default function AIChatWidget({
 
   };
 
-  const sendMessage = async (overrideText) => {
+  const sendMessage = async (overrideText, options = {}) => {
 
     const isQuickAction = typeof overrideText === "string";
     const text = (isQuickAction ? overrideText : input).trim();
+    const isHidden = !!options.hidden;
 
     if ((!text && !attachedImage) || loading) return;
 
@@ -853,6 +938,7 @@ export default function AIChatWidget({
         role: "user",
         display: text || "📷 ছবি পাঠানো হয়েছে",
         image: imageToSend ? imageToSend.dataUrl : null,
+        hidden: isHidden,
         time: formatTime(),
       },
     ];
@@ -899,6 +985,16 @@ export default function AIChatWidget({
       const aiChat = httpsCallable(functions, functionName);
 
       const result = await aiChat({ messages: apiMessages });
+
+      const replyText = (result.data.reply || "").trim();
+
+      // Proactive চেকে সত্যিই জানানোর মতো কিছু না পেলে ব্যাকএন্ড ঠিক
+      // "NIL_PROACTIVE" পাঠায় — সেক্ষেত্রে কোনো নতুন বাবল দেখানো হবে
+      // না (কাস্টমার এটা জিজ্ঞেসই করেননি, তাই চুপ থাকাই স্বাভাবিক)।
+      if (replyText === "NIL_PROACTIVE") {
+        setLoading(false);
+        return;
+      }
 
       setMessages((prev) => [
         ...prev,
@@ -965,6 +1061,7 @@ export default function AIChatWidget({
   const startNewChat = () => {
 
     setMessages([welcomeMessage]);
+    proactiveCheckedRef.current = false;
 
   };
 
@@ -1135,7 +1232,11 @@ export default function AIChatWidget({
             ref={scrollRef}
             className="flex-1 space-y-3 overflow-y-auto bg-gray-50 px-3 py-3"
           >
-            {messages.map((m, idx) => (
+            {messages.map((m, idx) => {
+
+              if (m.hidden) return null;
+
+              return (
               <div
                 key={idx}
                 className={`flex flex-col ${
@@ -1172,6 +1273,17 @@ export default function AIChatWidget({
                     <AdminContactCard adminContact={m.adminContact} />
                     <AdminHelpCard adminHelp={m.adminHelp} />
                     <InvoiceCard invoice={m.invoice} />
+                    {m.cartRecovery && (
+                      <button
+                        type="button"
+                        onClick={() => navigate("/checkout")}
+                        className="mt-1 rounded-full bg-violet-600 px-3 py-1
+                                   text-[11px] font-semibold text-white
+                                   hover:bg-violet-700"
+                      >
+                        Checkout করুন 🛒
+                      </button>
+                    )}
                     <QuickReplyChips
                       products={m.products}
                       disabled={loading}
@@ -1180,7 +1292,8 @@ export default function AIChatWidget({
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
 
             {/* চ্যাট একদম শুরুতে থাকলে quick-action কার্ড দেখানো হয় */}
             {messages.length === 1 && !loading && (
