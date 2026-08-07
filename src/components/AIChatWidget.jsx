@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../firebase/functions";
 import useAuth from "../hooks/useAuth";
+import useCart from "../hooks/useCart";
 import { useSettings } from "../context/SettingsContext";
 
 // =================================================
@@ -140,60 +141,130 @@ function RobotIcon({ className = "h-6 w-6", bodyColor = "#FFFFFF", screenColor =
 // -------------------------------------------------
 function ProductCards({ products }) {
 
+  const { addToCart, cartCount } = useCart() || {};
+  const navigate = useNavigate();
+  const [addedId, setAddedId] = useState(null);
+  const [addedCartCount, setAddedCartCount] = useState(0);
+
   if (!products || !products.length) return null;
+
+  const handleAddToCart = (e, p) => {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!p.inStock || !addToCart) return;
+
+    addToCart(p);
+    setAddedId(p.id);
+    setAddedCartCount((cartCount || 0) + 1);
+    setTimeout(() => setAddedId((cur) => (cur === p.id ? null : cur)), 2500);
+
+  };
+
+  const handleBuyNow = (e, p) => {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!p.inStock || !addToCart) return;
+
+    addToCart(p);
+    navigate("/checkout");
+
+  };
 
   return (
     <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
       {products.map((p) => (
-        <Link
+        <div
           key={p.id}
-          to={`/product/${p.id}`}
           className="block w-36 flex-shrink-0 rounded-xl border border-gray-200
                      bg-white p-2 text-left shadow-sm hover:shadow-md
                      transition-shadow"
         >
-          <div className="mb-2 h-24 w-full overflow-hidden rounded-lg bg-gray-100">
-            {p.image ? (
-              <img
-                src={p.image}
-                alt={p.name}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xl">
-                📦
-              </div>
-            )}
-          </div>
-
-          <p className="line-clamp-2 text-xs font-medium text-gray-800">
-            {p.name}
-          </p>
-
-          <div className="mt-1 flex items-baseline gap-1">
-            {p.offerPrice > 0 ? (
-              <>
-                <span className="text-sm font-bold text-violet-700">
-                  ৳{p.offerPrice}
+          <Link to={`/product/${p.id}`}>
+            <div className="relative mb-2 h-24 w-full overflow-hidden rounded-lg bg-gray-100">
+              {p.offerPrice > 0 && p.price > p.offerPrice && (
+                <span className="absolute left-1 top-1 z-10 rounded-full bg-red-600
+                                  px-1.5 py-0.5 text-[9px] font-bold text-white shadow">
+                  {Math.round(((p.price - p.offerPrice) / p.price) * 100)}% OFF
                 </span>
-                <span className="text-[11px] text-gray-400 line-through">
-                  ৳{p.price}
-                </span>
-              </>
-            ) : (
-              <span className="text-sm font-bold text-violet-700">৳{p.price}</span>
-            )}
-          </div>
+              )}
+              {p.image ? (
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-2xl">
+                  📦
+                </div>
+              )}
+            </div>
 
-          <p
-            className={`mt-1 text-[11px] font-medium ${
-              p.inStock ? "text-green-600" : "text-red-500"
-            }`}
-          >
-            {p.inStock ? `স্টকে আছে (${p.stock})` : "স্টক নেই"}
-          </p>
-        </Link>
+            <p className="line-clamp-2 text-xs font-medium text-gray-800">
+              {p.name}
+            </p>
+
+            <div className="mt-1 flex items-baseline gap-1">
+              {p.offerPrice > 0 ? (
+                <>
+                  <span className="text-sm font-bold text-violet-700">
+                    ৳{p.offerPrice}
+                  </span>
+                  <span className="text-[11px] text-gray-400 line-through">
+                    ৳{p.price}
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm font-bold text-violet-700">৳{p.price}</span>
+              )}
+            </div>
+
+            <p
+              className={`mt-1 text-[11px] font-medium ${
+                p.inStock ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              {p.inStock ? `স্টকে আছে (${p.stock})` : "স্টক নেই"}
+            </p>
+          </Link>
+
+          {p.inStock && (
+            <div className="mt-2 space-y-1">
+              <button
+                type="button"
+                onClick={(e) => handleBuyNow(e, p)}
+                className="w-full rounded-lg bg-violet-600 px-2 py-1 text-[11px]
+                           font-semibold text-white hover:bg-violet-700"
+              >
+                Buy Now
+              </button>
+              <button
+                type="button"
+                onClick={(e) => handleAddToCart(e, p)}
+                className="w-full rounded-lg border border-violet-600 px-2 py-1
+                           text-[11px] font-semibold text-violet-700
+                           hover:bg-violet-50"
+              >
+                {addedId === p.id ? "✓ Cart-এ যোগ হয়েছে" : "🛒 Add to Cart"}
+              </button>
+              {addedId === p.id && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/checkout")}
+                  className="w-full rounded-lg bg-green-50 px-2 py-1 text-[10px]
+                             font-medium text-green-700 hover:bg-green-100"
+                >
+                  Cart-এ এখন {addedCartCount} আইটেম — Checkout করুন
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );
@@ -324,6 +395,44 @@ function AdminHelpCard({ adminHelp }) {
 
 }
 
+// -------------------------------------------------
+// Quick-reply চিপস — প্রোডাক্ট কার্ড দেখানো হলে তার নিচে ছোট
+// suggested-question বাটন দেখায়, যাতে কাস্টমার টাইপ না করেই এক
+// ট্যাপে পরের প্রশ্ন জিজ্ঞেস করতে পারে (related products/trending/
+// checkout ইত্যাদি)।
+// -------------------------------------------------
+function QuickReplyChips({ products, onPick, disabled }) {
+
+  if (!products || !products.length) return null;
+
+  const first = products[0];
+
+  const chips = [
+    { label: "🔁 আরও মিলিয়ে দেখান", prompt: `${first.name}-এর সাথে মিলিয়ে আর কী নেওয়া যায়?` },
+    { label: "🔥 ট্রেন্ডিং প্রোডাক্ট", prompt: "এখন সবচেয়ে বেশি বিক্রি হচ্ছে এমন প্রোডাক্ট দেখান" },
+    { label: "🚚 ডেলিভারি চার্জ", prompt: "ডেলিভারি চার্জ কত হবে?" },
+  ];
+
+  return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
+      {chips.map((c) => (
+        <button
+          key={c.label}
+          type="button"
+          disabled={disabled}
+          onClick={() => onPick(c.prompt)}
+          className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1
+                     text-[11px] font-medium text-violet-700 hover:bg-violet-100
+                     disabled:opacity-50"
+        >
+          {c.label}
+        </button>
+      ))}
+    </div>
+  );
+
+}
+
 export default function AIChatWidget({
   functionName = "aiChat",
   storageKey = STORAGE_KEY,
@@ -336,7 +445,16 @@ export default function AIChatWidget({
   const { user } = useAuth() || {};
   const { settings } = useSettings();
 
-  const welcomeMessage = { role: "assistant", display: welcomeText };
+  // লগইন করা কাস্টমারকে নাম ধরে শুভেচ্ছা জানানো — নাম না থাকলে
+  // (গেস্ট বা নাম সেট করা নেই) ডিফল্ট সাধারণ welcome text দেখানো হয়।
+  const displayName = (user?.name || user?.displayName || "").trim();
+  const personalizedWelcomeText = displayName
+    ? `আসসালামু আলাইকুম, ${displayName}! আমি Dream AI, আপনার শপিং সহকারী। ` +
+      "প্রোডাক্ট খুঁজে দেওয়া, অর্ডার করা বা আপনার অর্ডারের স্ট্যাটাস জানাতে " +
+      "আমি সাহায্য করতে পারি। কী জানতে চান?"
+    : welcomeText;
+
+  const welcomeMessage = { role: "assistant", display: personalizedWelcomeText };
 
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -360,6 +478,24 @@ export default function AIChatWidget({
   const dragStateRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0, moved: false });
 
   const MAX_IMAGE_MB = 4;
+
+  // --------- ইউজার লগইন তথ্য দেরিতে (async) লোড হলে, এখনো কথোপকথন
+  // শুরু না হয়ে থাকলে (শুধু welcome message আছে) নাম দিয়ে
+  // greeting আপডেট করা — চলমান কথোপকথন থাকলে ছোঁয়া হয় না ---------
+  useEffect(() => {
+
+    if (!displayName) return;
+
+    setMessages((prev) => {
+
+      if (prev.length !== 1 || prev[0].role !== "assistant") return prev;
+      if (prev[0].display === personalizedWelcomeText) return prev;
+
+      return [{ role: "assistant", display: personalizedWelcomeText }];
+
+    });
+
+  }, [displayName, personalizedWelcomeText]);
 
   // --------- সেভ করা পজিশন লোড (মাউন্টে একবার) ---------
   useEffect(() => {
@@ -969,6 +1105,26 @@ export default function AIChatWidget({
                     >
                       🔄 নতুন চ্যাট শুরু করুন
                     </button>
+
+                    <button
+                      onClick={() => {
+                        sendMessage("এখন থেকে সবসময় বাংলায় কথা বলুন।");
+                        setMenuOpen(false);
+                      }}
+                      className="block w-full px-3 py-2 text-left hover:bg-gray-100"
+                    >
+                      🇧🇩 বাংলায় চ্যাট করুন
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        sendMessage("Please reply in English from now on.");
+                        setMenuOpen(false);
+                      }}
+                      className="block w-full px-3 py-2 text-left hover:bg-gray-100"
+                    >
+                      🇬🇧 Chat in English
+                    </button>
                   </div>
                 </>
               )}
@@ -1016,6 +1172,11 @@ export default function AIChatWidget({
                     <AdminContactCard adminContact={m.adminContact} />
                     <AdminHelpCard adminHelp={m.adminHelp} />
                     <InvoiceCard invoice={m.invoice} />
+                    <QuickReplyChips
+                      products={m.products}
+                      disabled={loading}
+                      onPick={(prompt) => sendMessage(prompt)}
+                    />
                   </div>
                 )}
               </div>
