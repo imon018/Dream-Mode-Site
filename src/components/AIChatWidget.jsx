@@ -509,6 +509,8 @@ export default function AIChatWidget({
 
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
+  const panelRef = useRef(null);
+  const buttonRef = useRef(null);
   const dragStateRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0, moved: false });
   const cartRecoveryShownRef = useRef(false);
   const proactiveCheckedRef = useRef(false);
@@ -836,6 +838,34 @@ export default function AIChatWidget({
 
   }, [open]);
 
+  // --------- প্যানেলের বাইরে ট্যাপ/ক্লিক করলে চ্যাট অটো বন্ধ হবে
+  // (ফ্লোটিং বাটনে ক্লিক আলাদাভাবে handlePointerUp-এ সামলানো হয়,
+  // তাই সেটা এখানে বাদ দেওয়া হয়েছে যাতে ডাবল-টগল না হয়) ---------
+  useEffect(() => {
+
+    if (!open) return;
+
+    const handleOutside = (e) => {
+
+      const target = e.target;
+
+      if (panelRef.current && panelRef.current.contains(target)) return;
+      if (buttonRef.current && buttonRef.current.contains(target)) return;
+
+      setOpen(false);
+
+    };
+
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+
+  }, [open]);
+
   // --------- Smart Cart Recovery: চ্যাট খোলার সময় Cart-এ আইটেম
   // পড়ে থাকলে (কোনো AI কল ছাড়াই, শুধু local cart context থেকে)
   // একবার মনে করিয়ে দেওয়া — সেশনে একবারের বেশি না ---------
@@ -1075,7 +1105,7 @@ export default function AIChatWidget({
             setOpen(true);
             setShowGreeting(false);
           }}
-          className="fixed z-50 max-w-[240px] cursor-pointer rounded-2xl rounded-bl-sm
+          className="fixed z-[1000] max-w-[240px] cursor-pointer rounded-2xl rounded-bl-sm
                      bg-white p-3 text-sm shadow-2xl"
         >
           <button
@@ -1101,6 +1131,7 @@ export default function AIChatWidget({
 
       {/* ফ্লোটিং বাটন — যেকোনো জায়গায় টেনে (drag) সরানো যাবে */}
       <button
+        ref={buttonRef}
         onMouseDown={handlePointerDown}
         onTouchStart={handlePointerDown}
         style={{
@@ -1111,7 +1142,7 @@ export default function AIChatWidget({
           touchAction: "none",
         }}
         aria-label="Dream AI চ্যাট"
-        className={`fixed z-50 flex flex-col items-center justify-center gap-0.5
+        className={`fixed z-[1000] flex flex-col items-center justify-center gap-0.5
                    rounded-full bg-gradient-to-br from-violet-600 via-purple-600
                    to-fuchsia-600 text-white shadow-2xl ring-4 ring-white/40
                    transition-transform hover:scale-105
@@ -1146,8 +1177,9 @@ export default function AIChatWidget({
       {/* চ্যাট উইন্ডো — বাটন যেখানে আছে তার কাছাকাছি খোলে */}
       {open && (
         <div
+          ref={panelRef}
           style={getPanelStyle()}
-          className="fixed z-50 flex flex-col overflow-hidden rounded-2xl border
+          className="fixed z-[1000] flex flex-col overflow-hidden rounded-2xl border
                      border-gray-200 bg-white shadow-2xl"
         >
           <div className="flex items-center justify-between bg-gradient-to-r
