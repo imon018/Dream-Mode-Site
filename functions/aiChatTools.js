@@ -29,6 +29,14 @@ const DELIVERY_TIERS = [
   { key: "outside_dhaka", label: "ঢাকার বাইরে (সারাদেশ)", charge: 150 },
 ];
 
+// আনুমানিক ডেলিভারি সময় — src/courier/estimatedDelivery.js-এর সাথে
+// হুবহু মিলিয়ে রাখা হয়েছে, যাতে ফ্রন্টএন্ড আর AI চ্যাট একই সংখ্যা বলে।
+const DELIVERY_ETA = {
+  dhaka_city: "১-২ দিন",
+  dhaka_sub_area: "২-৩ দিন",
+  outside_dhaka: "৩-৫ দিন",
+};
+
 function calculateDeliveryCharge(district) {
 
   const d = (district || "").toString().trim().toLowerCase();
@@ -54,12 +62,18 @@ async function getDeliveryInfo({ district } = {}) {
   const charge = district ? calculateDeliveryCharge(district) : null;
 
   return {
-    tiers: DELIVERY_TIERS,
+    tiers: DELIVERY_TIERS.map((t) => ({ ...t, estimatedDays: DELIVERY_ETA[t.key] })),
     freeDeliveryOver: 3000,
     matchedCharge: charge,
+    matchedEstimatedDays: charge
+      ? DELIVERY_ETA[
+          DELIVERY_TIERS.find((t) => t.charge === charge)?.key || "outside_dhaka"
+        ]
+      : null,
     note:
-      "৳৩০০০ বা তার বেশি অর্ডারে ডেলিভারি ফ্রি। এলাকা অনুযায়ী চার্জ " +
-      "উপরের tiers থেকে বলুন, matchedCharge থাকলে সরাসরি সেটাই বলুন।",
+      "৳৩০০০ বা তার বেশি অর্ডারে ডেলিভারি ফ্রি। এলাকা অনুযায়ী চার্জ ও " +
+      "আনুমানিক সময় উপরের tiers থেকে বলুন, matchedCharge/matchedEstimatedDays " +
+      "থাকলে সরাসরি সেটাই বলুন।",
   };
 
 }
@@ -343,6 +357,273 @@ async function getTrendingProducts() {
   }
 
   return { items };
+
+}
+
+// -------------------------------------------------
+// NEW ARRIVALS (READ-ONLY) — Proactive AI-এর জন্য
+// -------------------------------------------------
+async function getNewArrivals() {
+
+  const snap = await admin
+    .firestore()
+    .collection("products")
+    .orderBy("createdAt", "desc")
+    .limit(6)
+    .get();
+
+  const items = [];
+
+  snap.forEach((doc) => {
+
+    const p = doc.data();
+
+    items.push({
+      id: doc.id,
+      name: p.name || p.title || "Unnamed",
+      category: p.category || "",
+      price: p.price ?? 0,
+      offerPrice: p.offerPrice || 0,
+      stock: p.stock ?? 0,
+      inStock: (p.stock ?? 0) > 0,
+      image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
+    });
+
+  });
+
+  return { items };
+
+}
+
+// -------------------------------------------------
+// WISHLIST-এ যোগ করা (শুধু লগইন করা কাস্টমারের জন্য)
+// কাস্টমার চ্যাটেই "এটা wishlist-এ রাখো" বললে ব্যবহার হয়। ফ্রন্টএন্ডের
+// wishlistService.js-এর ঠিক একই schema (userId, productId, product,
+// createdAt) মিলিয়ে লেখা হয়েছে যাতে দুই জায়গা থেকেই সেভ করা
+// আইটেম একইভাবে দেখা যায়।
+// -------------------------------------------------
+async function addToWishlist({ productId, uid } = {}) {
+
+  if (!uid) {
+    return { error: "wishlist-এ যোগ করতে হলে কাস্টমারকে লগইন করা থাকতে হবে।" };
+  }
+
+  if (!productId) {
+    return { error: "productId প্রয়োজন।" };
+  }
+
+  const db = admin.firestore();
+
+  const pSnap = await db.collection("products").doc(productId).get();
+
+  if (!pSnap.exists) {
+    return { error: "এই প্রোডাক্ট খুঁজে পাওয়া যায়নি।" };
+  }
+
+  const existing = await db
+    .collection("wishlist")
+    .where("userId", "==", uid)
+    .where("productId", "==", productId)
+    .limit(1)
+    .get();
+
+  if (!existing.empty) {
+    return { alreadyExists: true, message: "এই প্রোডাক্ট আগে থেকেই wishlist-এ আছে।" };
+  }
+
+  const p = pSnap.data();
+
+  await db.collection("wishlist").add({
+    userId: uid,
+    productId,
+    product: { id: pSnap.id, ...p },
+    createdAt: new Date(),
+  });
+
+  return { added: true, productName: p.name || p.title || "প্রোডাক্ট" };
+
+}
+
+// -------------------------------------------------
+// শপিং মেমরি — প্রিয় রঙ/ক্যাটাগরি/বাজেট মনে রাখা (শুধু লগইন করা
+// কাস্টমারের জন্য, users/{uid}.chatPreferences ফিল্ডে সেভ হয়)
+// -------------------------------------------------
+async function saveShoppingPreference({ color, category, budget, uid } = {}) {
+
+  if (!uid) {
+    return { error: "পছন্দ মনে রাখতে হলে কাস্টমারকে লগইন করা থাকতে হবে।" };
+  }
+
+  const update = { updatedAt: new Date() };
+
+  if (color) update.color = color;
+  if (category) update.category = category;
+  if (budget) update.budget = budget;
+
+  await admin
+    .firestore()
+    .collection("users")
+    .doc(uid)
+    .set({ chatPreferences: update }, { merge: true });
+
+  return { saved: true };
+
+}
+
+async function getShoppingPreference({ uid } = {}) {
+
+  if (!uid) {
+    return { error: "লগইন করা না থাকলে আগের পছন্দ দেখা যাবে না।" };
+  }
+
+  const snap = await admin.firestore().collection("users").doc(uid).get();
+
+  const prefs = snap.exists ? snap.data().chatPreferences : null;
+
+  if (!prefs) {
+    return { found: false };
+  }
+
+  return {
+    found: true,
+    color: prefs.color || "",
+    category: prefs.category || "",
+    budget: prefs.budget || "",
+  };
+
+}
+
+// -------------------------------------------------
+// ORDER CANCEL REQUEST
+// নিরাপত্তার জন্য AI সরাসরি অর্ডার Cancelled করে না — শুধু
+// cancelRequested ফ্ল্যাগ সেট করে Admin-কে নোটিফিকেশন পাঠায়,
+// চূড়ান্ত Cancel Admin-ই করবে (ঠিক ফ্রন্টএন্ডের Return/Cancel UI-এর
+// মতোই আচরণ)।
+// -------------------------------------------------
+async function requestOrderCancel({ orderId, phone, uid, reason } = {}) {
+
+  if (!orderId) {
+    return { error: "orderId প্রয়োজন।" };
+  }
+
+  const db = admin.firestore();
+  const orderRef = db.collection("orders").doc(orderId);
+  const snap = await orderRef.get();
+
+  if (!snap.exists) {
+    return { error: "এই অর্ডার নম্বর দিয়ে কিছু পাওয়া যায়নি।" };
+  }
+
+  const order = snap.data();
+
+  const authorized = (uid && order.userId === uid) || (phone && order.phone === phone);
+
+  if (!authorized) {
+    return {
+      error:
+        "নিরাপত্তার জন্য এই অর্ডারের জন্য cancel request পাঠানো যাচ্ছে না। " +
+        "অনুগ্রহ করে যে ফোন নাম্বার দিয়ে অর্ডার করেছিলেন সেটা দিন।",
+    };
+  }
+
+  if (order.status === "Cancelled" || order.status === "Delivered") {
+    return { error: `এই অর্ডার এখন "${order.status}" অবস্থায় আছে, cancel request পাঠানো যাচ্ছে না।` };
+  }
+
+  await orderRef.update({ cancelRequested: true, cancelReason: reason || "" });
+
+  try {
+
+    await db.collection("notifications").add({
+      title: "❌ Order Cancel Request",
+      message: `${order.customerName || "Customer"} requested cancellation for order #${orderId.slice(-8)} via AI chat.`,
+      type: "cancel",
+      priority: "high",
+      receiverId: "ADMIN",
+      senderId: null,
+      senderName: "",
+      senderRole: "",
+      actionUrl: `/admin/orders/${orderId}`,
+      image: "",
+      extra: { reason: reason || "" },
+      isRead: false,
+      isDeleted: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+  } catch (notifyErr) {
+    console.log("AI CHAT — cancel request notification failed:", notifyErr.message);
+  }
+
+  return { requested: true, orderId, message: "আপনার cancel request Admin-এর কাছে পাঠানো হয়েছে।" };
+
+}
+
+// -------------------------------------------------
+// RETURN REQUEST
+// একটা আলাদা "returnRequests" কালেকশনে রিকোয়েস্ট জমা রাখা হয়
+// (অর্ডার নিজে বদলানো হয় না) — Admin পরে review করে সিদ্ধান্ত নেবে।
+// -------------------------------------------------
+async function requestReturn({ orderId, phone, uid, reason } = {}) {
+
+  if (!orderId || !reason) {
+    return { error: "return request পাঠাতে orderId এবং কারণ (reason) দুটোই লাগবে।" };
+  }
+
+  const db = admin.firestore();
+  const snap = await db.collection("orders").doc(orderId).get();
+
+  if (!snap.exists) {
+    return { error: "এই অর্ডার নম্বর দিয়ে কিছু পাওয়া যায়নি।" };
+  }
+
+  const order = snap.data();
+
+  const authorized = (uid && order.userId === uid) || (phone && order.phone === phone);
+
+  if (!authorized) {
+    return {
+      error:
+        "নিরাপত্তার জন্য এই অর্ডারের জন্য return request পাঠানো যাচ্ছে না। " +
+        "অনুগ্রহ করে যে ফোন নাম্বার দিয়ে অর্ডার করেছিলেন সেটা দিন।",
+    };
+  }
+
+  const docRef = await db.collection("returnRequests").add({
+    orderId,
+    userId: uid || null,
+    phone: order.phone || phone || "",
+    customerName: order.customerName || "",
+    reason,
+    status: "Pending",
+    source: "ai-chat",
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  try {
+
+    await db.collection("notifications").add({
+      title: "↩️ Return Request",
+      message: `${order.customerName || "Customer"} requested a return for order #${orderId.slice(-8)} via AI chat.`,
+      type: "return",
+      priority: "high",
+      receiverId: "ADMIN",
+      senderId: null,
+      senderName: "",
+      senderRole: "",
+      actionUrl: `/admin/orders/${orderId}`,
+      image: "",
+      extra: { reason },
+      isRead: false,
+      isDeleted: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+  } catch (notifyErr) {
+    console.log("AI CHAT — return request notification failed:", notifyErr.message);
+  }
+
+  return { requested: true, returnRequestId: docRef.id, message: "আপনার return request Admin-এর কাছে পাঠানো হয়েছে।" };
 
 }
 
@@ -762,6 +1043,12 @@ module.exports = {
   getRelatedProducts,
   getWishlistItems,
   getTrendingProducts,
+  getNewArrivals,
+  addToWishlist,
+  saveShoppingPreference,
+  getShoppingPreference,
+  requestOrderCancel,
+  requestReturn,
   getOrderStatus,
   getOrdersByPhone,
   getAdminContact,
