@@ -13,6 +13,7 @@
 
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
+const admin = require("firebase-admin");
 
 const {
   getDeliveryInfo,
@@ -21,6 +22,12 @@ const {
   getRelatedProducts,
   getWishlistItems,
   getTrendingProducts,
+  getNewArrivals,
+  addToWishlist,
+  saveShoppingPreference,
+  getShoppingPreference,
+  requestOrderCancel,
+  requestReturn,
   getOrderStatus,
   getOrdersByPhone,
   getAdminContact,
@@ -131,6 +138,71 @@ const SYSTEM_PROMPT = `
   দেখানোর পর কাস্টমারকে "Add to Cart"/"Buy Now" বাটন থেকেই cart-এ
   যোগ করতে বলুন (বাটন এমনিতেই কার্ডের সাথে UI-তে দেখানো হয়)।
 
+মানুষের মতো, উষ্ণ ব্যক্তিত্ব:
+- একদম ফ্ল্যাট/রোবটিক শোনাবেন না — মাঝেমধ্যে (প্রতিটা লাইনে না)
+  স্বাভাবিক প্রশংসা/উৎসাহ দিতে পারেন, যেমন "চমৎকার পছন্দ!",
+  "এটা দারুণ মানাবে", "এই আইটেমটা এখন বেশ চলছে" — তবে অতিরিক্ত
+  করবেন না, এবং কখনো এমন কিছু বলবেন না যা tool রেজাল্ট দিয়ে
+  সমর্থিত না (যেমন "সবচেয়ে জনপ্রিয়" শুধু তখনই বলুন যখন
+  get_trending_products সত্যিই সেটা দেখায়)।
+
+দামের তুলনা (Price Intelligence):
+- search_products/get_related_products কল করার পর রেজাল্টে যদি
+  একাধিক প্রোডাক্ট থাকে এবং তার মধ্যে একটা তুলনামূলক সস্তা/বেশি
+  ছাড়ে পাওয়া যাচ্ছে, সেটা স্বাভাবিকভাবে উল্লেখ করতে পারেন (যেমন
+  "এটার চেয়ে এই একটা একটু কম দামে পাচ্ছেন")। কখনো দামের
+  ইতিহাস/আগে কত ছিল এসব বানিয়ে বলবেন না — এই তথ্য tool-এ নেই,
+  শুধু বর্তমান দাম/অফার নিয়ে কথা বলুন।
+
+শপিং মেমরি (প্রিয় রঙ/ক্যাটাগরি/বাজেট মনে রাখা):
+- লগইন করা কাস্টমার কথায় কথায় তার প্রিয় রঙ/ক্যাটাগরি/বাজেট বললে
+  (যেমন "আমি সাধারণত মেরুন রঙ পছন্দ করি") স্বাভাবিকভাবে
+  save_shopping_preference কল করে সেভ করুন — কাস্টমারকে আলাদা
+  করে জানানোর দরকার নেই যে এটা "সেভ" হচ্ছে, স্বাভাবিক কথোপকথনের
+  অংশ হিসেবেই করুন। নতুন করে প্রোডাক্ট সাজেস্ট করার আগে, বিশেষ করে
+  কাস্টমার নির্দিষ্ট কিছু না বললে, get_shopping_preference কল করে
+  আগের পছন্দ থাকলে সেটা বিবেচনায় নিতে পারেন (জোর করে চাপিয়ে দেবেন
+  না, শুধু প্রাসঙ্গিক হলে উল্লেখ করুন — যেমন "আগে আপনি মেরুন রঙ
+  পছন্দ করেছিলেন, এই কালেকশনেও মেরুন আছে")।
+
+উপলক্ষ/উৎসব-ভিত্তিক সাজেশন:
+- শুধু নির্দিষ্ট/স্থির তারিখের উপলক্ষ (যেমন ভ্যালেন্টাইনস ডে
+  ফেব্রুয়ারি ১৪) নিয়ে নিজে থেকে অনুমান করে বলতে পারেন যে এখন
+  সেই উপলক্ষ কাছাকাছি কিনা। ঈদ/পূজা/রমজানের মতো চন্দ্র
+  ক্যালেন্ডার-ভিত্তিক তারিখ আপনার জানা নেই এবং ভুল হতে পারে —
+  তাই এসব নিয়ে নিজে থেকে "এখন ঈদ আসছে" জাতীয় দাবি করবেন না;
+  বরং কাস্টমার নিজে থেকে উপলক্ষ বললে (যেমন "ঈদের জন্য কিছু চাই")
+  সেই অনুযায়ী সাহায্য করুন।
+
+wishlist-এ যোগ করা:
+- লগইন করা কাস্টমার কোনো প্রোডাক্ট "wishlist-এ রাখো/সেভ করো"
+  বললে add_to_wishlist কল করুন (productId লাগবে — এর আগে
+  search_products/check_stock থেকে productId জানা থাকতে হবে)।
+  লগইন করা না থাকলে tool error দেবে, সেটা বিনয়ের সাথে জানিয়ে
+  লগইন করতে বলুন।
+
+অর্ডার বাতিল/রিটার্নের অনুরোধ:
+- কাস্টমার অর্ডার বাতিল করতে চাইলে, ঠিক create_order-এর মতোই —
+  আগে কোন অর্ডার (orderId, get_orders_by_phone দিয়ে বের করা যায়)
+  এবং কারণ জেনে একবার সংক্ষেপে কনফার্ম করে নিন, তারপর
+  request_order_cancel কল করুন। এটা সরাসরি অর্ডার বাতিল করে না,
+  শুধু Admin-কে অনুরোধ পাঠায় — কাস্টমারকে বলুন Admin রিভিউ করে
+  চূড়ান্ত করবে।
+- একইভাবে রিটার্ন চাইলে কারণ জেনে কনফার্ম করে request_return কল
+  করুন। কখনো নিজে থেকে "রিফান্ড হয়ে গেছে/বাতিল হয়ে গেছে" বলবেন
+  না — শুধু "অনুরোধ পাঠানো হয়েছে, Admin দেখবে" বলুন।
+
+Proactive চেক (সিস্টেম-উদ্যোগে):
+- মেসেজে যদি "[PROACTIVE_CHECK]" মার্কার দেখেন, এটা কাস্টমারের
+  পাঠানো প্রশ্ন না — চ্যাট খোলার সময় স্বয়ংক্রিয়ভাবে পাঠানো একটা
+  সিস্টেম ট্রিগার। এই ক্ষেত্রে get_new_arrivals এবং (লগইন করা
+  থাকলে) get_wishlist_items কল করে দেখুন সত্যিই কোনো নতুন
+  প্রোডাক্ট বা wishlist-এর কোনো আইটেমে (offerPrice>0) ছাড় আছে
+  কিনা। সত্যিই প্রাসঙ্গিক কিছু পেলে এক লাইনে সংক্ষেপে জানান (যেমন
+  "আজ কয়েকটা নতুন প্রোডাক্ট এসেছে, দেখবেন?")। কিছুই প্রাসঙ্গিক না
+  পেলে অন্য কিছু না লিখে ঠিক এই একটা শব্দই লিখুন: NIL_PROACTIVE
+  (অন্য কোনো টেক্সট/emoji/বাক্য ছাড়া, ঠিক এই শব্দটাই)।
+
 অর্ডার স্ট্যাটাস (কাস্টমার Order ID না জানলেও):
 - কাস্টমার "আমার প্রোডাক্টের কি অবস্থা/আমার অর্ডার কই" এই ধরনের
   কিছু জিজ্ঞেস করলে প্রথমেই Order ID চাইবেন না — বেশিরভাগ কাস্টমার
@@ -153,6 +225,13 @@ Admin/মানুষের সাথে কথা বলা:
   সরাসরি যোগাযোগ করতে পারেন: [নাম্বার]")। কখনো নিজে থেকে কোনো
   নাম্বার অনুমান করে বলবেন না — সবসময় tool কল করেই আসল নাম্বার
   নিন।
+- আপনি যদি নিজে নিশ্চিত না হন (যেমন প্রশ্নটা প্রোডাক্ট/অর্ডার/
+  ডেলিভারির বাইরের জটিল/নীতিগত কোনো বিষয়, অথবা tool দিয়েও উত্তর
+  বের করতে পারছেন না) — অনুমান করে ভুল তথ্য দেওয়ার চেয়ে সততার
+  সাথে বলুন যে এই বিষয়ে আপনি পুরোপুরি নিশ্চিত না, এবং
+  get_admin_contact দিয়ে সাপোর্ট টিমের সাথে কথা বলার অপশন দিন
+  (যেমন: "এই বিষয়ে আমি ১০০% নিশ্চিত না, আমাদের সাপোর্ট টিমের
+  সাথে সরাসরি কথা বললে ভালো হবে")।
 
 ডেলিভারি চার্জ:
 - ডেলিভারি চার্জ সম্পর্কে যেকোনো প্রশ্নে অবশ্যই get_delivery_info
@@ -294,6 +373,73 @@ const TOOLS = [
     },
   },
   {
+    name: "get_new_arrivals",
+    description: "সাম্প্রতিক যোগ করা নতুন প্রোডাক্টগুলো দেখুন (Proactive সাজেশনের জন্য)।",
+    input_schema: { type: "object", properties: {} },
+  },
+  {
+    name: "add_to_wishlist",
+    description:
+      "লগইন করা কাস্টমার কোনো প্রোডাক্ট wishlist-এ রাখতে চাইলে এটা কল করুন।",
+    input_schema: {
+      type: "object",
+      properties: { productId: { type: "string" } },
+      required: ["productId"],
+    },
+  },
+  {
+    name: "save_shopping_preference",
+    description:
+      "লগইন করা কাস্টমারের প্রিয় রঙ/ক্যাটাগরি/বাজেট মনে রাখতে এটা কল করুন — " +
+      "কাস্টমার এসব নিজে থেকে উল্লেখ করলে (যেমন 'আমি সাধারণত লাল রঙ পছন্দ করি') " +
+      "স্বাভাবিকভাবে সেভ করে রাখুন, ভবিষ্যতে সাজেশনে কাজে লাগবে।",
+    input_schema: {
+      type: "object",
+      properties: {
+        color: { type: "string" },
+        category: { type: "string" },
+        budget: { type: "string" },
+      },
+    },
+  },
+  {
+    name: "get_shopping_preference",
+    description:
+      "লগইন করা কাস্টমারের আগে সেভ করা প্রিয় রঙ/ক্যাটাগরি/বাজেট দেখুন — " +
+      "প্রোডাক্ট সাজেস্ট করার আগে এটা কল করলে আরও প্রাসঙ্গিক সাজেশন দেওয়া যায়।",
+    input_schema: { type: "object", properties: {} },
+  },
+  {
+    name: "request_order_cancel",
+    description:
+      "কাস্টমার অর্ডার বাতিল করতে চাইলে (এবং কনফার্ম করার পর) এটা কল করুন — " +
+      "এটা সরাসরি বাতিল করে না, Admin-কে রিকোয়েস্ট নোটিফিকেশন পাঠায়।",
+    input_schema: {
+      type: "object",
+      properties: {
+        orderId: { type: "string" },
+        phone: { type: "string" },
+        reason: { type: "string" },
+      },
+      required: ["orderId"],
+    },
+  },
+  {
+    name: "request_return",
+    description:
+      "কাস্টমার কোনো ডেলিভারি হওয়া অর্ডার ফেরত দিতে চাইলে (কারণ জেনে/কনফার্ম " +
+      "করার পর) এটা কল করুন — Admin রিভিউ করে সিদ্ধান্ত নেবে।",
+    input_schema: {
+      type: "object",
+      properties: {
+        orderId: { type: "string" },
+        phone: { type: "string" },
+        reason: { type: "string" },
+      },
+      required: ["orderId", "reason"],
+    },
+  },
+  {
     name: "get_order_status",
     description: "একটা অর্ডারের বর্তমান অবস্থা দেখুন।",
     input_schema: {
@@ -413,6 +559,24 @@ async function runTool(name, input, context) {
     case "get_trending_products":
       return getTrendingProducts();
 
+    case "get_new_arrivals":
+      return getNewArrivals();
+
+    case "add_to_wishlist":
+      return addToWishlist({ ...input, uid: context.uid });
+
+    case "save_shopping_preference":
+      return saveShoppingPreference({ ...input, uid: context.uid });
+
+    case "get_shopping_preference":
+      return getShoppingPreference({ uid: context.uid });
+
+    case "request_order_cancel":
+      return requestOrderCancel({ ...input, uid: context.uid });
+
+    case "request_return":
+      return requestReturn({ ...input, uid: context.uid });
+
     case "get_order_status":
       return getOrderStatus({ ...input, uid: context.uid });
 
@@ -473,7 +637,9 @@ function collectUiData(collected, toolName, output) {
     }
 
   } else if (
-    (toolName === "get_wishlist_items" || toolName === "get_trending_products") &&
+    (toolName === "get_wishlist_items" ||
+      toolName === "get_trending_products" ||
+      toolName === "get_new_arrivals") &&
     Array.isArray(output.items)
   ) {
 
@@ -571,6 +737,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
   let conversation = genericMessages;
 
   const collected = { products: [], orders: [], adminContact: null, invoice: null };
+  const toolsUsed = [];
 
   for (let i = 0; i < 5; i++) {
 
@@ -587,7 +754,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
     ];
 
     if (!result.toolCalls.length) {
-      return { text: result.textReply || "", ...collected };
+      return { text: result.textReply || "", toolsUsed, ...collected };
     }
 
     const toolResultParts = [];
@@ -596,6 +763,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
       const output = await runTool(call.name, call.input, { uid });
 
+      toolsUsed.push(call.name);
       collectUiData(collected, call.name, output);
 
       toolResultParts.push({
@@ -618,6 +786,7 @@ async function runConversation({ attempt, genericMessages, uid }) {
     text:
       "দুঃখিত, এই মুহূর্তে অনুরোধটা প্রসেস করতে পারছি না। " +
       "আবার চেষ্টা করুন বা সরাসরি WhatsApp-এ যোগাযোগ করুন।",
+    toolsUsed,
     ...collected,
   };
 
@@ -696,6 +865,31 @@ exports.aiChat = onCall(
             genericMessages: trimmedMessages,
             uid,
           });
+
+          // -------------------------------------------------
+          // হালকা usage logging (ভবিষ্যতে Admin AI Dashboard-এর
+          // ভিত্তি) — সবচেয়ে বেশি কী জিজ্ঞেস করা হচ্ছে, কোন
+          // প্রোডাক্ট বেশি খোঁজা হচ্ছে, কখন handoff দরকার হয়েছে
+          // ইত্যাদি পরে এখান থেকেই বিশ্লেষণ করা যাবে। চ্যাট চলতে
+          // এটার সফল হওয়া জরুরি না, তাই ব্যর্থ হলেও উপেক্ষা করা হয়।
+          // -------------------------------------------------
+          try {
+
+            const lastUserText =
+              messages[messages.length - 1]?.content?.toString().slice(0, 300) || "";
+
+            await admin.firestore().collection("aiChatLogs").add({
+              uid: uid || null,
+              lastUserMessage: lastUserText,
+              toolsUsed: result.toolsUsed || [],
+              handoffRequested: (result.toolsUsed || []).includes("get_admin_contact"),
+              providerUsed: attempt.key,
+              createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+
+          } catch (logErr) {
+            console.log("AI CHAT — usage log failed:", logErr.message);
+          }
 
           return {
             reply: result.text,
