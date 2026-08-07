@@ -526,6 +526,58 @@ async function generateInvoiceText({ orderId, phone, uid }) {
 
 }
 
+// -------------------------------------------------
+// INVOICE — PDF (Phase 2)
+// একই authorization নিয়ম (uid/phone match) — কিন্তু এবার পুরো
+// order ডকুমেন্ট (address, delivery charge ইত্যাদি সহ) নিয়ে
+// একটা প্রকৃত ডাউনলোডযোগ্য PDF বানানো হচ্ছে।
+// -------------------------------------------------
+async function generateInvoicePdf({ orderId, phone, uid }) {
+
+  if (!orderId) {
+    return { error: "orderId প্রয়োজন।" };
+  }
+
+  const snap = await admin.firestore().collection("orders").doc(orderId).get();
+
+  if (!snap.exists) {
+    return { error: "এই অর্ডার নম্বর দিয়ে কিছু পাওয়া যায়নি।" };
+  }
+
+  const order = snap.data();
+
+  const authorized =
+    (uid && order.userId === uid) ||
+    (phone && order.phone === phone);
+
+  if (!authorized) {
+
+    return {
+      error:
+        "নিরাপত্তার জন্য এই অর্ডারের ইনভয়েস দেখানো যাচ্ছে না। " +
+        "অনুগ্রহ করে যে ফোন নাম্বার দিয়ে অর্ডার করেছিলেন সেটা দিন।",
+    };
+
+  }
+
+  try {
+
+    const { generateInvoicePdfForOrder } = require("./pdfInvoice");
+
+    const { pdfUrl } = await generateInvoicePdfForOrder({ order, orderId: snap.id });
+
+    return { pdfUrl, orderId: snap.id };
+
+  } catch (error) {
+
+    console.log("INVOICE PDF GENERATION ERROR:", error);
+
+    return { error: "ইনভয়েস PDF বানাতে সমস্যা হয়েছে, একটু পর আবার চেষ্টা করুন।" };
+
+  }
+
+}
+
 module.exports = {
   getDeliveryInfo,
   searchProducts,
@@ -535,4 +587,5 @@ module.exports = {
   getAdminContact,
   createOrderViaChat,
   generateInvoiceText,
+  generateInvoicePdf,
 };
