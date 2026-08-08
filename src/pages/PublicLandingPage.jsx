@@ -24,6 +24,11 @@ import {
   FiTruck,
 } from "react-icons/fi";
 
+import {
+  FaFacebookMessenger,
+  FaWhatsapp,
+} from "react-icons/fa";
+
 
 import SEO from "../seo/SEO";
 
@@ -40,6 +45,10 @@ import {
 
 import RelatedProducts from "../components/RelatedProducts";
 
+import useSettings from "../hooks/useSettings";
+
+
+const MESSENGER_LINK = "https://m.me/61560486613695";
 
 const BKASH_NUMBER = "01628464209";
 const NAGAD_NUMBER = "01628464209";
@@ -52,6 +61,8 @@ export default function PublicLandingPage(){
 const navigate = useNavigate();
 
 const { slug } = useParams();
+
+const { settings } = useSettings();
 
 const [landing,setLanding] = useState(null);
 
@@ -2480,6 +2491,96 @@ text-center
 </div>
 
 
+{/* CONTACT US */}
+
+<div
+className="
+mt-6
+bg-gray-50
+rounded-lg
+p-5
+text-center
+"
+>
+
+<h3
+className="
+text-base
+font-bold
+mb-4
+"
+>
+যেকোন প্রয়োজনে যোগাযোগ করুন
+</h3>
+
+<div
+className="
+flex
+items-center
+justify-center
+gap-4
+"
+>
+
+<a
+href={MESSENGER_LINK}
+target="_blank"
+rel="noreferrer"
+aria-label="Messenger"
+className="
+w-14
+h-14
+rounded-full
+bg-[#0084FF]
+text-white
+flex
+items-center
+justify-center
+shadow-md
+hover:opacity-90
+transition
+"
+>
+
+<FaFacebookMessenger size={24}/>
+
+</a>
+
+{
+settings?.whatsapp && (
+
+<a
+href={`https://wa.me/${settings.whatsapp?.replace(/\D/g,"")}`}
+target="_blank"
+rel="noreferrer"
+aria-label="WhatsApp"
+className="
+w-14
+h-14
+rounded-full
+bg-[#25D366]
+text-white
+flex
+items-center
+justify-center
+shadow-md
+hover:opacity-90
+transition
+"
+>
+
+<FaWhatsapp size={26}/>
+
+</a>
+
+)
+}
+
+</div>
+
+</div>
+
+
 {/* RELATED PRODUCTS */}
 
 <div
@@ -2504,6 +2605,7 @@ mb-4
 
 <RelatedProducts
 currentId={landing.productId}
+category={landing.category}
 />
 
 </div>
