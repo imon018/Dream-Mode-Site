@@ -35,6 +35,7 @@ const {
   updateProductPrice,
   updateOrderStatus,
   listRecentOrders,
+  getTrafficAnalytics,
 } = require("./aiChatAdminTools");
 
 const geminiProvider = require("./aiProviders/geminiProvider");
@@ -60,6 +61,9 @@ const SYSTEM_PROMPT = `
   status-গুলোর একটা হতে পারে: ${VALID_ORDER_STATUSES.join(", ")}
 - সাম্প্রতিক অর্ডার/নির্দিষ্ট status-এর অর্ডার লিস্ট দেখা
   (list_recent_orders)
+- ওয়েবসাইট ট্রাফিক/ভিজিটর দেখা — মোট পেজভিউ, ইউনিক ভিজিটর,
+  এখন লাইভ কতজন আছে, কোন পেজ কতবার দেখা হয়েছে ও গড়ে কতক্ষণ ধরে
+  দেখা হয়েছে (get_traffic_analytics)
 - প্রোডাক্ট খোঁজা, স্টক চেক করা, অর্ডার status/ইনভয়েস (টেক্সট ও
   PDF) দেখা — এগুলো read-only, ঝুঁকিহীন
 
@@ -173,6 +177,23 @@ const TOOLS = [
     description: "ডেলিভারি চার্জের নিয়ম দেখুন।",
     input_schema: { type: "object", properties: {} },
   },
+  {
+    name: "get_traffic_analytics",
+    description:
+      "ওয়েবসাইট ট্রাফিক/ভিজিটর অ্যানালিটিক্স দেখুন — মোট পেজভিউ, ইউনিক " +
+      "ভিজিটর সংখ্যা, এখন লাইভ কতজন আছে, কোন পেজ সবচেয়ে বেশি দেখা " +
+      "হয়েছে এবং প্রতিটা পেজে ভিজিটররা গড়ে কতক্ষণ সময় কাটিয়েছে।",
+    input_schema: {
+      type: "object",
+      properties: {
+        hours: {
+          type: "number",
+          description:
+            "কত ঘণ্টার ডেটা দেখতে চান (ডিফল্ট ২৪ ঘণ্টা, সর্বোচ্চ ৭২০ অর্থাৎ ৩০ দিন)।",
+        },
+      },
+    },
+  },
 ];
 
 async function runTool(name, input) {
@@ -222,6 +243,9 @@ async function runTool(name, input) {
 
     case "get_delivery_info":
       return getDeliveryInfo(input);
+
+    case "get_traffic_analytics":
+      return getTrafficAnalytics(input);
 
     default:
       return { error: `Unknown tool: ${name}` };
