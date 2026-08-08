@@ -34,31 +34,6 @@ const PANEL_HEIGHT = 560;
 const BUBBLE_WIDTH = 240;
 const BUBBLE_HEIGHT_ESTIMATE = 110;
 
-// মোবাইলে bottom navigation bar + browser-এর নিজস্ব bottom UI
-// (address bar/gesture area) মিলিয়ে নিচের দিকে যতটুকু জায়গা সবসময়
-// ফাঁকা রাখা হবে, যাতে ফ্লোটিং বাটন কখনো ট্যাপ-অযোগ্য জোনে না পড়ে।
-const BOTTOM_SAFE_MARGIN = 96;
-
-// visualViewport থাকলে সেটাই আসল দৃশ্যমান উচ্চতা (address bar/keyboard
-// হিসাব করা) — না থাকলে window.innerHeight-এ fallback করে।
-function getViewportHeight() {
-  if (typeof window === "undefined") return 0;
-  return window.visualViewport?.height || window.innerHeight;
-}
-
-function getViewportWidth() {
-  if (typeof window === "undefined") return 0;
-  return window.visualViewport?.width || window.innerWidth;
-}
-
-function getSafeMaxY() {
-  return Math.max(0, getViewportHeight() - BUTTON_SIZE - BOTTOM_SAFE_MARGIN);
-}
-
-function getSafeMaxX() {
-  return Math.max(0, getViewportWidth() - BUTTON_SIZE);
-}
-
 const WELCOME_MESSAGE = {
   role: "assistant",
   display:
@@ -527,8 +502,8 @@ export default function AIChatWidget({
 
   // ভাসমান বাটনের পজিশন — WhatsApp বাটনের মতোই যেকোনো জায়গায় drag করা যাবে
   const [position, setPosition] = useState(() => ({
-    x: Math.max(0, getSafeMaxX() - 20),
-    y: Math.max(0, getSafeMaxY() - 90),
+    x: Math.max(0, window.innerWidth - BUTTON_SIZE - 20),
+    y: Math.max(0, window.innerHeight - BUTTON_SIZE - 150),
   }));
   const [dragging, setDragging] = useState(false);
 
@@ -572,8 +547,8 @@ export default function AIChatWidget({
         const oldPosition = JSON.parse(saved);
 
         const safePosition = {
-          x: Math.min(Math.max(0, oldPosition.x), getSafeMaxX()),
-          y: Math.min(Math.max(0, oldPosition.y), getSafeMaxY()),
+          x: Math.min(Math.max(0, oldPosition.x), window.innerWidth - BUTTON_SIZE),
+          y: Math.min(Math.max(0, oldPosition.y), window.innerHeight - BUTTON_SIZE),
         };
 
         setPosition(safePosition);
@@ -585,31 +560,6 @@ export default function AIChatWidget({
       console.log("AI CHAT WIDGET — position load failed:", error);
 
     }
-
-  }, []);
-
-  // --------- ব্রাউজারের address bar/keyboard দেখা-না দেখায় দৃশ্যমান
-  // viewport-এর উচ্চতা বদলে গেলে (mobile-এ খুব সাধারণ ব্যাপার) বাটনের
-  // পজিশন live-এ আবার নিরাপদ সীমার মধ্যে টেনে আনা — এতে বাটন কখনো
-  // ট্যাপ-অযোগ্য (অদৃশ্য/অর্ধ-অদৃশ্য) জোনে আটকে থাকবে না ---------
-  useEffect(() => {
-
-    const reclamp = () => {
-
-      setPosition((prev) => ({
-        x: Math.min(Math.max(0, prev.x), getSafeMaxX()),
-        y: Math.min(Math.max(0, prev.y), getSafeMaxY()),
-      }));
-
-    };
-
-    window.addEventListener("resize", reclamp);
-    window.visualViewport?.addEventListener("resize", reclamp);
-
-    return () => {
-      window.removeEventListener("resize", reclamp);
-      window.visualViewport?.removeEventListener("resize", reclamp);
-    };
 
   }, []);
 
@@ -694,12 +644,12 @@ export default function AIChatWidget({
 
     const nextX = Math.min(
       Math.max(0, dragStateRef.current.startPosX + dx),
-      getSafeMaxX()
+      window.innerWidth - BUTTON_SIZE
     );
 
     const nextY = Math.min(
       Math.max(0, dragStateRef.current.startPosY + dy),
-      getSafeMaxY()
+      window.innerHeight - BUTTON_SIZE
     );
 
     setPosition({ x: nextX, y: nextY });
@@ -755,8 +705,8 @@ export default function AIChatWidget({
   // বাটনের বর্তমান পজিশনের কাছাকাছি স্ক্রিনে জায়গা অনুযায়ী চ্যাট প্যানেল বসানো
   const getPanelStyle = () => {
 
-    const vw = getViewportWidth();
-    const vh = getViewportHeight();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
     const panelWidth = Math.min(PANEL_WIDTH, vw - PANEL_MARGIN * 2);
     const panelHeight = Math.min(PANEL_HEIGHT, Math.floor(vh * 0.75));
@@ -786,8 +736,8 @@ export default function AIChatWidget({
   // greeting বাবলের পজিশন — বাটনের কাছাকাছি, ছোট সাইজের জন্য আলাদা হিসাব
   const getGreetingStyle = () => {
 
-    const vw = getViewportWidth();
-    const vh = getViewportHeight();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
     const bubbleWidth = Math.min(BUBBLE_WIDTH, vw - PANEL_MARGIN * 2);
 
