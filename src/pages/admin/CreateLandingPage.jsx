@@ -25,6 +25,10 @@ import {
 } from "../../services/firestoreProductService";
 
 import {
+  getCategories,
+} from "../../services/categoryService";
+
+import {
   createLandingPage,
 } from "../../services/landingPageService";
 
@@ -48,6 +52,10 @@ const searchRef=useRef(null);
 const [loading,setLoading]=useState(false);
 
 const [products,setProducts]=useState([]);
+
+const [categories,setCategories]=useState([]);
+
+const [category,setCategory]=useState("");
 
 const [selectedProduct,setSelectedProduct]=useState("");
 
@@ -109,6 +117,8 @@ useEffect(()=>{
 
 loadProducts();
 
+loadCategories();
+
 },[]);
 
 useEffect(()=>{
@@ -167,6 +177,25 @@ async function loadProducts(){
 
 }
 
+async function loadCategories(){
+
+  try{
+
+    const data=
+    await getCategories();
+
+    setCategories(data);
+
+  }
+
+  catch(error){
+
+    console.log(error);
+
+  }
+
+}
+
 const filteredProducts=
 
 products.filter(product=>{
@@ -214,6 +243,14 @@ setShowDropdown(false);
 setTitle(
 product.name||""
 );
+
+if(product.category){
+
+setCategory(
+product.category
+);
+
+}
 
 setSlug(
 
@@ -423,6 +460,8 @@ useMemo(()=>({
 
 productId:selectedProduct,
 
+category,
+
 title,
 
 slug,
@@ -484,6 +523,8 @@ createdAt:new Date(),
 
 selectedProduct,
 
+category,
+
 title,
 
 slug,
@@ -529,6 +570,8 @@ function handlePreview(){
 const previewData={
 
 productId:selectedProduct,
+
+category,
 
 title,
 
@@ -1228,6 +1271,88 @@ text-xl
 )
 
 }
+
+</div>
+
+{/* CATEGORY */}
+
+<div>
+
+<label
+className="
+block
+font-semibold
+mb-2
+"
+>
+
+Category
+
+</label>
+
+<select
+
+value={category}
+
+onChange={(e)=>
+
+setCategory(
+e.target.value
+)
+
+}
+
+className="
+w-full
+h-12
+rounded-lg
+border
+border-amber-200
+px-4
+outline-none
+focus:border-amber-500
+focus:ring-4
+focus:ring-amber-100
+bg-white
+"
+
+>
+
+<option value="">
+
+Select Category
+
+</option>
+
+{categories.map((item)=>(
+
+<option
+
+key={item.id}
+
+value={item.name}
+
+>
+
+{item.name}
+
+</option>
+
+))}
+
+</select>
+
+<p
+className="
+text-xs
+text-gray-500
+mt-2
+"
+>
+
+Synced with your shop categories — used to show related products of the same category on the landing page.
+
+</p>
 
 </div>
 
