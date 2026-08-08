@@ -51,6 +51,9 @@ export const createLandingPage = async (data) => {
     productId:
     data.productId,
 
+    category:
+    data.category||"",
+
     title:
     data.title,
 
