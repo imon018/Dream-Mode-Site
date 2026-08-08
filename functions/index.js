@@ -2701,3 +2701,11 @@ exports.aiChat = require("./aiChat").aiChat;
 // =================================================
 
 exports.aiChatAdmin = require("./aiChatAdmin").aiChatAdmin;
+
+// =================================================
+// ওয়েবসাইট ট্রাফিক রিপোর্ট — প্রতি ৬ ঘণ্টা পর পর Admin-কে
+// অটোমেটিক আপডেট (ভিজিটর সংখ্যা, বেশি দেখা পেজ, নতুন রেজিস্ট্রেশন)
+// =================================================
+
+exports.trafficReportScheduled =
+require("./trafficReport").trafficReportScheduled;
