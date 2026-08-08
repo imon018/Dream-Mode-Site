@@ -231,10 +231,111 @@ async function listRecentOrders({ status, limit } = {}) {
 
 }
 
+// -------------------------------------------------
+// ওয়েবসাইট ট্রাফিক/ভিজিটর অ্যানালিটিক্স — pageViews কালেকশন
+// থেকে পড়ে (কে কোন পেজ কতক্ষণ দেখেছে)।
+// -------------------------------------------------
+async function getTrafficAnalytics({ hours } = {}) {
+
+  const windowHours = Math.min(Math.max(Number(hours) || 24, 1), 720);
+  const since = new Date(Date.now() - windowHours * 60 * 60 * 1000);
+
+  const snap = await admin
+    .firestore()
+    .collection("pageViews")
+    .where("enteredAt", ">=", since)
+    .orderBy("enteredAt", "desc")
+    .limit(2000)
+    .get();
+
+  if (snap.empty) {
+
+    return {
+      windowHours,
+      totalPageViews: 0,
+      uniqueVisitors: 0,
+      liveVisitorsNow: 0,
+      averageTimeOnPageSeconds: 0,
+      topPages: [],
+      liveVisitors: [],
+    };
+
+  }
+
+  const visitorIds = new Set();
+  const pageStats = {}; // page -> { views, totalDuration }
+  const liveVisitorsMap = new Map(); // sessionId -> latest active view
+  let totalDuration = 0;
+  let durationCount = 0;
+
+  const fiveMinAgoMs = Date.now() - 5 * 60 * 1000;
+
+  snap.forEach((docSnap) => {
+
+    const v = docSnap.data();
+
+    if (v.visitorId) visitorIds.add(v.visitorId);
+
+    const page = v.page || "unknown";
+
+    if (!pageStats[page]) {
+      pageStats[page] = { views: 0, totalDuration: 0 };
+    }
+
+    pageStats[page].views += 1;
+
+    if (typeof v.duration === "number") {
+      pageStats[page].totalDuration += v.duration;
+      totalDuration += v.duration;
+      durationCount += 1;
+    }
+
+    const enteredAtMs = v.enteredAt?.toMillis
+      ? v.enteredAt.toMillis()
+      : 0;
+
+    if (v.isActive && enteredAtMs >= fiveMinAgoMs) {
+
+      liveVisitorsMap.set(docSnap.id, {
+        page,
+        visitorId: v.visitorId || "",
+        currentDurationSeconds: v.duration || 0,
+        enteredAt: v.enteredAt || null,
+        referrer: v.referrer || "",
+      });
+
+    }
+
+  });
+
+  const topPages = Object.entries(pageStats)
+    .map(([page, s]) => ({
+      page,
+      views: s.views,
+      averageTimeOnPageSeconds:
+        s.views > 0 ? Math.round(s.totalDuration / s.views) : 0,
+    }))
+    .sort((a, b) => b.views - a.views)
+    .slice(0, 10);
+
+  return {
+    windowHours,
+    totalPageViews: snap.size,
+    uniqueVisitors: visitorIds.size,
+    liveVisitorsNow: liveVisitorsMap.size,
+    averageTimeOnPageSeconds:
+      durationCount > 0 ? Math.round(totalDuration / durationCount) : 0,
+    topPages,
+    liveVisitors: Array.from(liveVisitorsMap.values()).slice(0, 20),
+  };
+
+}
+
 module.exports = {
   VALID_ORDER_STATUSES,
   updateProductStock,
   updateProductPrice,
   updateOrderStatus,
   listRecentOrders,
+  getTrafficAnalytics,
 };
