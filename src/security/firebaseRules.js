@@ -621,8 +621,16 @@ match /emailVerificationRequests/{requestId} {
   // Admin access
   allow update:
     if isAdmin();
+}
 
 
+  match /pageViews/{docId} {
+  allow create: if true;
+  allow update: if request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(["duration", "isActive", "leftAt"]);
+  allow read: if request.auth != null &&
+                get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+  allow delete: if false;
 }
 
 
