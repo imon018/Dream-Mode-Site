@@ -100,6 +100,27 @@ const [formData, setFormData] = useState({
   notes: "",
 });
 
+// ---------- AUTO DELIVERY CHARGE BY DISTRICT ----------
+// If the customer types a district other than Dhaka, switch the
+// delivery charge to the "Outside Dhaka" rate automatically. If
+// they type Dhaka (or clear the field), switch back to the
+// "Dhaka City" rate. A manual pick from the dropdown still works
+// normally since this only reacts to district changes.
+
+useEffect(() => {
+
+  const district = formData.district.trim().toLowerCase();
+
+  if (!district) return;
+
+  const isDhaka =
+    district.includes("dhaka") ||
+    district.includes("ঢাকা");
+
+  setDeliveryCharge(isDhaka ? 80 : 150);
+
+}, [formData.district]);
+
 // Moved above the early return, and memoized so it doesn't
 // produce a brand-new array reference on every render.
 const images = useMemo(() => {
