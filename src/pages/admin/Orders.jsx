@@ -28,7 +28,8 @@ import {
   FiPrinter,
   FiDownload,
   FiTrash2,
-  FiX
+  FiX,
+  FiPlus
 } from "react-icons/fi";
 
 
@@ -578,7 +579,7 @@ lg:p-6
 className="
 flex
 items-center
-justify-center
+justify-between
 mb-4
 "
 >
@@ -594,6 +595,24 @@ text-slate-900
 Orders
 
 </h1>
+
+<button
+onClick={()=>navigate("/admin/add-order")}
+className="
+w-9
+h-9
+rounded-lg
+bg-amber-500
+text-white
+flex
+items-center
+justify-center
+"
+>
+
+<FiPlus size={18}/>
+
+</button>
 
 </div>
 
