@@ -15,7 +15,8 @@ export async function sendOrderToSteadfast(order) {
       recipient_address:
         `${order.address}, ${order.thana || ""}, ${order.district || ""}`,
 
-      cod_amount: Number(order.total),
+      cod_amount:
+        order.paymentStatus === "Paid" ? 0 : Number(order.total),
 
       note: order.notes || "",
 
