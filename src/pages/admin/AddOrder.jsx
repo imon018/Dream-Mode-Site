@@ -22,7 +22,10 @@ import {
   FiPlus,
   FiMinus,
   FiTag,
-  FiTruck
+  FiTruck,
+  FiCreditCard,
+  FiChevronDown,
+  FiChevronUp
 } from "react-icons/fi";
 
 
@@ -48,6 +51,10 @@ import {
 import useAuth from "../../hooks/useAuth";
 
 import { getEffectivePrice } from "../../utils/helpers";
+
+
+const BKASH_NUMBER = "01628464209";
+const NAGAD_NUMBER = "01628464209";
 
 
 
@@ -97,6 +104,19 @@ const [selectedProducts,setSelectedProducts]=useState([]);
 const [discount,setDiscount]=useState(0);
 
 const [deliveryCharge,setDeliveryCharge]=useState(80);
+
+
+// ---------- PAYMENT METHOD ----------
+
+const [paymentOpen,setPaymentOpen]=useState(true);
+
+const [paymentMethod,setPaymentMethod]=useState("COD");
+
+const [bkashNumber,setBkashNumber]=useState("");
+const [bkashTransactionId,setBkashTransactionId]=useState("");
+
+const [nagadNumber,setNagadNumber]=useState("");
+const [nagadTransactionId,setNagadTransactionId]=useState("");
 
 
 const [loading,setLoading] = useState(false);
@@ -332,6 +352,34 @@ return;
 }
 
 
+if(
+paymentMethod === "bKash" &&
+(!bkashNumber || !bkashTransactionId)
+){
+
+errorToast(
+"Please provide bKash number and transaction ID"
+);
+
+return;
+
+}
+
+
+if(
+paymentMethod === "Nagad" &&
+(!nagadNumber || !nagadTransactionId)
+){
+
+errorToast(
+"Please provide Nagad number and transaction ID"
+);
+
+return;
+
+}
+
+
 
 try{
 
@@ -378,6 +426,32 @@ deliveryCharge: Number(deliveryCharge)||0,
 
 total,
 
+paymentMethod,
+
+paymentStatus:
+(paymentMethod === "bKash" || paymentMethod === "Nagad")
+?
+"Paid"
+:
+"Pending",
+
+paymentDetails:
+paymentMethod === "bKash"
+?
+{
+  accountNumber: bkashNumber,
+  transactionId: bkashTransactionId,
+}
+:
+paymentMethod === "Nagad"
+?
+{
+  accountNumber: nagadNumber,
+  transactionId: nagadTransactionId,
+}
+:
+null,
+
 status:"Pending",
 
 createdAt:new Date().toISOString()
@@ -410,6 +484,16 @@ setSelectedProducts([]);
 setDiscount(0);
 
 setDeliveryCharge(80);
+
+setPaymentMethod("COD");
+
+setBkashNumber("");
+
+setBkashTransactionId("");
+
+setNagadNumber("");
+
+setNagadTransactionId("");
 
 
 }
@@ -2187,6 +2271,563 @@ border-gray-200
 </div>
 
 </div>
+
+
+
+
+{/* PAYMENT METHOD */}
+
+
+<div
+className="
+bg-gray-50
+border
+border-gray-200
+rounded-lg
+p-4
+"
+>
+
+
+<button
+
+type="button"
+
+onClick={()=>setPaymentOpen(!paymentOpen)}
+
+className="
+w-full
+flex
+items-center
+justify-between
+"
+
+>
+
+<span
+className="
+flex
+items-center
+gap-2
+text-base
+font-bold
+text-[#172033]
+"
+>
+
+<FiCreditCard />
+Payment Method
+
+</span>
+
+
+{
+paymentOpen
+?
+<FiChevronUp className="text-gray-500" />
+:
+<FiChevronDown className="text-gray-500" />
+}
+
+
+</button>
+
+
+
+
+{
+paymentOpen && (
+
+<div
+className="
+mt-4
+space-y-3
+"
+>
+
+
+{/* BKASH */}
+
+<div
+
+onClick={()=>setPaymentMethod("bKash")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "bKash"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "bKash"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "bKash" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+overflow-hidden
+flex-shrink-0
+bg-white
+border
+border-gray-100
+"
+>
+<img
+src="/payments/bkash-logo.png"
+alt="bKash"
+className="w-full h-full object-contain"
+/>
+</span>
+
+
+<div>
+
+<p className="font-bold text-sm">
+bKash Payment
+</p>
+
+<p className="text-xs text-gray-500">
+Pay securely using bKash
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{
+paymentMethod === "bKash" && (
+
+<div
+className="
+p-4
+rounded-lg
+bg-white
+border
+border-gray-200
+"
+>
+
+<p
+className="
+font-bold
+text-green-600
+mb-3
+text-sm
+"
+>
+You need to send us ৳ {total}
+</p>
+
+
+<p className="text-xs text-gray-600 mb-1">
+Account Type: <span className="font-semibold text-gray-800">Personal</span>
+</p>
+
+<p className="text-xs text-gray-600 mb-3">
+Account Number: <span className="font-semibold text-gray-800">{BKASH_NUMBER}</span>
+</p>
+
+
+<hr className="border-gray-200 mb-3" />
+
+
+<label className="block text-xs text-gray-600 mb-1">
+Customer's bKash Account Number
+</label>
+
+<input
+
+value={bkashNumber}
+
+onChange={e=>setBkashNumber(e.target.value)}
+
+placeholder="01XXXXXXXXX"
+
+className="
+w-full
+mb-3
+px-3
+py-2.5
+border
+border-gray-300
+rounded-lg
+text-sm
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+<label className="block text-xs text-gray-600 mb-1">
+bKash Transaction ID
+</label>
+
+<input
+
+value={bkashTransactionId}
+
+onChange={e=>setBkashTransactionId(e.target.value)}
+
+placeholder="Ex: 2M7A5"
+
+className="
+w-full
+px-3
+py-2.5
+border
+border-gray-300
+rounded-lg
+text-sm
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+</div>
+
+)
+}
+
+
+
+
+{/* NAGAD */}
+
+<div
+
+onClick={()=>setPaymentMethod("Nagad")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "Nagad"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "Nagad"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "Nagad" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+overflow-hidden
+flex-shrink-0
+bg-white
+border
+border-gray-100
+"
+>
+<img
+src="/payments/nagad-logo.png"
+alt="Nagad"
+className="w-full h-full object-contain"
+/>
+</span>
+
+
+<div>
+
+<p className="font-bold text-sm">
+Nagad Payment
+</p>
+
+<p className="text-xs text-gray-500">
+Pay securely using Nagad
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+{
+paymentMethod === "Nagad" && (
+
+<div
+className="
+p-4
+rounded-lg
+bg-white
+border
+border-gray-200
+"
+>
+
+<p
+className="
+font-bold
+text-green-600
+mb-3
+text-sm
+"
+>
+You need to send us ৳ {total}
+</p>
+
+
+<p className="text-xs text-gray-600 mb-1">
+Account Type: <span className="font-semibold text-gray-800">Personal</span>
+</p>
+
+<p className="text-xs text-gray-600 mb-3">
+Account Number: <span className="font-semibold text-gray-800">{NAGAD_NUMBER}</span>
+</p>
+
+
+<hr className="border-gray-200 mb-3" />
+
+
+<label className="block text-xs text-gray-600 mb-1">
+Customer's Nagad Account Number
+</label>
+
+<input
+
+value={nagadNumber}
+
+onChange={e=>setNagadNumber(e.target.value)}
+
+placeholder="01XXXXXXXXX"
+
+className="
+w-full
+mb-3
+px-3
+py-2.5
+border
+border-gray-300
+rounded-lg
+text-sm
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+<label className="block text-xs text-gray-600 mb-1">
+Nagad Transaction ID
+</label>
+
+<input
+
+value={nagadTransactionId}
+
+onChange={e=>setNagadTransactionId(e.target.value)}
+
+placeholder="Ex: 2M7A5"
+
+className="
+w-full
+px-3
+py-2.5
+border
+border-gray-300
+rounded-lg
+text-sm
+focus:outline-none
+focus:border-amber-500
+bg-white
+"
+/>
+
+
+</div>
+
+)
+}
+
+
+
+
+{/* COD */}
+
+<div
+
+onClick={()=>setPaymentMethod("COD")}
+
+className={`
+flex
+items-center
+gap-3
+p-4
+rounded-lg
+border
+cursor-pointer
+transition
+${
+paymentMethod === "COD"
+?
+"border-amber-500 bg-amber-50"
+:
+"border-gray-200 bg-white hover:border-gray-300"
+}
+`}
+
+>
+
+<span
+className={`
+w-5
+h-5
+rounded-full
+border-2
+flex-shrink-0
+flex
+items-center
+justify-center
+${
+paymentMethod === "COD"
+?
+"border-amber-500"
+:
+"border-gray-300"
+}
+`}
+>
+
+{
+paymentMethod === "COD" && (
+<span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+)
+}
+
+</span>
+
+
+<span
+className="
+w-10
+h-10
+rounded-lg
+bg-gray-100
+flex
+items-center
+justify-center
+text-amber-500
+flex-shrink-0
+"
+>
+<FiTruck size={20} />
+</span>
+
+
+<div>
+
+<p className="font-bold text-sm">
+Cash on Delivery (COD)
+</p>
+
+<p className="text-xs text-gray-500">
+Pay when you receive
+</p>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+)
+}
+
+
+</div>
+
 
 
 
