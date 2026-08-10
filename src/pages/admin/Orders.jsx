@@ -270,7 +270,12 @@ status
         recipient_name: order.customerName,
         recipient_phone: order.phone,
         recipient_address: `${order.address}, ${order.thana}, ${order.district}`,
-        cod_amount: order.total,
+        // পেমেন্ট মেথড bKash/Nagad-এ আগে থেকেই পুরো টাকা পেইড হলে
+        // (paymentStatus === "Paid") Steadfast-কে বলা হচ্ছে কিছুই কালেক্ট
+        // করতে হবে না (cod_amount: 0) — নাহলে ডেলিভারি ম্যান কাস্টমারের
+        // কাছ থেকে আবার পুরো টাকা চেয়ে বসবে (ডাবল চার্জ)।
+        cod_amount:
+          order.paymentStatus === "Paid" ? 0 : order.total,
         note: order.notes || "",
       });
 
