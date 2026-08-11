@@ -37,8 +37,11 @@ import {
   getAllOrders,
   updateOrderStatus,
   deleteOrder,
-  sendToSteadfast
+  sendToSteadfast,
+  updateOrderCourier
 } from "../../services/orderService";
+
+import { sendOrderToCourrierfast } from "../../services/courrierfastService";
 
 
 import {
@@ -61,6 +64,11 @@ export default function Orders(){
 const navigate = useNavigate();
 
 const [deleteId,setDeleteId] = useState(null);
+
+// কোন কুরিয়ারে (Steadfast/Courrierfast) পাঠাবে সেটা জিজ্ঞেস করার জন্য —
+// "Processing"-এ নেওয়া অর্ডারটা এখানে সাময়িকভাবে রাখা হয়
+const [courierPrompt, setCourierPrompt] = useState(null);
+const [sendingCourier, setSendingCourier] = useState(false);
 
 const [page, setPage] = useState(1);
 
@@ -262,30 +270,9 @@ status
   const order = orders.find((o) => o.id === id);
 
   if (order) {
-    try {
-      console.log("Processing order:", order);
-
-      const result = await sendToSteadfast({
-        invoice: order.id,
-        recipient_name: order.customerName,
-        recipient_phone: order.phone,
-        recipient_address: `${order.address}, ${order.thana}, ${order.district}`,
-        // পেমেন্ট মেথড bKash/Nagad-এ আগে থেকেই পুরো টাকা পেইড হলে
-        // (paymentStatus === "Paid") Steadfast-কে বলা হচ্ছে কিছুই কালেক্ট
-        // করতে হবে না (cod_amount: 0) — নাহলে ডেলিভারি ম্যান কাস্টমারের
-        // কাছ থেকে আবার পুরো টাকা চেয়ে বসবে (ডাবল চার্জ)।
-        cod_amount:
-          order.paymentStatus === "Paid" ? 0 : order.total,
-        note: order.notes || "",
-      });
-
-      console.log("Steadfast Response:", result);
-
-      successToast("Steadfast order created");
-    } catch (err) {
-      console.error(err);
-      errorToast(err.message);
-    }
+    // আগে সরাসরি Steadfast-এ পাঠিয়ে দিত — এখন কোন কুরিয়ারে
+    // পাঠাবে সেটা অ্যাডমিনকে জিজ্ঞেস করা হয় (মডাল দেখানো হবে)
+    setCourierPrompt(order);
   }
 }
 
@@ -323,6 +310,78 @@ console.log(error);
 
 }
 
+
+};
+
+
+
+
+// =================================
+// কুরিয়ার বেছে নেওয়ার পর সেই কুরিয়ারে পার্সেল পাঠানো
+// (courierPrompt মডাল থেকে "Steadfast" বা "Courrierfast" চাপলে এটা চলে)
+// =================================
+
+const sendOrderToCourier = async (order, courierName) => {
+
+  setSendingCourier(true);
+
+  try {
+
+    // পেমেন্ট মেথড bKash/Nagad-এ আগে থেকেই পুরো টাকা পেইড হলে
+    // (paymentStatus === "Paid") কুরিয়ারকে বলা হচ্ছে কিছুই কালেক্ট
+    // করতে হবে না — নাহলে ডেলিভারি ম্যান কাস্টমারের কাছ থেকে আবার
+    // পুরো টাকা চেয়ে বসবে (ডাবল চার্জ)।
+    const codAmount =
+      order.paymentStatus === "Paid" ? 0 : order.total;
+
+    let result;
+
+    if (courierName === "Steadfast") {
+
+      result = await sendToSteadfast({
+        invoice: order.id,
+        recipient_name: order.customerName,
+        recipient_phone: order.phone,
+        recipient_address:
+          `${order.address}, ${order.thana}, ${order.district}`,
+        cod_amount: codAmount,
+        note: order.notes || "",
+      });
+
+    } else if (courierName === "Courrierfast") {
+
+      result = await sendOrderToCourrierfast(order);
+
+    }
+
+    console.log(`${courierName} Response:`, result);
+
+    if (result?.success === false) {
+      throw new Error(result?.message || `${courierName} এ পাঠাতে ব্যর্থ`);
+    }
+
+    successToast(`${courierName}-এ অর্ডার পাঠানো হয়েছে`);
+
+    // পরে দেখার সুবিধার জন্য অর্ডারে কুরিয়ারের নামটা সেভ রাখা হচ্ছে
+    try {
+      await updateOrderCourier(order.id, courierName);
+    } catch (e) {
+      console.log(e);
+    }
+
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === order.id ? { ...o, courierName } : o
+      )
+    );
+
+  } catch (err) {
+    console.error(err);
+    errorToast(err.message);
+  } finally {
+    setSendingCourier(false);
+    setCourierPrompt(null);
+  }
 
 };
 
@@ -2180,6 +2239,122 @@ Next
 
 
 	
+
+
+{
+courierPrompt && (
+
+<div
+className="
+fixed
+inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-[100]
+"
+>
+
+<div
+className="
+bg-white
+rounded-xl
+p-5
+w-[320px]
+shadow-xl
+"
+>
+
+<h3
+className="
+font-black
+text-lg
+text-slate-900
+"
+>
+কুরিয়ার বেছে নিন
+</h3>
+
+<p
+className="
+text-sm
+text-gray-500
+mt-2
+"
+>
+অর্ডার #{courierPrompt.id} — কোন কুরিয়ারে পার্সেলটা পাঠাবেন?
+{courierPrompt.paymentStatus === "Paid" && (
+  <span className="block mt-1 text-emerald-600 font-semibold">
+    পেমেন্ট আগে থেকেই পেইড — cod_amount 0 যাবে।
+  </span>
+)}
+</p>
+
+<div className="flex flex-col gap-2 mt-4">
+
+<button
+disabled={sendingCourier}
+onClick={() =>
+  sendOrderToCourier(courierPrompt, "Steadfast")
+}
+className="
+w-full
+py-2.5
+rounded-lg
+bg-blue-600
+text-white
+font-bold
+disabled:opacity-50
+"
+>
+{sendingCourier ? "পাঠানো হচ্ছে..." : "Steadfast-এ পাঠান"}
+</button>
+
+<button
+disabled={sendingCourier}
+onClick={() =>
+  sendOrderToCourier(courierPrompt, "Courrierfast")
+}
+className="
+w-full
+py-2.5
+rounded-lg
+bg-orange-500
+text-white
+font-bold
+disabled:opacity-50
+"
+>
+{sendingCourier ? "পাঠানো হচ্ছে..." : "Courrierfast-এ পাঠান"}
+</button>
+
+<button
+disabled={sendingCourier}
+onClick={() => setCourierPrompt(null)}
+className="
+w-full
+py-2
+rounded-lg
+bg-gray-100
+text-gray-600
+font-semibold
+disabled:opacity-50
+"
+>
+বাতিল করুন
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+)
+}
+
+
 
 
 {
