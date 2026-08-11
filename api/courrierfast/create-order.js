@@ -72,7 +72,22 @@ export default async function handler(req, res) {
     console.log("Courrierfast Response:", text);
 
     try {
-      return res.status(parcelResponse.status).json(JSON.parse(text));
+      const parsed = JSON.parse(text);
+
+      // ভ্যালিডেশন এরর হলে ঠিক কী ডেটা পাঠানো হয়েছিল সেটাও রেসপন্সের
+      // সাথে জুড়ে দেওয়া হচ্ছে — ফ্রন্টএন্ডে দেখেই বোঝা যাবে কোন
+      // ফিল্ডে সমস্যা, সার্ভার লগ চেক করার দরকার পড়বে না।
+      if (!parcelResponse.ok || parsed?.success === false) {
+        parsed._sentPayload = {
+          customer_name,
+          customer_contact_number,
+          customer_address,
+          have_exchange: have_exchange || "no",
+          cod_amount: cod_amount ?? 0,
+        };
+      }
+
+      return res.status(parcelResponse.status).json(parsed);
     } catch {
       return res.status(parcelResponse.status).json({
         success: false,
