@@ -13,6 +13,7 @@ import useAuth from "../hooks/useAuth";
 import {
   FiChevronRight,
   FiFilter,
+  FiEdit2,
 } from "react-icons/fi";
 
 import {
@@ -714,38 +715,82 @@ font-black
 </div>
                                 {/* VIEW DETAILS */}
 
-                <button
+                <div
+                  className="
+                  flex
+                  items-center
+                  gap-2
+                  pt-2
+                  "
+                >
 
-  onClick={() =>
-    navigate(
-      `/profile/orders/${order.id}`
-    )
-  }
+                  <button
 
-className="
-w-full
-flex
-items-center
-justify-between
-text-sm
-font-bold
-text-amber-600
-pt-2
-"
+                    onClick={() =>
+                      navigate(
+                        `/profile/orders/${order.id}`
+                      )
+                    }
 
->
+                    className="
+                    flex-1
+                    flex
+                    items-center
+                    justify-between
+                    text-sm
+                    font-bold
+                    text-amber-600
+                    "
 
-                  <span>
+                  >
 
-                    View Details
+                    <span>
 
-                  </span>
+                      View Details
 
-                  <FiChevronRight
-                    size={18}
-                  />
+                    </span>
 
-                </button>
+                    <FiChevronRight
+                      size={18}
+                    />
+
+                  </button>
+
+                  {
+                    order.status === "Pending" && (
+
+                      <button
+
+                        onClick={() =>
+                          navigate(
+                            `/profile/orders/${order.id}?edit=1`
+                          )
+                        }
+
+                        title="Edit order info"
+
+                        className="
+                        w-9
+                        h-9
+                        rounded-lg
+                        border
+                        border-gray-200
+                        text-gray-600
+                        flex
+                        items-center
+                        justify-center
+                        "
+
+                      >
+
+                        <FiEdit2 size={14}/>
+
+                      </button>
+
+                    )
+                  }
+
+                </div>
 
               </div>
 
