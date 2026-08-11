@@ -9,6 +9,7 @@ import {
 import {
   useParams,
   useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 
 import {
@@ -30,6 +31,9 @@ import {
   FiEye,
   FiPrinter,
   FiDownload,
+  FiEdit2,
+  FiSave,
+  FiXCircle,
 } from "react-icons/fi";
 
 
@@ -37,6 +41,7 @@ import {
   getUserOrders,
   requestCancelOrder,
   requestReturnOrder,
+  updateOrder,
 } from "../../services/orderService";
 
 
@@ -65,6 +70,8 @@ const {id}=useParams();
 
 const navigate=useNavigate();
 
+const [searchParams]=useSearchParams();
+
 
 const {user}=useAuth();
 
@@ -83,6 +90,93 @@ const [showProductsModal, setShowProductsModal] = useState(false);
 
 const [showInvoicePreview, setShowInvoicePreview] = useState(false);
 
+// =========================
+// USER EDIT MODE — কাস্টমার শুধু নিজের ফোন/ঠিকানা/নোট ঠিক করতে
+// পারবে, আর তাও শুধু অর্ডারটা এখনো Pending থাকা অবস্থায় (অ্যাডমিন
+// প্রসেসিং শুরু করার আগ পর্যন্ত)।
+// =========================
+
+const [editMode,setEditMode]=useState(false);
+
+const [saving,setSaving]=useState(false);
+
+const [form,setForm]=useState(null);
+
+const canEditOrder = order?.status === "Pending";
+
+
+function startEdit(){
+
+  setForm({
+    phone: order.phone || "",
+    address: order.address || "",
+    thana: order.thana || "",
+    district: order.district || "",
+    notes: order.notes || "",
+  });
+
+  setEditMode(true);
+
+}
+
+
+function cancelEdit(){
+
+  setForm(null);
+
+  setEditMode(false);
+
+}
+
+
+async function saveEdit(){
+
+  if(!form.phone || !form.address){
+
+    errorToast("Phone and address are required.");
+
+    return;
+
+  }
+
+  setSaving(true);
+
+  try{
+
+    await updateOrder(order.id, {
+      phone: form.phone,
+      address: form.address,
+      thana: form.thana,
+      district: form.district,
+      notes: form.notes,
+    });
+
+    setOrder(prev=>({ ...prev, ...form }));
+
+    successToast("Order info updated");
+
+    setEditMode(false);
+
+    setForm(null);
+
+  }
+
+  catch(error){
+
+    console.log(error);
+
+    errorToast("Update failed");
+
+  }
+
+  finally{
+
+    setSaving(false);
+
+  }
+
+}
+
 const printRef = useRef(null);
 
 const handlePrint = useReactToPrint({
@@ -99,6 +193,20 @@ useEffect(()=>{
 loadOrder();
 
 },[user]);
+
+
+// ?edit=1 দিয়ে সরাসরি এডিট মোডে ঢোকার জন্য (MyOrders.jsx-এর
+// এডিট শর্টকাট থেকে), শুধু Pending অর্ডারের ক্ষেত্রেই
+useEffect(()=>{
+
+  if(order && order.status==="Pending" && searchParams.get("edit")==="1" && !editMode){
+
+    startEdit();
+
+  }
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+},[order]);
 
 
 
@@ -1341,8 +1449,16 @@ shadow-sm
 className="
 flex
 items-center
-gap-2
+justify-between
 mb-4
+"
+>
+
+<div
+className="
+flex
+items-center
+gap-2
 "
 >
 
@@ -1361,85 +1477,232 @@ Shipping Address
 
 </div>
 
+{
+  canEditOrder && !editMode && (
 
+    <button
 
+    onClick={startEdit}
 
+    className="
+    flex
+    items-center
+    gap-1
+    text-xs
+    font-bold
+    text-amber-600
+    "
 
-<div
-className="
-space-y-2
-text-sm
-"
->
+    >
 
+    <FiEdit2 size={13}/>
 
-<p className="font-bold">
+    Edit
 
-{order.customerName || user?.name}
+    </button>
 
-</p>
-
-
-
-<p>
-
-{order.address || user?.address || "No Address"}
-
-</p>
-
-
-
-<p>
-
-{order.postOffice || user?.postOffice}
-
-</p>
-
-
-
-<p>
-
-{order.thana || user?.thana}
-
-</p>
-
-
-
-<p>
-
-{order.district || user?.district}
-
-</p>
-
-
-
-
-
-<div
-className="
-flex
-items-center
-gap-2
-pt-2
-"
->
-
-
-<FiPhone size={15}/>
-
-
-<span>
-
-{order.phone || user?.phone}
-
-</span>
-
+  )
+}
 
 </div>
 
 
 
-</div>
+
+{
+  editMode
+  ?
+  (
+    <div className="space-y-3 text-sm">
+
+      <div>
+        <label className="text-xs font-bold text-gray-500">Phone</label>
+        <input
+          value={form.phone}
+          onChange={(e)=>setForm(prev=>({ ...prev, phone: e.target.value }))}
+          className="w-full h-10 mt-1 px-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-gray-500">Address</label>
+        <input
+          value={form.address}
+          onChange={(e)=>setForm(prev=>({ ...prev, address: e.target.value }))}
+          className="w-full h-10 mt-1 px-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-gray-500">Thana</label>
+        <input
+          value={form.thana}
+          onChange={(e)=>setForm(prev=>({ ...prev, thana: e.target.value }))}
+          className="w-full h-10 mt-1 px-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-gray-500">District</label>
+        <input
+          value={form.district}
+          onChange={(e)=>setForm(prev=>({ ...prev, district: e.target.value }))}
+          className="w-full h-10 mt-1 px-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-gray-500">Notes</label>
+        <textarea
+          value={form.notes}
+          onChange={(e)=>setForm(prev=>({ ...prev, notes: e.target.value }))}
+          rows={2}
+          className="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 pt-1">
+
+        <button
+
+        onClick={cancelEdit}
+
+        disabled={saving}
+
+        className="
+        h-10
+        rounded-lg
+        border
+        border-gray-300
+        text-gray-600
+        font-bold
+        text-sm
+        flex
+        items-center
+        justify-center
+        gap-2
+        disabled:opacity-50
+        "
+
+        >
+
+        <FiXCircle size={14}/>
+
+        Cancel
+
+        </button>
+
+        <button
+
+        onClick={saveEdit}
+
+        disabled={saving}
+
+        className="
+        h-10
+        rounded-lg
+        bg-amber-500
+        text-white
+        font-bold
+        text-sm
+        flex
+        items-center
+        justify-center
+        gap-2
+        disabled:opacity-50
+        "
+
+        >
+
+        <FiSave size={14}/>
+
+        {saving ? "Saving..." : "Save"}
+
+        </button>
+
+      </div>
+
+    </div>
+  )
+  :
+  (
+    <div
+    className="
+    space-y-2
+    text-sm
+    "
+    >
+
+
+    <p className="font-bold">
+
+    {order.customerName || user?.name}
+
+    </p>
+
+
+
+    <p>
+
+    {order.address || user?.address || "No Address"}
+
+    </p>
+
+
+
+    <p>
+
+    {order.postOffice || user?.postOffice}
+
+    </p>
+
+
+
+    <p>
+
+    {order.thana || user?.thana}
+
+    </p>
+
+
+
+    <p>
+
+    {order.district || user?.district}
+
+    </p>
+
+
+
+
+
+    <div
+    className="
+    flex
+    items-center
+    gap-2
+    pt-2
+    "
+    >
+
+
+    <FiPhone size={15}/>
+
+
+    <span>
+
+    {order.phone || user?.phone}
+
+    </span>
+
+
+    </div>
+
+
+
+    </div>
+  )
+}
 
 
 </div>
