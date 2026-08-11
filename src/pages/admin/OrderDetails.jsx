@@ -78,11 +78,17 @@ const [showProductsModal, setShowProductsModal] = useState(false);
 
 // অর্ডারে কাস্টমারের ছবি সেট না থাকলে, বা অ্যাডমিন নিজে
 // AddOrder.jsx দিয়ে অর্ডারটা যোগ করে থাকলে, স্টোরের লোগো
-// দেখানো হবে কাস্টমারের ছবির জায়গায়।
+// দেখানো হবে কাস্টমারের ছবির জায়গায়। addedByAdmin ফ্ল্যাগটা এই
+// ফিক্সের আগের অর্ডারগুলাতে নেই, তাই orderSource
+// ("Messenger"/"WhatsApp") — যেটা শুধু AddOrder.jsx-ই সেট করে,
+// কাস্টমারের নিজের চেকআউটে না — সেটাকেও একই সিগনাল হিসেবে ধরা
+// হচ্ছে, পুরনো ডেটা মাইগ্রেট না করেই।
 const storeLogo = settings?.logoUrl || "/logo.png";
 
+const isAdminAddedOrder = !!(order?.addedByAdmin || order?.orderSource);
+
 const customerAvatar =
-  order?.addedByAdmin
+  isAdminAddedOrder
     ? storeLogo
     : (order?.customerPhoto || storeLogo);
 
