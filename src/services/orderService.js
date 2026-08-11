@@ -332,7 +332,21 @@ paymentStatus,
 
 );
 
+};
 
+
+// =================================
+// UPDATE COURIER NAME (ADMIN) — কোন কুরিয়ারে
+// (Steadfast/Courrierfast) অর্ডারটা পাঠানো হয়েছে সেটা সেভ রাখা
+// =================================
+
+export const updateOrderCourier = async (id, courierName) => {
+
+  const orderDoc = doc(db, "orders", id);
+
+  await updateDoc(orderDoc, {
+    courierName,
+  });
 
 };
 
