@@ -8,6 +8,7 @@ import {
 import {
   useParams,
   useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 
 
@@ -22,6 +23,9 @@ import {
   FiCreditCard,
   FiChevronRight,
   FiX,
+  FiEdit2,
+  FiSave,
+  FiXCircle,
 } from "react-icons/fi";
 
 
@@ -29,6 +33,7 @@ import {
   getAllOrders,
   updateOrderStatus,
   updatePaymentStatus,
+  updateOrder,
   deleteOrder,
 } from "../../services/orderService";
 
@@ -40,6 +45,8 @@ import {
 
 import { getEffectivePrice } from "../../utils/helpers";
 
+import { useSettings } from "../../context/SettingsContext";
+
 
 
 
@@ -50,6 +57,10 @@ export default function OrderDetails(){
 const {id}=useParams();
 
 const navigate=useNavigate();
+
+const [searchParams]=useSearchParams();
+
+const { settings } = useSettings();
 
 const menuRef = useRef(null);
 
@@ -65,12 +76,204 @@ const [deleting, setDeleting] = useState(false);
 
 const [showProductsModal, setShowProductsModal] = useState(false);
 
+// অর্ডারে কাস্টমারের ছবি সেট না থাকলে, বা অ্যাডমিন নিজে
+// AddOrder.jsx দিয়ে অর্ডারটা যোগ করে থাকলে, স্টোরের লোগো
+// দেখানো হবে কাস্টমারের ছবির জায়গায়।
+const storeLogo = settings?.logoUrl || "/logo.png";
+
+const customerAvatar =
+  order?.addedByAdmin
+    ? storeLogo
+    : (order?.customerPhoto || storeLogo);
+
+// =========================
+// ADMIN EDIT MODE
+// =========================
+
+const [editMode,setEditMode]=useState(false);
+
+const [saving,setSaving]=useState(false);
+
+const [form,setForm]=useState(null);
+
+
+function startEdit(){
+
+  setForm({
+
+    customerName: order.customerName || "",
+    phone: order.phone || "",
+    email: order.email || "",
+    address: order.address || "",
+    thana: order.thana || "",
+    district: order.district || "",
+    notes: order.notes || "",
+    discount: order.discount || 0,
+    deliveryCharge: order.deliveryCharge || 0,
+
+    items: (order.items || []).map(item=>({ ...item })),
+
+    paymentDetails: {
+      accountNumber: order.paymentDetails?.accountNumber || "",
+      transactionId: order.paymentDetails?.transactionId || "",
+    },
+
+  });
+
+  setEditMode(true);
+
+}
+
+
+function cancelEdit(){
+
+  setForm(null);
+
+  setEditMode(false);
+
+}
+
+
+function updateFormItem(index,key,value){
+
+  setForm(prev=>({
+
+    ...prev,
+
+    items: prev.items.map((item,i)=>
+
+      i===index
+        ? { ...item, [key]: value }
+        : item
+
+    ),
+
+  }));
+
+}
+
+
+function removeFormItem(index){
+
+  setForm(prev=>({
+
+    ...prev,
+
+    items: prev.items.filter((_,i)=>i!==index),
+
+  }));
+
+}
+
+
+const formSubtotal =
+  form
+    ? form.items.reduce(
+        (sum,item)=>
+          sum + (Number(item.price)||0) * (Number(item.quantity)||0),
+        0
+      )
+    : 0;
+
+
+const formTotal =
+  form
+    ? Math.max(0, formSubtotal - (Number(form.discount)||0)) + (Number(form.deliveryCharge)||0)
+    : 0;
+
+
+async function saveEdit(){
+
+  if(!form.customerName || !form.phone || !form.address){
+
+    errorToast("Name, phone and address are required.");
+
+    return;
+
+  }
+
+  setSaving(true);
+
+  try{
+
+    const updateData = {
+
+      customerName: form.customerName,
+      phone: form.phone,
+      email: form.email,
+      address: form.address,
+      thana: form.thana,
+      district: form.district,
+      notes: form.notes,
+
+      discount: Number(form.discount)||0,
+      deliveryCharge: Number(form.deliveryCharge)||0,
+
+      items: form.items.map(item=>({
+        ...item,
+        price: Number(item.price)||0,
+        quantity: Math.max(1, Number(item.quantity)||1),
+      })),
+
+      subtotal: formSubtotal,
+      total: formTotal,
+
+    };
+
+    if(order.paymentMethod === "bKash" || order.paymentMethod === "Nagad"){
+
+      updateData.paymentDetails = form.paymentDetails;
+
+    }
+
+    await updateOrder(id, updateData);
+
+    setOrder(prev=>({ ...prev, ...updateData }));
+
+    successToast("Order updated successfully");
+
+    setEditMode(false);
+
+    setForm(null);
+
+  }
+
+  catch(error){
+
+    console.log(error);
+
+    errorToast("Update failed");
+
+  }
+
+  finally{
+
+    setSaving(false);
+
+  }
+
+}
+
 
 useEffect(()=>{
 
 loadOrder();
 
 },[id]);
+
+
+// ?edit=1 দিয়ে সরাসরি এডিট মোডে ঢোকার জন্য (Orders.jsx-এর
+// তিন-ডট মেনু থেকে "Edit"-এ ক্লিক করলে)
+useEffect(()=>{
+
+  if(order && searchParams.get("edit")==="1" && !editMode){
+
+    startEdit();
+
+  }
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+},[order]);
 
 
 useEffect(()=>{
@@ -464,6 +667,32 @@ z-50
 
 onClick={()=>{
 setMenuOpen(false);
+startEdit();
+}}
+
+className="
+w-full
+flex
+items-center
+gap-2
+px-3
+py-2
+text-sm
+text-slate-700
+"
+
+>
+
+<FiEdit2/>
+
+Edit
+
+</button>
+
+<button
+
+onClick={()=>{
+setMenuOpen(false);
 setDeleteModal(true);
 }}
 
@@ -663,12 +892,8 @@ border-gray-100
     >
 
       <img
-        src={
-          order.customerPhoto ||
-          `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            order.customerName || "User"
-          )}`
-        }
+        src={customerAvatar}
+        onError={(e)=>{ e.currentTarget.src = storeLogo; }}
         className="
         w-12
         h-12
@@ -677,60 +902,93 @@ border-gray-100
         "
       />
 
-      <div>
+      {
+        editMode
+        ?
+        (
+          <div className="flex-1 space-y-2">
 
-        <p
-          className="
-          font-bold
-          text-sm
-        "
-        >
-          {order.customerName}
-        </p>
+            <input
+              value={form.customerName}
+              onChange={(e)=>setForm(prev=>({ ...prev, customerName: e.target.value }))}
+              placeholder="Customer name"
+              className="w-full h-9 px-2 rounded-md border border-gray-200 text-sm font-bold outline-none focus:border-amber-400"
+            />
 
-        <p
-          className="
-          text-xs
-          text-gray-500
-        "
-        >
-          {order.email}
-        </p>
+            <input
+              value={form.email}
+              onChange={(e)=>setForm(prev=>({ ...prev, email: e.target.value }))}
+              placeholder="Email"
+              className="w-full h-9 px-2 rounded-md border border-gray-200 text-xs outline-none focus:border-amber-400"
+            />
 
-        <p
-          className="
-          text-xs
-          text-gray-500
-          mt-1
-        "
-        >
-          {order.phone}
-        </p>
+            <input
+              value={form.phone}
+              onChange={(e)=>setForm(prev=>({ ...prev, phone: e.target.value }))}
+              placeholder="Phone"
+              className="w-full h-9 px-2 rounded-md border border-gray-200 text-xs outline-none focus:border-amber-400"
+            />
 
-        {
-          (order.orderSource==="Messenger" || order.orderSource==="WhatsApp") && (
+          </div>
+        )
+        :
+        (
+          <div>
+
+            <p
+              className="
+              font-bold
+              text-sm
+            "
+            >
+              {order.customerName}
+            </p>
 
             <p
               className="
               text-xs
-              font-bold
-              text-amber-600
+              text-gray-500
+            "
+            >
+              {order.email}
+            </p>
+
+            <p
+              className="
+              text-xs
+              text-gray-500
               mt-1
             "
             >
-              {
-                order.orderSource==="Messenger"
-                ?
-                "Messenger Order"
-                :
-                "WhatsApp Order"
-              }
+              {order.phone}
             </p>
 
-          )
-        }
+            {
+              (order.orderSource==="Messenger" || order.orderSource==="WhatsApp") && (
 
-      </div>
+                <p
+                  className="
+                  text-xs
+                  font-bold
+                  text-amber-600
+                  mt-1
+                "
+                >
+                  {
+                    order.orderSource==="Messenger"
+                    ?
+                    "Messenger Order"
+                    :
+                    "WhatsApp Order"
+                  }
+                </p>
+
+              )
+            }
+
+          </div>
+        )
+      }
 
     </div>
 
@@ -823,25 +1081,74 @@ text-gray-500
 
 
 
-<div className="space-y-2 text-sm text-gray-700">
+{
+  editMode
+  ?
+  (
+    <div className="space-y-2 text-sm text-gray-700 flex-1">
 
-  <p>
-    <strong>Address:</strong> {order.address || "-"}
-  </p>
+      <div>
+        <label className="text-xs font-bold text-gray-500">Address</label>
+        <input
+          value={form.address}
+          onChange={(e)=>setForm(prev=>({ ...prev, address: e.target.value }))}
+          className="w-full h-9 mt-1 px-2 rounded-md border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
 
-  <p>
-    <strong>Thana:</strong> {order.thana || "-"}
-  </p>
+      <div>
+        <label className="text-xs font-bold text-gray-500">Thana</label>
+        <input
+          value={form.thana}
+          onChange={(e)=>setForm(prev=>({ ...prev, thana: e.target.value }))}
+          className="w-full h-9 mt-1 px-2 rounded-md border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
 
-  <p>
-    <strong>District:</strong> {order.district || "-"}
-  </p>
+      <div>
+        <label className="text-xs font-bold text-gray-500">District</label>
+        <input
+          value={form.district}
+          onChange={(e)=>setForm(prev=>({ ...prev, district: e.target.value }))}
+          className="w-full h-9 mt-1 px-2 rounded-md border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
 
-  <p>
-    <strong>Notes:</strong> {order.notes || "-"}
-  </p>
+      <div>
+        <label className="text-xs font-bold text-gray-500">Notes</label>
+        <textarea
+          value={form.notes}
+          onChange={(e)=>setForm(prev=>({ ...prev, notes: e.target.value }))}
+          rows={2}
+          className="w-full mt-1 px-2 py-1.5 rounded-md border border-gray-200 text-sm outline-none focus:border-amber-400"
+        />
+      </div>
 
-</div>
+    </div>
+  )
+  :
+  (
+    <div className="space-y-2 text-sm text-gray-700">
+
+      <p>
+        <strong>Address:</strong> {order.address || "-"}
+      </p>
+
+      <p>
+        <strong>Thana:</strong> {order.thana || "-"}
+      </p>
+
+      <p>
+        <strong>District:</strong> {order.district || "-"}
+      </p>
+
+      <p>
+        <strong>Notes:</strong> {order.notes || "-"}
+      </p>
+
+    </div>
+  )
+}
 
 
 </div>
@@ -901,21 +1208,61 @@ text-gray-500
 
 
 
-  <div className="space-y-2 text-sm text-gray-700">
+  {
+    editMode
+    ?
+    (
+      <div className="space-y-2 text-sm text-gray-700 flex-1">
 
-    <p>
-      <strong>Payment with:</strong> {order.paymentMethod}
-    </p>
+        <p>
+          <strong>Payment with:</strong> {order.paymentMethod}
+        </p>
 
-    <p>
-      <strong>{order.paymentMethod} Number:</strong> {order.paymentDetails.accountNumber || "-"}
-    </p>
+        <div>
+          <label className="text-xs font-bold text-gray-500">{order.paymentMethod} Number</label>
+          <input
+            value={form.paymentDetails.accountNumber}
+            onChange={(e)=>setForm(prev=>({
+              ...prev,
+              paymentDetails: { ...prev.paymentDetails, accountNumber: e.target.value },
+            }))}
+            className="w-full h-9 mt-1 px-2 rounded-md border border-gray-200 text-sm outline-none focus:border-amber-400"
+          />
+        </div>
 
-    <p>
-      <strong>Transaction ID:</strong> {order.paymentDetails.transactionId || "-"}
-    </p>
+        <div>
+          <label className="text-xs font-bold text-gray-500">Transaction ID</label>
+          <input
+            value={form.paymentDetails.transactionId}
+            onChange={(e)=>setForm(prev=>({
+              ...prev,
+              paymentDetails: { ...prev.paymentDetails, transactionId: e.target.value },
+            }))}
+            className="w-full h-9 mt-1 px-2 rounded-md border border-gray-200 text-sm outline-none focus:border-amber-400"
+          />
+        </div>
 
-  </div>
+      </div>
+    )
+    :
+    (
+      <div className="space-y-2 text-sm text-gray-700">
+
+        <p>
+          <strong>Payment with:</strong> {order.paymentMethod}
+        </p>
+
+        <p>
+          <strong>{order.paymentMethod} Number:</strong> {order.paymentDetails.accountNumber || "-"}
+        </p>
+
+        <p>
+          <strong>Transaction ID:</strong> {order.paymentDetails.transactionId || "-"}
+        </p>
+
+      </div>
+    )
+  }
 
 
   </div>
@@ -1012,7 +1359,7 @@ space-y-3
 
 {
 
-order.items?.map(
+(editMode ? form.items : order.items)?.map(
 
 (item,index)=>(
 
@@ -1030,6 +1377,7 @@ justify-between
 border-b
 border-gray-100
 pb-3
+gap-3
 "
 
 
@@ -1098,15 +1446,50 @@ item.color &&
 
 </p>
 
+{
+  editMode
+  ?
+  (
+    <div className="flex items-center gap-2 mt-1">
 
-<p className="
-text-xs
-text-gray-500
-">
+      <input
+        type="number"
+        min="1"
+        value={item.quantity}
+        onChange={(e)=>updateFormItem(index,"quantity",e.target.value===""?"":Number(e.target.value))}
+        className="w-14 h-8 px-2 rounded-md border border-gray-200 text-xs outline-none focus:border-amber-400"
+      />
 
-Qty: {item.quantity}
+      <input
+        type="number"
+        min="0"
+        value={item.price}
+        onChange={(e)=>updateFormItem(index,"price",e.target.value===""?"":Number(e.target.value))}
+        className="w-20 h-8 px-2 rounded-md border border-gray-200 text-xs outline-none focus:border-amber-400"
+      />
 
-</p>
+      <button
+        type="button"
+        onClick={()=>removeFormItem(index)}
+        className="w-8 h-8 rounded-md bg-red-50 text-red-500 flex items-center justify-center"
+      >
+        <FiTrash2 size={13}/>
+      </button>
+
+    </div>
+  )
+  :
+  (
+    <p className="
+    text-xs
+    text-gray-500
+    ">
+
+    Qty: {item.quantity}
+
+    </p>
+  )
+}
 
 
 </div>
@@ -1129,7 +1512,7 @@ text-right
   text-sm
   "
   >
-    ৳ {getEffectivePrice(item) * item.quantity}
+    ৳ {(editMode ? (Number(item.price)||0) : getEffectivePrice(item)) * (Number(item.quantity)||0)}
   </p>
 
 </div>
@@ -1144,6 +1527,14 @@ text-right
 )
 
 
+}
+
+{
+  editMode && form.items.length===0 && (
+    <p className="text-xs text-gray-400 text-center py-2">
+      No products left in this order.
+    </p>
+  )
 }
 
 
@@ -1214,7 +1605,7 @@ Subtotal
 font-semibold
 ">
 
-৳ {order.subtotal || order.total}
+৳ {editMode ? formSubtotal : (order.subtotal || order.total)}
 
 </span>
 
@@ -1230,6 +1621,7 @@ font-semibold
 <div className="
 flex
 justify-between
+items-center
 ">
 
 
@@ -1241,14 +1633,29 @@ Shipping
 
 </span>
 
+{
+  editMode
+  ?
+  (
+    <input
+      type="number"
+      min="0"
+      value={form.deliveryCharge}
+      onChange={(e)=>setForm(prev=>({ ...prev, deliveryCharge: e.target.value===""?"":Number(e.target.value) }))}
+      className="w-24 h-8 px-2 rounded-md border border-gray-200 text-sm text-right outline-none focus:border-amber-400"
+    />
+  )
+  :
+  (
+    <span className="
+    font-semibold
+    ">
 
-<span className="
-font-semibold
-">
+    ৳ {order.deliveryCharge || 0}
 
-৳ {order.deliveryCharge || 0}
-
-</span>
+    </span>
+  )
+}
 
 
 </div>
@@ -1262,6 +1669,7 @@ font-semibold
 <div className="
 flex
 justify-between
+items-center
 ">
 
 
@@ -1273,15 +1681,30 @@ Discount
 
 </span>
 
+{
+  editMode
+  ?
+  (
+    <input
+      type="number"
+      min="0"
+      value={form.discount}
+      onChange={(e)=>setForm(prev=>({ ...prev, discount: e.target.value===""?"":Number(e.target.value) }))}
+      className="w-24 h-8 px-2 rounded-md border border-gray-200 text-sm text-right outline-none focus:border-amber-400"
+    />
+  )
+  :
+  (
+    <span className="
+    font-semibold
+    text-red-500
+    ">
 
-<span className="
-font-semibold
-text-red-500
-">
+    -৳ {order.discount || 0}
 
--৳ {order.discount || 0}
-
-</span>
+    </span>
+  )
+}
 
 
 </div>
@@ -1317,7 +1740,7 @@ Total Amount
 
 <span>
 
-৳ {order.total}
+৳ {editMode ? formTotal : order.total}
 
 </span>
 
@@ -1567,36 +1990,131 @@ Cancelled
 
 
 
-{/* DELETE BUTTON */}
+{/* EDIT / DELETE BUTTONS */}
+
+{
+  editMode
+  ?
+  (
+    <div className="grid grid-cols-2 gap-3">
+
+      <button
+
+      onClick={cancelEdit}
+
+      disabled={saving}
+
+      className="
+      h-11
+      rounded-lg
+      border
+      border-gray-300
+      text-gray-600
+      font-bold
+      text-sm
+      flex
+      items-center
+      justify-center
+      gap-2
+      disabled:opacity-50
+      "
+
+      >
+
+      <FiXCircle/>
+
+      Cancel
+
+      </button>
+
+      <button
+
+      onClick={saveEdit}
+
+      disabled={saving}
+
+      className="
+      h-11
+      rounded-lg
+      bg-amber-500
+      text-white
+      font-bold
+      text-sm
+      flex
+      items-center
+      justify-center
+      gap-2
+      disabled:opacity-50
+      "
+
+      >
+
+      <FiSave/>
+
+      {saving ? "Saving..." : "Save Changes"}
+
+      </button>
+
+    </div>
+  )
+  :
+  (
+    <div className="grid grid-cols-2 gap-3">
+
+      <button
+
+      onClick={startEdit}
+
+      className="
+      h-11
+      rounded-lg
+      bg-slate-800
+      text-white
+      font-bold
+      text-sm
+      flex
+      items-center
+      justify-center
+      gap-2
+      "
+
+      >
+
+      <FiEdit2/>
+
+      Edit Order
+
+      </button>
+
+      <button
+
+      onClick={()=>setDeleteModal(true)}
+
+      className="
+      h-11
+      rounded-lg
+      bg-red-500
+      text-white
+      font-bold
+      text-sm
+      flex
+      items-center
+      justify-center
+      gap-2
+      "
+
+      >
 
 
+      <FiTrash2/>
 
-<button
+      Delete Order
 
-onClick={()=>setDeleteModal(true)}
+      </button>
 
-className="
-w-full
-h-11
-rounded-lg
-bg-red-500
-text-white
-font-bold
-text-sm
-flex
-items-center
-justify-center
-gap-2
-"
-
->
-
-
-<FiTrash2/>
-
-Delete Order
-
-</button>
+    </div>
+  )
+}
 
 
 
