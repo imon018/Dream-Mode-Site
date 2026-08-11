@@ -336,6 +336,31 @@ paymentStatus,
 
 
 // =================================
+// UPDATE ORDER (GENERIC EDIT — ADMIN OrderDetails.jsx / USER UserOrderDetails.jsx)
+// Accepts a partial object of fields to update on the order document.
+// Used by the "Edit" buttons added next to the Delete buttons so admin
+// and the customer can correct order info after it was placed.
+// =================================
+
+export const updateOrder =
+async(id, data)=>{
+
+  const orderDoc =
+  doc(
+    db,
+    "orders",
+    id
+  );
+
+  await updateDoc(
+    orderDoc,
+    data
+  );
+
+};
+
+
+// =================================
 // UPDATE COURIER NAME (ADMIN) — কোন কুরিয়ারে
 // (Steadfast/Courrierfast) অর্ডারটা পাঠানো হয়েছে সেটা সেভ রাখা
 // =================================
