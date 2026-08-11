@@ -74,8 +74,16 @@ const { settings } = useSettings();
 // দেখানো হবে।
 const storeLogo = settings?.logoUrl || "/logo.png";
 
+// addedByAdmin ফ্ল্যাগটা এই ফিক্সের আগে তৈরি হওয়া অর্ডারগুলাতে নেই।
+// কিন্তু orderSource ("Messenger"/"WhatsApp") ফিল্ডটা শুধু
+// AddOrder.jsx-ই সেট করে — কাস্টমারের নিজের চেকআউটে এটা কখনো সেট
+// হয় না। তাই এটাকেও "অ্যাডমিন-যোগ করা অর্ডার" চেনার সিগনাল হিসেবে
+// ব্যবহার করা হচ্ছে, পুরনো ডেটা মাইগ্রেট না করেই।
+const isAdminAddedOrder = (order) =>
+  !!(order.addedByAdmin || order.orderSource);
+
 const getOrderAvatar = (order) =>
-  order.addedByAdmin
+  isAdminAddedOrder(order)
     ? storeLogo
     : (order.customerPhoto || storeLogo);
 
