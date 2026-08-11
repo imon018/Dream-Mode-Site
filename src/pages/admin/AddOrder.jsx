@@ -396,6 +396,12 @@ customerName,
 // in the Steadfast courier payload.
 orderSource,
 
+// Marks this order as manually added by the admin — order
+// lists/details always show the store logo instead of a
+// customer photo for these, since there is no logged-in
+// customer profile picture to show.
+addedByAdmin: true,
+
 phone,
 
 address,
