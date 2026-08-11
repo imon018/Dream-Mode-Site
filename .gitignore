@@ -7,6 +7,11 @@ android/.gradle
 android/app/build
 android/build
 
-# Android signing files
-android/keystore.properties
-android/app/*.keystore
+# Android signing files — intentionally NOT ignored.
+# This is a private repo and the team wants keystore.properties
+# and the .keystore file committed so the app-signing password
+# and key can be recovered from the repo if lost locally.
+# If this repo is ever made public, re-add the two lines below
+# and rotate the keystore password immediately:
+# android/keystore.properties
+# android/app/*.keystore
