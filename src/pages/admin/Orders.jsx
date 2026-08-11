@@ -358,16 +358,27 @@ const sendOrderToCourier = async (order, courierName) => {
 
     console.log(`${courierName} Response:`, result);
 
-    // Courrierfast ভ্যালিডেশন ফেইল হলে শুধু "Validation Error" মেসেজটাই
-    // আসে, আসল কারণ (কোন ফিল্ড, কেন ফেইল) থাকে result.errors অবজেক্টে —
-    // সেটা বের করে মেসেজে জুড়ে দেওয়া হচ্ছে যাতে আসল কারণটা দেখা যায়
-    if (result?.success === false || result?.errors) {
-      const fieldErrors = result?.errors
-        ? Object.values(result.errors).flat().join(", ")
+    // Courrierfast ভ্যালিডেশন ফেইল হলে "Validation Error" ছাড়া কিছুই
+    // দেখা যাচ্ছিল না — আসল কারণটা কোন key-তে আছে সেটা এখনো অজানা,
+    // তাই এখানে যত সম্ভব সব জায়গায় (errors/error/data.errors ইত্যাদি)
+    // খোঁজা হচ্ছে, আর কিছুই না পেলে পুরো রেসপন্সটাই দেখানো হচ্ছে —
+    // যাতে পরের বার এররটা এলে পুরো কারণটা বোঝা যায়।
+    if (result?.success === false || result?.status === false || result?.errors) {
+      const errorSource =
+        result?.errors || result?.error || result?.data?.errors;
+
+      const fieldErrors = errorSource
+        ? typeof errorSource === "string"
+          ? errorSource
+          : Object.values(errorSource).flat().join(", ")
         : "";
 
+      const fallback = fieldErrors
+        ? ""
+        : JSON.stringify(result);
+
       throw new Error(
-        [result?.message, fieldErrors]
+        [result?.message, fieldErrors, fallback]
           .filter(Boolean)
           .join(" — ") || `${courierName} এ পাঠাতে ব্যর্থ`
       );
