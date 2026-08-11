@@ -68,7 +68,9 @@ const [deleteId,setDeleteId] = useState(null);
 // কোন কুরিয়ারে (Steadfast/Courrierfast) পাঠাবে সেটা জিজ্ঞেস করার জন্য —
 // "Processing"-এ নেওয়া অর্ডারটা এখানে সাময়িকভাবে রাখা হয়
 const [courierPrompt, setCourierPrompt] = useState(null);
-const [sendingCourier, setSendingCourier] = useState(false);
+// null = কিছু পাঠানো হচ্ছে না, নাহলে "Steadfast" / "Courrierfast" —
+// যেই বাটনে ক্লিক করা হয়েছে শুধু সেটাতেই "পাঠানো হচ্ছে..." দেখানোর জন্য
+const [sendingCourier, setSendingCourier] = useState(null);
 
 const [page, setPage] = useState(1);
 
@@ -323,7 +325,7 @@ console.log(error);
 
 const sendOrderToCourier = async (order, courierName) => {
 
-  setSendingCourier(true);
+  setSendingCourier(courierName);
 
   try {
 
@@ -356,8 +358,19 @@ const sendOrderToCourier = async (order, courierName) => {
 
     console.log(`${courierName} Response:`, result);
 
-    if (result?.success === false) {
-      throw new Error(result?.message || `${courierName} এ পাঠাতে ব্যর্থ`);
+    // Courrierfast ভ্যালিডেশন ফেইল হলে শুধু "Validation Error" মেসেজটাই
+    // আসে, আসল কারণ (কোন ফিল্ড, কেন ফেইল) থাকে result.errors অবজেক্টে —
+    // সেটা বের করে মেসেজে জুড়ে দেওয়া হচ্ছে যাতে আসল কারণটা দেখা যায়
+    if (result?.success === false || result?.errors) {
+      const fieldErrors = result?.errors
+        ? Object.values(result.errors).flat().join(", ")
+        : "";
+
+      throw new Error(
+        [result?.message, fieldErrors]
+          .filter(Boolean)
+          .join(" — ") || `${courierName} এ পাঠাতে ব্যর্থ`
+      );
     }
 
     successToast(`${courierName}-এ অর্ডার পাঠানো হয়েছে`);
@@ -379,7 +392,7 @@ const sendOrderToCourier = async (order, courierName) => {
     console.error(err);
     errorToast(err.message);
   } finally {
-    setSendingCourier(false);
+    setSendingCourier(null);
     setCourierPrompt(null);
   }
 
@@ -2348,7 +2361,7 @@ mt-2
 <div className="flex flex-col gap-2 mt-4">
 
 <button
-disabled={sendingCourier}
+disabled={!!sendingCourier}
 onClick={() =>
   sendOrderToCourier(courierPrompt, "Steadfast")
 }
@@ -2362,11 +2375,11 @@ font-bold
 disabled:opacity-50
 "
 >
-{sendingCourier ? "পাঠানো হচ্ছে..." : "Steadfast-এ পাঠান"}
+{sendingCourier === "Steadfast" ? "পাঠানো হচ্ছে..." : "Steadfast-এ পাঠান"}
 </button>
 
 <button
-disabled={sendingCourier}
+disabled={!!sendingCourier}
 onClick={() =>
   sendOrderToCourier(courierPrompt, "Courrierfast")
 }
@@ -2380,11 +2393,11 @@ font-bold
 disabled:opacity-50
 "
 >
-{sendingCourier ? "পাঠানো হচ্ছে..." : "Courrierfast-এ পাঠান"}
+{sendingCourier === "Courrierfast" ? "পাঠানো হচ্ছে..." : "Courrierfast-এ পাঠান"}
 </button>
 
 <button
-disabled={sendingCourier}
+disabled={!!sendingCourier}
 onClick={() => setCourierPrompt(null)}
 className="
 w-full
