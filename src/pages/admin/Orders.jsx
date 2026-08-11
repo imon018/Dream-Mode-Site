@@ -1426,6 +1426,33 @@ gap-2
 <span>View</span>
 
 </button>
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+setCourierPrompt(order);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiTruck size={14}/>
+
+<span>কুরিয়ারে পাঠান</span>
+
+</button>
+
 
 <button
 
@@ -2049,6 +2076,33 @@ gap-2
 <span>View</span>
 
 </button>
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+setCourierPrompt(order);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiTruck size={14}/>
+
+<span>কুরিয়ারে পাঠান</span>
+
+</button>
+
 
 <button
 
