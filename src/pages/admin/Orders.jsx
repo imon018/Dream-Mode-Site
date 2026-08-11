@@ -29,7 +29,8 @@ import {
   FiDownload,
   FiTrash2,
   FiX,
-  FiPlus
+  FiPlus,
+  FiEdit2
 } from "react-icons/fi";
 
 
@@ -42,6 +43,8 @@ import {
 } from "../../services/orderService";
 
 import { sendOrderToCourrierfast } from "../../services/courrierfastService";
+
+import { useSettings } from "../../context/SettingsContext";
 
 
 import {
@@ -62,6 +65,19 @@ export default function Orders(){
 
 
 const navigate = useNavigate();
+
+const { settings } = useSettings();
+
+// অর্ডারে কাস্টমারের ছবি সেট না থাকলে, বা অ্যাডমিন নিজে
+// AddOrder.jsx দিয়ে অর্ডারটা যোগ করে থাকলে (এক্ষেত্রে কোনো
+// কাস্টমার প্রোফাইল ছবিই নেই), কাস্টমারের বদলে স্টোরের লোগো
+// দেখানো হবে।
+const storeLogo = settings?.logoUrl || "/logo.png";
+
+const getOrderAvatar = (order) =>
+  order.addedByAdmin
+    ? storeLogo
+    : (order.customerPhoto || storeLogo);
 
 const [deleteId,setDeleteId] = useState(null);
 
@@ -1123,12 +1139,11 @@ gap-2
 
 <img
 
-src={
-order.customerPhoto ||
-`https://ui-avatars.com/api/?name=${encodeURIComponent(
-order.customerName || "User"
-)}`
-}
+src={getOrderAvatar(order)}
+
+onError={(e) => {
+  e.currentTarget.src = storeLogo;
+}}
 
 className="
 w-9
@@ -1423,6 +1438,33 @@ z-50
 "
 
 >
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}?edit=1`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiEdit2 size={14}/>
+
+<span>Edit</span>
+
+</button>
 
 <button
 
@@ -1766,12 +1808,7 @@ gap-3
 
 
 <img
-  src={
-    order.customerPhoto ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      order.customerName || "User"
-    )}`
-  }
+  src={getOrderAvatar(order)}
   alt={order.customerName || "Customer"}
   className="
     w-8
@@ -1780,10 +1817,7 @@ gap-3
     object-cover
   "
   onError={(e) => {
-    e.currentTarget.src =
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        order.customerName || "User"
-      )}`;
+    e.currentTarget.src = storeLogo;
   }}
 />
 
@@ -2073,6 +2107,33 @@ overflow-hidden
 "
 
 >
+
+<button
+
+onClick={()=>{
+setMenuOpen(null);
+navigate(`/admin/orders/${order.id}?edit=1`);
+}}
+
+className="
+w-full
+text-left
+px-3
+py-2
+text-xs
+hover:bg-gray-50
+flex
+items-center
+gap-2
+"
+
+>
+
+<FiEdit2 size={14}/>
+
+<span>Edit</span>
+
+</button>
 
 <button
 
