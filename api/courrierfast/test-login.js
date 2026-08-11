@@ -1,46 +1,31 @@
 export default async function handler(req, res) {
   try {
-    const clientId = process.env.COURRIERFAST_CLIENT_ID;
-    const clientSecret = process.env.COURRIERFAST_CLIENT_SECRET;
+    const loginForm = new FormData();
 
-    if (!clientId || !clientSecret) {
-      return res.status(500).json({
-        connected: false,
-        step: "environment",
-        message: "Courrierfast Client ID/Secret পাওয়া যায়নি",
-      });
-    }
+    loginForm.append(
+      "email",
+      process.env.COURRIERFAST_EMAIL
+    );
 
-    // Try JSON request
+    loginForm.append(
+      "password",
+      process.env.COURRIERFAST_PASSWORD
+    );
+
     const loginResponse = await fetch(
       "https://courrierfast.com/api/merchant/login",
       {
         method: "POST",
+        body: loginForm,
         headers: {
-          "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({
-          client_id: clientId,
-          client_secret: clientSecret,
-        }),
       }
     );
 
-    const text = await loginResponse.text();
+    const loginData = await loginResponse.json();
 
-    let loginData;
-
-    try {
-      loginData = JSON.parse(text);
-    } catch {
-      loginData = {
-        raw_response: text,
-      };
-    }
-
-    console.log("Courrierfast Login Status:", loginResponse.status);
-    console.log("Courrierfast Login Response:", loginData);
+    console.log("Courrierfast login:", loginResponse.status, loginData);
 
     if (!loginResponse.ok || !loginData?.token) {
       return res.status(401).json({
@@ -53,11 +38,12 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       connected: true,
-      message: "Courrierfast-এর সাথে কানেকশন সফল হয়েছে!",
+      message: "Courrierfast login successful",
       merchant: loginData?.merchant || null,
     });
+
   } catch (err) {
-    console.error("Courrierfast Test Error:", err);
+    console.error("Courrierfast test error:", err);
 
     return res.status(500).json({
       connected: false,
