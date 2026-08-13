@@ -338,7 +338,7 @@ async function sendTurnWithRetry(attempt, args) {
 
     if (err.status === 429) {
 
-      console.log(`AI CHAT ADMIN — "${attempt.key}" rate-limited, retrying once...`);
+      console.error(`AI CHAT ADMIN — "${attempt.key}" rate-limited, retrying once...`);
       await new Promise((r) => setTimeout(r, 1500));
       return await attempt.provider.sendTurn(args);
 
@@ -442,7 +442,7 @@ exports.aiChatAdmin = onCall(
 
       if (role !== "admin") {
 
-        console.log(`AI CHAT ADMIN — unauthorized access attempt by uid: ${uid}`);
+        console.error(`AI CHAT ADMIN — unauthorized access attempt by uid: ${uid}`);
 
         throw new HttpsError(
           "permission-denied",
@@ -492,7 +492,7 @@ exports.aiChatAdmin = onCall(
 
         } catch (err) {
 
-          console.log(`AI CHAT ADMIN — "${attempt.key}" failed:`, err.message);
+          console.error(`AI CHAT ADMIN — "${attempt.key}" failed:`, err.message);
           lastError = err;
           continue;
 
@@ -506,7 +506,7 @@ exports.aiChatAdmin = onCall(
 
       if (error instanceof HttpsError) throw error;
 
-      console.log("AI CHAT ADMIN ERROR:", error);
+      console.error("AI CHAT ADMIN ERROR:", error);
 
       throw new HttpsError(
         "internal",

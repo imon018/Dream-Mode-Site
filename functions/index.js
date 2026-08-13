@@ -96,7 +96,7 @@ async function getPasskeyRpConfig(){
 
   }catch(err){
 
-    console.log("Invalid websiteUrl for passkey RP:", err);
+    console.error("Invalid websiteUrl for passkey RP:", err);
 
   }
 
@@ -490,7 +490,7 @@ success:true
 catch(error){
 
 
-console.log(error);
+console.error(error);
 
 
 
@@ -706,7 +706,7 @@ success:true
 
 catch(error){
 
-console.log(error);
+console.error(error);
 
 
 throw new HttpsError(
@@ -871,7 +871,7 @@ throw error;
 }
 
 
-console.log(error);
+console.error(error);
 
 
 throw new HttpsError(
@@ -1307,7 +1307,7 @@ success:true
 catch(error){
 
 
-console.log(error);
+console.error(error);
 
 
 
@@ -1501,7 +1501,7 @@ success:true
 
 catch(error){
 
-console.log(error);
+console.error(error);
 
 if(error instanceof HttpsError){
 
@@ -1879,7 +1879,7 @@ success:true
 catch(error){
 
 
-console.log(error);
+console.error(error);
 
 
 
@@ -2210,7 +2210,7 @@ async(request)=>{
 
   }catch(error){
 
-    console.log("PASSKEY REGISTRATION VERIFY ERROR:", error);
+    console.error("PASSKEY REGISTRATION VERIFY ERROR:", error);
 
     throw new HttpsError(
       "invalid-argument",
@@ -2443,7 +2443,7 @@ async()=>{
     // Firebase নিজে থেকে একটা masked "INTERNAL" এরর হিসেবে পাঠিয়ে
     // দেয়, যেটা client-এ কোনো নির্দিষ্ট মেসেজে ধরা পড়ে না এবং সবসময়
     // একই generic মেসেজ দেখায়। এখানে ধরে, লগ করে, স্পষ্ট এরর পাঠানো হচ্ছে।
-    console.log("PASSKEY GENERATE AUTH OPTIONS ERROR:", error);
+    console.error("PASSKEY GENERATE AUTH OPTIONS ERROR:", error);
 
     throw new HttpsError(
       "internal",
@@ -2582,7 +2582,7 @@ async(request)=>{
 
     }catch(error){
 
-      console.log("PASSKEY LOGIN VERIFY ERROR:", error);
+      console.error("PASSKEY LOGIN VERIFY ERROR:", error);
 
       // rpID/origin mismatch (যেমন Admin Settings-এ Website URL আর
       // আসল ডোমেইন আলাদা হয়ে গেলে) সাধারণত এখানে ধরা পড়ে — সরাসরি
@@ -2650,7 +2650,7 @@ async(request)=>{
       // এই ফাংশনের service account (সাধারণত
       // <project-id>@appspot.gserviceaccount.com) নিজের উপর ওই role
       // পেয়েছে কিনা।
-      console.log("PASSKEY CREATE CUSTOM TOKEN ERROR:", error);
+      console.error("PASSKEY CREATE CUSTOM TOKEN ERROR:", error);
 
       throw new HttpsError(
         "internal",
@@ -2678,7 +2678,7 @@ async(request)=>{
 
     }
 
-    console.log("PASSKEY LOGIN UNEXPECTED ERROR:", error);
+    console.error("PASSKEY LOGIN UNEXPECTED ERROR:", error);
 
     throw new HttpsError(
       "internal",

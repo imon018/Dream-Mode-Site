@@ -58,7 +58,7 @@ async function buildAndSendTrafficReport() {
     newRegistrations = usersSnap.size;
 
   } catch (err) {
-    console.log("Traffic report: user count failed", err);
+    console.error("Traffic report: user count failed", err);
   }
 
   // মোট রেজিস্টার্ড ইউজার
@@ -75,7 +75,7 @@ async function buildAndSendTrafficReport() {
     totalUsers = countSnap.data().count;
 
   } catch (err) {
-    console.log("Traffic report: total user count failed", err);
+    console.error("Traffic report: total user count failed", err);
   }
 
   const topPage = traffic.topPages[0];
@@ -145,7 +145,7 @@ exports.trafficReportScheduled = onSchedule(
     try {
       await buildAndSendTrafficReport();
     } catch (err) {
-      console.log("Traffic report failed:", err);
+      console.error("Traffic report failed:", err);
     }
 
     return null;

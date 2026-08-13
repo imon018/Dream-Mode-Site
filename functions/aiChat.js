@@ -723,7 +723,7 @@ async function sendTurnWithRetry(attempt, args) {
 
     if (err.status === 429) {
 
-      console.log(`AI CHAT — "${attempt.key}" rate-limited, retrying once...`);
+      console.error(`AI CHAT — "${attempt.key}" rate-limited, retrying once...`);
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       return await attempt.provider.sendTurn(args);
@@ -914,7 +914,7 @@ exports.aiChat = onCall(
             });
 
           } catch (logErr) {
-            console.log("AI CHAT — usage log failed:", logErr.message);
+            console.error("AI CHAT — usage log failed:", logErr.message);
           }
 
           return {
@@ -928,7 +928,7 @@ exports.aiChat = onCall(
 
         } catch (err) {
 
-          console.log(`AI CHAT — "${attempt.key}" failed:`, err.message);
+          console.error(`AI CHAT — "${attempt.key}" failed:`, err.message);
           lastError = err;
           continue; // Gemini ব্যর্থ হলে Groq দিয়ে আবার চেষ্টা করবে
 
@@ -940,7 +940,7 @@ exports.aiChat = onCall(
 
     } catch (error) {
 
-      console.log("AI CHAT ERROR:", error);
+      console.error("AI CHAT ERROR:", error);
 
       if (error instanceof HttpsError) {
         throw error;

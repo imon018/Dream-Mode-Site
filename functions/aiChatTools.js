@@ -552,7 +552,7 @@ async function requestOrderCancel({ orderId, phone, uid, reason } = {}) {
     });
 
   } catch (notifyErr) {
-    console.log("AI CHAT — cancel request notification failed:", notifyErr.message);
+    console.error("AI CHAT — cancel request notification failed:", notifyErr.message);
   }
 
   return { requested: true, orderId, message: "আপনার cancel request Admin-এর কাছে পাঠানো হয়েছে।" };
@@ -620,7 +620,7 @@ async function requestReturn({ orderId, phone, uid, reason } = {}) {
     });
 
   } catch (notifyErr) {
-    console.log("AI CHAT — return request notification failed:", notifyErr.message);
+    console.error("AI CHAT — return request notification failed:", notifyErr.message);
   }
 
   return { requested: true, returnRequestId: docRef.id, message: "আপনার return request Admin-এর কাছে পাঠানো হয়েছে।" };
@@ -988,7 +988,7 @@ async function createOrderViaChat({
   } catch (notifyErr) {
 
     // নোটিফিকেশন ব্যর্থ হলেও অর্ডার তৈরি সফল থাকবে — শুধু লগ করা হলো
-    console.log("AI CHAT — order notification failed:", notifyErr.message);
+    console.error("AI CHAT — order notification failed:", notifyErr.message);
 
   }
 
@@ -1077,7 +1077,7 @@ async function generateInvoicePdf({ orderId, phone, uid }) {
 
   } catch (error) {
 
-    console.log("INVOICE PDF GENERATION ERROR:", error);
+    console.error("INVOICE PDF GENERATION ERROR:", error);
 
     return { error: "ইনভয়েস PDF বানাতে সমস্যা হয়েছে, একটু পর আবার চেষ্টা করুন।" };
 
