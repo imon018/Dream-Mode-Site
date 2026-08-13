@@ -46,6 +46,7 @@ import {
 import { getEffectivePrice } from "../../utils/helpers";
 
 import { useSettings } from "../../context/SettingsContext";
+import { FALLBACK_PRODUCT_IMAGE } from "../../utils/constants";
 
 
 
@@ -1397,7 +1398,7 @@ gap-3
 
 src={
 item.image ||
-"https://via.placeholder.com/60"
+FALLBACK_PRODUCT_IMAGE
 }
 
 className="

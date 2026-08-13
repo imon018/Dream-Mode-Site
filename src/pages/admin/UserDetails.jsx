@@ -25,6 +25,7 @@ import {
 import {
   getUserOrders
 } from "../../services/orderService";
+import { FALLBACK_PRODUCT_IMAGE } from "../../utils/constants";
 
 
 
@@ -655,7 +656,7 @@ order.items?.[0]?.image ||
 
 order.items?.[0]?.productImage ||
 
-"https://via.placeholder.com/80"
+FALLBACK_PRODUCT_IMAGE
 
 }
 

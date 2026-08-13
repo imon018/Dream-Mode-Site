@@ -40,6 +40,7 @@ import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import { useSettings } from "../context/SettingsContext";
 
 import { getEffectivePrice } from "../utils/helpers";
+import { FALLBACK_PRODUCT_IMAGE } from "../utils/constants";
 
 
 
@@ -836,7 +837,7 @@ export default function OrderSuccess(){
                     ]
                     :
                     item.image ||
-                    "https://via.placeholder.com/600";
+                    FALLBACK_PRODUCT_IMAGE;
 
                   return (
 

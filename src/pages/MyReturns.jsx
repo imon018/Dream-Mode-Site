@@ -27,6 +27,7 @@ import {
 import {
   errorToast,
 } from "../components/ui/Toast";
+import { FALLBACK_PRODUCT_IMAGE } from "../utils/constants";
 
 
 
@@ -1036,7 +1037,7 @@ src={
 
 item.image ||
 
-"https://via.placeholder.com/70"
+FALLBACK_PRODUCT_IMAGE
 
 }
 

@@ -6,6 +6,7 @@ import {
 } from "react-icons/fi";
 
 import { useNavigate } from "react-router-dom";
+import { FALLBACK_PRODUCT_IMAGE } from "../../../utils/constants";
 
 
 
@@ -489,7 +490,7 @@ src={
 
 product.image ||
 
-"https://via.placeholder.com/80"
+FALLBACK_PRODUCT_IMAGE
 
 }
 

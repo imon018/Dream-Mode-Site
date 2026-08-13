@@ -25,6 +25,7 @@ import {
 } from "../components/ui/Toast";
 
 import { getEffectivePrice } from "../utils/helpers";
+import { FALLBACK_PRODUCT_IMAGE } from "../utils/constants";
 
 export default function MyOrders() {
 
@@ -659,7 +660,7 @@ gap-3
 
 src={
 item.image ||
-"https://via.placeholder.com/70"
+FALLBACK_PRODUCT_IMAGE
 }
 
 className="

@@ -9,6 +9,7 @@ import {
 import {
   useNavigate
 } from "react-router-dom";
+import { FALLBACK_PRODUCT_IMAGE } from "../../../utils/constants";
 
 
 
@@ -263,7 +264,7 @@ gap-3
 
 src={
 product.image ||
-"https://via.placeholder.com/100"
+FALLBACK_PRODUCT_IMAGE
 }
 
 className="

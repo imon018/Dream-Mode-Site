@@ -54,6 +54,7 @@ import {
 } from "../../components/ui/Toast";
 
 import { getEffectivePrice } from "../../utils/helpers";
+import { FALLBACK_PRODUCT_IMAGE } from "../../utils/constants";
 
 const Invoice58mm = lazy(() => import("../../components/invoice/Invoice58mm"));
 const generateInvoicePdf = (order) =>
@@ -1194,7 +1195,7 @@ gap-3
 
 src={
 item.image ||
-"https://via.placeholder.com/70"
+FALLBACK_PRODUCT_IMAGE
 }
 
 className="
@@ -2089,7 +2090,7 @@ Buy Again
                 <img
                   src={
                     item.image ||
-                    "https://via.placeholder.com/60"
+                    FALLBACK_PRODUCT_IMAGE
                   }
                   className="
                     w-14

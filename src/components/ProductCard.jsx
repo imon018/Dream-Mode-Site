@@ -15,6 +15,7 @@ import {
   FiShoppingCart,
   FiShoppingBag,
 } from "react-icons/fi";
+import { FALLBACK_PRODUCT_IMAGE } from "../utils/constants";
 
 
 export default function ProductCard({
@@ -86,7 +87,7 @@ export default function ProductCard({
       product.images[0]
       :
       product.image ||
-      "https://via.placeholder.com/600";
+      FALLBACK_PRODUCT_IMAGE;
 
 
 
@@ -186,7 +187,7 @@ export default function ProductCard({
     src={
       product.image ||
       product.images?.[0] ||
-      "https://via.placeholder.com/600"
+      FALLBACK_PRODUCT_IMAGE
     }
 
 

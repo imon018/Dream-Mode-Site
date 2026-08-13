@@ -38,6 +38,7 @@ import {
 } from "../../services/uploadService";
 
 import { getEffectivePrice } from "../../utils/helpers";
+import { FALLBACK_PRODUCT_IMAGE } from "../../utils/constants";
 
 
 export default function ReturnOrder(){
@@ -1059,7 +1060,7 @@ src={
 
 item.image ||
 
-"https://via.placeholder.com/80"
+FALLBACK_PRODUCT_IMAGE
 
 }
 
