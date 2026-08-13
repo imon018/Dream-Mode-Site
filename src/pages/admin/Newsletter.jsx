@@ -37,7 +37,7 @@ export default function Newsletter() {
         `${emails.length} subscriber emails copied.`
       );
 
-    } catch (error) {
+    } catch (_error) {
 
 
       errorToast("Failed to load subscribers.");

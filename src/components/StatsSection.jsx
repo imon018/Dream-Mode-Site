@@ -99,7 +99,7 @@ export default function StatsSection(){
 
 
 
-  const mobileReviews =
+  const _mobileReviews =
     reviews.slice(0,10);
 
 

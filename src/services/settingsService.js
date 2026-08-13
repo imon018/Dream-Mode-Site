@@ -105,7 +105,7 @@ export const getSettings = async()=>{
 
 
   }
-  catch(error){
+  catch(_error){
 
 
 

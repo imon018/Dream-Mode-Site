@@ -115,7 +115,7 @@ load();
 setDeleteId(null);
 
 }
-catch(error){
+catch(_error){
 
 errorToast(
 "Delete failed");

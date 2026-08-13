@@ -63,7 +63,7 @@ async function fetchFirstAvailableFontBuffer(urls) {
 
       return buf;
 
-    } catch (e) {
+    } catch (_e) {
 
       // try the next mirror
 
@@ -105,7 +105,7 @@ async function ensureBengaliFont() {
 
         return true;
 
-      } catch (e) {
+      } catch (_e) {
 
         return false;
 
@@ -141,7 +141,7 @@ async function ensureScriptFont(doc) {
 
     return true;
 
-  } catch (e) {
+  } catch (_e) {
 
     return false;
 
@@ -331,7 +331,7 @@ function drawSmartText(doc, text, x, y, opts = {}) {
 
       try {
         doc.addImage(img.dataUrl, "PNG", cursorX, y - img.ascentMm, img.widthMm, img.heightMm);
-      } catch (e) {
+      } catch (_e) {
         // ignore
       }
 
@@ -378,7 +378,7 @@ function loadImageAsDataURL(url) {
 
         resolve(canvas.toDataURL("image/png"));
 
-      } catch (e) {
+      } catch (_e) {
 
         resolve(null);
 
@@ -517,7 +517,7 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   if (logoData) {
     try {
       doc.addImage(logoData, "PNG", marginX, y, 9, 9);
-    } catch (e) {
+    } catch (_e) {
       // ignore broken image data
     }
   }
@@ -851,7 +851,7 @@ function renderInvoiceContent(doc, { order, settings, qrCode, logoData, bengaliL
   if (qrCode) {
     try {
       doc.addImage(qrCode, "PNG", qrX, qrY, qrSize, qrSize);
-    } catch (e) {
+    } catch (_e) {
       // ignore
     }
   }

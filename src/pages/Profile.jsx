@@ -117,7 +117,7 @@ export default function Profile(){
 
         window.location.reload();
 
-      }catch(err){
+      }catch(_err){
 
 
         alert(

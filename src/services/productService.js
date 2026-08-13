@@ -1,4 +1,4 @@
-const API_URL = "/api/products";
+const _API_URL = "/api/products";
 
 // temporary mock (later Firestore connect হবে)
 let products = [];

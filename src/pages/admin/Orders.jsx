@@ -151,6 +151,7 @@ useEffect(() => {
 
   return () => clearTimeout(t);
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [printOrder]);
 
 
@@ -468,7 +469,7 @@ setDeleteId(null);
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(

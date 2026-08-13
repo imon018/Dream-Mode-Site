@@ -161,7 +161,7 @@ async function saveEdit(){
 
   }
 
-  catch(error){
+  catch(_error){
 
 
     errorToast("Update failed");
@@ -191,6 +191,7 @@ useEffect(()=>{
 
 loadOrder();
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[user]);
 
 
@@ -419,7 +420,7 @@ Order Not Found
 
 
 
-async function returnOrder(){
+async function _returnOrder(){
 
 
 try{
@@ -443,7 +444,7 @@ loadOrder();
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(

@@ -64,7 +64,7 @@ const NAGAD_NUMBER = "01628464209";
 export default function AddOrder(){
 
 
-const navigate = useNavigate();
+const _navigate = useNavigate();
 
 const { user } = useAuth();
 

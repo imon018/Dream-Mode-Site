@@ -141,7 +141,7 @@ export default function OrderSuccess(){
           items: data.items || [],
         });
 
-      } catch (error) {
+      } catch (_error) {
         setOrder(null);
       } finally {
         setLoading(false);

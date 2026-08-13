@@ -53,6 +53,7 @@ useEffect(()=>{
 
 loadOrder();
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[]);
 
 
@@ -83,7 +84,7 @@ setOrder(found);
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(
@@ -140,7 +141,7 @@ successToast(
 
 }
 
-catch(error){
+catch(_error){
 
 errorToast(
 "Update failed"

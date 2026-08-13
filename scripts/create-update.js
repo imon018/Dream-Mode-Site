@@ -9,7 +9,7 @@ execSync("npm run build", {
 });
 
 const packageDir = "public/updates/package";
-const updateDir = "public/updates";
+const _updateDir = "public/updates";
 const zipPath = "public/updates/app.zip";
 const versionFile = "public/updates/version.json";
 

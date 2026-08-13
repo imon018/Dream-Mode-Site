@@ -121,6 +121,7 @@ verifyEmail();
 }
 
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[]);
 
 
@@ -183,7 +184,7 @@ token
 
 
 
-const data =
+const _data =
 
 result.data;
 

@@ -306,7 +306,7 @@ export default function AddProduct() {
           }
 
         }
-        catch(bannerError){
+        catch(_bannerError){
 
 
           errorToast(
@@ -359,7 +359,7 @@ export default function AddProduct() {
 
     }
 
-    catch(error){
+    catch(_error){
 
 
       setLoading(false);

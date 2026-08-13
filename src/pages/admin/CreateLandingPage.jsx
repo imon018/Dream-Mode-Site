@@ -165,7 +165,7 @@ async function loadProducts(){
 
   }
 
-  catch(error){
+  catch(_error){
 
 
     errorToast(
@@ -379,7 +379,7 @@ successToast(
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(

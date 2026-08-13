@@ -150,7 +150,7 @@ function createProvider({ baseUrl, model, extraHeaders = {} }) {
 
       try {
         input = JSON.parse(tc.function.arguments || "{}");
-      } catch (e) {
+      } catch (_e) {
         input = {};
       }
 

@@ -80,7 +80,7 @@ export default function ProductCard({
 
 
 
-  const productImage =
+  const _productImage =
     product.images?.length
       ?
       product.images[0]

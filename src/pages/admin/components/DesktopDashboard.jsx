@@ -47,7 +47,7 @@ export default function DesktopDashboard({data}){
 const {
   stats,
   orders,
-  products
+  _products
 }=data;
 
 

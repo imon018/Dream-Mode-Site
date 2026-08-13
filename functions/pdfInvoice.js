@@ -31,7 +31,7 @@ function formatDate(value) {
 
     return d.toLocaleDateString("en-GB");
 
-  } catch (err) {
+  } catch (_err) {
 
     return new Date().toLocaleDateString("en-GB");
 

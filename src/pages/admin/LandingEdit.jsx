@@ -173,7 +173,7 @@ async function loadProducts(){
 
   }
 
-  catch(error){
+  catch(_error){
 
 
     errorToast(
@@ -191,6 +191,7 @@ useEffect(() => {
 
   loadLanding();
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [id, products]);
 
 
@@ -295,7 +296,7 @@ async function loadLanding() {
   landing.title || ""
 );
 
-  } catch (error) {
+  } catch (_error) {
 
 
     errorToast(
@@ -492,7 +493,7 @@ successToast(
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(

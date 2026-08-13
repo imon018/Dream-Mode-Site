@@ -196,7 +196,7 @@ export async function getLatestReviews(
       name = profile.name || name;
       photo = profile.photoURL || photo;
     }
-  } catch (error) {
+  } catch (_error) {
     // Guest user বা permission error হলেও review দেখাবে
   }
 }

@@ -149,7 +149,7 @@ export default function AdminProfile(){
 
 
 
-    }catch(err){
+    }catch(_err){
 
 
       alert(

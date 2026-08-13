@@ -153,6 +153,7 @@ export default function ProductReviews({
 
     checkReviewed();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[
     productId,
     user
@@ -309,7 +310,7 @@ if (images.length > 0) {
 
 
 
-    }catch(error){
+    }catch(_error){
 
 
 

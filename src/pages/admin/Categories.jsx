@@ -193,7 +193,7 @@ export default function Categories() {
 
     }
 
-    catch(err){
+    catch(_err){
 
 
       errorToast(

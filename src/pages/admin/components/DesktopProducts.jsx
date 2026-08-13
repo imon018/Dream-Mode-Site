@@ -20,7 +20,7 @@ search,
 
 setSearch,
 
-handleDelete,
+_handleDelete,
 
 setDeleteId
 

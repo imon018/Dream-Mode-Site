@@ -80,7 +80,7 @@ function AppContent(){
 
   const location = useLocation();
 const navigate = useNavigate();
-const lastBackPress = useRef(0);
+const _lastBackPress = useRef(0);
 
 const seo = routeSEO[location.pathname] || {};
 

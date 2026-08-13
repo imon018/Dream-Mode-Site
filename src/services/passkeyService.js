@@ -55,7 +55,7 @@ export function isPasskeySupported(){
 
     return browserSupportsWebAuthn();
 
-  }catch(err){
+  }catch(_err){
 
     return false;
 

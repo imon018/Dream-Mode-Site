@@ -5,5 +5,5 @@
 // those files again, this just quietly logs to the console instead of
 // drawing anything on screen.
 
-export function pushDebugLog(message) {
+export function pushDebugLog(_message) {
 }

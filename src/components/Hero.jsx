@@ -93,7 +93,7 @@ export default function Hero() {
 
   }, [banners]);
 
-  const nextSlide = () => {
+  const _nextSlide = () => {
 
     setCurrent(
       current ===
@@ -104,7 +104,7 @@ export default function Hero() {
 
   };
 
-  const prevSlide = () => {
+  const _prevSlide = () => {
 
     setCurrent(
       current === 0

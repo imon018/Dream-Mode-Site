@@ -288,7 +288,7 @@ export default function AddReturn() {
 
       }
 
-      catch(error){
+      catch(_error){
 
 
         setSelectedUserOrders([]);
@@ -765,7 +765,7 @@ export default function AddReturn() {
 
     }
 
-    catch(error){
+    catch(_error){
 
 
       errorToast(

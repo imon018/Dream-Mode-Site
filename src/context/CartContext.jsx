@@ -41,7 +41,7 @@ export default function CartProvider({
           ? parsed
           : [];
 
-      } catch (err) {
+      } catch (_err) {
 
         return [];
 

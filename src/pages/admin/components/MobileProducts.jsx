@@ -20,7 +20,7 @@ const {
 products,
 search,
 setSearch,
-handleDelete,
+_handleDelete,
 setDeleteId
 
 }=data;

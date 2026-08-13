@@ -94,7 +94,7 @@ function formatTime() {
 
   try {
     return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  } catch (error) {
+  } catch (_error) {
     return "";
   }
 
@@ -817,6 +817,7 @@ export default function AIChatWidget({
     console.error(error);
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   // চ্যাট খোলা হলে unread badge ও greeting বাবল মুছে যাবে
@@ -1042,7 +1043,7 @@ export default function AIChatWidget({
 
       });
 
-    } catch (error) {
+    } catch (_error) {
 
 
       setMessages((prev) => [

@@ -45,7 +45,7 @@ const navigate = useNavigate();
 
 const [orders,setOrders] = useState([]);
 
-const [loading,setLoading] = useState(true);
+const [_loading,setLoading] = useState(true);
 
 const [search,setSearch] = useState("");
 
@@ -106,7 +106,7 @@ setOrders(data || []);
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(
@@ -173,7 +173,7 @@ successToast(
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(
@@ -218,7 +218,7 @@ setDeleteId(null);
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(

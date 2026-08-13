@@ -217,6 +217,7 @@ useEffect(()=>{
 loadOrder();
 
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[user]);
 
 
@@ -286,7 +287,7 @@ item.quantity || 1
 
 }
 
-catch(error){
+catch(_error){
 
 
 
@@ -2841,7 +2842,7 @@ navigate(
 
 }
 
-catch(error){
+catch(_error){
 
 
 

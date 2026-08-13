@@ -23,10 +23,10 @@ const {
   getDeliveryInfo,
   searchProducts,
   checkStock,
-  getOrderStatus,
-  getAdminContact,
-  generateInvoiceText,
-  generateInvoicePdf,
+  _getOrderStatus,
+  _getAdminContact,
+  _generateInvoiceText,
+  _generateInvoicePdf,
 } = require("./aiChatTools");
 
 const {

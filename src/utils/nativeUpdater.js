@@ -25,7 +25,7 @@ export async function getNativeUpdatePath() {
     return null;
 
 
-  } catch(error) {
+  } catch(_error) {
 
 
     return null;

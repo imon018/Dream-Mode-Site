@@ -244,7 +244,7 @@ async function saveEdit(){
 
   }
 
-  catch(error){
+  catch(_error){
 
 
     errorToast("Update failed");
@@ -264,6 +264,7 @@ useEffect(()=>{
 
 loadOrder();
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[id]);
 
 
@@ -387,7 +388,7 @@ successToast(
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(
@@ -430,7 +431,7 @@ successToast(
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast(
@@ -457,7 +458,7 @@ navigate("/admin/orders");
 
 }
 
-catch(error){
+catch(_error){
 
 
 errorToast("Delete failed");

@@ -134,7 +134,7 @@ setOrder({
   title: data.title || data.productName || "",
 });
 
-    } catch (error) {
+    } catch (_error) {
       setOrder(null);
     }
 

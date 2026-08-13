@@ -170,7 +170,7 @@ async(id)=>{
 
     await loadPasskeys();
 
-  }catch(error){
+  }catch(_error){
 
 
     errorToast(

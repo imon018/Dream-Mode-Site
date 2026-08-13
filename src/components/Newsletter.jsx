@@ -56,7 +56,7 @@ export default function Newsletter() {
       setEmail("");
 
 
-    }catch(error){
+    }catch(_error){
 
 
 

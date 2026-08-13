@@ -28,7 +28,7 @@ export async function getAppliedVersion() {
 
     return APP_VERSION;
 
-  } catch (error) {
+  } catch (_error) {
 
     // No applied-update record yet, this is the version baked
     // into the installed APK itself.
@@ -52,7 +52,7 @@ export async function setAppliedVersion(version) {
 
     return true;
 
-  } catch (error) {
+  } catch (_error) {
 
 
     return false;

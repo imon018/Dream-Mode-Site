@@ -66,6 +66,7 @@ export default function ProductDetailsView() {
   const [fullscreen, setFullscreen] = useState(false);
 
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const galleryImages =
   product?.images?.length
     ? product.images

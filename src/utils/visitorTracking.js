@@ -56,7 +56,7 @@ function getSessionId() {
 
 let currentViewRef = null;
 let currentViewStartedAt = null;
-let heartbeatInterval = null;
+let _heartbeatInterval = null;
 let lifecycleAttached = false;
 
 async function writeDuration(isFinal) {
@@ -73,7 +73,7 @@ async function writeDuration(isFinal) {
       isActive: !isFinal,
       ...(isFinal ? { leftAt: serverTimestamp() } : {}),
     });
-  } catch (err) {
+  } catch (_err) {
     // ট্র্যাকিং কখনো সাইট ভাঙবে না — silently ignore
   }
 }
@@ -99,7 +99,7 @@ export async function startPageView(path) {
     });
 
     currentViewRef = ref;
-  } catch (err) {
+  } catch (_err) {
     currentViewRef = null;
     currentViewStartedAt = null;
   }
@@ -123,7 +123,7 @@ export function initVisitorTrackingLifecycle() {
 
   lifecycleAttached = true;
 
-  heartbeatInterval = setInterval(() => {
+  _heartbeatInterval = setInterval(() => {
     if (currentViewRef && document.visibilityState === "visible") {
       writeDuration(false);
     }

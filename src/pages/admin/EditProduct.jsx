@@ -125,7 +125,7 @@ setStock
 
 
 const [
-image,
+_image,
 setImage
 ]=useState("");
 
@@ -181,6 +181,7 @@ useEffect(()=>{
 
 loadProduct();
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[id]);
 
 
@@ -612,7 +613,7 @@ navigate(
 
 }
 
-catch(error){
+catch(_error){
 
 
 

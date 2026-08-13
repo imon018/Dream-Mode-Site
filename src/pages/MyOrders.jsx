@@ -97,7 +97,7 @@ useEffect(() => {
 
       }
 
-      catch (error) {
+      catch (_error) {
 
 
         errorToast(
@@ -515,7 +515,7 @@ const currentOrders = filteredOrders.slice(
 
           currentOrders.map((order)=>{
 
-            const item =
+            const _item =
               order.items?.[0];
 
             return(
