@@ -6,7 +6,7 @@ export default function Loading() {
 
       <h2 className="text-xl font-semibold">
 
-        Loading...
+        Loading Dream Mode...
 
       </h2>
 
