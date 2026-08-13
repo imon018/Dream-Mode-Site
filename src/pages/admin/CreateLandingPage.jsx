@@ -187,9 +187,8 @@ async function loadCategories(){
 
   }
 
-  catch(error){
-
-
+  catch (error) {
+    console.error(error);
   }
 
 }
@@ -436,10 +435,9 @@ await deleteImageFromCloudinary(
 removedPublicId
 );
 
-}catch(err){
-
-
-}
+}catch (err) {
+    console.error(err);
+  }
 
 }
 

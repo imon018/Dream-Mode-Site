@@ -25,7 +25,8 @@ export default function DesktopLandingPages({ data }) {
       await toggleLandingPageStatus(id, status);
       reload();
     } catch (error) {
-    }
+    console.error(error);
+  }
   }
 
 

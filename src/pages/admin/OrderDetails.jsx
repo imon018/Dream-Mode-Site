@@ -342,10 +342,9 @@ setOrder(found);
 
 }
 
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 finally{
 

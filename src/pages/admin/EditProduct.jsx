@@ -306,10 +306,9 @@ product.themeGradientDirection || "to right"
 
 }
 
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 
 finally{

@@ -119,10 +119,9 @@ export default function AddReturn() {
 
     }
 
-    catch(error){
-
-
-    }
+    catch (error) {
+    console.error(error);
+  }
 
   }
 
@@ -194,10 +193,9 @@ export default function AddReturn() {
 
       }
 
-      catch(error){
-
-
-      }
+      catch (error) {
+    console.error(error);
+  }
 
       finally{
 

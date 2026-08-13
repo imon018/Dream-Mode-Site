@@ -143,10 +143,9 @@ const data = await getProductsFromDB();
 setProducts(data);
 
 }
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 }
 
@@ -2484,7 +2483,7 @@ Account Number: <span className="font-semibold text-gray-800">{BKASH_NUMBER}</sp
 
 
 <label className="block text-xs text-gray-600 mb-1">
-Customer's bKash Account Number
+Customer&apos;s bKash Account Number
 </label>
 
 <input
@@ -2677,7 +2676,7 @@ Account Number: <span className="font-semibold text-gray-800">{NAGAD_NUMBER}</sp
 
 
 <label className="block text-xs text-gray-600 mb-1">
-Customer's Nagad Account Number
+Customer&apos;s Nagad Account Number
 </label>
 
 <input

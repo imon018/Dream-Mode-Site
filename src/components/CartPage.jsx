@@ -214,7 +214,7 @@ export default function CartPage() {
                 "
               >
 
-                Looks like you haven't added anything yet.
+                Looks like you haven&apos;t added anything yet.
 
               </p>
 

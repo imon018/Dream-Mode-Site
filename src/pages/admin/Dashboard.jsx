@@ -88,10 +88,9 @@ setOrders(ordersData);
 
 }
 
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 finally{
 

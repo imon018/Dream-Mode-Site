@@ -72,10 +72,9 @@ export default function ProductRating({
 
 
 
-      }catch(error){
-
-
-      }
+      }catch (error) {
+    console.error(error);
+  }
 
 
     };

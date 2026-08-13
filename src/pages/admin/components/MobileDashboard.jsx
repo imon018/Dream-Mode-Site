@@ -220,7 +220,7 @@ text-gray-500
 mt-1
 ">
 
-Here's what's happening with your store today.
+Here&apos;s what&apos;s happening with your store today.
 
 </p>
 

@@ -105,10 +105,9 @@ export default function ProductReviews({
       setReviews(data);
 
 
-    }catch(error){
-
-
-    }
+    }catch (error) {
+    console.error(error);
+  }
 
   };
 

@@ -53,9 +53,8 @@ export default function Hero() {
           );
 
         } catch (error) {
-
-
-        } finally {
+    console.error(error);
+  } finally {
 
           setLoading(false);
 

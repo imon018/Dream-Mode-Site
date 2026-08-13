@@ -10,7 +10,6 @@ import {
   FiAlignLeft,
   FiPackage,
   FiPhone,
-  FiDollarSign,
   FiTag,
   FiTrash2,
   FiUploadCloud,
@@ -146,10 +145,9 @@ setBanners(bannerData);
 
 }
 
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 };
 
@@ -419,10 +417,9 @@ await deleteImageFromCloudinary(
 target.imagePublicId
 );
 
-}catch(err){
-
-
-}
+}catch (err) {
+    console.error(err);
+  }
 
 }
 

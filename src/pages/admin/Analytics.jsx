@@ -50,7 +50,8 @@ export default function Analytics() {
         revenue,
       });
     } catch (err) {
-    }
+    console.error(err);
+  }
   };
 
   const cards = [

@@ -548,10 +548,9 @@ await deleteImageFromCloudinary(
 removedPublicId
 );
 
-}catch(err){
-
-
-}
+}catch (err) {
+    console.error(err);
+  }
 
 }
 

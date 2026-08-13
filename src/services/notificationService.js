@@ -12,7 +12,6 @@ import {
   orderBy,
   onSnapshot,
   getDocs,
-  limit,
 } from "firebase/firestore";
 
 /* ===========================================

@@ -76,9 +76,8 @@ async()=>{
 
     setPasskeys(list);
 
-  }catch(error){
-
-
+  }catch (error) {
+    console.error(error);
   }finally{
 
     setLoading(false);

@@ -249,12 +249,9 @@ userSnap.data().photoURL || "";
 
 }
 
-catch(error){
-
-
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 
 }
@@ -947,10 +944,9 @@ userSnap.data().photoURL || "";
 
 }
 
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 
 }

@@ -327,7 +327,7 @@ const currentNotifications = filteredNotifications.slice(
           </h2>
 
           <p className="text-gray-500 mt-2">
-            You're all caught up.
+            You&apos;re all caught up.
           </p>
         </div>
       ) : (

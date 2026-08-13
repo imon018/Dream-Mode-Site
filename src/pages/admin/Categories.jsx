@@ -151,10 +151,9 @@ export default function Categories() {
               oldCategory.imagePublicId
             );
 
-          }catch(err){
-
-
-          }
+          }catch (err) {
+    console.error(err);
+  }
 
         }
 
@@ -488,10 +487,9 @@ export default function Categories() {
                             category.imagePublicId
                           );
 
-                        }catch(err){
-
-
-                        }
+                        }catch (err) {
+    console.error(err);
+  }
 
                       }
 

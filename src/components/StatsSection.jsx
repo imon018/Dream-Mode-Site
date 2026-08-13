@@ -74,12 +74,9 @@ export default function StatsSection(){
 
 
 
-      }catch(error){
-
-
-
-
-      }finally{
+      }catch (error) {
+    console.error(error);
+  }finally{
 
 
         setLoading(false);

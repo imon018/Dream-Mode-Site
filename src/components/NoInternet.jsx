@@ -229,7 +229,7 @@ export default function NoInternet() {
           "
         >
 
-          You're Offline 😔
+          You&apos;re Offline 😔
 
         </h2>
 
@@ -245,7 +245,7 @@ export default function NoInternet() {
 
           No internet connection detected.
           <br/>
-          Some features are unavailable while you're offline.
+          Some features are unavailable while you&apos;re offline.
 
         </p>
 

@@ -65,10 +65,9 @@ setProducts(data);
 
 }
 
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 finally{
 
@@ -96,10 +95,9 @@ setDeleteId(null);
 loadProducts();
 
 }
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 }
 

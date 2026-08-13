@@ -54,11 +54,9 @@ export const saveSettings = async(data)=>{
 
 
   }
-  catch(error){
-
-
+  catch (error) {
+    console.error(error);
     throw error;
-
   }
 
 };
@@ -146,11 +144,9 @@ export const disableMaintenance = async()=>{
 
 
   }
-  catch(error){
-
-
+  catch (error) {
+    console.error(error);
     throw error;
-
   }
 
 };

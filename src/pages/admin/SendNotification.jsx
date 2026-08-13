@@ -61,10 +61,9 @@ export default function SendNotification() {
 
 
       }
-      catch(error){
-
-
-      }
+      catch (error) {
+    console.error(error);
+  }
 
 
     }

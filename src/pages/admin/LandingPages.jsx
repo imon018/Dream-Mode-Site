@@ -38,7 +38,8 @@ const itemsPerPage = 10;
 
       setLandingPages(data);
     } catch (error) {
-    } finally {
+    console.error(error);
+  } finally {
       setLoading(false);
     }
   }
@@ -51,7 +52,8 @@ const itemsPerPage = 10;
 
       loadLandingPages();
     } catch (error) {
-    }
+    console.error(error);
+  }
   }
 
   const filteredLandingPages = useMemo(() => {

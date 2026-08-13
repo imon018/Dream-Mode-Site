@@ -35,7 +35,7 @@ export default function Testimonials() {
               </div>
 
               <p className="mt-4 text-gray-600">
-                "{item.review}"
+                &quot;{item.review}&quot;
               </p>
 
               <h4 className="mt-6 font-semibold">

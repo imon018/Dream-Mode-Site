@@ -43,7 +43,8 @@ export default function Users() {
       const data = await getUsers(search);
       setUsers(data);
     } catch (error) {
-    } finally {
+    console.error(error);
+  } finally {
       setLoading(false);
     }
   }
@@ -54,7 +55,8 @@ export default function Users() {
       await loadUsers();
       setDeleteUserData(null);
     } catch (error) {
-    }
+    console.error(error);
+  }
   }
 
   async function confirmRoleChange() {
@@ -63,7 +65,8 @@ export default function Users() {
       await loadUsers();
       setRoleChangeData(null);
     } catch (error) {
-    }
+    console.error(error);
+  }
   }
 
   const filteredUsers =

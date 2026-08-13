@@ -24,7 +24,6 @@ import {
   FiX,
   FiDownload,
   FiChevronDown,
-  FiGrid,
   FiUser,
   FiUsers,
   FiBox,

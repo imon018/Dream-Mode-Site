@@ -22,9 +22,8 @@ import {
 } from "react-icons/fi";
 
 
-import {
-  functions
-} from "../firebase/functions";
+
+
 
 
 import Button from "../components/ui/Button";

@@ -18,7 +18,6 @@ import {
   FiShoppingBag,
   FiHeadphones,
   FiHome,
-  FiFileText,
 } from "react-icons/fi";
 
 

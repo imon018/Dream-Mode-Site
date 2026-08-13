@@ -87,10 +87,9 @@ export function SettingsProvider({
 
 
       }
-      catch(error){
-
-
-      }
+      catch (error) {
+    console.error(error);
+  }
       finally{
 
         setLoading(false);

@@ -256,10 +256,9 @@ setOrders(data || []);
 
 
 
-}catch(error){
-
-
-}
+}catch (error) {
+    console.error(error);
+  }
 
 finally{
 
@@ -329,10 +328,9 @@ order
 
 
 
-}catch(error){
-
-
-}
+}catch (error) {
+    console.error(error);
+  }
 
 
 };
@@ -411,7 +409,8 @@ const sendOrderToCourier = async (order, courierName) => {
     try {
       await updateOrderCourier(order.id, courierName);
     } catch (e) {
-    }
+    console.error(e);
+  }
 
     setOrders((prev) =>
       prev.map((o) =>

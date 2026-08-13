@@ -11,7 +11,6 @@ import {
 
 
 import {
- FiPackage,
  FiImage,
  FiArrowLeft
 } from "react-icons/fi";

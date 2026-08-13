@@ -106,10 +106,9 @@ banner.publicId
 
 
 }
-catch(error){
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 
 };
@@ -225,10 +224,9 @@ await deleteImageFromCloudinary(
 currentPublicId
 );
 
-}catch(err){
-
-
-}
+}catch (err) {
+    console.error(err);
+  }
 
 }
 

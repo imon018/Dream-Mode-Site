@@ -105,10 +105,9 @@ export default function Profile(){
               oldPhotoPublicId
             );
 
-          }catch(err){
-
-
-          }
+          }catch (err) {
+    console.error(err);
+  }
 
         }
 

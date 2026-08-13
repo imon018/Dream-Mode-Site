@@ -83,8 +83,7 @@ function loadStoredMessages(storageKey, welcomeMessage) {
     }
 
   } catch (error) {
-
-
+    console.error(error);
   }
 
   return [welcomeMessage];
@@ -162,7 +161,8 @@ function ProductCards({ products }) {
       setWishedId(p.id);
       setTimeout(() => setWishedId((cur) => (cur === p.id ? null : cur)), 2500);
     } catch (error) {
-    }
+    console.error(error);
+  }
 
   };
 
@@ -554,9 +554,8 @@ export default function AIChatWidget({
       }
 
     } catch (error) {
-
-
-    }
+    console.error(error);
+  }
 
   }, []);
 
@@ -579,7 +578,8 @@ export default function AIChatWidget({
           try {
             localStorage.setItem(GREETING_SHOWN_KEY, "1");
           } catch (error) {
-          }
+    console.error(error);
+  }
 
           hideTimer = setTimeout(() => setShowGreeting(false), 9000);
 
@@ -588,9 +588,8 @@ export default function AIChatWidget({
       }
 
     } catch (error) {
-
-
-    }
+    console.error(error);
+  }
 
     return () => {
       clearTimeout(showTimer);
@@ -660,7 +659,8 @@ export default function AIChatWidget({
       try {
         localStorage.setItem(WIDGET_POSITION_KEY, JSON.stringify(currentPosition));
       } catch (error) {
-      }
+    console.error(error);
+  }
 
       return currentPosition;
 
@@ -814,9 +814,8 @@ export default function AIChatWidget({
       localStorage.setItem(storageKey, JSON.stringify(messages));
 
     } catch (error) {
-
-
-    }
+    console.error(error);
+  }
 
   }, [messages]);
 

@@ -132,10 +132,9 @@ export default function AdminProfile(){
             oldPhotoPublicId
           );
 
-        }catch(err){
-
-
-        }
+        }catch (err) {
+    console.error(err);
+  }
 
       }
 

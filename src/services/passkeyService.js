@@ -364,9 +364,8 @@ export async function loginWithPasskey(){
       }
     );
 
-  }catch(err){
-
-
+  }catch (err) {
+    console.error(err);
   }
 
   if(role === "admin"){

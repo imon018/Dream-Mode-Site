@@ -93,13 +93,9 @@ export default function WishlistProvider({
 
 
 
-      }catch(error){
-
-
-
-
-
-      }finally{
+      }catch (error) {
+    console.error(error);
+  }finally{
 
 
         setLoading(false);

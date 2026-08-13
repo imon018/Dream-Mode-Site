@@ -119,12 +119,9 @@ data.logoUrl
 
 
 }
-catch(error){
-
-
-
-
-}
+catch (error) {
+    console.error(error);
+  }
 
 
 };
@@ -258,10 +255,9 @@ await deleteImageFromCloudinary(
 oldLogoPublicId
 );
 
-}catch(err){
-
-
-}
+}catch (err) {
+    console.error(err);
+  }
 
 }
 
