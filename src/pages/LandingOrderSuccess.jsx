@@ -136,7 +136,6 @@ setOrder({
 });
 
     } catch (error) {
-      console.log(error);
       setOrder(null);
     }
 

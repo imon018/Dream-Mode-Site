@@ -239,10 +239,6 @@ catch(error){
 
 
 
-console.log(
-"LOGIN ERROR:",
-error
-);
 
 
 
@@ -438,7 +434,6 @@ successToast(
 catch(error){
 
 
-console.log(error);
 
 
 

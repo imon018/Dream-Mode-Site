@@ -163,7 +163,6 @@ async function saveEdit(){
 
   catch(error){
 
-    console.log(error);
 
     errorToast("Update failed");
 
@@ -244,7 +243,6 @@ setOrder(found);
 
 catch(error){
 
-console.log(error);
 
 }
 
@@ -356,7 +354,6 @@ loadOrder();
 catch(error){
 
 
-console.log(error);
 
 
 

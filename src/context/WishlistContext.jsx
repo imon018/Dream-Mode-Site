@@ -96,7 +96,6 @@ export default function WishlistProvider({
       }catch(error){
 
 
-        console.log(error);
 
 
 
@@ -254,7 +253,6 @@ export default function WishlistProvider({
     }catch(error){
 
 
-      console.log(error);
 
 
       errorToast(
@@ -303,7 +301,6 @@ const removeFromWishlist = async(
 
   }catch(error){
 
-    console.log(error);
 
 
     errorToast(

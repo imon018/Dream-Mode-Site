@@ -235,7 +235,6 @@ setMessage(
 catch(error){
 
 
-console.log(error);
 
 
 errorToast(
@@ -425,7 +424,6 @@ navigate(
 catch(error){
 
 
-console.log(error);
 
 
 

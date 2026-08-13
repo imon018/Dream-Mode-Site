@@ -107,7 +107,6 @@ export default function ProductReviews({
 
     }catch(error){
 
-      console.log(error);
 
     }
 
@@ -314,7 +313,6 @@ if (images.length > 0) {
     }catch(error){
 
 
-      console.log(error);
 
 
       errorToast(

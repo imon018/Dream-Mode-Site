@@ -84,7 +84,6 @@ function loadStoredMessages(storageKey, welcomeMessage) {
 
   } catch (error) {
 
-    console.log("AI CHAT WIDGET — history load failed:", error);
 
   }
 
@@ -163,7 +162,6 @@ function ProductCards({ products }) {
       setWishedId(p.id);
       setTimeout(() => setWishedId((cur) => (cur === p.id ? null : cur)), 2500);
     } catch (error) {
-      console.log("AI CHAT WIDGET — wishlist add failed:", error);
     }
 
   };
@@ -557,7 +555,6 @@ export default function AIChatWidget({
 
     } catch (error) {
 
-      console.log("AI CHAT WIDGET — position load failed:", error);
 
     }
 
@@ -582,7 +579,6 @@ export default function AIChatWidget({
           try {
             localStorage.setItem(GREETING_SHOWN_KEY, "1");
           } catch (error) {
-            console.log("AI CHAT WIDGET — greeting flag save failed:", error);
           }
 
           hideTimer = setTimeout(() => setShowGreeting(false), 9000);
@@ -593,7 +589,6 @@ export default function AIChatWidget({
 
     } catch (error) {
 
-      console.log("AI CHAT WIDGET — greeting flag load failed:", error);
 
     }
 
@@ -665,7 +660,6 @@ export default function AIChatWidget({
       try {
         localStorage.setItem(WIDGET_POSITION_KEY, JSON.stringify(currentPosition));
       } catch (error) {
-        console.log("AI CHAT WIDGET — position save failed:", error);
       }
 
       return currentPosition;
@@ -821,7 +815,6 @@ export default function AIChatWidget({
 
     } catch (error) {
 
-      console.log("AI CHAT WIDGET — history save failed:", error);
 
     }
 
@@ -1052,7 +1045,6 @@ export default function AIChatWidget({
 
     } catch (error) {
 
-      console.log("AI CHAT WIDGET ERROR:", error);
 
       setMessages((prev) => [
         ...prev,

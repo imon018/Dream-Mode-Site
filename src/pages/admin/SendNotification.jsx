@@ -63,10 +63,6 @@ export default function SendNotification() {
       }
       catch(error){
 
-        console.log(
-          "Load Users Error:",
-          error
-        );
 
       }
 
@@ -216,10 +212,6 @@ export default function SendNotification() {
     catch(error){
 
 
-      console.log(
-        "Notification Send Error:",
-        error
-      );
 
 
       alert(

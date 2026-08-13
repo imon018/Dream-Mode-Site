@@ -38,7 +38,6 @@ const itemsPerPage = 10;
 
       setLandingPages(data);
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -52,7 +51,6 @@ const itemsPerPage = 10;
 
       loadLandingPages();
     } catch (error) {
-      console.log(error);
     }
   }
 

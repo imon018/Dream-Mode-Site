@@ -148,7 +148,6 @@ setBanners(bannerData);
 
 catch(error){
 
-console.log(error);
 
 }
 
@@ -371,7 +370,6 @@ loadData();
 catch(error){
 
 
-console.log(error);
 
 
 errorToast(
@@ -423,10 +421,6 @@ target.imagePublicId
 
 }catch(err){
 
-console.log(
-"Banner image delete failed",
-err
-);
 
 }
 

@@ -56,10 +56,6 @@ export const saveSettings = async(data)=>{
   }
   catch(error){
 
-    console.log(
-      "Save settings error:",
-      error
-    );
 
     throw error;
 
@@ -113,10 +109,6 @@ export const getSettings = async()=>{
   }
   catch(error){
 
-    console.log(
-      "Get settings error:",
-      error
-    );
 
 
     return {
@@ -156,10 +148,6 @@ export const disableMaintenance = async()=>{
   }
   catch(error){
 
-    console.log(
-      "Disable maintenance error:",
-      error
-    );
 
     throw error;
 

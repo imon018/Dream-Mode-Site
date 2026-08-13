@@ -153,10 +153,6 @@ export default function Categories() {
 
           }catch(err){
 
-            console.log(
-              "Old category image delete failed",
-              err
-            );
 
           }
 
@@ -200,7 +196,6 @@ export default function Categories() {
 
     catch(err){
 
-      console.log(err);
 
       errorToast(
         "Something went wrong."
@@ -495,10 +490,6 @@ export default function Categories() {
 
                         }catch(err){
 
-                          console.log(
-                            "Category image delete failed",
-                            err
-                          );
 
                         }
 

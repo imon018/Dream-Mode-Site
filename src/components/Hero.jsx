@@ -54,7 +54,6 @@ export default function Hero() {
 
         } catch (error) {
 
-          console.log(error);
 
         } finally {
 

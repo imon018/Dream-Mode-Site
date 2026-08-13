@@ -48,17 +48,11 @@ export async function runUpdateManager() {
 
     if (!hasUpdate) {
 
-      console.log(
-        "No update required"
-      );
 
       pushDebugLog("runUpdateManager: no newer update (shouldServe=" + shouldServe + ")");
 
     } else {
 
-      console.log(
-        "Downloading new frontend..."
-      );
 
 
       const downloaded =
@@ -81,9 +75,6 @@ export async function runUpdateManager() {
 
         if (!extracted.success) {
 
-          console.log(
-            "Extraction failed"
-          );
 
           pushDebugLog("runUpdateManager: extraction failed, keeping previous local package if any");
 
@@ -117,10 +108,6 @@ export async function runUpdateManager() {
 
     if (server.available) {
 
-      console.log(
-        "Update applied:",
-        server.url
-      );
 
       pushDebugLog("runUpdateManager: SUCCESS, redirecting to " + server.url);
 
@@ -137,10 +124,6 @@ export async function runUpdateManager() {
   } catch(error) {
 
 
-    console.log(
-      "Update manager failed",
-      error
-    );
 
     pushDebugLog("runUpdateManager: ERROR " + (error && error.message ? error.message : String(error)));
 

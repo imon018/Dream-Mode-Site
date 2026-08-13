@@ -99,7 +99,6 @@ useEffect(() => {
 
       catch (error) {
 
-        console.log(error);
 
         errorToast(
           "Failed to load orders."

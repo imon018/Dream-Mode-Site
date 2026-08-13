@@ -209,7 +209,6 @@ goNext();
 catch(error){
 
 
-console.log(error);
 
 
 let message =

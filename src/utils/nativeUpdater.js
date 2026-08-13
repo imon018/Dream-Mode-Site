@@ -17,10 +17,6 @@ export async function getNativeUpdatePath() {
 
     if (result.available) {
 
-      console.log(
-        "Using local update server:",
-        result.url
-      );
 
       return result.url;
     }
@@ -31,10 +27,6 @@ export async function getNativeUpdatePath() {
 
   } catch(error) {
 
-    console.log(
-      "Native update server failed",
-      error
-    );
 
     return null;
   }

@@ -89,10 +89,6 @@ export function SettingsProvider({
       }
       catch(error){
 
-        console.log(
-          "Settings load error:",
-          error
-        );
 
       }
       finally{

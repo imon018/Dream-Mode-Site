@@ -289,7 +289,6 @@ item.quantity || 1
 catch(error){
 
 
-console.log(error);
 
 
 errorToast(
@@ -2845,7 +2844,6 @@ navigate(
 catch(error){
 
 
-console.log(error);
 
 
 errorToast(

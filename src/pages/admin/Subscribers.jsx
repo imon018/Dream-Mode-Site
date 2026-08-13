@@ -85,7 +85,6 @@ setSubscribers(data);
 
 catch(error){
 
-console.log(error);
 
 }
 

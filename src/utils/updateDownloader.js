@@ -10,7 +10,6 @@ export async function downloadUpdate() {
 
   try {
 
-    console.log("Downloading update...");
     pushDebugLog("downloadUpdate: fetching app.zip...");
 
 
@@ -58,9 +57,6 @@ export async function downloadUpdate() {
     });
 
 
-    console.log(
-      "Update downloaded"
-    );
 
     pushDebugLog("downloadUpdate: written to Filesystem OK");
 
@@ -70,10 +66,6 @@ export async function downloadUpdate() {
 
   } catch(error){
 
-    console.log(
-      "Download failed",
-      error
-    );
 
     pushDebugLog("downloadUpdate: ERROR " + (error && error.message ? error.message : String(error)));
 

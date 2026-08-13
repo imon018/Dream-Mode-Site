@@ -108,7 +108,6 @@ banner.publicId
 }
 catch(error){
 
-console.log(error);
 
 }
 
@@ -228,10 +227,6 @@ currentPublicId
 
 }catch(err){
 
-console.log(
-"Old banner delete failed",
-err
-);
 
 }
 

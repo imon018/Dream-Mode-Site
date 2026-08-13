@@ -3,6 +3,8 @@ import {
   useState,
 } from "react";
 
+import { DEFAULT_DELIVERY_CHARGE } from "../utils/constants";
+
 import {
   useNavigate,
 } from "react-router-dom";
@@ -99,7 +101,7 @@ export default function Checkout(){
 
   // ---------- DELIVERY CHARGE ----------
 
-  const [deliveryCharge, setDeliveryCharge] = useState(80);
+  const [deliveryCharge, setDeliveryCharge] = useState(DEFAULT_DELIVERY_CHARGE);
 
 
 

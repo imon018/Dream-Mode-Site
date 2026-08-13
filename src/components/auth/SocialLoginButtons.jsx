@@ -71,7 +71,6 @@ export default function SocialLoginButtons({ onAuthenticated }) {
 
     } catch (error) {
 
-      console.log("SOCIAL LOGIN ERROR:", error);
 
       let message = "লগইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন.";
 

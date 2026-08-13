@@ -122,7 +122,6 @@ data.logoUrl
 catch(error){
 
 
-console.log(error);
 
 
 }
@@ -261,10 +260,6 @@ oldLogoPublicId
 
 }catch(err){
 
-console.log(
-"Old logo delete failed",
-err
-);
 
 }
 
@@ -283,7 +278,6 @@ alert(
 catch(error){
 
 
-console.log(error);
 
 
 

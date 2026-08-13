@@ -6,5 +6,4 @@
 // drawing anything on screen.
 
 export function pushDebugLog(message) {
-  console.log("[update-debug]", message);
 }

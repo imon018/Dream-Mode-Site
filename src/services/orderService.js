@@ -252,10 +252,6 @@ userSnap.data().photoURL || "";
 catch(error){
 
 
-console.log(
-"Failed to load customer photo:",
-error
-);
 
 
 }
@@ -953,10 +949,6 @@ userSnap.data().photoURL || "";
 
 catch(error){
 
-console.log(
-"Photo load error:",
-error
-);
 
 }
 

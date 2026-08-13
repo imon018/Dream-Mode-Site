@@ -258,7 +258,6 @@ setOrders(data || []);
 
 }catch(error){
 
-console.log(error);
 
 }
 
@@ -332,7 +331,6 @@ order
 
 }catch(error){
 
-console.log(error);
 
 }
 
@@ -380,7 +378,6 @@ const sendOrderToCourier = async (order, courierName) => {
 
     }
 
-    console.log(`${courierName} Response:`, result);
 
     // Courrierfast ভ্যালিডেশন ফেইল হলে "Validation Error" ছাড়া কিছুই
     // দেখা যাচ্ছিল না — আসল কারণটা কোন key-তে আছে সেটা এখনো অজানা,
@@ -414,7 +411,6 @@ const sendOrderToCourier = async (order, courierName) => {
     try {
       await updateOrderCourier(order.id, courierName);
     } catch (e) {
-      console.log(e);
     }
 
     setOrders((prev) =>

@@ -4,6 +4,8 @@ import {
   useState
 } from "react";
 
+import { DEFAULT_DELIVERY_CHARGE } from "../../utils/constants";
+
 
 import {
   useNavigate
@@ -103,7 +105,7 @@ const [selectedProducts,setSelectedProducts]=useState([]);
 
 const [discount,setDiscount]=useState(0);
 
-const [deliveryCharge,setDeliveryCharge]=useState(80);
+const [deliveryCharge,setDeliveryCharge]=useState(DEFAULT_DELIVERY_CHARGE);
 
 
 // ---------- PAYMENT METHOD ----------
@@ -143,7 +145,6 @@ setProducts(data);
 }
 catch(error){
 
-console.log(error);
 
 }
 

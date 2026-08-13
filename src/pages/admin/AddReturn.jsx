@@ -121,7 +121,6 @@ export default function AddReturn() {
 
     catch(error){
 
-      console.log(error);
 
     }
 
@@ -197,7 +196,6 @@ export default function AddReturn() {
 
       catch(error){
 
-        console.log(error);
 
       }
 
@@ -294,7 +292,6 @@ export default function AddReturn() {
 
       catch(error){
 
-        console.log(error);
 
         setSelectedUserOrders([]);
 
@@ -772,7 +769,6 @@ export default function AddReturn() {
 
     catch(error){
 
-      console.log(error);
 
       errorToast(
 

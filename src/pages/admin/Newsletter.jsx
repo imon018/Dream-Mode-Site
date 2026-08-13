@@ -39,7 +39,6 @@ export default function Newsletter() {
 
     } catch (error) {
 
-      console.log(error);
 
       errorToast("Failed to load subscribers.");
 

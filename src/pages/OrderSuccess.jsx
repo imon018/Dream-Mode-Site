@@ -142,7 +142,6 @@ export default function OrderSuccess(){
         });
 
       } catch (error) {
-        console.log(error);
         setOrder(null);
       } finally {
         setLoading(false);

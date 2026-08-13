@@ -77,7 +77,6 @@ export default function StatsSection(){
       }catch(error){
 
 
-        console.log(error);
 
 
       }finally{

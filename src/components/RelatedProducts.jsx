@@ -76,7 +76,6 @@ export default function RelatedProducts({
 
       }catch(error){
 
-        console.log(error);
 
       }
 

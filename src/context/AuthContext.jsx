@@ -194,7 +194,6 @@ try{
 }catch(error){
 
 
-  console.log(error);
 
 
 }
@@ -264,7 +263,6 @@ userData
 }catch(error){
 
 
-console.log(error);
 
 
 

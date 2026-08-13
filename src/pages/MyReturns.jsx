@@ -150,7 +150,6 @@ setOrders(sorted);
 catch(error){
 
 
-console.log(error);
 
 
 errorToast(

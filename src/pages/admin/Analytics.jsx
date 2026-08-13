@@ -50,7 +50,6 @@ export default function Analytics() {
         revenue,
       });
     } catch (err) {
-      console.log(err);
     }
   };
 

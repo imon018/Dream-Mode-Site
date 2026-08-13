@@ -25,7 +25,6 @@ export default function MobileLandingPages({ data }) {
       await toggleLandingPageStatus(id, status);
       reload();
     } catch (err) {
-      console.log(err);
     }
   }
 

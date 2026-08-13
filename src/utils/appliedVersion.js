@@ -54,10 +54,6 @@ export async function setAppliedVersion(version) {
 
   } catch (error) {
 
-    console.log(
-      "Failed to persist applied OTA version",
-      error
-    );
 
     return false;
   }

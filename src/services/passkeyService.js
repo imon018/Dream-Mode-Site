@@ -125,7 +125,6 @@ export async function registerPasskey(customLabel){
 
   }catch(error){
 
-    console.log("PASSKEY REGISTRATION ERROR:", error);
 
     if(error.name === "InvalidStateError"){
 
@@ -240,7 +239,6 @@ export async function loginWithPasskey(){
 
   }catch(error){
 
-    console.log("PASSKEY LOGIN (BROWSER) ERROR:", error);
 
     // Android-এ Chrome/Google Play Services-এর Credential Manager-এর
     // একটা পরিচিত, মাঝে মাঝে হওয়া bug আছে (NotReadableError/AbortError
@@ -277,7 +275,6 @@ export async function loginWithPasskey(){
 
   }catch(error){
 
-    console.log("PASSKEY LOGIN (VERIFY) ERROR:", error);
 
     if(
       error.message?.includes("PASSKEY_NOT_SETUP")
@@ -320,7 +317,6 @@ export async function loginWithPasskey(){
       // (যেমন rpID/origin mismatch, বা createCustomToken/IAM
       // permission সমস্যা)। আগে এই তথ্যটা সব সময় একটা generic
       // মেসেজ দিয়ে চাপা পড়ে যেত, যার কারণে আসল সমস্যা ধরা যাচ্ছিল না।
-      console.log("PASSKEY LOGIN DETAILED ERROR:", error.message);
 
       throw new Error(
         "Passkey Login করা যায়নি। কারিগরি বিস্তারিত: " +
@@ -335,7 +331,6 @@ export async function loginWithPasskey(){
 
     // শুধুমাত্র সত্যিকারের অজানা/নেটওয়ার্ক সমস্যার ক্ষেত্রেই এই generic
     // মেসেজ দেখানো হবে এখন। console-এ আসল error টা দেখা যাবে debug করার জন্য।
-    console.log("PASSKEY LOGIN UNMAPPED ERROR:", error);
 
     throw new Error(
       "ডিভাইস/ব্রাউজারে সাময়িক একটা সমস্যা হচ্ছে Passkey যাচাই করতে। " +
@@ -371,7 +366,6 @@ export async function loginWithPasskey(){
 
   }catch(err){
 
-    console.log(err);
 
   }
 
@@ -380,13 +374,13 @@ export async function loginWithPasskey(){
     await notifyAdminLogin({
       uid: result.user.uid,
       displayName: result.user.displayName || "Admin",
-    }).catch((err)=>console.log(err));
+    }).catch((err)=>console.error(err));
 
   }else{
 
     await notifyUserLogin({
       uid: result.user.uid,
-    }).catch((err)=>console.log(err));
+    }).catch((err)=>console.error(err));
 
   }
 

@@ -307,7 +307,6 @@ untilTimestamp
 catch(error){
 
 
-console.log(error);
 
 
 

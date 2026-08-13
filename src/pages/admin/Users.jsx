@@ -43,7 +43,6 @@ export default function Users() {
       const data = await getUsers(search);
       setUsers(data);
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -55,7 +54,6 @@ export default function Users() {
       await loadUsers();
       setDeleteUserData(null);
     } catch (error) {
-      console.log(error);
     }
   }
 
@@ -65,7 +63,6 @@ export default function Users() {
       await loadUsers();
       setRoleChangeData(null);
     } catch (error) {
-      console.log(error);
     }
   }
 

@@ -86,7 +86,6 @@ setOrder(found);
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 "Failed to load return details"

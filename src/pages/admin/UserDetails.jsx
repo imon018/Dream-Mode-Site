@@ -100,7 +100,6 @@ setOrders(orderData || []);
 }
 catch(error){
 
-console.log(error);
 
 }
 finally{

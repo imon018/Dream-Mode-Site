@@ -18,24 +18,16 @@ export async function checkForUpdate() {
     pushDebugLog("checkForUpdate: remoteVersion=" + remote.version);
 
     if (remote.version !== currentVersion) {
-      console.log(
-        "New update available:",
-        remote.version
-      );
 
       pushDebugLog("checkForUpdate: hasUpdate=true");
 
       return { hasUpdate: true, version: remote.version };
     }
 
-    console.log("App is latest version");
     pushDebugLog("checkForUpdate: hasUpdate=false (versions match)");
     return { hasUpdate: false, version: remote.version };
 
   } catch (error) {
-    console.log(
-      "Update check failed, using local app"
-    );
 
     pushDebugLog("checkForUpdate: ERROR " + (error && error.message ? error.message : String(error)));
 

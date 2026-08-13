@@ -294,7 +294,6 @@ request.images || []
 catch(error){
 
 
-console.log(error);
 
 
 
@@ -1908,7 +1907,6 @@ await loadReturn();
 catch(error){
 
 
-console.log(error);
 
 
 

@@ -78,7 +78,6 @@ async()=>{
 
   }catch(error){
 
-    console.log(error);
 
   }finally{
 
@@ -129,7 +128,6 @@ async()=>{
 
   }catch(error){
 
-    console.log(error);
 
     errorToast(
       error.message ||
@@ -175,7 +173,6 @@ async(id)=>{
 
   }catch(error){
 
-    console.log(error);
 
     errorToast(
       "Passkey রিমুভ করা যায়নি।"

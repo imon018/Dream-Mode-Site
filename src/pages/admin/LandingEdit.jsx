@@ -175,7 +175,6 @@ async function loadProducts(){
 
   catch(error){
 
-    console.log(error);
 
     errorToast(
       "Failed to load products."
@@ -298,7 +297,6 @@ async function loadLanding() {
 
   } catch (error) {
 
-    console.log(error);
 
     errorToast(
       "Failed to load Landing Page."
@@ -496,7 +494,6 @@ successToast(
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 
@@ -553,10 +550,6 @@ removedPublicId
 
 }catch(err){
 
-console.log(
-"Hero image delete failed",
-err
-);
 
 }
 
@@ -792,7 +785,6 @@ navigate("/admin/landing");
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 

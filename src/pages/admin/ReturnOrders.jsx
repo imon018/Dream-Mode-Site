@@ -108,7 +108,6 @@ setOrders(data || []);
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 "Failed to load return orders"
@@ -176,7 +175,6 @@ successToast(
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 "Status update failed"
@@ -222,7 +220,6 @@ setDeleteId(null);
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 "Delete failed"

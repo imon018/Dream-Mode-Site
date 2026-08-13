@@ -246,7 +246,6 @@ async function saveEdit(){
 
   catch(error){
 
-    console.log(error);
 
     errorToast("Update failed");
 
@@ -345,7 +344,6 @@ setOrder(found);
 
 catch(error){
 
-console.log(error);
 
 }
 
@@ -392,7 +390,6 @@ successToast(
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 "Update failed"
@@ -436,7 +433,6 @@ successToast(
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 "Payment update failed"
@@ -464,7 +460,6 @@ navigate("/admin/orders");
 
 catch(error){
 
-console.log(error);
 
 errorToast("Delete failed");
 

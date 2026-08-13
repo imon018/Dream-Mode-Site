@@ -198,7 +198,6 @@ export async function getLatestReviews(
     }
   } catch (error) {
     // Guest user বা permission error হলেও review দেখাবে
-    console.log("Profile sync skipped:", error);
   }
 }
 

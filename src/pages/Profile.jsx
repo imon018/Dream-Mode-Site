@@ -107,10 +107,6 @@ export default function Profile(){
 
           }catch(err){
 
-            console.log(
-              "Old photo delete failed",
-              err
-            );
 
           }
 
@@ -124,7 +120,6 @@ export default function Profile(){
 
       }catch(err){
 
-        console.log(err);
 
         alert(
           "Upload failed"

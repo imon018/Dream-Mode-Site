@@ -308,7 +308,6 @@ export default function AddProduct() {
         }
         catch(bannerError){
 
-          console.log(bannerError);
 
           errorToast(
             "Product saved, but adding to Hero Banner failed."
@@ -362,7 +361,6 @@ export default function AddProduct() {
 
     catch(error){
 
-      console.log(error);
 
       setLoading(false);
 

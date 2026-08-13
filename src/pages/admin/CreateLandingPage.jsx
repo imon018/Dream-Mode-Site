@@ -167,7 +167,6 @@ async function loadProducts(){
 
   catch(error){
 
-    console.log(error);
 
     errorToast(
       "Failed to load products."
@@ -190,7 +189,6 @@ async function loadCategories(){
 
   catch(error){
 
-    console.log(error);
 
   }
 
@@ -384,7 +382,6 @@ successToast(
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 
@@ -441,10 +438,6 @@ removedPublicId
 
 }catch(err){
 
-console.log(
-"Hero image delete failed",
-err
-);
 
 }
 
@@ -695,7 +688,6 @@ navigate(
 
 catch(error){
 
-console.log(error);
 
 errorToast(
 

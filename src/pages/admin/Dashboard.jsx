@@ -90,7 +90,6 @@ setOrders(ordersData);
 
 catch(error){
 
-console.log(error);
 
 }
 

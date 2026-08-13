@@ -28,7 +28,6 @@ async function applyUpdateIfAvailable() {
     const updatePath = await runUpdateManager();
 
     if (updatePath) {
-      console.log("Loading updated frontend:", updatePath);
       pushDebugLog("main.jsx: navigating to " + updatePath + " ...");
       window.location.replace(updatePath);
     }

@@ -165,7 +165,6 @@ successToast(
 }
 catch(error){
 
-console.log(error);
 
 errorToast(
 error.message ||
@@ -496,7 +495,6 @@ untilTimestamp
 catch(error){
 
 
-console.log(error);
 
 
 

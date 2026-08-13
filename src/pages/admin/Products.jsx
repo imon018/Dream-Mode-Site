@@ -67,7 +67,6 @@ setProducts(data);
 
 catch(error){
 
-console.log(error);
 
 }
 
@@ -99,7 +98,6 @@ loadProducts();
 }
 catch(error){
 
-console.log(error);
 
 }
 
