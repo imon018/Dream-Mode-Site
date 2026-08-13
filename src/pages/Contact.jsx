@@ -15,7 +15,7 @@ import {
 
 
 export default function Contact() {
-
+  const { settings } = useSettings();
 
   const submitHandler = (e) => {
 
