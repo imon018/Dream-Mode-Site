@@ -567,8 +567,15 @@ whitespace-nowrap
               <div className="space-y-3 mt-2">
 
   {(product.description || "")
-    .split("\n")
-    .filter(line => line.trim() !== "")
+    // এন্টার (নিউলাইন) দিলে যেন নতুন টিক-মার্ক আইটেম না হয় — এন্টারকে
+    // শুধু একটা স্পেস হিসেবে ট্রিট করা হচ্ছে (লাইন জোড়া লেগে যাবে)।
+    // নতুন আইটেম তৈরি হবে শুধু তখনই যখন পরপর ২টা (বা বেশি) স্পেস
+    // (ডাবল স্পেস) দেওয়া হবে।
+    .replace(/\r\n/g, "\n")
+    .replace(/\n/g, " ")
+    .split(/ {2,}/)
+    .map(line => line.trim())
+    .filter(line => line !== "")
     .map((line, index) => (
 
       <div
