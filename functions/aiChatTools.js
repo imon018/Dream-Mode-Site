@@ -109,43 +109,60 @@ async function searchProducts({ query, category }) {
 
     const p = doc.data();
 
-    const haystack = [
-      p.name,
-      p.title,
-      p.category,
-      p.description,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    const name = (p.name || p.title || "").toLowerCase();
+    const category = (p.category || "").toLowerCase();
+    const description = (p.description || "").toLowerCase();
 
-    const matches =
-      !terms.length ||
-      terms.some((term) => haystack.includes(term));
+    const product = {
+      id: doc.id,
+      name: p.name || p.title || "Unnamed",
+      category: p.category || "",
+      price: p.price ?? 0,
+      offerPrice: p.offerPrice || 0,
+      stock: p.stock ?? 0,
+      inStock: (p.stock ?? 0) > 0,
+      image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
+    };
 
-    if (matches) {
+    if (!terms.length) {
+      // কোনো সার্চ টার্ম দেওয়া হয়নি — সব প্রোডাক্টই সমান relevance-এ
+      // রাখা হচ্ছে (খুব কম ব্যবহৃত হয়, safety fallback)।
+      results.push({ score: 1, product });
+      return;
+    }
 
-      results.push({
-        id: doc.id,
-        name: p.name || p.title || "Unnamed",
-        category: p.category || "",
-        price: p.price ?? 0,
-        offerPrice: p.offerPrice || 0,
-        stock: p.stock ?? 0,
-        inStock: (p.stock ?? 0) > 0,
-        image: p.image || (Array.isArray(p.images) ? p.images[0] : "") || "",
-      });
+    // নাম/টাইটেলে মিললে সবচেয়ে বেশি গুরুত্ব (score 3), category-তে
+    // মিললে মাঝারি (score 2), শুধু description-এ মিললে সবচেয়ে কম
+    // (score 1) — এতে একটা নির্দিষ্ট প্রোডাক্টের নামের সাথে সরাসরি
+    // মিলে যাওয়া রেজাল্ট, শুধু কোনো সাধারণ শব্দ description-এ থাকা
+    // (আরও অনেক অপ্রাসঙ্গিক প্রোডাক্টে মিলে যাওয়া) রেজাল্টের চেয়ে
+    // ওপরে থাকবে — কাস্টমার একটা নির্দিষ্ট প্রোডাক্ট খুঁজলে (যেমন
+    // ছবি দিয়ে সার্চ), পুরো দোকানের অর্ধেক প্রোডাক্ট না এসে
+    // সবচেয়ে প্রাসঙ্গিক কয়েকটাই আগে আসবে।
+    let score = 0;
+
+    for (const term of terms) {
+
+      if (name.includes(term)) score += 3;
+      else if (category.includes(term)) score += 2;
+      else if (description.includes(term)) score += 1;
 
     }
 
+    if (score > 0) {
+      results.push({ score, product });
+    }
 
   });
 
-  // AI-কে বেশি টোকেন খরচ না করিয়ে সবচেয়ে প্রাসঙ্গিক ১০টা রেজাল্ট।
-  // এই একই লিস্ট frontend-এ প্রোডাক্ট কার্ড রেন্ডার করতেও ব্যবহার
-  // হবে (aiChat.js orchestrator এটা কালেক্ট করে রাখে), তাই id/image
-  // বাদ দেওয়া যাবে না — শুধু চ্যাট টেক্সটে id দেখানো হয় না।
-  return results.slice(0, 10);
+  // সবচেয়ে প্রাসঙ্গিক (বেশি score) আগে, তারপর সর্বোচ্চ ৬টা রেজাল্ট
+  // — আগে ১০টা arbitrary ক্রমে (Firestore-এর ডিফল্ট order) ফেরত
+  // যেত, যার ফলে একটা নির্দিষ্ট প্রোডাক্ট খোঁজার সময়ও দোকানের প্রায়
+  // সব প্রোডাক্ট একসাথে দেখানো হতো। এখন সবচেয়ে কাছাকাছি মিলগুলোই
+  // আগে, এবং সংখ্যাও কম রাখা হচ্ছে।
+  results.sort((a, b) => b.score - a.score);
+
+  return results.slice(0, 6).map((r) => r.product);
 
 }
 
