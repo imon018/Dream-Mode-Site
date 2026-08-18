@@ -96,6 +96,15 @@ const SYSTEM_PROMPT = `
 - হুবহু মিল না পেলে সেটা সততার সাথে বলুন (যেমন: "একদম এই
   ডিজাইনটা নেই, তবে কাছাকাছি এগুলো আছে") — কখনো ছবির সাথে
   "হুবহু মিলে গেছে" বলে দাবি করবেন না যদি নিশ্চিত না হন।
+- search_products-এর query-তে শুধু একটা সাধারণ/generic শব্দ
+  (যেমন খালি "gold" বা "শাড়ি") না দিয়ে, ছবিতে যা দেখেছেন তার
+  কয়েকটা নির্দিষ্ট বৈশিষ্ট্য (রঙ + ধরন + material/style, যেমন
+  "gold pearl necklace set") একসাথে জুড়ে দিন — এতে tool সবচেয়ে
+  কাছাকাছি মিলগুলোই আগে ফেরত দেবে, পুরো দোকানের এলোমেলো অনেক
+  প্রোডাক্ট না। কাস্টমার একটা নির্দিষ্ট প্রোডাক্ট (ছবি দেখিয়ে
+  "এইটা আছে?") জিজ্ঞেস করলে, রেজাল্টে যতগুলোই আসুক, টেক্সটে ও
+  সাজেশনে শুধু সবচেয়ে কাছাকাছি ১-২টা প্রোডাক্টের কথাই উল্লেখ
+  করুন — পুরো লিস্ট (৫-৬টা ভিন্ন ধরনের প্রোডাক্ট) না দেখিয়ে।
 
 সাইজ সম্পর্কিত প্রশ্ন:
 - এই স্টোরের প্রোডাক্ট ডেটাবেসে আলাদা সাইজ/ভ্যারিয়েন্ট তথ্য রাখা
@@ -858,6 +867,80 @@ async function runConversation({ attempt, genericMessages, uid }) {
 
 }
 
+// -------------------------------------------------
+// নিরাপত্তা নেট (deterministic, মডেলের উপর নির্ভর না করে):
+// মডেল কখনো কখনো নির্দেশ উপেক্ষা করে নিজে থেকে একটা ফোন/WhatsApp
+// নাম্বার "বানিয়ে" বলে ফেলতে পারে (বিশেষত ছোট fallback মডেল
+// ব্যবহার হলে) — যেমন একটা সাধারণ প্লেসহোল্ডার নাম্বার
+// (+8801700000000 টাইপ) হুবহু কল্পনা করে বলে দেওয়া। এটা ঠেকাতে,
+// রিপ্লাই টেক্সটে কোনো ফোন/WhatsApp নাম্বার বা wa.me লিংক থাকলে,
+// আর একই টার্নে সত্যিই get_admin_contact কল করে real ডেটা
+// (adminContact) পাওয়া না গেলে — পুরো রিপ্লাইটাই বাতিল করে
+// get_admin_contact নিজে থেকে কল করে সঠিক তথ্য দিয়ে রিপ্লাই
+// বসিয়ে দেওয়া হচ্ছে। এতে কাস্টমার কখনোই ভুয়া নাম্বার দেখবে না।
+// -------------------------------------------------
+const WA_LINK_PATTERN = /wa\.me\/\d{6,}/i;
+const PHONE_LIKE_PATTERN = /(?:\+?\d[\d\s-]{7,}\d)/;
+const ADMIN_CONTACT_KEYWORDS =
+  /(admin|এডমিন|administrator|whatsapp|হোয়াটসঅ্যাপ)/i;
+
+// টেক্সটে সত্যিই Admin/WhatsApp নাম্বার সংক্রান্ত কোনো দাবি আছে কিনা
+// — শুধু কোনো ফোন-সদৃশ সংখ্যা থাকলেই ধরা হচ্ছে না (কাস্টমারের নিজের
+// ফোন নাম্বার/অর্ডার আইডি order confirmation-এ থাকতে পারে, সেটা
+// ভুলভাবে মুছে ফেলা ঠিক না) — শুধু wa.me লিংক থাকলে, অথবা ফোন-সদৃশ
+// সংখ্যার পাশাপাশি "Admin"/"WhatsApp" জাতীয় শব্দও থাকলে ধরা হবে।
+function mightBeAdminContactClaim(text) {
+
+  if (!text) return false;
+
+  if (WA_LINK_PATTERN.test(text)) return true;
+
+  return PHONE_LIKE_PATTERN.test(text) && ADMIN_CONTACT_KEYWORDS.test(text);
+
+}
+
+async function sanitizeAdminContactClaims(result) {
+
+  const text = result.text || "";
+
+  if (!mightBeAdminContactClaim(text)) {
+    return result; // Admin/WhatsApp নাম্বার সংক্রান্ত কোনো দাবিই নেই, ঠিক আছে
+  }
+
+  if (result.adminContact && result.adminContact.whatsapp) {
+    // এই টার্নেই সত্যিই get_admin_contact কল হয়েছে এবং সেখান
+    // থেকেই ডেটা এসেছে — এটা বিশ্বাসযোগ্য, কিছু বদলানোর দরকার নেই।
+    return result;
+  }
+
+  // মডেল tool কল না করেই নাম্বার বলে দিয়েছে (বা ভুল/পুরনো ডেটা
+  // থেকে) — real ডেটা নিজে থেকে এনে রিপ্লাই ঠিক করে দেওয়া হচ্ছে।
+  const real = await getAdminContact();
+
+  if (real && real.whatsapp) {
+
+    return {
+      ...result,
+      text:
+        `আমাদের Admin-এর সাথে সরাসরি WhatsApp-এ যোগাযোগ করতে ` +
+        `নিচের বাটনে ট্যাপ করুন। (নাম্বার: ${real.whatsapp})`,
+      adminContact: real,
+    };
+
+  }
+
+  // real নাম্বারও পাওয়া না গেলে (সেটিংসে সেট করা নেই), কোনো
+  // নাম্বার না দেখিয়ে honest ভাবে জানানো হচ্ছে।
+  return {
+    ...result,
+    text:
+      "দুঃখিত, এই মুহূর্তে Admin-এর নাম্বারটা দেখাতে পারছি না। " +
+      "একটু পরে আবার চেষ্টা করুন।",
+    adminContact: null,
+  };
+
+}
+
 exports.aiChat = onCall(
   { secrets: [geminiApiKey, groqApiKey] },
   async (request) => {
@@ -926,11 +1009,13 @@ exports.aiChat = onCall(
 
         try {
 
-          const result = await runConversation({
+          const rawResult = await runConversation({
             attempt,
             genericMessages: trimmedMessages,
             uid,
           });
+
+          const result = await sanitizeAdminContactClaims(rawResult);
 
           // -------------------------------------------------
           // হালকা usage logging (ভবিষ্যতে Admin AI Dashboard-এর
