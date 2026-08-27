@@ -33,8 +33,11 @@ className="
 bg-[#061538]
 text-white
 pt-12
+lg:pt-20
 pb-24
+lg:pb-14
 px-6
+lg:px-8
 "
 >
 
@@ -48,7 +51,9 @@ className="
 grid
 grid-cols-2
 md:grid-cols-3
+lg:grid-cols-[1.3fr_1fr_1fr]
 gap-10
+lg:gap-16
 "
 >
 
@@ -85,6 +90,8 @@ alt={
 className="
 w-14
 h-14
+lg:w-16
+lg:h-16
 object-contain
 "
 />
@@ -96,6 +103,7 @@ object-contain
 <h2
   className="
     text-2xl
+    lg:text-3xl
     font-bold
     tracking-widest
   "
@@ -140,6 +148,9 @@ className="
 text-gray-300
 leading-7
 text-sm
+lg:text-[15px]
+lg:leading-8
+max-w-sm
 "
 >
 
@@ -166,7 +177,9 @@ className="
 text-amber-500
 font-bold
 text-lg
+lg:text-xl
 mb-5
+lg:mb-6
 "
 >
 
@@ -178,14 +191,16 @@ Quick Links
 <ul
 className="
 space-y-3
+lg:space-y-4
 text-gray-300
 text-sm
+lg:text-[15px]
 "
 >
 
 
 <li>
-<Link to="/" className="flex items-center gap-2">
+<Link to="/" className="flex items-center gap-2 transition-colors hover:text-amber-400">
 <FiHome className="text-amber-500" />
 Home
 </Link>
@@ -193,7 +208,7 @@ Home
 
 
 <li>
-<Link to="/shop" className="flex items-center gap-2">
+<Link to="/shop" className="flex items-center gap-2 transition-colors hover:text-amber-400">
 <FiShoppingBag className="text-amber-500" />
 Shop
 </Link>
@@ -205,7 +220,7 @@ Shop
 href={settings.facebook || "#"}
 target="_blank"
 rel="noopener noreferrer"
-className="flex items-center gap-2"
+className="flex items-center gap-2 transition-colors hover:text-amber-400"
 >
 <FiFacebook className="text-amber-500" />
 Facebook
@@ -214,7 +229,7 @@ Facebook
   
 
 <li>
-<Link to="/about" className="flex items-center gap-2">
+<Link to="/about" className="flex items-center gap-2 transition-colors hover:text-amber-400">
 <FiInfo className="text-amber-500" />
 About Us
 </Link>
@@ -222,7 +237,7 @@ About Us
 
 
 <li>
-<Link to="/faqs" className="flex items-center gap-2">
+<Link to="/faqs" className="flex items-center gap-2 transition-colors hover:text-amber-400">
 <FiHelpCircle className="text-amber-500" />
 FAQs
 </Link>
@@ -250,7 +265,9 @@ className="
 text-amber-500
 font-bold
 text-lg
+lg:text-xl
 mb-5
+lg:mb-6
 "
 >
 
@@ -263,42 +280,44 @@ Customer Service
 <ul
 className="
 space-y-3
+lg:space-y-4
 text-gray-300
 text-sm
+lg:text-[15px]
 "
 >
 
 
 <li>
-<Link to="/page/returnpolicy">
+<Link to="/page/returnpolicy" className="transition-colors hover:text-amber-400">
 Return Policy
 </Link>
 </li>
 
 
 <li>
-<Link to="/page/refundpolicy">
+<Link to="/page/refundpolicy" className="transition-colors hover:text-amber-400">
 Refund Policy
 </Link>
 </li>
 
 
 <li>
-<Link to="/page/shippingpolicy">
+<Link to="/page/shippingpolicy" className="transition-colors hover:text-amber-400">
 Shipping Policy
 </Link>
 </li>
 
 
 <li>
-<Link to="/page/privacypolicy">
+<Link to="/page/privacypolicy" className="transition-colors hover:text-amber-400">
 Privacy Policy
 </Link>
 </li>
 
 
 <li>
-<Link to="/page/terms">
+<Link to="/page/terms" className="transition-colors hover:text-amber-400">
 Terms & Conditions
 </Link>
 </li>
@@ -323,12 +342,16 @@ Terms & Conditions
 <div
 className="
 mt-12
+lg:mt-16
 border-t
 border-white/10
 pt-8
+lg:pt-10
 grid
 md:grid-cols-2
+lg:grid-cols-2
 gap-8
+lg:gap-16
 "
 >
 
@@ -344,7 +367,9 @@ gap-8
 className="
 text-amber-500
 font-bold
+lg:text-xl
 mb-5
+lg:mb-6
 "
 >
 Contact Us
@@ -354,8 +379,10 @@ Contact Us
 <div
 className="
 space-y-4
+lg:space-y-5
 text-gray-300
 text-sm
+lg:text-[15px]
 "
 >
 
@@ -397,7 +424,9 @@ text-sm
 className="
 text-amber-500
 font-bold
+lg:text-xl
 mb-5
+lg:mb-6
 "
 >
 
@@ -411,7 +440,10 @@ We Accept
 className="
 grid
 grid-cols-4
+lg:flex
+lg:flex-wrap
 gap-3
+lg:gap-5
 items-center
 "
 >
@@ -420,8 +452,13 @@ items-center
   src="/payments/visa-logo.png"
   className="
     w-full
+    lg:w-20
     h-8
+    lg:h-10
     object-contain
+    bg-white
+    rounded-md
+    lg:p-1.5
   "
 />
 
@@ -429,8 +466,13 @@ items-center
   src="/payments/mastercard-logo.png"
   className="
     w-full
+    lg:w-20
     h-8
+    lg:h-10
     object-contain
+    bg-white
+    rounded-md
+    lg:p-1.5
   "
 />
 
@@ -438,8 +480,13 @@ items-center
   src="/payments/bkash-logo.png"
   className="
     w-full
+    lg:w-20
     h-8
+    lg:h-10
     object-contain
+    bg-white
+    rounded-md
+    lg:p-1.5
   "
 />
 
@@ -447,8 +494,13 @@ items-center
   src="/payments/nagad-logo.png"
   className="
     w-full
+    lg:w-20
     h-8
+    lg:h-10
     object-contain
+    bg-white
+    rounded-md
+    lg:p-1.5
   "
 />
 
@@ -472,7 +524,9 @@ className="
 border-t
 border-white/10
 mt-8
+lg:mt-12
 pt-6
+lg:pt-7
 text-center
 text-gray-400
 text-sm
