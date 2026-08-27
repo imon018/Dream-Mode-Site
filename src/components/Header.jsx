@@ -366,12 +366,14 @@ return (
 <div
 className="
 h-8
+lg:h-10
 bg-[#071F57]
 overflow-hidden
 flex
 items-center
 text-white
 text-[12px]
+lg:text-[13px]
 font-medium
 "
 >
@@ -431,6 +433,7 @@ shadow-md
 <div
 className="
 h-[72px]
+lg:h-[96px]
 flex
 items-center
 justify-between
@@ -483,6 +486,8 @@ w-10
 h-10
 md:w-12
 md:h-12
+lg:w-14
+lg:h-14
 object-contain
 "
 />
@@ -504,6 +509,7 @@ leading-none
 className="
 text-[30px]
 md:text-[42px]
+lg:text-[46px]
 font-bold
 text-[#1A1A1A]
 whitespace-nowrap
@@ -525,6 +531,7 @@ settings.storeName || ""
 className="
 text-[7px]
 md:text-[11px]
+lg:text-[12px]
 mt-1
 text-[#D4AF37]
 font-medium
@@ -555,18 +562,130 @@ hidden
 md:flex
 items-center
 gap-8
+lg:gap-10
 font-medium
 "
 >
 
 
-<Link to="/">
+<Link
+to="/"
+className="
+relative
+py-2
+lg:text-[15px]
+transition-colors
+hover:text-[#D4AF37]
+after:content-['']
+after:absolute
+after:left-0
+after:-bottom-1
+after:h-[2px]
+after:w-0
+after:bg-[#D4AF37]
+after:transition-all
+hover:after:w-full
+"
+>
 Home
 </Link>
 
 
-<Link to="/shop">
+<Link
+to="/shop"
+className="
+relative
+py-2
+lg:text-[15px]
+transition-colors
+hover:text-[#D4AF37]
+after:content-['']
+after:absolute
+after:left-0
+after:-bottom-1
+after:h-[2px]
+after:w-0
+after:bg-[#D4AF37]
+after:transition-all
+hover:after:w-full
+"
+>
 Shop
+</Link>
+
+
+<Link
+to="/about"
+className="
+hidden
+lg:inline-flex
+relative
+py-2
+lg:text-[15px]
+transition-colors
+hover:text-[#D4AF37]
+after:content-['']
+after:absolute
+after:left-0
+after:-bottom-1
+after:h-[2px]
+after:w-0
+after:bg-[#D4AF37]
+after:transition-all
+hover:after:w-full
+"
+>
+About
+</Link>
+
+
+<Link
+to="/contact"
+className="
+hidden
+lg:inline-flex
+relative
+py-2
+lg:text-[15px]
+transition-colors
+hover:text-[#D4AF37]
+after:content-['']
+after:absolute
+after:left-0
+after:-bottom-1
+after:h-[2px]
+after:w-0
+after:bg-[#D4AF37]
+after:transition-all
+hover:after:w-full
+"
+>
+Contact
+</Link>
+
+
+<Link
+to="/faqs"
+className="
+hidden
+lg:inline-flex
+relative
+py-2
+lg:text-[15px]
+transition-colors
+hover:text-[#D4AF37]
+after:content-['']
+after:absolute
+after:left-0
+after:-bottom-1
+after:h-[2px]
+after:w-0
+after:bg-[#D4AF37]
+after:transition-all
+hover:after:w-full
+"
+>
+FAQs
 </Link>
 
 
@@ -577,10 +696,13 @@ className="
 relative
 flex
 items-center
+transition-transform
+hover:scale-110
+hover:text-[#D4AF37]
 "
 >
 
-<FiShoppingCart size={22}/>
+<FiShoppingCart size={22} className="lg:w-6 lg:h-6"/>
 
 {
 cartCount > 0 && (
@@ -622,10 +744,13 @@ className="
 relative
 flex
 items-center
+transition-transform
+hover:scale-110
+hover:text-[#D4AF37]
 "
 >
 
-<FiHeart size={22}/>
+<FiHeart size={22} className="lg:w-6 lg:h-6"/>
 
 {
 wishlistCount > 0 && (
@@ -673,6 +798,7 @@ className="
 flex
 items-center
 gap-4
+lg:gap-6
 "
 >
 
@@ -706,7 +832,7 @@ overflow-hidden
 ${
 searchOpen
 ?
-"w-[240px] opacity-100 scale-x-100"
+"w-[240px] lg:w-[320px] opacity-100 scale-x-100"
 :
 "w-0 opacity-0 scale-x-95 pointer-events-none"
 }
@@ -805,6 +931,8 @@ onClick={()=>setSearchOpen(true)}
 className="
 relative
 z-10
+transition-transform
+hover:scale-110
 "
 
 >
@@ -813,7 +941,7 @@ z-10
 
 size={22}
 
-className="text-[#071F57]"
+className="text-[#071F57] lg:w-6 lg:h-6"
 
 />
 
@@ -865,6 +993,8 @@ setNotifOpen(prev => !prev);
 
 className="
 relative
+transition-transform
+hover:scale-110
 "
 
 >
@@ -873,7 +1003,7 @@ relative
 
 size={24}
 
-className="text-[#071F57]"
+className="text-[#071F57] lg:w-[26px] lg:h-[26px]"
 
 />
 
@@ -953,11 +1083,16 @@ flex
 items-center
 gap-2
 px-5
+lg:px-6
 py-2.5
+lg:py-3
 rounded-full
 border
 border-[#071F57]
 text-[#071F57]
+transition-colors
+hover:bg-[#071F57]
+hover:text-white
 "
 >
 
@@ -975,10 +1110,14 @@ flex
 items-center
 gap-2
 px-6
+lg:px-7
 py-2.5
+lg:py-3
 rounded-full
 bg-[#071F57]
 text-white
+transition-colors
+hover:bg-[#0a2d7a]
 "
 >
 
@@ -1333,6 +1472,7 @@ right-0
 top-full
 mt-3
 w-64
+lg:w-72
 max-h-[70vh]
 overflow-y-auto
 bg-white
