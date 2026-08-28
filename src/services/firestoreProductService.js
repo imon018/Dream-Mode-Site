@@ -94,7 +94,8 @@ async()=>{
 
 
 
-  return snapshot.docs.map(
+  const products =
+  snapshot.docs.map(
 
     (doc)=>(
 
@@ -109,6 +110,20 @@ async()=>{
       }
 
     )
+
+  );
+
+
+  // সবসময় সবচেয়ে নতুন (Recent) প্রোডাক্ট আগে দেখাবে — না হলে
+  // Firestore ডিফল্টভাবে যেই ক্রমে ডকুমেন্ট রাখে সেভাবেই আসে,
+  // যেটা নতুন যোগ করা প্রোডাক্টকে ক্যাটাগরির শুরুতে নাও আনতে পারে।
+  return products
+  .sort(
+
+    (a,b)=>
+
+    (b.createdAt?.seconds || 0) -
+    (a.createdAt?.seconds || 0)
 
   );
 
