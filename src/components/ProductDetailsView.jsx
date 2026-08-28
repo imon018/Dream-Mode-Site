@@ -566,7 +566,8 @@ whitespace-nowrap
 
               <div className="space-y-3 mt-2">
 
-  {(product.description || "")
+  {(() => {
+
     // নিয়ম:
     // - একবার Enter দিলে টেক্সটে সেভাবেই লাইন-ব্রেক থাকবে (ভাঙা
     //   লাইন হিসেবেই দেখাবে, প্যারাগ্রাফের মতো জোড়া লাগবে না)।
@@ -577,54 +578,87 @@ whitespace-nowrap
     //   ডাবল স্পেস (পরপর ২টা স্পেস) দেওয়া হবে — এটাই একমাত্র
     //   বিভাজক। Enter/ডাবল Enter কখনোই নতুন আইটেম তৈরি করবে না,
     //   শুধু লাইন-ব্রেক হিসেবে থেকে যাবে।
-    .split(/ {2,}/)
-    .map(chunk => chunk.trim())
-    .filter(chunk => chunk !== "")
-    .map((line, index) => (
+    // - প্রথম অংশটুকু (একদম শুরুর টেক্সট, যেটার আগে কোনো ডাবল
+    //   স্পেস দেওয়া হয়নি) কোনো টিক-মার্ক আইটেম না — এটা বর্ণনার
+    //   সাধারণ ভূমিকা/ইন্ট্রো প্যারাগ্রাফ। তাই এটার পাশে টিক-মার্ক
+    //   আইকন দেখানো হবে না, শুধু বাকি (ডাবল স্পেস দিয়ে সত্যিকারের
+    //   আলাদা করা) অংশগুলোতেই টিক-মার্ক থাকবে।
 
-      <div
-        key={index}
-        className="
-          flex
-          items-start
-          gap-2
-        "
-      >
+    const chunks = (product.description || "")
+      .split(/ {2,}/)
+      .map(chunk => chunk.trim())
+      .filter(chunk => chunk !== "");
+
+    return chunks.map((line, index) => {
+
+      if (index === 0) {
+
+        return (
+          <p
+            key={index}
+            className="
+              text-gray-600
+              leading-7
+              text-sm
+              md:text-base
+              whitespace-pre-line
+            "
+          >
+            {line}
+          </p>
+        );
+
+      }
+
+      return (
 
         <div
-  style={themeBgStyle}
-  className="
-    w-4
-    h-4
-    rounded-full
-    text-white
-    flex
-    items-center
-    justify-center
-    text-xs
-    font-bold
-    shrink-0
-    mt-1
-  "
->
-  ✓
-</div>
-
-        <p
+          key={index}
           className="
-            text-gray-600
-            leading-7
-            text-sm
-            md:text-base
-            whitespace-pre-line
+            flex
+            items-start
+            gap-2
           "
         >
-          {line}
-        </p>
 
-      </div>
+          <div
+    style={themeBgStyle}
+    className="
+      w-4
+      h-4
+      rounded-full
+      text-white
+      flex
+      items-center
+      justify-center
+      text-xs
+      font-bold
+      shrink-0
+      mt-1
+    "
+  >
+    ✓
+  </div>
 
-    ))}
+          <p
+            className="
+              text-gray-600
+              leading-7
+              text-sm
+              md:text-base
+              whitespace-pre-line
+            "
+          >
+            {line}
+          </p>
+
+        </div>
+
+      );
+
+    });
+
+  })()}
 
 </div>
 
