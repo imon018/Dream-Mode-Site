@@ -21,7 +21,10 @@ import { FaWhatsapp } from "react-icons/fa6";
 
 import Button from "./ui/Button";
 import RelatedProducts from "./RelatedProducts";
+import RecentlyViewed from "./RecentlyViewed";
 import ProductReviews from "./product/ProductReviews";
+
+import { addRecentlyViewed } from "../hooks/useRecentlyViewed";
 
 import { useSettings } from "../context/SettingsContext";
 
@@ -120,6 +123,8 @@ export default function ProductDetailsView() {
         setProduct(data);
 
 		  trackViewContent(data);
+
+        addRecentlyViewed(data);
 
 
 
@@ -405,6 +410,7 @@ whitespace-nowrap
       src={selectedImage}
       alt={product.name}
       onClick={() => setFullscreen(true)}
+      loading="lazy" decoding="async"
       className="
         w-full
         h-auto
@@ -443,6 +449,7 @@ whitespace-nowrap
               src={img}
               alt=""
               onClick={()=>setSelectedImage(img)}
+              loading="lazy" decoding="async"
               className={`
                 w-14
                 h-20
@@ -1231,6 +1238,13 @@ Order
         </div>
 
 
+        {/* RECENTLY VIEWED */}
+
+        <RecentlyViewed
+          excludeId={product.id}
+        />
+
+
 
 
 
@@ -1295,7 +1309,7 @@ rounded-lg
 object-contain
 "
 
-/>
+ loading="lazy" decoding="async"/>
 
 </div>
 
