@@ -1,4 +1,8 @@
 import {
+  useState,
+} from "react";
+
+import {
   useNavigate,
 } from "react-router-dom";
 
@@ -26,6 +30,14 @@ export default function ProductCard({
 
   const navigate =
     useNavigate();
+
+
+
+  const [
+    imageHovered,
+    setImageHovered,
+  ] = useState(false);
+
 
 
 
@@ -81,13 +93,25 @@ export default function ProductCard({
 
 
 
-  const _productImage =
-    product.images?.length
-      ?
-      product.images[0]
-      :
-      product.image ||
-      FALLBACK_PRODUCT_IMAGE;
+  // প্রোডাক্টের দ্বিতীয় ছবি থাকলে সেটাকে হোভার-প্রিভিউ হিসেবে
+  // ব্যবহার করা হবে — মাউস কার্ডের ছবির উপর নিলে হালকা ফেড
+  // ইফেক্টে দ্বিতীয় ছবিটা দেখাবে, সরিয়ে নিলে আবার প্রথম ছবিতে
+  // ফিরে যাবে। দ্বিতীয় ছবি না থাকলে এই আচরণ চালু হবে না।
+
+  const primaryImage =
+    product.image ||
+    product.images?.[0] ||
+    FALLBACK_PRODUCT_IMAGE;
+
+  const hoverImage =
+    (
+      product.images?.length > 1 &&
+      product.images[1] !== primaryImage
+    )
+    ?
+    product.images[1]
+    :
+    null;
 
 
 
@@ -174,6 +198,8 @@ export default function ProductCard({
  {/* IMAGE */}
 
 <div
+  onMouseEnter={()=>setImageHovered(true)}
+  onMouseLeave={()=>setImageHovered(false)}
   className="
     relative
     overflow-hidden
@@ -184,11 +210,7 @@ export default function ProductCard({
 
   <img
 
-    src={
-      product.image ||
-      product.images?.[0] ||
-      FALLBACK_PRODUCT_IMAGE
-    }
+    src={primaryImage}
 
 
     alt={product.name}
@@ -205,9 +227,58 @@ export default function ProductCard({
       duration-700
 
       group-hover:scale-110
+
+      ${
+        hoverImage && imageHovered
+        ?
+        "opacity-0"
+        :
+        "opacity-100"
+      }
     `}
 
-  />
+   loading="lazy" decoding="async"/>
+
+
+  {/* HOVER PREVIEW (২য় ছবি থাকলে) */}
+
+  {
+    hoverImage && (
+
+      <img
+
+        src={hoverImage}
+
+        alt={product.name}
+
+        className={`
+          absolute
+          inset-0
+          w-full
+          h-full
+
+          aspect-[3/4]
+
+          object-cover
+
+          transition-opacity
+          duration-500
+
+          ${
+            imageHovered
+            ?
+            "opacity-100"
+            :
+            "opacity-0"
+          }
+        `}
+
+        loading="lazy"
+        decoding="async"
+      />
+
+    )
+  }
 
 
 
