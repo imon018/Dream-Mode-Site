@@ -18,6 +18,7 @@ import "swiper/css/pagination";
 
 
 import ProductCard from "./ProductCard";
+import { ProductCardSkeletonGrid } from "./ProductCardSkeleton";
 
 import {
   getCategories,
@@ -44,6 +45,12 @@ export default function CategoryProducts(){
     categoryProducts,
     setCategoryProducts,
   ] = useState({});
+
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
 
 
@@ -96,6 +103,9 @@ export default function CategoryProducts(){
     );
 
 
+    setLoading(false);
+
+
   }
 
 
@@ -109,6 +119,70 @@ export default function CategoryProducts(){
     >
 
       {
+        loading && (
+
+          <>
+
+            {
+              Array.from({ length: 2 }).map(
+                (_, index) => (
+
+                  <div
+                    key={index}
+                    className="
+                      container-box
+                    "
+                  >
+
+                    <div
+                      className="
+                        text-center
+                        mb-5
+                      "
+                    >
+
+                      <div
+                        className="
+                          inline-flex
+                          w-40
+                          h-9
+                          rounded-full
+                          bg-gray-200
+                          animate-pulse
+                        "
+                      />
+
+                    </div>
+
+                    <div
+                      className="
+                        grid
+                        grid-cols-2
+                        gap-4
+                        lg:grid-cols-4
+                      "
+                    >
+
+                      <ProductCardSkeletonGrid
+                        count={4}
+                        compact={true}
+                      />
+
+                    </div>
+
+                  </div>
+
+                )
+              )
+            }
+
+          </>
+
+        )
+      }
+
+      {
+        !loading &&
         categories.map(
           (category)=>{
 
