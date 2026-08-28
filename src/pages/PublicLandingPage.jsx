@@ -591,6 +591,8 @@ alt="product"
 
 onClick={()=>setFullscreen(true)}
 
+loading="lazy" decoding="async"
+
 className="
 w-full
 h-auto
@@ -746,6 +748,8 @@ src={img}
 alt="thumb"
 
 onClick={()=>setActiveImage(img)}
+
+loading="lazy" decoding="async"
 
 className={`
 w-20
@@ -1830,7 +1834,7 @@ border-gray-100
 src="/payments/bkash-logo.png"
 alt="bKash"
 className="w-full h-full object-contain"
-/>
+ loading="lazy" decoding="async"/>
 </span>
 
 
@@ -2020,7 +2024,7 @@ border-gray-100
 src="/payments/nagad-logo.png"
 alt="Nagad"
 className="w-full h-full object-contain"
-/>
+ loading="lazy" decoding="async"/>
 </span>
 
 
@@ -2695,7 +2699,7 @@ rounded-lg
 object-contain
 "
 
-/>
+ loading="lazy" decoding="async"/>
 
 
 
