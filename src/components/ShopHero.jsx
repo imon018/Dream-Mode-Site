@@ -174,7 +174,9 @@ block
 
 "
 
-loading="lazy"
+loading="eager"
+
+fetchpriority="high"
 
 />
 
