@@ -342,7 +342,7 @@ export default function CartPage() {
                           object-cover
                         "
 
-                      />
+                       loading="lazy" decoding="async"/>
 
 
 
