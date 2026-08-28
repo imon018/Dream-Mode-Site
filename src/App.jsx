@@ -27,6 +27,10 @@ import {
   SettingsProvider,
 } from "./context/SettingsContext";
 
+import {
+  ThemeProvider,
+} from "./context/ThemeContext";
+
 
 import MaintenanceGuard from "./components/MaintenanceGuard";
 import NoInternet from "./components/NoInternet";
@@ -265,6 +269,8 @@ export default function App(){
   return (
 
 
+    <ThemeProvider>
+
     <AuthProvider>
 
 
@@ -317,6 +323,8 @@ export default function App(){
 
 
     </AuthProvider>
+
+    </ThemeProvider>
 
 
   );
