@@ -3,20 +3,20 @@ import jewelryImage from "../assets/banners/facebook-jewelry.png";
 
 export default function FacebookFollowBanner() {
   return (
-    <section className="pb-20">
+    <section className="pb-10 md:pb-14">
       <div className="container-box">
         <div
           className="
           relative
           overflow-hidden
-          rounded-2xl
+          rounded-xl
           bg-[#0B1229]
           shadow-luxury
           "
         >
           {/* Decorative Glows */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-amber-400/10 blur-[110px]" />
-          <div className="absolute -bottom-24 -right-10 w-72 h-72 rounded-full bg-blue-500/10 blur-[110px]" />
+          <div className="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-amber-400/10 blur-[90px]" />
+          <div className="absolute -bottom-16 -right-10 w-56 h-56 rounded-full bg-blue-500/10 blur-[90px]" />
 
           {/* Faint diamond texture */}
           <div
@@ -31,33 +31,36 @@ export default function FacebookFollowBanner() {
             className="
             relative
             z-10
-            grid
-            grid-cols-1
-            md:grid-cols-2
+            flex
+            flex-row
             items-center
-            gap-10
-            px-6
-            py-12
+            justify-between
+            gap-3
+            sm:gap-6
+            px-4
+            py-4
+            sm:px-8
+            sm:py-6
             md:px-14
-            md:py-16
+            md:py-8
             "
           >
             {/* Left: Text */}
-            <div className="flex items-center gap-5">
-              <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#1877F2] flex items-center justify-center shadow-gold">
-                <FaFacebookF className="text-white text-3xl md:text-4xl" />
+            <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+              <div className="shrink-0 w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-[#1877F2] flex items-center justify-center shadow-gold">
+                <FaFacebookF className="text-white text-base sm:text-2xl md:text-3xl" />
               </div>
 
-              <div>
-                <p className="text-gold text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-1">
+              <div className="min-w-0">
+                <p className="text-gold text-[9px] sm:text-xs md:text-sm font-bold tracking-[0.15em] uppercase mb-0.5">
                   Follow Us On
                 </p>
 
-                <h2 className="font-serif text-3xl md:text-5xl font-bold text-white leading-none mb-3">
+                <h2 className="font-serif text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight mb-1 sm:mb-2">
                   Facebook
                 </h2>
 
-                <p className="text-slate-300 text-sm md:text-base max-w-xs mb-5">
+                <p className="hidden sm:block text-slate-300 text-xs md:text-sm max-w-xs mb-3">
                   Join our Facebook page for latest updates, exclusive offers and new arrivals.
                 </p>
 
@@ -70,12 +73,14 @@ export default function FacebookFollowBanner() {
                   bg-gold-gradient
                   text-primary
                   font-bold
-                  text-xs
-                  md:text-sm
+                  text-[9px]
+                  sm:text-xs
                   tracking-wider
                   uppercase
-                  px-6
-                  py-3
+                  px-3
+                  py-1.5
+                  sm:px-5
+                  sm:py-2.5
                   rounded-md
                   shadow-gold
                   transition
@@ -89,65 +94,37 @@ export default function FacebookFollowBanner() {
               </div>
             </div>
 
-            {/* Right: Phone Mockup */}
-            <div className="relative flex justify-center md:justify-end">
+            {/* Right: Compact phone image with floating reactions */}
+            <div className="relative shrink-0">
               {/* Floating reactions */}
-              <FaHeart className="hidden md:block absolute -top-2 left-10 text-amber-400 text-3xl drop-shadow-lg animate-bounce [animation-duration:3s]" />
+              <FaHeart className="hidden sm:block absolute -top-3 -left-3 text-amber-400 text-base md:text-xl drop-shadow-lg animate-bounce [animation-duration:3s] z-20" />
 
-              <div className="hidden md:flex absolute top-16 -left-6 w-11 h-11 rounded-full bg-[#1877F2] items-center justify-center shadow-lg">
-                <FaThumbsUp className="text-white text-lg" />
+              <div className="hidden sm:flex absolute top-3 -left-5 md:-left-6 w-5 h-5 md:w-7 md:h-7 rounded-full bg-[#1877F2] items-center justify-center shadow-lg z-20">
+                <FaThumbsUp className="text-white text-[8px] md:text-xs" />
               </div>
 
-              <div className="hidden md:flex absolute bottom-24 -left-8 w-9 h-9 rounded-full bg-white items-center justify-center text-lg shadow-lg">
+              <div className="hidden sm:flex absolute bottom-8 -left-4 md:-left-6 w-4 h-4 md:w-6 md:h-6 rounded-full bg-white items-center justify-center text-[9px] md:text-xs shadow-lg z-20">
                 😮
               </div>
 
-              <div className="hidden md:flex absolute top-6 right-2 w-12 h-12 rounded-full bg-[#F02849] items-center justify-center shadow-lg">
-                <FaHeart className="text-white text-xl" />
+              <div className="hidden sm:flex absolute top-1 -right-3 md:-right-4 w-5 h-5 md:w-7 md:h-7 rounded-full bg-[#F02849] items-center justify-center shadow-lg z-20">
+                <FaHeart className="text-white text-[8px] md:text-xs" />
               </div>
 
-              <div className="hidden md:flex absolute bottom-4 right-10 w-9 h-9 rounded-full bg-white items-center justify-center text-lg shadow-lg">
+              <div className="hidden sm:flex absolute bottom-2 -right-4 md:-right-5 w-4 h-4 md:w-6 md:h-6 rounded-full bg-white items-center justify-center text-[9px] md:text-xs shadow-lg z-20">
                 😍
               </div>
 
-              {/* Phone frame */}
-              <div className="relative w-[210px] md:w-[240px] h-[420px] md:h-[480px] rounded-[2.2rem] bg-black p-2.5 shadow-2xl">
-                <div className="relative w-full h-full rounded-[1.7rem] overflow-hidden bg-[#F0F2F5]">
-                  {/* Notch */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-b-2xl z-20" />
+              <div className="relative w-20 sm:w-28 md:w-36 aspect-[9/16] rounded-[0.9rem] bg-black p-1 shadow-2xl">
+                <div className="relative w-full h-full rounded-[0.6rem] overflow-hidden">
+                  <img
+                    src={jewelryImage}
+                    alt="Dream Mode jewelry"
+                    className="w-full h-full object-cover"
+                  />
 
-                  {/* Status/App bar */}
-                  <div className="h-11 bg-white flex items-center px-3 gap-2 border-b border-slate-200">
-                    <div className="w-6 h-6 rounded-full bg-gold-gradient" />
-                    <div className="h-2 w-16 rounded-full bg-slate-200" />
-                  </div>
-
-                  {/* Post header */}
-                  <div className="flex items-center gap-2 px-3 py-2.5 bg-white">
-                    <div className="w-8 h-8 rounded-full bg-[#1877F2] flex items-center justify-center">
-                      <FaFacebookF className="text-white text-xs" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="h-2 w-24 rounded-full bg-slate-700 mb-1.5" />
-                      <div className="h-1.5 w-14 rounded-full bg-slate-300" />
-                    </div>
-                  </div>
-
-                  {/* Post image - real product photo */}
-                  <div className="px-0.5">
-                    <div className="aspect-square overflow-hidden">
-                      <img
-                        src={jewelryImage}
-                        alt="Dream Mode jewelry"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Post footer */}
-                  <div className="px-3 py-2.5">
-                    <div className="h-1.5 w-3/4 rounded-full bg-slate-300 mb-1.5" />
-                    <div className="h-1.5 w-1/2 rounded-full bg-slate-200" />
+                  <div className="absolute top-1.5 left-1.5 w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-[#1877F2] flex items-center justify-center shadow">
+                    <FaFacebookF className="text-white text-[8px] sm:text-xs" />
                   </div>
                 </div>
               </div>
