@@ -15,6 +15,7 @@ import {
 
 import ProductCard from "../components/ProductCard";
 import Spinner from "../components/Spinner";
+import { ProductCardSkeletonGrid } from "../components/ProductCardSkeleton";
 import SearchBar from "../components/ui/SearchBar";
 import ShopHero from "../components/ShopHero";
 import CategoryBar from "../components/CategoryBar";
@@ -292,10 +293,11 @@ const filterProducts = (category) => {
   
 
 
-  if(loading)
-    return <Spinner />;
-
-
+  // এখন লোডিং অবস্থায় পুরো পেজের বদলে (Hero/Search/Category bar
+  // ঠিকই দেখাবে) শুধু প্রোডাক্ট গ্রিডের জায়গায় Skeleton কার্ড
+  // দেখানো হবে — নিচে গ্রিড রেন্ডার হওয়ার সময় `loading` চেক করা
+  // হয়েছে। তাই এখানে আর সম্পূর্ণ পেজ replace করা early-return
+  // দরকার নেই।
 
 
 
@@ -455,7 +457,26 @@ const filterProducts = (category) => {
 
 
         {
-          currentProducts.length === 0 ? (
+          loading ? (
+
+            <div
+              className="
+                grid
+                grid-cols-2
+                md:grid-cols-3
+                gap-4
+                md:gap-6
+              "
+            >
+
+              <ProductCardSkeletonGrid
+                count={12}
+                compact={true}
+              />
+
+            </div>
+
+          ) : currentProducts.length === 0 ? (
 
 
             <div
