@@ -447,7 +447,7 @@ object-cover
 bg-gray-50
 "
 
-/>
+ loading="lazy" decoding="async"/>
 
 
 
