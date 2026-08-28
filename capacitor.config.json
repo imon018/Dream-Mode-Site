@@ -3,6 +3,8 @@
   "appName": "Dream Mode",
   "webDir": "dist",
   "server": {
+    "hostname": "www.dream-mode.shop",
+    "androidScheme": "https",
     "allowNavigation": ["127.0.0.1", "127.0.0.1:8765"]
   },
   "plugins": {
@@ -11,4 +13,3 @@
     }
   }
 }
-
