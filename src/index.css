@@ -24,6 +24,92 @@ body{
   color:#111827;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
+
+  transition:background-color .3s ease, color .3s ease;
+}
+
+/* ==========================
+   DARK MODE (site-wide base)
+========================== */
+
+html.dark body{
+  background:#0f172a;
+  color:#e5e7eb;
+}
+
+/* সাইট জুড়ে ছড়িয়ে থাকা কমন Tailwind ইউটিলিটি ক্লাসগুলোর জন্য
+   ডার্ক-মোড ওভাররাইড। প্রতিটা কম্পোনেন্ট/পেজ আলাদাভাবে dark:
+   ভ্যারিয়েন্ট বসানোর বদলে, সবচেয়ে বেশি ব্যবহৃত ব্যাকগ্রাউন্ড/
+   টেক্সট/বর্ডার ক্লাসগুলোকে এখানে একবারে ওভাররাইড করে দেওয়া
+   হয়েছে যাতে পুরো সাইটে দ্রুত ও কনসিস্টেন্টভাবে ডার্ক মোড কাজ
+   করে। Admin প্যানেলের (.admin-bg ইত্যাদি) নিজস্ব ডার্ক থিম
+   আগে থেকেই আছে, তাই এখানে ছোঁয়া হয়নি। */
+
+html.dark .bg-white{
+  background-color:#1e293b !important;
+}
+
+html.dark .bg-\[\#FAF7F2\]{
+  background-color:#0f172a !important;
+}
+
+html.dark .bg-gray-50{
+  background-color:#1e293b !important;
+}
+
+html.dark .bg-gray-100{
+  background-color:#273449 !important;
+}
+
+html.dark .bg-\[\#f8fafc\]{
+  background-color:#0f172a !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-slate-900,
+html.dark .text-\[\#111827\],
+html.dark .text-\[\#172033\]{
+  color:#f1f5f9 !important;
+}
+
+html.dark .text-gray-700,
+html.dark .text-gray-800{
+  color:#cbd5e1 !important;
+}
+
+html.dark .text-gray-500,
+html.dark .text-gray-600,
+html.dark .text-muted{
+  color:#94a3b8 !important;
+}
+
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-slate-100{
+  border-color:#334155 !important;
+}
+
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-xl,
+html.dark .shadow-2xl{
+  box-shadow:0 10px 30px rgba(0,0,0,.45) !important;
+}
+
+/* ইনপুট/ফর্ম ফিল্ড */
+
+html.dark input,
+html.dark textarea,
+html.dark select{
+  background-color:#1e293b;
+  color:#e5e7eb;
+  border-color:#334155;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder{
+  color:#64748b;
 }
 
 /* ==========================
