@@ -1,4 +1,4 @@
-import { FaFacebookF, FaThumbsUp, FaHeart } from "react-icons/fa";
+import { FaFacebookF, FaThumbsUp, FaHeart, FaGem } from "react-icons/fa";
 import jewelryImage from "../assets/banners/facebook-jewelry.png";
 
 export default function FacebookFollowBanner() {
@@ -11,21 +11,38 @@ export default function FacebookFollowBanner() {
           overflow-hidden
           rounded-xl
           bg-[#0B1229]
+          border
+          border-amber-400/10
           shadow-luxury
           "
         >
           {/* Decorative Glows */}
           <div className="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-amber-400/10 blur-[90px]" />
           <div className="absolute -bottom-16 -right-10 w-56 h-56 rounded-full bg-blue-500/10 blur-[90px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-40 rounded-full bg-amber-400/[0.06] blur-[70px]" />
 
-          {/* Faint diamond texture */}
+          {/* Diamond texture */}
           <div
-            className="absolute inset-0 opacity-[0.05]"
+            className="absolute inset-0 opacity-[0.07]"
             style={{
               backgroundImage:
                 "repeating-linear-gradient(45deg, #D4AF37 0, #D4AF37 1px, transparent 1px, transparent 40px)",
             }}
           />
+          <div
+            className="absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(-45deg, #D4AF37 0, #D4AF37 1px, transparent 1px, transparent 40px)",
+            }}
+          />
+
+          {/* Scattered sparkles filling the empty space */}
+          <FaGem className="absolute top-4 left-[46%] text-amber-400/25 text-xs sm:text-sm" />
+          <span className="absolute top-8 left-[58%] text-amber-400/30 text-[10px] sm:text-sm">✦</span>
+          <span className="absolute bottom-6 left-[50%] text-amber-400/20 text-xs sm:text-base">✧</span>
+          <span className="absolute top-1/2 left-[38%] -translate-y-1/2 text-amber-400/20 text-[10px] sm:text-sm">✦</span>
+          <span className="absolute bottom-10 left-[62%] text-white/10 text-[10px] sm:text-sm">✧</span>
 
           <div
             className="
@@ -96,22 +113,25 @@ export default function FacebookFollowBanner() {
 
             {/* Right: Compact phone image with floating reactions */}
             <div className="relative shrink-0">
-              {/* Floating reactions */}
-              <FaHeart className="hidden sm:block absolute -top-3 -left-3 text-amber-400 text-base md:text-xl drop-shadow-lg animate-bounce [animation-duration:3s] z-20" />
+              {/* Soft glow behind the phone so it doesn't float in empty space */}
+              <div className="absolute inset-0 scale-125 rounded-full bg-amber-400/10 blur-2xl" />
 
-              <div className="hidden sm:flex absolute top-3 -left-5 md:-left-6 w-5 h-5 md:w-7 md:h-7 rounded-full bg-[#1877F2] items-center justify-center shadow-lg z-20">
-                <FaThumbsUp className="text-white text-[8px] md:text-xs" />
+              {/* Floating reactions - visible on all screen sizes */}
+              <FaHeart className="absolute -top-2.5 -left-2.5 sm:-top-3 sm:-left-3 text-amber-400 text-xs sm:text-base md:text-xl drop-shadow-lg animate-bounce [animation-duration:3s] z-20" />
+
+              <div className="flex absolute top-2.5 sm:top-3 -left-4 sm:-left-5 md:-left-6 w-3.5 h-3.5 sm:w-5 sm:h-5 md:w-7 md:h-7 rounded-full bg-[#1877F2] items-center justify-center shadow-lg z-20">
+                <FaThumbsUp className="text-white text-[6px] sm:text-[8px] md:text-xs" />
               </div>
 
-              <div className="hidden sm:flex absolute bottom-8 -left-4 md:-left-6 w-4 h-4 md:w-6 md:h-6 rounded-full bg-white items-center justify-center text-[9px] md:text-xs shadow-lg z-20">
+              <div className="flex absolute bottom-6 sm:bottom-8 -left-3 sm:-left-4 md:-left-6 w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 rounded-full bg-white items-center justify-center text-[7px] sm:text-[9px] md:text-xs shadow-lg z-20">
                 😮
               </div>
 
-              <div className="hidden sm:flex absolute top-1 -right-3 md:-right-4 w-5 h-5 md:w-7 md:h-7 rounded-full bg-[#F02849] items-center justify-center shadow-lg z-20">
-                <FaHeart className="text-white text-[8px] md:text-xs" />
+              <div className="flex absolute top-0.5 sm:top-1 -right-2.5 sm:-right-3 md:-right-4 w-3.5 h-3.5 sm:w-5 sm:h-5 md:w-7 md:h-7 rounded-full bg-[#F02849] items-center justify-center shadow-lg z-20">
+                <FaHeart className="text-white text-[6px] sm:text-[8px] md:text-xs" />
               </div>
 
-              <div className="hidden sm:flex absolute bottom-2 -right-4 md:-right-5 w-4 h-4 md:w-6 md:h-6 rounded-full bg-white items-center justify-center text-[9px] md:text-xs shadow-lg z-20">
+              <div className="flex absolute bottom-1.5 sm:bottom-2 -right-3 sm:-right-4 md:-right-5 w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 rounded-full bg-white items-center justify-center text-[7px] sm:text-[9px] md:text-xs shadow-lg z-20">
                 😍
               </div>
 
