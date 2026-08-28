@@ -7,6 +7,7 @@ import AnimatedWrapper from "../components/ui/AnimatedWrapper";
 import PremiumHighlights from "../components/PremiumHighlights";
 import Newsletter from "../components/Newsletter";
 import CategoryProducts from "../components/CategoryProducts";
+import FacebookFollowBanner from "../components/FacebookFollowBanner";
 
 export default function Home() {
   
@@ -27,6 +28,8 @@ export default function Home() {
       <StatsSection />
 
       <TrustBanner />
+
+      <FacebookFollowBanner />
 
       <Newsletter />
 
