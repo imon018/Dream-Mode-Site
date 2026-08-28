@@ -254,6 +254,22 @@ export async function loginWithPasskey(){
 
     }
 
+    // Android App (Capacitor) থেকে চালানোর সময় ওয়েবভিউ যদি সঠিক
+    // ডোমেইনের (www.dream-mode.shop) বদলে অন্য কোনো origin (যেমন
+    // localhost) থেকে লোড হয়, তাহলে ব্রাউজার নিজেই এই SecurityError
+    // ছুঁড়ে দেয় — কারণ RP ID বর্তমান origin-এর সাথে মেলে না। এটা
+    // ব্যবহারকারীর কোনো ভুল না, তাই raw ব্রাউজার এরর না দেখিয়ে
+    // বোধগম্য মেসেজ দেখানো হচ্ছে।
+    if(error.name === "SecurityError"){
+
+      throw new Error(
+        "এই অ্যাপ থেকে এখনই Passkey দিয়ে Login করা যাচ্ছে না। " +
+        "অনুগ্রহ করে অ্যাপটি সবশেষ ভার্সনে Update করুন, অথবা " +
+        "আপাতত Email/Password দিয়ে Login করুন।"
+      );
+
+    }
+
     throw new Error(
       `PASSKEY_CLIENT_ERROR: ${error.name || ""} — ${error.message || error}`
     );
