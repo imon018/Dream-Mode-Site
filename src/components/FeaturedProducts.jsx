@@ -22,6 +22,7 @@ import "swiper/css/pagination";
 
 
 import ProductCard from "./ProductCard";
+import { ProductCardSkeletonGrid } from "./ProductCardSkeleton";
 
 import {
   getLatestProducts,
@@ -213,11 +214,18 @@ export default function FeaturedProducts() {
 
             <div
               className="
-                text-center
+                grid
+                grid-cols-2
+                md:grid-cols-4
+                gap-4
+                md:gap-6
               "
             >
 
-              Loading...
+              <ProductCardSkeletonGrid
+                count={4}
+                compact={true}
+              />
 
             </div>
 
