@@ -47,6 +47,8 @@ import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
 import useWishlist from "../hooks/useWishlist";
 
+import ThemeToggle from "./ThemeToggle";
+
 
 import {
   useNotifications
@@ -961,6 +963,11 @@ className="text-[#071F57] lg:w-6 lg:h-6"
 
 
 {/* NOTIFICATION */}
+
+
+{/* THEME TOGGLE (Dark/Light) */}
+
+<ThemeToggle />
 
 
 {
