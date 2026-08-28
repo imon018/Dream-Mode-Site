@@ -229,7 +229,7 @@ return (
     md:object-fill
     md:bg-transparent
   "
-/>
+ loading="eager" fetchpriority="high" decoding="async"/>
 
       {/* DARK OVERLAY */}
 
@@ -303,7 +303,7 @@ pt-6
     scale-100
     rounded-full
     "
-/>
+ loading="eager" fetchpriority="high" decoding="async"/>
 
   {/* GLASS OVERLAY */}
 
