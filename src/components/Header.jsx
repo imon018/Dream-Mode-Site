@@ -125,15 +125,15 @@ const {
 }=useSettings();
 
 
-// Website Settings থেকে অ্যাডমিন লোগো হিসেবে ছবি (image) বা
-// এনিমেটেড ভিডিও (mp4/webm) — যেকোনোটা আপলোড করতে পারেন।
-// logoType ফিল্ড দেখে (নতুন সেভ করা সেটিংসে থাকে), আর পুরনো
-// সেটিংসে ওই ফিল্ড না থাকলে URL-এর এক্সটেনশন দেখে ভিডিও কিনা
-// বোঝা হচ্ছে।
+// Website Settings থেকে অ্যাডমিন স্টোরের জন্য ছবি (logoUrl) ও
+// এনিমেটেড ভিডিও (logoVideoUrl) — দুটো লোগোই আলাদাভাবে আপলোড
+// করে রাখতে পারেন। ভিডিও লোগো আপলোড করা থাকলে Header/Footer-এ
+// সেটাই (AnimatedLogo দিয়ে) দেখানো হয়; নাহলে সাধারণ ছবি লোগো
+// দেখানো হয়। বাকি সব জায়গা (Invoice, Admin/User Drawer, Orders
+// লিস্ট ইত্যাদি) সবসময় logoUrl (ছবি)-ই ব্যবহার করে, তাই সেগুলোতে
+// কোনো পরিবর্তনের দরকার নেই।
 
-const isLogoVideo =
-  settings.logoType === "video" ||
-  /\.(mp4|webm)(\?|$)/i.test(settings.logoUrl || "");
+const isLogoVideo = !!settings.logoVideoUrl;
 
 
 
@@ -492,13 +492,14 @@ gap-3
 
 
 {
-  settings.logoUrl && isLogoVideo
+  isLogoVideo
   ?
   (
     // অ্যাডমিন এনিমেটেড ভিডিও লোগো আপলোড করলে — একবার এনিমেশন
     // চলে শেষ ফ্রেমে থেমে যায়, প্রতি ১০ সেকেন্ড পরপর রিপিট হয়।
     <AnimatedLogo
-      src={settings.logoUrl}
+      src={settings.logoVideoUrl}
+      fallbackSrc={settings.logoUrl || "/logo.png"}
       className="
         w-10
         h-10
@@ -1696,10 +1697,11 @@ gap-3
 
 
 {
-  settings.logoUrl && isLogoVideo
+  isLogoVideo
   ?
   <AnimatedLogo
-    src={settings.logoUrl}
+    src={settings.logoVideoUrl}
+    fallbackSrc={settings.logoUrl || "/logo.png"}
     className="
       w-12
       h-12
@@ -2004,10 +2006,11 @@ text-center
 
 
 {
-  settings.logoUrl && isLogoVideo
+  isLogoVideo
   ?
   <AnimatedLogo
-    src={settings.logoUrl}
+    src={settings.logoVideoUrl}
+    fallbackSrc={settings.logoUrl || "/logo.png"}
     className="
       w-14
       h-14
