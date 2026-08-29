@@ -85,7 +85,7 @@ async function fetchFirstAvailableFontBuffer(urls) {
 // shaping stack, so ctx.fillText() renders Bengali correctly; we
 // then capture that as a small image and place it into the PDF.
 // Returns true once the font is loaded and ready to use.
-async function ensureBengaliFont() {
+export async function ensureBengaliFont() {
 
   if (!bengaliFontFacePromise) {
 
@@ -353,7 +353,7 @@ function drawSmartText(doc, text, x, y, opts = {}) {
 // Try to load a (possibly remote) image and convert it to a data URL
 // so it can be embedded into the PDF. Resolves to null on any failure
 // so a missing/blocked logo never breaks PDF generation.
-function loadImageAsDataURL(url) {
+export function loadImageAsDataURL(url) {
 
   return new Promise((resolve) => {
 
