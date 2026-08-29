@@ -6,8 +6,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import Button from "./ui/Button";
-
 import useCart from "../hooks/useCart";
 import useWishlist from "../hooks/useWishlist";
 
@@ -596,7 +594,7 @@ export default function ProductCard({
 
 {/* ADD CART */}
 
-<Button
+<button
   onClick={handleAdd}
   className="
   w-1/2
@@ -622,7 +620,6 @@ export default function ProductCard({
  justify-center
  gap-1
  whitespace-nowrap
- overflow-hidden
  "
 >
 
@@ -632,7 +629,7 @@ Add Cart
 
 </span>
 
-</Button>
+</button>
 
 
 
@@ -670,7 +667,6 @@ Add Cart
  justify-center
  gap-1
  whitespace-nowrap
- overflow-hidden
  "
 >
 
