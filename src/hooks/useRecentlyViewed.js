@@ -9,6 +9,8 @@ import {
   useState,
 } from "react";
 
+import { getProductById } from "../services/firestoreProductService";
+
 const STORAGE_KEY = "dreamMode_recentlyViewed";
 const MAX_ITEMS = 12;
 
@@ -101,15 +103,94 @@ export default function useRecentlyViewed(excludeId){
 
   useEffect(()=>{
 
+    let cancelled = false;
+
     const all = readFromStorage();
 
-    setItems(
+    const visible =
       excludeId
       ?
       all.filter((item) => item.id !== excludeId)
       :
-      all
-    );
+      all;
+
+    // যতক্ষণ না DB-তে চেক করা হচ্ছে, ততক্ষণ সাথে সাথে যা
+    // localStorage-এ আছে সেটাই দেখানো হচ্ছে (দ্রুত UI দেখানোর
+    // জন্য) — এরপর ব্যাকগ্রাউন্ডে যাচাই করে ডিলিট হয়ে যাওয়া
+    // প্রোডাক্টগুলো সরিয়ে ফেলা হবে।
+
+    setItems(visible);
+
+
+    // কোনো প্রোডাক্ট Admin থেকে ডিলিট করা হয়ে থাকলে localStorage-এ
+    // পুরনো এন্ট্রি রয়ে যায় — সেগুলো ক্লিক করলে "Product Not
+    // Found" দেখায়। তাই প্রতিবার এই সেকশন লোড হওয়ার সময় DB-তে
+    // চেক করে দেখা হচ্ছে প্রোডাক্টগুলো এখনও আছে কিনা, না থাকলে
+    // localStorage থেকেও স্থায়ীভাবে সরিয়ে ফেলা হচ্ছে।
+
+    const pruneDeleted = async()=>{
+
+      if(!visible.length) return;
+
+      const results =
+        await Promise.all(
+          visible.map(
+            async(item)=>{
+
+              try{
+
+                const product =
+                  await getProductById(item.id);
+
+                return product ? item : null;
+
+              }catch(err){
+
+                // নেটওয়ার্ক সমস্যা হলে আইটেমটা এখনই বাদ না দিয়ে
+                // রেখে দেওয়া হচ্ছে, যাতে সাময়িক এরর-এ ভুলভাবে
+                // মুছে না যায়।
+                return item;
+
+              }
+
+            }
+          )
+        );
+
+      const stillExisting =
+        results.filter(Boolean);
+
+      if(cancelled) return;
+
+      if(stillExisting.length !== visible.length){
+
+        setItems(stillExisting);
+
+        // সম্পূর্ণ (excludeId ছাড়া) লিস্ট থেকেও ডিলিট হওয়া
+        // আইডিগুলো বাদ দিয়ে localStorage আপডেট করা হচ্ছে।
+        const stillExistingIds =
+          new Set(
+            stillExisting.map((item)=>item.id)
+          );
+
+        const prunedAll =
+          all.filter(
+            (item)=>
+              stillExistingIds.has(item.id) ||
+              item.id === excludeId
+          );
+
+        writeToStorage(prunedAll);
+
+      }
+
+    };
+
+    pruneDeleted();
+
+    return ()=>{
+      cancelled = true;
+    };
 
   },[excludeId]);
 
