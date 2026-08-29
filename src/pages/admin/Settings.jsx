@@ -62,7 +62,9 @@ logoUrl:"",
 
 logoPublicId:"",
 
-logoType:"image",
+logoVideoUrl:"",
+
+logoVideoPublicId:"",
 
 maintenanceMode:false,
   
@@ -85,16 +87,16 @@ setLogoPreview
 ]=useState("");
 
 
-// প্রিভিউ/সেভ করা লোগো ছবি নাকি ভিডিও তা বের করার জন্য —
-// নতুন ফাইল সিলেক্ট করলে সেই ফাইলের টাইপ দেখে, আগে থেকে সেভ
-// করা থাকলে settings.logoType দেখে।
+const [
+videoLogoFile,
+setVideoLogoFile
+]=useState(null);
 
-const isLogoVideo =
-logoFile
-?
-logoFile.type?.startsWith("video/")
-:
-settings.logoType === "video";
+
+const [
+videoLogoPreview,
+setVideoLogoPreview
+]=useState("");
 
 
 
@@ -124,6 +126,14 @@ if(data.logoUrl){
 
 setLogoPreview(
 data.logoUrl
+);
+
+}
+
+if(data.logoVideoUrl){
+
+setVideoLogoPreview(
+data.logoVideoUrl
 );
 
 }
@@ -180,7 +190,7 @@ e.target.value,
 
 
 
-// LOGO PREVIEW ONLY
+// LOGO PREVIEW ONLY (ছবি)
 
 const handleLogoChange=(e)=>{
 
@@ -195,6 +205,32 @@ setLogoFile(file);
 
 
 setLogoPreview(
+URL.createObjectURL(file)
+);
+
+
+}
+
+
+};
+
+
+
+// ভিডিও লোগো (এনিমেশন) প্রিভিউ ONLY
+
+const handleVideoLogoChange=(e)=>{
+
+
+const file=e.target.files[0];
+
+
+if(file){
+
+
+setVideoLogoFile(file);
+
+
+setVideoLogoPreview(
 URL.createObjectURL(file)
 );
 
@@ -221,9 +257,14 @@ try{
 
 let logoData={};
 
+let videoLogoData={};
+
 
 const oldLogoPublicId =
 settings.logoPublicId;
+
+const oldVideoLogoPublicId =
+settings.logoVideoPublicId;
 
 
 
@@ -244,11 +285,28 @@ uploaded.imageUrl,
 logoPublicId:
 uploaded.publicId,
 
+};
 
-logoType:
-uploaded.resourceType === "video"
-? "video"
-: "image",
+
+}
+
+
+if(videoLogoFile){
+
+
+const uploadedVideo =
+await uploadSingleMedia(videoLogoFile);
+
+
+
+videoLogoData={
+
+logoVideoUrl:
+uploadedVideo.imageUrl,
+
+
+logoVideoPublicId:
+uploadedVideo.publicId,
 
 };
 
@@ -262,7 +320,9 @@ await saveSettings({
 
 ...settings,
 
-...logoData
+...logoData,
+
+...videoLogoData
 
 });
 
@@ -274,6 +334,20 @@ try{
 
 await deleteImageFromCloudinary(
 oldLogoPublicId
+);
+
+}catch (err) {
+    console.error(err);
+  }
+
+}
+
+if(videoLogoFile && oldVideoLogoPublicId){
+
+try{
+
+await deleteImageFromCloudinary(
+oldVideoLogoPublicId
 );
 
 }catch (err) {
@@ -1166,7 +1240,7 @@ className={inputClass}
 
 
 
-  {/* STORE LOGO */}
+  {/* STORE LOGO (IMAGE) */}
 
 
 <div>
@@ -1220,40 +1294,18 @@ overflow-hidden
 logoPreview ?
 
 
-(
-  isLogoVideo
-  ?
-  <video
+<img
 
-    src={logoPreview}
+src={logoPreview}
 
-    className="
-    w-28
-    h-28
-    object-contain
-    rounded-xl
-    "
+className="
+w-28
+h-28
+object-contain
+rounded-xl
+"
 
-    autoPlay
-    muted
-    loop
-    playsInline
-
-  />
-  :
-  <img
-
-  src={logoPreview}
-
-  className="
-  w-28
-  h-28
-  object-contain
-  rounded-xl
-  "
-
-  />
-)
+/>
 
 
 
@@ -1299,7 +1351,7 @@ text-gray-400
 
 >
 
-PNG, JPG, WEBP অথবা MP4/WEBM (এনিমেটেড লোগো)
+PNG, JPG, WEBP
 
 </p>
 
@@ -1317,20 +1369,179 @@ PNG, JPG, WEBP অথবা MP4/WEBM (এনিমেটেড লোগো)
 
 
 
-
 <input
 
 id="logo"
 
 type="file"
 
-accept="image/*,video/mp4,video/webm"
+accept="image/*"
 
 className="hidden"
 
 onChange={handleLogoChange}
 
 />
+
+
+
+</div>
+
+
+
+  {/* STORE LOGO ANIMATION (VIDEO) - एচ্ছিক */}
+
+
+<div
+className="mt-6"
+>
+
+
+<label
+
+className="
+block
+font-bold
+text-sm
+text-[#172033]
+mb-2
+"
+
+>
+
+Store Logo Animation (एচ্ছিক)
+
+</label>
+
+
+
+
+
+<label
+
+htmlFor="logoVideo"
+
+className="
+h-36
+rounded-xl
+border-dashed
+border
+border-gray-300
+bg-[#FAF7F2]
+flex
+flex-col
+items-center
+justify-center
+cursor-pointer
+overflow-hidden
+"
+
+>
+
+
+
+{
+
+videoLogoPreview ?
+
+
+<video
+
+src={videoLogoPreview}
+
+className="
+w-28
+h-28
+object-contain
+rounded-xl
+"
+
+autoPlay
+muted
+loop
+playsInline
+
+/>
+
+
+
+:
+
+
+
+<>
+
+
+<FiUploadCloud
+
+className="
+text-amber-500
+text-3xl
+mb-2
+"
+
+/>
+
+
+<p
+
+className="
+text-sm
+font-semibold
+"
+
+>
+
+Upload Logo Animation
+
+</p>
+
+
+
+<p
+
+className="
+text-xs
+text-gray-400
+"
+
+>
+
+MP4/WEBM — Header ও Footer-এ এই এনিমেশনটা দেখানো হবে, বাকি সব জায়গায় উপরের ছবি লোগো দেখানো হবে।
+
+</p>
+
+
+
+</>
+
+
+}
+
+
+
+</label>
+
+
+
+
+<input
+
+id="logoVideo"
+
+type="file"
+
+accept="video/mp4,video/webm"
+
+className="hidden"
+
+onChange={handleVideoLogoChange}
+
+/>
+
+
+
+</div>
 
 
 
