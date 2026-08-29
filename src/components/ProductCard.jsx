@@ -608,7 +608,7 @@ export default function ProductCard({
   text-white
   text-[10px]
   font-semibold
-  px-2
+  px-1
   flex
   items-center
   justify-center
@@ -622,10 +622,11 @@ export default function ProductCard({
  justify-center
  gap-1
  whitespace-nowrap
+ overflow-hidden
  "
 >
 
-<FiShoppingCart size={12}/>
+<FiShoppingCart size={12} className="shrink-0"/>
 
 Add Cart
 
@@ -657,7 +658,7 @@ Add Cart
     flex
     items-center
     justify-center
-    px-2
+    px-1
   "
 
 >
@@ -669,10 +670,11 @@ Add Cart
  justify-center
  gap-1
  whitespace-nowrap
+ overflow-hidden
  "
 >
 
-<FiShoppingBag size={12}/>
+<FiShoppingBag size={12} className="shrink-0"/>
 
 Buy Now
 
