@@ -4,7 +4,6 @@ import {
 } from "react";
 
 
-
 import {
   FiSettings,
   FiUser,
@@ -1390,7 +1389,7 @@ onChange={handleLogoChange}
 
 
 
-  {/* STORE LOGO ANIMATION (VIDEO) - एচ্ছিক */}
+  {/* STORE LOGO ANIMATION (VIDEO) - ঐচ্ছিক */}
 
 
 <div
@@ -1410,7 +1409,7 @@ mb-2
 
 >
 
-Store Logo Animation (एচ্ছিক)
+Store Logo Animation (ঐচ্ছিক)
 
 </label>
 
@@ -1546,7 +1545,6 @@ onChange={handleVideoLogoChange}
 
 
 
-</div>
 
 
 
