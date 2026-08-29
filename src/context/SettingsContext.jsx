@@ -41,6 +41,10 @@ export function SettingsProvider({
 
     logoPublicId:"",
 
+    logoVideoUrl:"",
+
+    logoVideoPublicId:"",
+
     maintenanceMode:false,
 
     maintenanceEndTime:"",
