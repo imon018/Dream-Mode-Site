@@ -46,6 +46,96 @@ import {
 
 
 // =========================
+// এই ডিভাইসে আগে যেসব Passkey দিয়ে সফলভাবে Register/Login করা
+// হয়েছে, তাদের Credential ID লোকালি (localStorage) মনে রাখা
+// হচ্ছে। এর উদ্দেশ্য: "Login with Passkey" চাপলে যদি এই
+// ডিভাইসে ঠিক ১টা Passkey থাকে, তাহলে কোনো Account-চুজার/
+// "Use saved passkey?" শীট না দেখিয়ে সরাসরি ফিঙ্গারপ্রিন্ট/
+// বায়োমেট্রিক প্রম্পট দেখানো (allowCredentials-এ নির্দিষ্ট করে
+// একটাই আইডি পাঠিয়ে) — আর ১টার বেশি থাকলে সেগুলোর মধ্যে থেকে
+// বেছে নেওয়ার চুজার দেখানো (allowCredentials-এ সবগুলো আইডি
+// পাঠিয়ে)। কোনোটাই সেভ করা না থাকলে (নতুন ডিভাইস/ব্রাউজার,
+// অথবা অন্য কোনো ব্রাউজার/অ্যাপে সেটআপ করা প্যাসকি) আগের মতোই
+// usernameless/discoverable ফ্লো-তে ফলব্যাক করবে।
+
+const LOCAL_PASSKEYS_KEY = "dreamMode_localPasskeys";
+
+
+function getLocalPasskeys(){
+
+  try{
+
+    const raw =
+      localStorage.getItem(LOCAL_PASSKEYS_KEY);
+
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed : [];
+
+  }catch(err){
+
+    return [];
+
+  }
+
+}
+
+
+function saveLocalPasskey(credentialId){
+
+  if(!credentialId) return;
+
+  try{
+
+    const existing =
+      getLocalPasskeys()
+      .filter(
+        (item) => item.id !== credentialId
+      );
+
+    const updated =
+      [
+        ...existing,
+        { id: credentialId, savedAt: Date.now() },
+      ];
+
+    localStorage.setItem(
+      LOCAL_PASSKEYS_KEY,
+      JSON.stringify(updated)
+    );
+
+  }catch(err){
+    // localStorage না থাকলেও যেন পুরো ফ্লো ভেঙে না পড়ে
+  }
+
+}
+
+
+function removeLocalPasskey(credentialId){
+
+  try{
+
+    const updated =
+      getLocalPasskeys()
+      .filter(
+        (item) => item.id !== credentialId
+      );
+
+    localStorage.setItem(
+      LOCAL_PASSKEYS_KEY,
+      JSON.stringify(updated)
+    );
+
+  }catch(err){
+    // ignore
+  }
+
+}
+
+
+
+
+// =========================
 // এই ব্রাউজার/ডিভাইস Passkey সাপোর্ট করে কিনা
 // =========================
 
@@ -157,6 +247,11 @@ export async function registerPasskey(customLabel){
 
   }
 
+  // রেজিস্ট্রেশন সফল হলে এই ডিভাইসের জন্য Credential ID মনে
+  // রাখা হচ্ছে, যাতে পরের বার "Login with Passkey"-এ সরাসরি
+  // বায়োমেট্রিক প্রম্পট দেখানো যায় (একাধিক থাকলে চুজার দেখাবে)।
+  saveLocalPasskey(attestationResponse.id);
+
   return verifyResult.data;
 
 }
@@ -196,6 +291,11 @@ export async function removePasskey(credentialId){
     credentialId,
   });
 
+  // ডিলিট করা Passkey-টা লোকাল লিস্ট থেকেও সরিয়ে দেওয়া হচ্ছে,
+  // যাতে এই ডিভাইসের "মনে রাখা" তালিকাটা সবসময় সার্ভারের সাথে
+  // সিঙ্কে থাকে।
+  removeLocalPasskey(credentialId);
+
 }
 
 
@@ -228,13 +328,40 @@ export async function loginWithPasskey(){
     challengeId,
   } = optionsResult.data || {};
 
+
+  // এই ডিভাইসে আগে থেকে মনে রাখা Passkey থাকলে, সেগুলোর ID
+  // দিয়ে allowCredentials ভরে দেওয়া হচ্ছে — এতে ১টা থাকলে
+  // ব্রাউজার সরাসরি বায়োমেট্রিক প্রম্পট দেখাবে (কোনো Account
+  // চুজার ছাড়াই), আর ১টার বেশি থাকলে শুধু এই ID গুলোর মধ্যে
+  // থেকে বেছে নেওয়ার চুজার দেখাবে। কিছু মনে রাখা না থাকলে
+  // (নতুন ডিভাইস/ব্রাউজার) আগের usernameless/discoverable
+  // ফ্লো-তেই ফলব্যাক করবে (allowCredentials খালি থাকবে)।
+
+  const localPasskeys = getLocalPasskeys();
+
+  const authOptions =
+    localPasskeys.length
+    ?
+    {
+      ...options,
+      allowCredentials: localPasskeys.map(
+        (item) => ({
+          id: item.id,
+          type: "public-key",
+        })
+      ),
+    }
+    :
+    options;
+
+
   let assertionResponse;
 
   try{
 
     assertionResponse =
     await startAuthentication({
-      optionsJSON: options,
+      optionsJSON: authOptions,
     });
 
   }catch(error){
@@ -370,6 +497,12 @@ export async function loginWithPasskey(){
 
   const result =
   await signInWithCustomToken(auth, token);
+
+  // লগইন সফল হয়েছে মানে এই Credential ID বৈধ ও এই ডিভাইসেই
+  // ব্যবহৃত হচ্ছে — পরের বার সরাসরি বায়োমেট্রিক প্রম্পট দেখানোর
+  // জন্য এটা মনে রাখা হচ্ছে (আগে থেকে থাকলে duplicate হবে না)।
+  saveLocalPasskey(assertionResponse.id);
+
 
   try{
 
