@@ -248,6 +248,14 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
   const mm = (v) => v * S;
   const measureMm = (text) => ctx.measureText(text).width / S;
 
+  // Font sizes below are given in the same "point" numbers
+  // generateInvoicePdf.js passes to doc.setFontSize() (jsPDF font sizes
+  // are always points, never the document's mm unit) — so they need a
+  // pt→mm conversion before the mm→px scale, unlike every other number
+  // in this layout, which is already in real mm and just needs mm().
+  const PT_TO_MM = 0.352778;
+  const fontPx = (pt) => pt * PT_TO_MM * S;
+
   const pageWidth = 58;
   const marginX = 4;
   const contentWidth = pageWidth - marginX * 2;
@@ -279,11 +287,11 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   const storeName = settings.storeName || "Dream Mode";
 
-  ctx.font = `bold ${mm(13)}px ${SERIF}`;
+  ctx.font = `bold ${fontPx(13)}px ${SERIF}`;
   ctx.textAlign = headerAlign;
   ctx.fillText(storeName, mm(headerTextX), mm(y + 4.5));
 
-  ctx.font = `${mm(6.3)}px ${SANS}`;
+  ctx.font = `${fontPx(6.3)}px ${SANS}`;
   ctx.fillStyle = "#5a5a5a";
   ctx.fillText("Dress Your Dream, Live Your Style", mm(headerTextX), mm(y + 8));
   ctx.fillStyle = "#000000";
@@ -293,7 +301,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   // ---- INVOICE / MEMO BAR ----
 
-  ctx.font = `bold ${mm(8.5)}px ${SANS}`;
+  ctx.font = `bold ${fontPx(8.5)}px ${SANS}`;
 
   const barLabel = "INVOICE / MEMO";
   const barPaddingX = 3;
@@ -315,7 +323,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
   // ---- INFO ROWS ----
 
   const infoRow = (label, value) => {
-    ctx.font = `${mm(8)}px ${SANS}`;
+    ctx.font = `${fontPx(8)}px ${SANS}`;
     ctx.textAlign = "left";
     ctx.fillText(label, mm(marginX), mm(y));
     ctx.textAlign = "right";
@@ -334,14 +342,14 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
     order.createdAt ? new Date(order.createdAt).toLocaleString() : "-"
   );
 
-  ctx.font = `${mm(8)}px ${SANS}`;
+  ctx.font = `${fontPx(8)}px ${SANS}`;
   ctx.fillText("Status", mm(marginX), mm(y));
-  drawBadge(ctx, "Confirmed", mm(rightX), mm(y), "#22c55e", mm(7.5));
+  drawBadge(ctx, "Confirmed", mm(rightX), mm(y), "#22c55e", fontPx(7.5));
   y += 4.4;
 
   infoRow("Payment Method", order.paymentMethod || "Cash On Delivery");
 
-  ctx.font = `${mm(8)}px ${SANS}`;
+  ctx.font = `${fontPx(8)}px ${SANS}`;
   ctx.fillText("Payment Status", mm(marginX), mm(y));
   drawBadge(
     ctx,
@@ -349,7 +357,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
     mm(rightX),
     mm(y),
     order.paymentStatus === "Paid" ? "#22c55e" : "#eab308",
-    mm(7.5)
+    fontPx(7.5)
   );
   y += 4.4;
 
@@ -359,7 +367,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   // ---- CUSTOMER ----
 
-  ctx.font = `bold ${mm(9)}px ${SERIF}`;
+  ctx.font = `bold ${fontPx(9)}px ${SERIF}`;
   ctx.fillText("Customer", mm(marginX), mm(y));
   y += 4.2;
 
@@ -370,12 +378,12 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   const customerName = order.customerName || "-";
   drawPersonIcon(ctx, mm(marginX), mm(y), mm(iconSize), iconColor);
-  ctx.font = `${mm(8)}px ${SANS}`;
+  ctx.font = `${fontPx(8)}px ${SANS}`;
   ctx.fillText(customerName, mm(textX), mm(y));
   y += 4.2;
 
   drawPhoneIcon(ctx, mm(marginX), mm(y), mm(iconSize), iconColor);
-  ctx.font = `${mm(8)}px ${SANS}`;
+  ctx.font = `${fontPx(8)}px ${SANS}`;
   ctx.fillText(order.phone || "-", mm(textX), mm(y));
   y += 4.2;
 
@@ -385,14 +393,14 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
     order.district,
   ].filter(Boolean).join(", ") || "-";
 
-  ctx.font = `${mm(8)}px ${SANS}`;
+  ctx.font = `${fontPx(8)}px ${SANS}`;
   const addressLines = wrapText(ctx, fullAddress, mm(textWidth));
 
   addressLines.forEach((line, idx) => {
     if (idx === 0) {
       drawPinIcon(ctx, mm(marginX), mm(y), mm(iconSize), iconColor);
     }
-    ctx.font = `${mm(8)}px ${SANS}`;
+    ctx.font = `${fontPx(8)}px ${SANS}`;
     ctx.fillText(line, mm(textX), mm(y));
     y += 4;
   });
@@ -403,14 +411,14 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   // ---- PRODUCTS ----
 
-  ctx.font = `bold ${mm(9)}px ${SERIF}`;
+  ctx.font = `bold ${fontPx(9)}px ${SERIF}`;
   ctx.fillText("Products", mm(marginX), mm(y));
   y += 4.2;
 
   const qtyX = marginX + 34;
   const priceRightX = rightX;
 
-  ctx.font = `bold ${mm(7.5)}px ${SANS}`;
+  ctx.font = `bold ${fontPx(7.5)}px ${SANS}`;
   ctx.textAlign = "left";
   ctx.fillText("Item", mm(marginX), mm(y));
   ctx.textAlign = "center";
@@ -427,17 +435,17 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
     const itemName = item.name || "-";
 
-    ctx.font = `bold ${mm(7.8)}px ${SANS}`;
+    ctx.font = `bold ${fontPx(7.8)}px ${SANS}`;
     const nameLines = wrapText(ctx, itemName, mm(contentWidth - 22));
 
     nameLines.forEach((line, idx) => {
-      ctx.font = `bold ${mm(7.8)}px ${SANS}`;
+      ctx.font = `bold ${fontPx(7.8)}px ${SANS}`;
       ctx.fillText(line, mm(marginX), mm(y + idx * 3.4));
     });
 
     const priceText = `\u09F3${(item.offerPrice || item.price || 0) * (item.quantity || 1)}`;
 
-    ctx.font = `${mm(7.8)}px ${SANS}`;
+    ctx.font = `${fontPx(7.8)}px ${SANS}`;
     ctx.textAlign = "center";
     ctx.fillText(String(item.quantity ?? "-"), mm(qtyX), mm(y));
     ctx.textAlign = "right";
@@ -450,7 +458,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
       const sub = `${item.size || "-"}${item.color ? ` / ${item.color}` : ""}`;
 
-      ctx.font = `${mm(6.8)}px ${SANS}`;
+      ctx.font = `${fontPx(6.8)}px ${SANS}`;
       ctx.fillStyle = "#787878";
       ctx.fillText(sub, mm(marginX), mm(y));
       ctx.fillStyle = "#000000";
@@ -467,7 +475,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   // ---- SUMMARY ----
 
-  ctx.font = `${mm(8)}px ${SANS}`;
+  ctx.font = `${fontPx(8)}px ${SANS}`;
 
   infoRow("Subtotal", `\u09F3 ${order.subtotal || order.total || 0}`);
   infoRow("Delivery", `\u09F3 ${order.deliveryCharge || 0}`);
@@ -484,7 +492,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   const totalText = `\u09F3 ${order.total ?? 0}`;
 
-  ctx.font = `bold ${mm(12)}px ${SANS}`;
+  ctx.font = `bold ${fontPx(12)}px ${SANS}`;
   ctx.textAlign = "left";
   ctx.fillText("TOTAL", mm(marginX), mm(y));
   ctx.textAlign = "right";
@@ -497,7 +505,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   // ---- STORE CONTACT ----
 
-  ctx.font = `${mm(7.5)}px ${SANS}`;
+  ctx.font = `${fontPx(7.5)}px ${SANS}`;
 
   if (settings.phone) {
     ctx.textAlign = "center";
@@ -508,7 +516,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   if (settings.facebook) {
 
-    ctx.font = `${mm(7.5)}px ${SANS}`;
+    ctx.font = `${fontPx(7.5)}px ${SANS}`;
     const fbLines = wrapText(ctx, settings.facebook, mm(contentWidth));
 
     fbLines.forEach((line) => {
@@ -529,9 +537,9 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
   const qrY = y;
 
   if (scriptLoaded) {
-    ctx.font = `${mm(17)}px "${SCRIPT_CANVAS_FONT}", cursive`;
+    ctx.font = `${fontPx(17)}px "${SCRIPT_CANVAS_FONT}", cursive`;
   } else {
-    ctx.font = `bold italic ${mm(13)}px Georgia, serif`;
+    ctx.font = `bold italic ${fontPx(13)}px Georgia, serif`;
   }
 
   ctx.fillText("Thank You!", mm(marginX), mm(y + 5));
@@ -541,7 +549,7 @@ function renderInvoiceContent(ctx, { order, settings, qrImg, logoImg, scriptLoad
 
   const forShoppingLine = `for shopping with ${storeName}`;
 
-  ctx.font = `${mm(6.5)}px ${SANS}`;
+  ctx.font = `${fontPx(6.5)}px ${SANS}`;
   ctx.fillStyle = "#5a5a5a";
   ctx.fillText(forShoppingLine, mm(marginX), mm(y + 9));
   ctx.fillStyle = "#000000";
