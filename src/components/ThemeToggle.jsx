@@ -52,7 +52,7 @@ export default function ThemeToggle({ className = "" }) {
         :
         <FiMoon
           size={22}
-          className="text-[#071F57]"
+          className="text-white"
         />
       }
 
