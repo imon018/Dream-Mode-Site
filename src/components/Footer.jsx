@@ -18,12 +18,18 @@ import {
   useSettings
 } from "../context/SettingsContext";
 
+import AnimatedLogo from "./AnimatedLogo";
+
 
 export default function Footer(){
 
 const {
   settings
 }=useSettings();
+
+const isLogoVideo =
+  settings.logoType === "video" ||
+  /\.(mp4|webm)(\?|$)/i.test(settings.logoUrl || "");
 
   
 return (
@@ -78,23 +84,38 @@ mb-5
 >
 
 
-<img
-src={
-  settings.logoUrl ||
-  "/logo.png"
+{
+  settings.logoUrl && isLogoVideo
+  ?
+  <AnimatedLogo
+    src={settings.logoUrl}
+    className="
+      w-14
+      h-14
+      lg:w-16
+      lg:h-16
+      object-contain
+    "
+  />
+  :
+  <img
+  src={
+    settings.logoUrl ||
+    "/logo.png"
+  }
+  alt={
+    settings.storeName ||
+    ""
+  }
+  className="
+  w-14
+  h-14
+  lg:w-16
+  lg:h-16
+  object-contain
+  "
+  />
 }
-alt={
-  settings.storeName ||
-  ""
-}
-className="
-w-14
-h-14
-lg:w-16
-lg:h-16
-object-contain
-"
-/>
 
 
 <div>
