@@ -44,6 +44,7 @@ import {
 
 
 import useAuth from "../hooks/useAuth";
+import ThemeToggle from "./ThemeToggle";
 import useCart from "../hooks/useCart";
 import useWishlist from "../hooks/useWishlist";
 
@@ -958,6 +959,18 @@ className="text-[#071F57] lg:w-6 lg:h-6"
 
 
 
+
+
+{/* THEME TOGGLE — শুধু Guest (Login করা নেই এমন) ইউজারদের
+    জন্য। Login করা ইউজারদের হেডারে আগে থেকেই Search + Bell +
+    Cart আইকন থাকায় জায়গা কম থাকে, তাই তাদের জন্য এটা
+    Drawer-এর ভেতরে (Notification আইকনের পাশে) রাখা হয়েছে। */}
+
+{
+!user && (
+  <ThemeToggle />
+)
+}
 
 
 {/* NOTIFICATION */}
