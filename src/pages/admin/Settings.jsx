@@ -27,6 +27,7 @@ import {
 
 import {
   uploadImages,
+  uploadSingleMedia,
   deleteImageFromCloudinary,
 } from "../../services/uploadService";
 
@@ -61,6 +62,8 @@ logoUrl:"",
 
 logoPublicId:"",
 
+logoType:"image",
+
 maintenanceMode:false,
   
   maintenanceEndTime:"",
@@ -80,6 +83,18 @@ const [
 logoPreview,
 setLogoPreview
 ]=useState("");
+
+
+// প্রিভিউ/সেভ করা লোগো ছবি নাকি ভিডিও তা বের করার জন্য —
+// নতুন ফাইল সিলেক্ট করলে সেই ফাইলের টাইপ দেখে, আগে থেকে সেভ
+// করা থাকলে settings.logoType দেখে।
+
+const isLogoVideo =
+logoFile
+?
+logoFile.type?.startsWith("video/")
+:
+settings.logoType === "video";
 
 
 
@@ -216,18 +231,24 @@ if(logoFile){
 
 
 const uploaded =
-await uploadImages([logoFile]);
+await uploadSingleMedia(logoFile);
 
 
 
 logoData={
 
 logoUrl:
-uploaded[0].imageUrl,
+uploaded.imageUrl,
 
 
 logoPublicId:
-uploaded[0].publicId
+uploaded.publicId,
+
+
+logoType:
+uploaded.resourceType === "video"
+? "video"
+: "image",
 
 };
 
@@ -1199,19 +1220,40 @@ overflow-hidden
 logoPreview ?
 
 
+(
+  isLogoVideo
+  ?
+  <video
 
-<img
+    src={logoPreview}
 
-src={logoPreview}
+    className="
+    w-28
+    h-28
+    object-contain
+    rounded-xl
+    "
 
-className="
-w-28
-h-28
-object-contain
-rounded-xl
-"
+    autoPlay
+    muted
+    loop
+    playsInline
 
-/>
+  />
+  :
+  <img
+
+  src={logoPreview}
+
+  className="
+  w-28
+  h-28
+  object-contain
+  rounded-xl
+  "
+
+  />
+)
 
 
 
@@ -1257,7 +1299,7 @@ text-gray-400
 
 >
 
-PNG JPG WEBP
+PNG, JPG, WEBP অথবা MP4/WEBM (এনিমেটেড লোগো)
 
 </p>
 
@@ -1282,7 +1324,7 @@ id="logo"
 
 type="file"
 
-accept="image/*"
+accept="image/*,video/mp4,video/webm"
 
 className="hidden"
 
