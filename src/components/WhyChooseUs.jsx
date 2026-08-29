@@ -68,7 +68,7 @@ const { settings } = useSettings();
   whitespace-nowrap
   "
 >
-            Why Choose {settings.storeName || ""}
+            Why Choose Us
           </h2>
 
         </div>
