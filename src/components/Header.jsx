@@ -47,8 +47,6 @@ import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
 import useWishlist from "../hooks/useWishlist";
 
-import ThemeToggle from "./ThemeToggle";
-
 
 import {
   useNotifications
@@ -963,11 +961,6 @@ className="text-[#071F57] lg:w-6 lg:h-6"
 
 
 {/* NOTIFICATION */}
-
-
-{/* THEME TOGGLE (Dark/Light) */}
-
-<ThemeToggle />
 
 
 {
@@ -1894,7 +1887,9 @@ className="
 mx-6
 mt-3
 flex
+items-center
 justify-center
+gap-2
 rounded-xl
 bg-[#071F57]
 text-white
@@ -1903,7 +1898,11 @@ py-3
 
 >
 
+<FiUserPlus size={18}/>
+
+<span>
 Register Now
+</span>
 
 
 </Link>
