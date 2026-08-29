@@ -27,9 +27,7 @@ const {
   settings
 }=useSettings();
 
-const isLogoVideo =
-  settings.logoType === "video" ||
-  /\.(mp4|webm)(\?|$)/i.test(settings.logoUrl || "");
+const isLogoVideo = !!settings.logoVideoUrl;
 
   
 return (
@@ -85,10 +83,11 @@ mb-5
 
 
 {
-  settings.logoUrl && isLogoVideo
+  isLogoVideo
   ?
   <AnimatedLogo
-    src={settings.logoUrl}
+    src={settings.logoVideoUrl}
+    fallbackSrc={settings.logoUrl || "/logo.png"}
     className="
       w-14
       h-14
