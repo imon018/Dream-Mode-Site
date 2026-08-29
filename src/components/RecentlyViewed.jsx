@@ -11,7 +11,7 @@ import useRecentlyViewed from "../hooks/useRecentlyViewed";
 export default function RecentlyViewed({
 
   excludeId,
-  title = "সম্প্রতি যা দেখেছেন",
+  title = "Recent Viewed",
 
 }) {
 
@@ -70,10 +70,10 @@ export default function RecentlyViewed({
               <div
                 key={item.id}
                 className="
-                  min-w-[150px]
-                  w-[150px]
-                  md:min-w-[190px]
-                  md:w-[190px]
+                  min-w-[172px]
+                  w-[172px]
+                  md:min-w-[200px]
+                  md:w-[200px]
                   shrink-0
                 "
               >
