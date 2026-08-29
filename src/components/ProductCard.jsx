@@ -599,7 +599,7 @@ export default function ProductCard({
   className="
   w-1/2
   h-8
-  rounded-lg
+  rounded-xl
   bg-black
   border
   border-amber-500
