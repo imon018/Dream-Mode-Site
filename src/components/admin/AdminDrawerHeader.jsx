@@ -16,6 +16,8 @@ import {
   useNotifications,
 } from "../../context/NotificationContext";
 
+import ThemeToggle from "../ThemeToggle";
+
 
 
 export default function AdminDrawerHeader({
@@ -431,8 +433,29 @@ user?.lastLogin
 
 
 
-{/* NOTIFICATION BUTTON */}
+{/* NOTIFICATION + THEME TOGGLE */}
 
+
+<div
+className="
+flex
+items-center
+gap-2
+"
+>
+
+
+<ThemeToggle
+className="
+w-10
+h-10
+rounded-xl
+flex
+items-center
+justify-center
+hover:bg-white/10
+"
+/>
 
 
 <button
@@ -509,6 +532,9 @@ unreadCount
 
 
 </button>
+
+
+</div>
 
 
 
