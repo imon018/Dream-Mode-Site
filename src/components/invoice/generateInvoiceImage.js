@@ -187,25 +187,39 @@ function drawHeart(ctx, cx, cy, size, color) {
 
 // rightXPx/yPx are already scaled to canvas pixels (unlike the mm-space
 // helpers below, this one is called with pixel coordinates directly since
-// it needs its own font/measure pass).
+// it needs its own font/measure pass). yPx is the baseline of the label
+// text on the same row (e.g. "Status") — the pill is sized from the
+// badge text's own real metrics and centered against that baseline so it
+// scales correctly at any resolution instead of a fixed mm-tuned ratio.
 function drawBadge(ctx, text, rightXPx, yPx, color, fontSizePx) {
 
   ctx.font = `bold ${fontSizePx}px ${SANS}`;
 
-  const paddingX = fontSizePx * 0.22;
-  const textWidth = ctx.measureText(text).width;
+  const metrics = ctx.measureText(text);
+  const ascent = metrics.actualBoundingBoxAscent || fontSizePx * 0.72;
+  const descent = metrics.actualBoundingBoxDescent || fontSizePx * 0.2;
+  const textWidth = metrics.width;
+
+  const paddingX = fontSizePx * 0.4;
+  const paddingY = fontSizePx * 0.3;
+
   const badgeWidth = textWidth + paddingX * 2;
-  const badgeHeight = fontSizePx * 0.48;
+  const badgeHeight = ascent + descent + paddingY * 2;
+
+  // Center the pill on roughly the same vertical spot as the row label's
+  // text (whose baseline is yPx, cap-height ~0.7 * its own font size).
+  const rowCenterY = yPx - fontSizePx * 0.32;
+  const badgeTop = rowCenterY - badgeHeight / 2;
 
   const x = rightXPx - badgeWidth;
 
   ctx.fillStyle = color;
-  roundedRectPath(ctx, x, yPx - badgeHeight + fontSizePx * 0.12, badgeWidth, badgeHeight, badgeHeight / 2);
+  roundedRectPath(ctx, x, badgeTop, badgeWidth, badgeHeight, badgeHeight / 2);
   ctx.fill();
 
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
-  ctx.fillText(text, rightXPx - badgeWidth / 2, yPx);
+  ctx.fillText(text, rightXPx - badgeWidth / 2, badgeTop + paddingY + ascent);
 
   ctx.fillStyle = "#000000";
   ctx.textAlign = "left";
