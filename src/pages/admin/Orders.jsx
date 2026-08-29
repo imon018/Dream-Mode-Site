@@ -58,28 +58,12 @@ const generateInvoicePdf = (order) =>
   import("../../components/invoice/generateInvoicePdf")
     .then((mod) => mod.generateInvoicePdf(order));
 
-// Invoice-কে PNG ইমেজ হিসেবে ডাউনলোড করার জন্য — html2canvas দিয়ে
-// মোডালের ভেতরের Invoice58mm নোডটাকে ক্যাপচার করে সরাসরি ডাউনলোড
-// করিয়ে দেয়। generateInvoicePdf-এর মতোই dynamic import ব্যবহার
-// করা হয়েছে যাতে html2canvas মূল বান্ডেলে না জোড়ে।
-const saveInvoiceAsImage = async (node, order) => {
-
-  if (!node) return;
-
-  const html2canvas = (await import("html2canvas")).default;
-
-  const canvas = await html2canvas(node, {
-    scale: 3,
-    backgroundColor: "#ffffff",
-    useCORS: true,
-  });
-
-  const link = document.createElement("a");
-  link.download = `Invoice-${order?.invoiceNo || order?.id || "Order"}.png`;
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-
-};
+// Save-as-image: draws the invoice from scratch (same principle as
+// generateInvoicePdf.js — not a DOM screenshot), so it can't inherit the
+// live page's overlap/clipping glitches the way html2canvas could.
+const saveInvoiceAsImage = (order) =>
+  import("../../components/invoice/generateInvoiceImage")
+    .then((mod) => mod.generateInvoiceImage(order));
 
 
 
@@ -152,10 +136,6 @@ useState(null);
 // is fully self-contained (draws the PDF directly, no DOM involved).
 
 const [viewOrder,setViewOrder] = useState(null);
-
-// viewOrder মোডালের ভেতরের Invoice58mm নোড ধরে রাখার জন্য — Save
-// (ইমেজ ডাউনলোড) বাটনে html2canvas দিয়ে এই নোডটাই ক্যাপচার হয়।
-const viewInvoiceRef = useRef(null);
 
 const [printOrder,setPrintOrder] = useState(null);
 
@@ -2743,7 +2723,7 @@ z-10
 
 </button>
 
-<div className="clear-both" ref={viewInvoiceRef}>
+<div className="clear-both">
 
 <Suspense fallback={<div className="p-6 text-sm text-gray-400">Loading…</div>}>
 <Invoice58mm order={viewOrder}/>
@@ -2765,7 +2745,7 @@ border-t
 <button
 
 onClick={()=>{
-saveInvoiceAsImage(viewInvoiceRef.current, viewOrder);
+saveInvoiceAsImage(viewOrder);
 }}
 
 className="
