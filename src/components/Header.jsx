@@ -45,6 +45,7 @@ import {
 
 import useAuth from "../hooks/useAuth";
 import ThemeToggle from "./ThemeToggle";
+import AnimatedLogo from "./AnimatedLogo";
 import useCart from "../hooks/useCart";
 import useWishlist from "../hooks/useWishlist";
 
@@ -122,6 +123,17 @@ user
 const {
  settings
 }=useSettings();
+
+
+// Website Settings থেকে অ্যাডমিন লোগো হিসেবে ছবি (image) বা
+// এনিমেটেড ভিডিও (mp4/webm) — যেকোনোটা আপলোড করতে পারেন।
+// logoType ফিল্ড দেখে (নতুন সেভ করা সেটিংসে থাকে), আর পুরনো
+// সেটিংসে ওই ফিল্ড না থাকলে URL-এর এক্সটেনশন দেখে ভিডিও কিনা
+// বোঝা হচ্ছে।
+
+const isLogoVideo =
+  settings.logoType === "video" ||
+  /\.(mp4|webm)(\?|$)/i.test(settings.logoUrl || "");
 
 
 
@@ -479,19 +491,42 @@ gap-3
 >
 
 
-<img
-src={settings.logoUrl || "/logo.png"}
-alt="logo"
-className="
-w-10
-h-10
-md:w-12
-md:h-12
-lg:w-14
-lg:h-14
-object-contain
-"
-/>
+{
+  settings.logoUrl && isLogoVideo
+  ?
+  (
+    // অ্যাডমিন এনিমেটেড ভিডিও লোগো আপলোড করলে — একবার এনিমেশন
+    // চলে শেষ ফ্রেমে থেমে যায়, প্রতি ১০ সেকেন্ড পরপর রিপিট হয়।
+    <AnimatedLogo
+      src={settings.logoUrl}
+      className="
+        w-10
+        h-10
+        md:w-12
+        md:h-12
+        lg:w-14
+        lg:h-14
+        object-contain
+      "
+    />
+  )
+  :
+  (
+    <img
+      src={settings.logoUrl || "/logo.png"}
+      alt="logo"
+      className="
+        w-10
+        h-10
+        md:w-12
+        md:h-12
+        lg:w-14
+        lg:h-14
+        object-contain
+      "
+    />
+  )
+}
 
 
 
@@ -1660,22 +1695,35 @@ gap-3
 >
 
 
-<img
+{
+  settings.logoUrl && isLogoVideo
+  ?
+  <AnimatedLogo
+    src={settings.logoUrl}
+    className="
+      w-12
+      h-12
+      object-contain
+    "
+  />
+  :
+  <img
 
-src={
-settings.logoUrl ||
-"/logo.png"
+  src={
+  settings.logoUrl ||
+  "/logo.png"
+  }
+
+  className="
+  w-12
+  h-12
+  object-contain
+  "
+
+  alt="logo"
+
+  />
 }
-
-className="
-w-12
-h-12
-object-contain
-"
-
-alt="logo"
-
-/>
 
 
 
@@ -1955,24 +2003,39 @@ text-center
 >
 
 
-<img
+{
+  settings.logoUrl && isLogoVideo
+  ?
+  <AnimatedLogo
+    src={settings.logoUrl}
+    className="
+      w-14
+      h-14
+      mx-auto
+      mb-3
+      object-contain
+    "
+  />
+  :
+  <img
 
-src={
-settings.logoUrl ||
-"/logo.png"
+  src={
+  settings.logoUrl ||
+  "/logo.png"
+  }
+
+  className="
+  w-14
+  h-14
+  mx-auto
+  mb-3
+  object-contain
+  "
+
+  alt="logo"
+
+  />
 }
-
-className="
-w-14
-h-14
-mx-auto
-mb-3
-object-contain
-"
-
-alt="logo"
-
-/>
 
 
 
