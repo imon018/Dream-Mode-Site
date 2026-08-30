@@ -188,6 +188,19 @@ const [
 const searchRef = useRef(null);
 
 
+// টাইটেল ("DREAM MODE") আর ট্যাগলাইন ("DRESS YOUR DREAM, LIVE
+// YOUR STYLE") দুটো আলাদা ফন্টে (Lobster vs সাধারণ ফন্ট) লেখা,
+// তাই ব্রাউজার আর অ্যাপ (WebView)-এর ফন্ট রেন্ডারিং/বোল্ডিং-এর
+// ছোটখাটো পার্থক্যের কারণে ফিক্সড পিক্সেল সাইজ দিয়ে দুটোর
+// প্রস্থ কখনোই সব ডিভাইসে ঠিক সমান হয় না। তাই CSS-এর বদলে
+// রানটাইমে আসল রেন্ডার-করা টাইটেলের প্রস্থ মেপে ট্যাগলাইনটাকে
+// ঠিক ততটুকু প্রস্থে scaleX করে বসানো হচ্ছে — ফলে যেকোনো
+// ব্রাউজার/অ্যাপ/ফন্ট-লোডিং অবস্থাতেই দুটো লাইন পিক্সেল-পারফেক্ট
+// সমান চওড়া দেখাবে।
+const titleRef = useRef(null);
+const taglineRef = useRef(null);
+
+
 const [
  notifOpen,
  setNotifOpen
@@ -293,6 +306,58 @@ setSearchOpen(false);
 
 
 };
+
+
+useEffect(()=>{
+
+
+const fitTagline = ()=>{
+
+const titleEl = titleRef.current;
+const taglineEl = taglineRef.current;
+
+if(!titleEl || !taglineEl) return;
+
+// আগে পুরনো scale সরিয়ে আসল (unscaled) প্রস্থ বের করা হচ্ছে,
+// নাহলে বারবার resize/font-load এ আগের scale-এর উপর হিসাব হয়ে
+// ভুল ফলাফল আসবে।
+taglineEl.style.transform = "none";
+
+const titleWidth = titleEl.offsetWidth;
+const taglineWidth = taglineEl.scrollWidth;
+
+if(titleWidth > 0 && taglineWidth > 0){
+
+taglineEl.style.transform = `scaleX(${titleWidth / taglineWidth})`;
+
+}
+
+};
+
+
+fitTagline();
+
+
+if(document.fonts && document.fonts.ready){
+
+document.fonts.ready.then(fitTagline);
+
+}
+
+
+window.addEventListener("resize", fitTagline);
+
+
+return ()=>{
+
+window.removeEventListener("resize", fitTagline);
+
+};
+
+
+},[settings.storeName]);
+
+
 
 
 useEffect(()=>{
@@ -543,6 +608,7 @@ leading-none
 
 
 <h2
+ref={titleRef}
 className="
 text-[30px]
 md:text-[42px]
@@ -565,6 +631,7 @@ settings.storeName || ""
 
 
 <p
+ref={taglineRef}
 className="
 text-[7px]
 md:text-[11px]
@@ -576,6 +643,9 @@ tracking-[1.5px]
 uppercase
 whitespace-nowrap
 "
+style={{
+transformOrigin:"left"
+}}
 >
 
 Dress Your Dream,
