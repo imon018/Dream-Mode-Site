@@ -574,6 +574,7 @@ text-[#D4AF37]
 font-medium
 tracking-[1.5px]
 uppercase
+whitespace-nowrap
 "
 >
 
