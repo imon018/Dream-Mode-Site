@@ -16,6 +16,17 @@
 
 html{
   scroll-behavior:smooth;
+
+  /* ছোট ফন্ট-সাইজের টেক্সট (যেমন হেডার/ফুটারের ট্যাগলাইন
+     "DRESS YOUR DREAM, LIVE YOUR STYLE") ব্রাউজারে ঠিকঠাক
+     দেখা গেলেও Android অ্যাপ (WebView)-এ এমনিতেই বড় দেখানোর
+     জন্য নিজে থেকে ফন্ট-সাইজ বাড়িয়ে দেয় (Chrome/WebView এর
+     "font boosting" ফিচার), ফলে টেক্সটটা লোগো টাইটেলের চেয়ে
+     চওড়া হয়ে বাইরে বেরিয়ে যায়। এটা বন্ধ করে দিলে অ্যাপ ও
+     ব্রাউজার — দুই জায়গাতেই সাইজ একই থাকবে। */
+  -webkit-text-size-adjust:100%;
+  -moz-text-size-adjust:100%;
+  text-size-adjust:100%;
 }
 
 body{
