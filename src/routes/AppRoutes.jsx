@@ -41,6 +41,7 @@ import Orders from "../pages/admin/Orders";
 import Analytics from "../pages/admin/Analytics";
 import Settings from "../pages/admin/Settings";
 import Subscribers from "../pages/admin/Subscribers";
+import Messages from "../pages/admin/Messages";
 import Newsletter from "../pages/admin/Newsletter";
 import ShopHeroBanner from "../pages/admin/ShopHeroBanner";
 import OrderDetails from "../pages/admin/OrderDetails";
@@ -434,6 +435,12 @@ element={<ReturnOrder />}
         <Route
           path="subscribers"
           element={<Subscribers />}
+        />
+
+
+        <Route
+          path="messages"
+          element={<Messages />}
         />
 
 
