@@ -1,4 +1,9 @@
 import {
+  useRef,
+  useEffect
+} from "react";
+
+import {
 Link
 } from "react-router-dom";
 
@@ -32,7 +37,58 @@ const isLogoVideo =
   settings.logoType === "video" ||
   /\.(mp4|webm)(\?|$)/i.test(settings.logoUrl || "");
 
-  
+
+// Header.jsx-এর মতো এখানেও টাইটেল ("DREAM MODE") আর ট্যাগলাইন
+// ("Dress Your Dream, Live Your Style") আলাদা ফন্টে লেখা বলে
+// ব্রাউজার/অ্যাপ ভেদে ফন্ট রেন্ডারিং-এ সামান্য পার্থক্য হতে
+// পারে। তাই ফিক্সড পিক্সেল সাইজের বদলে রানটাইমে টাইটেলের
+// রেন্ডার-করা প্রস্থ মেপে ট্যাগলাইনকে ঠিক ততটুকু প্রস্থে
+// scaleX করে বসানো হচ্ছে, যাতে দুটো লাইন সবসময় সমান চওড়া
+// দেখায়।
+const titleRef = useRef(null);
+const taglineRef = useRef(null);
+
+useEffect(()=>{
+
+const fitTagline = ()=>{
+
+const titleEl = titleRef.current;
+const taglineEl = taglineRef.current;
+
+if(!titleEl || !taglineEl) return;
+
+taglineEl.style.transform = "none";
+
+const titleWidth = titleEl.offsetWidth;
+const taglineWidth = taglineEl.scrollWidth;
+
+if(titleWidth > 0 && taglineWidth > 0){
+
+taglineEl.style.transform = `scaleX(${titleWidth / taglineWidth})`;
+
+}
+
+};
+
+fitTagline();
+
+if(document.fonts && document.fonts.ready){
+
+document.fonts.ready.then(fitTagline);
+
+}
+
+window.addEventListener("resize", fitTagline);
+
+return ()=>{
+
+window.removeEventListener("resize", fitTagline);
+
+};
+
+},[settings.storeName]);
+
+
 return (
 
 <footer
@@ -123,6 +179,7 @@ mb-5
 
 
 <h2
+  ref={titleRef}
   className="
     text-2xl
     lg:text-3xl
@@ -148,12 +205,16 @@ mb-5
 
 
 <p
+ref={taglineRef}
 className="
 text-amber-400
 text-xs
 mt-1
 whitespace-nowrap
 "
+style={{
+transformOrigin:"left"
+}}
 >
 Dress Your Dream, Live Your Style
 </p>
