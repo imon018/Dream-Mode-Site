@@ -50,7 +50,7 @@ jobs:
 
 
 
-    - name: Deploy Functions
+    - name: Deploy Functions + Firestore Rules
       run: |
 
-        firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --force
+        firebase deploy --only functions,firestore:rules --token ${{ secrets.FIREBASE_TOKEN }} --force
