@@ -41,6 +41,9 @@ function getIcon(type) {
     case "review":
       return <FiMessageSquare className="text-purple-500" />;
 
+    case "contact_message":
+      return <FiMessageSquare className="text-amber-500" />;
+
     default:
       return <FiBell className="text-amber-500" />;
   }
