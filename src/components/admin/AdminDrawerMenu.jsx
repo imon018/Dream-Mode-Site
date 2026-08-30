@@ -29,6 +29,7 @@ import {
   FiPlusCircle,
   FiKey,
   FiRotateCcw,
+  FiMessageSquare,
 } from "react-icons/fi";
 
 
@@ -658,6 +659,28 @@ className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
 <FiUsers size={20}/>
 
 Subscribers
+
+</NavLink>
+
+
+
+
+{/* CONTACT MESSAGES */}
+
+
+<NavLink
+
+to="/admin/messages"
+
+onClick={closeDrawer}
+
+className={menuItem+" text-slate-700 hover:bg-[#FFF7E8]"}
+
+>
+
+<FiMessageSquare size={20}/>
+
+Messages
 
 </NavLink>
 
