@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import PolicyLayout from "../components/PolicyLayout";
 
 import {
@@ -6,27 +8,74 @@ import {
   FiMapPin,
   FiFacebook,
   FiSend,
+  FiCheckCircle,
+  FiLoader,
 } from "react-icons/fi";
 
 import {
   useSettings,
 } from "../context/SettingsContext";
 
+import {
+  sendContactMessage,
+  BD_PHONE_REGEX,
+} from "../services/contactMessageService";
+
+import {
+  errorToast,
+} from "../components/ui/Toast";
+
 
 
 export default function Contact() {
   const { settings } = useSettings();
 
-  const submitHandler = (e) => {
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+
+  const [phoneError, setPhoneError] = useState("");
+
+  // "idle" | "sending" | "sent" — drives the button/inline feedback so
+  // it's always clear whether the message actually went through.
+  const [status, setStatus] = useState("idle");
+
+  const updateField = (field) => (e) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    if (field === "phone") setPhoneError("");
+  };
+
+  const submitHandler = async (e) => {
 
     e.preventDefault();
 
-    alert(
-      `Thank you for contacting ${settings.storeName || ""}. We will get back to you soon.`
-    );
+    if (!BD_PHONE_REGEX.test(form.phone.trim())) {
+      setPhoneError(
+        "Enter a valid number as 01XXXXXXXXX or +8801XXXXXXXXX"
+      );
+      return;
+    }
+
+    setStatus("sending");
+
+    try {
+
+      await sendContactMessage(form);
+
+      setStatus("sent");
+      setForm({ name: "", phone: "", subject: "", message: "" });
+
+    } catch (error) {
+
+      setStatus("idle");
+      errorToast(error.message || "Failed to send message. Please try again.");
+
+    }
 
   };
-
 
 
   return (
@@ -356,31 +405,9 @@ export default function Contact() {
 
               required
 
-              className="
-              w-full
-              rounded-2xl
-              border
-              border-slate-200
-              px-5
-              py-4
-              outline-none
-              focus:ring-2
-              focus:ring-amber-500
-              "
+              value={form.name}
 
-            />
-
-
-
-
-
-            <input
-
-              type="email"
-
-              placeholder="Your Email"
-
-              required
+              onChange={updateField("name")}
 
               className="
               w-full
@@ -395,6 +422,49 @@ export default function Contact() {
               "
 
             />
+
+
+
+
+
+            <div>
+
+              <input
+
+                type="tel"
+
+                placeholder="Your Phone Number (01XXXXXXXXX)"
+
+                required
+
+                value={form.phone}
+
+                onChange={updateField("phone")}
+
+                className={`
+                w-full
+                rounded-2xl
+                border
+                px-5
+                py-4
+                outline-none
+                focus:ring-2
+                ${
+                  phoneError
+                    ? "border-red-300 focus:ring-red-400"
+                    : "border-slate-200 focus:ring-amber-500"
+                }
+                `}
+
+              />
+
+              {phoneError && (
+                <p className="text-red-500 text-sm mt-2 px-1">
+                  {phoneError}
+                </p>
+              )}
+
+            </div>
 
 
 
@@ -407,6 +477,10 @@ export default function Contact() {
 
               placeholder="Subject"
 
+              value={form.subject}
+
+              onChange={updateField("subject")}
+
               className="
               w-full
               rounded-2xl
@@ -420,7 +494,6 @@ export default function Contact() {
               "
 
             />
-
 
 
 
@@ -435,6 +508,10 @@ export default function Contact() {
 
               required
 
+              value={form.message}
+
+              onChange={updateField("message")}
+
               className="
               w-full
               rounded-2xl
@@ -452,12 +529,28 @@ export default function Contact() {
 
 
 
+            {status === "sent" && (
+              <p
+                className="
+                flex
+                items-center
+                gap-2
+                text-green-600
+                font-semibold
+                "
+              >
+                <FiCheckCircle />
+                Your message has been sent. We will get back to you soon.
+              </p>
+            )}
 
 
 
             <button
 
               type="submit"
+
+              disabled={status === "sending"}
 
               className="
               inline-flex
@@ -471,13 +564,23 @@ export default function Contact() {
               font-bold
               hover:bg-blue-900
               transition
+              disabled:opacity-60
+              disabled:cursor-not-allowed
               "
 
             >
 
-              <FiSend />
-
-              Send Message
+              {status === "sending" ? (
+                <>
+                  <FiLoader className="animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <FiSend />
+                  Send Message
+                </>
+              )}
 
 
             </button>
