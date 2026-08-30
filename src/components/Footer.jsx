@@ -59,7 +59,11 @@ if(!titleEl || !taglineEl) return;
 
 taglineEl.style.transform = "none";
 
-const titleWidth = titleEl.offsetWidth;
+// offsetWidth ব্যবহার করলে flex লেআউটে বক্সটা কখনো কখনো
+// স্কুইজড হয়ে আসল টেক্সটের চেয়ে কম মাপ দেখাতে পারে। scrollWidth
+// সবসময় আসল রেন্ডার-করা টেক্সটের প্রকৃত প্রস্থ দেয় (nowrap
+// থাকায়), তাই দুটোতেই scrollWidth ব্যবহার করা হচ্ছে।
+const titleWidth = titleEl.scrollWidth;
 const taglineWidth = taglineEl.scrollWidth;
 
 if(titleWidth > 0 && taglineWidth > 0){
@@ -72,15 +76,25 @@ taglineEl.style.transform = `scaleX(${titleWidth / taglineWidth})`;
 
 fitTagline();
 
+// document.fonts API না থাকলে বা ফন্ট সুইচ হতে দেরি হলে সেই
+// কেস ধরার জন্য একটু পরে আবার একবার মেপে নেওয়া হচ্ছে।
+const fallbackTimer = setTimeout(fitTagline, 400);
+
 if(document.fonts && document.fonts.ready){
 
 document.fonts.ready.then(fitTagline);
 
 }
 
+window.addEventListener("load", fitTagline);
+
 window.addEventListener("resize", fitTagline);
 
 return ()=>{
+
+clearTimeout(fallbackTimer);
+
+window.removeEventListener("load", fitTagline);
 
 window.removeEventListener("resize", fitTagline);
 
