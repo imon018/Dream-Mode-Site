@@ -69,7 +69,41 @@ throw new Error(
 // RP ID/Origin ও automatically সেই নতুন ডোমেইন অনুযায়ী সেট
 // হয়ে যাবে। ডিফল্ট Vercel ডোমেইন fallback হিসেবে রাখা আছে
 // যাতে settings/store ডকুমেন্টে websiteUrl সেট না থাকলেও ভেঙে না পড়ে।
+//
+// Android app (Capacitor, com.dreammode.app) থেকে Passkey ব্যবহার
+// করলে Android নিজে থেকেই ওয়েবসাইটের নয়, "android:apk-key-hash:<...>"
+// ফরম্যাটের একটা origin পাঠায় (Digital Asset Links / assetlinks.json
+// দিয়ে যাচাই করার পর) — এই hash-টা অ্যাপের সাইনিং সার্টিফিকেটের
+// SHA256 ফিঙ্গারপ্রিন্ট থেকে বানানো, ঠিক public/.well-known/
+// assetlinks.json-এ যে fingerprint আছে সেটা থেকেই (base64url এনকোড
+// করা)। @simplewebauthn/server-কে এই origin-টাও "expected" হিসেবে
+// জানানো না থাকলে ওয়েব থেকে ঠিকঠাক কাজ করলেও Android অ্যাপ থেকে
+// Passkey Login/Register সবসময় "origin mismatch" দিয়ে fail করবে।
 // =================================================
+
+const ANDROID_PACKAGE_SHA256_FINGERPRINTS = [
+  "F7:53:B7:42:AC:63:01:E7:5C:DA:FC:A4:18:53:45:84:22:72:D4:84:DD:DC:88:2A:37:AF:59:8D:49:1D:9A:B9",
+];
+
+function androidOriginFromFingerprint(hexFingerprint){
+
+  const bytes =
+  Buffer.from(hexFingerprint.replace(/:/g, ""), "hex");
+
+  const base64url =
+  bytes.toString("base64")
+  .replace(/\+/g, "-")
+  .replace(/\//g, "_")
+  .replace(/=+$/, "");
+
+  return `android:apk-key-hash:${base64url}`;
+
+}
+
+const ANDROID_APP_ORIGINS =
+ANDROID_PACKAGE_SHA256_FINGERPRINTS
+.map(androidOriginFromFingerprint);
+
 
 async function getPasskeyRpConfig(){
 
@@ -104,7 +138,12 @@ async function getPasskeyRpConfig(){
   (data.storeName && data.storeName.trim()) ||
   "DREAM MODE";
 
-  return { rpID, rpName, origin };
+  // ওয়েবসাইটের origin + Android অ্যাপের origin(গুলো) — দুটো
+  // জায়গা থেকেই আসা Passkey রেসপন্স যাচাই করার জন্য।
+  const origins =
+  [ origin, ...ANDROID_APP_ORIGINS ];
+
+  return { rpID, rpName, origin, origins };
 
 }
 
@@ -2193,7 +2232,7 @@ async(request)=>{
 
   }
 
-  const { rpID, origin } =
+  const { rpID, origins } =
   await getPasskeyRpConfig();
 
   let verification;
@@ -2204,7 +2243,7 @@ async(request)=>{
     await verifyRegistrationResponse({
       response,
       expectedChallenge: userData.passkeyChallenge,
-      expectedOrigin: origin,
+      expectedOrigin: origins,
       expectedRPID: rpID,
     });
 
@@ -2557,7 +2596,7 @@ async(request)=>{
 
     const credData = credSnap.data();
 
-    const { rpID, origin } =
+    const { rpID, origin, origins } =
     await getPasskeyRpConfig();
 
     let verification;
@@ -2568,7 +2607,7 @@ async(request)=>{
       await verifyAuthenticationResponse({
         response,
         expectedChallenge: challenge,
-        expectedOrigin: origin,
+        expectedOrigin: origins,
         expectedRPID: rpID,
         credential: {
           id: credentialId,
