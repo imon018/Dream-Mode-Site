@@ -152,6 +152,7 @@ className="
 text-amber-400
 text-xs
 mt-1
+whitespace-nowrap
 "
 >
 Dress Your Dream, Live Your Style
