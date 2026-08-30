@@ -409,22 +409,48 @@ lg:text-[15px]
 >
 
 
-<p className="flex gap-3">
+<a
+href={`tel:${settings.phone || ""}`}
+className="
+flex
+gap-3
+hover:text-amber-400
+transition
+"
+>
 <FiPhone className="text-amber-500"/>
 {settings.phone || ""}
-</p>
+</a>
 
 
-<p className="flex gap-3">
+<a
+href={`mailto:${settings.email || ""}`}
+className="
+flex
+gap-3
+hover:text-amber-400
+transition
+"
+>
 <FiMail className="text-amber-500"/>
 {settings.email || ""}
-</p>
+</a>
 
 
-<p className="flex gap-3">
+<a
+href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address || "Dhaka, Bangladesh")}`}
+target="_blank"
+rel="noopener noreferrer"
+className="
+flex
+gap-3
+hover:text-amber-400
+transition
+"
+>
 <FiMapPin className="text-amber-500"/>
 {settings.address || "Dhaka, Bangladesh"}
-</p>
+</a>
 
 
 <Link
@@ -433,12 +459,11 @@ className="
 flex
 items-center
 gap-3
-text-amber-500
 hover:text-amber-400
 transition
 "
 >
-<FiSend/>
+<FiSend className="text-amber-500"/>
 Send Message
 </Link>
 
