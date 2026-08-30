@@ -323,7 +323,13 @@ if(!titleEl || !taglineEl) return;
 // ভুল ফলাফল আসবে।
 taglineEl.style.transform = "none";
 
-const titleWidth = titleEl.offsetWidth;
+// offsetWidth ব্যবহার করলে flex লেআউটে বক্সটা কখনো কখনো
+// (বিশেষত ছোট স্ক্রিনে/অ্যাপে) স্কুইজড হয়ে আসল টেক্সটের চেয়ে
+// কম মাপ দেখাতে পারে। scrollWidth সবসময় আসল রেন্ডার-করা
+// টেক্সটের প্রকৃত প্রস্থ দেয় (nowrap থাকায়), তাই দুটোতেই
+// scrollWidth ব্যবহার করা হচ্ছে যাতে হিসাবটা যেকোনো লেআউট/
+// ডিভাইসেই নির্ভরযোগ্য থাকে।
+const titleWidth = titleEl.scrollWidth;
 const taglineWidth = taglineEl.scrollWidth;
 
 if(titleWidth > 0 && taglineWidth > 0){
@@ -338,6 +344,12 @@ taglineEl.style.transform = `scaleX(${titleWidth / taglineWidth})`;
 fitTagline();
 
 
+// document.fonts API না থাকলে (কিছু পুরনো/App WebView-তে হতে
+// পারে), বা Lobster ফন্ট সুইচ হতে একটু দেরি হলে — সেই কেসগুলো
+// ধরার জন্য একটু পরে আবার একবার মেপে নেওয়া হচ্ছে (fallback)।
+const fallbackTimer = setTimeout(fitTagline, 400);
+
+
 if(document.fonts && document.fonts.ready){
 
 document.fonts.ready.then(fitTagline);
@@ -345,10 +357,16 @@ document.fonts.ready.then(fitTagline);
 }
 
 
+window.addEventListener("load", fitTagline);
+
 window.addEventListener("resize", fitTagline);
 
 
 return ()=>{
+
+clearTimeout(fallbackTimer);
+
+window.removeEventListener("load", fitTagline);
 
 window.removeEventListener("resize", fitTagline);
 
