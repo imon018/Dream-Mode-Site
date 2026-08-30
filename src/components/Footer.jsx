@@ -11,7 +11,8 @@ FiHome,
 FiShoppingBag,
 FiFacebook,
 FiInfo,
-FiHelpCircle
+FiHelpCircle,
+FiSend
 } from "react-icons/fi";
 
 import {
@@ -27,7 +28,9 @@ const {
   settings
 }=useSettings();
 
-const isLogoVideo = !!settings.logoVideoUrl;
+const isLogoVideo =
+  settings.logoType === "video" ||
+  /\.(mp4|webm)(\?|$)/i.test(settings.logoUrl || "");
 
   
 return (
@@ -83,11 +86,10 @@ mb-5
 
 
 {
-  isLogoVideo
+  settings.logoUrl && isLogoVideo
   ?
   <AnimatedLogo
-    src={settings.logoVideoUrl}
-    fallbackSrc={settings.logoUrl || "/logo.png"}
+    src={settings.logoUrl}
     className="
       w-14
       h-14
@@ -423,6 +425,22 @@ lg:text-[15px]
 <FiMapPin className="text-amber-500"/>
 {settings.address || "Dhaka, Bangladesh"}
 </p>
+
+
+<Link
+to="/contact"
+className="
+flex
+items-center
+gap-3
+text-amber-500
+hover:text-amber-400
+transition
+"
+>
+<FiSend/>
+Send Message
+</Link>
 
 
 
