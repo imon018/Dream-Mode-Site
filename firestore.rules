@@ -357,6 +357,25 @@ match /subscribers/{id} {
 
 
 
+match /contactMessages/{id} {  
+
+
+  // Guest বা Login user, যে কেউ Contact Us থেকে মেসেজ পাঠাতে পারবে
+  allow create:  
+    if true;  
+
+
+
+  // শুধু Admin মেসেজ দেখতে ও ডিলিট করতে পারবে
+  allow read,delete:  
+    if isAdmin();  
+
+
+}  
+
+
+
+
 
 
 
