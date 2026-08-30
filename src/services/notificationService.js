@@ -31,6 +31,7 @@ export const NotificationTypes = {
   BANNER: "banner",
   SETTINGS: "settings",
   SUBSCRIBER: "subscriber",
+  CONTACT_MESSAGE: "contact_message",
   ADMIN: "admin",
   SYSTEM: "system",
   CUSTOM: "custom",
